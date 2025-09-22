@@ -1,0 +1,561 @@
+Platform Client ID,Account Name,Created Date,Account Owner,CS Insight: CS Insights Name,CS Insight: Record Type,Feedback directed to,Feedback,Sentiment,Sentiment_Confidence,Analysis_Method,VADER_Score,TextBlob_Polarity,Year,Month
+CL005109,CodersLab,2023-12-20,Samuel Jimenez,CSI-0000042,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2023,December
+CL004094,EMS Employee Mobility Solutions,2023-01-20,Karoll Cabrera,CSI-0000054,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL001117,Tech And Solve HQ,2021-10-24,Giuliana Fontes,CSI-0000064,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL004748,nutrico.io,2023-10-17,Karoll Cabrera,CSI-0000081,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,October
+CL005068,Mercately,2022-05-26,Joaquin Rocchietti,CSI-0000083,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL003862,Iridian Consulting,2022-11-25,Automated Essentials,CSI-0000090,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,November
+CL003321,Alus Comercializadora,2023-04-05,Automated Essentials,CSI-0000103,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,April
+CL003733,Tecnología en Cuentas por Cobrar,2022-10-07,Karoll Cabrera,CSI-0000113,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+CL000900,DD3 Capital Partners,2022-01-24,Alejandra Arroyo,CSI-0000118,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL005109,CodersLab,2023-12-20,Samuel Jimenez,CSI-0000237,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,December
+CL004220,Rapiboy Latam,2023-03-08,Alejandra Arroyo,CSI-0001244,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,March
+CL005414,wild.,2022-10-20,Joaquin Rocchietti,CSI-0001261,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+CL005387,ecovis.cl,2024-12-21,Automated Essentials,CSI-0001265,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,December
+CL005345,StickerYou,2024-10-15,Joaquin Rocchietti,CSI-0001267,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,October
+CL005363,RP Criminal Defense,2024-12-05,Automated Essentials,CSI-0001268,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,December
+CL005395,beverlylaw.org,2024-12-11,Karoll Cabrera,CSI-0001270,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2024,December
+CL005223,KIT Global,2024-07-03,Joaquin Rocchietti,CSI-0001274,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2024,July
+CL004358,IKTAM,2023-01-30,Automated Essentials,CSI-0001291,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL004211,The Hire Talent,2023-03-06,Giuliana Fontes,CSI-0001293,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,March
+CL004642,Cobra Studio io,2023-09-07,Karoll Cabrera,CSI-0001295,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,September
+CL004721,Ay Hungry,2023-10-30,Karoll Cabrera,CSI-0001309,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,October
+CL005392,Bitual,2024-12-19,Automated Essentials,CSI-0001332,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2024,December
+CL005286,onerpm.com,2024-09-16,Karoll Cabrera,CSI-0001335,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2024,September
+CL005182,"Quiroga Law Office, PLLC",2024-01-26,Laura Del Gordo,CSI-0001510,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2024,January
+CL005362,Simplest Guru,2024-08-29,Alejandra Arroyo,CSI-0001548,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL004921,ACL Tecnología Chile - ACL SPA / Aplicaciones Computacionales SPA - ACL SPA,2022-08-31,Alejandra Arroyo,CSI-0001554,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2022,August
+CL004523,Maria Capital,2023-08-08,Automated Essentials,CSI-0001561,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2023,August
+CL003736,Termmed,2022-02-04,Joaquin Rocchietti,CSI-0001583,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL002475,SERVIAP USA LLC,2022-11-10,Jose Pinto,CSI-0001686,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2022,November
+CL005309,EF VENTURE,2024-10-31,Automated Essentials,CSI-0001688,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2024,October
+CL003273,rhome,2022-07-19,Karoll Cabrera,CSI-0001717,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL003348,"Crediviva, SA",2022-03-21,Automated Essentials,CSI-0001721,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL003436,Polynomial Protocol,2022-08-23,Giuliana Fontes,CSI-0001723,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,August
+CL004345,Tonder,2022-08-30,Joaquin Rocchietti,CSI-0001725,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,August
+CL003549,HireIn Cloud,2022-09-14,Automated Essentials,CSI-0001728,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL003771,The Kenyon Law Firm,2022-09-16,Automated Essentials,CSI-0001730,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL003750,TANGIBLE,2022-10-13,Automated Essentials,CSI-0001733,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+CL003780,Henry,2022-10-31,Giuliana Fontes,CSI-0001735,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+CL004831,The Victory Games,2023-01-26,Karoll Cabrera,CSI-0001737,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL004554,Publicar - NLOCAL ONLINE SERVICES SL,2023-04-14,Joaquin Rocchietti,CSI-0001741,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,April
+CL003778,Tiny Rockets LLC,2023-05-09,Karoll Cabrera,CSI-0001743,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,May
+CL004380,itexon.com,2023-05-22,Karoll Cabrera,CSI-0001747,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,May
+CL004498,Wireless DNA,2023-06-07,Karoll Cabrera,CSI-0001749,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,June
+CL004517,workandstudy.travel,2023-08-02,Joaquin Rocchietti,CSI-0001751,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL004537,Sharper Process,2023-08-09,Karoll Cabrera,CSI-0001754,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL004553,plexicus.com,2023-08-22,Automated Essentials,CSI-0001756,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL004730,LaTeam Partners,2023-10-31,Giuliana Fontes,CSI-0001760,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,October
+CL001001,The Wise Seeker,2021-10-08,Karoll Cabrera,CSI-0001764,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL000086,Think Place,2021-10-14,Giuliana Fontes,CSI-0001768,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL000067,M923 Inc,2021-10-15,Automated Essentials,CSI-0001770,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL004958,BullMetrix,2021-10-28,Karoll Cabrera,CSI-0001774,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL000117,Skydropx,2021-11-08,Karoll Cabrera,CSI-0001776,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL004845,Foodology Inc,2022-03-01,Alejandra Arroyo,CSI-0001851,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,March
+CL003961,Roads Consulting Group,2022-11-09,Giuliana Fontes,CSI-0001861,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,November
+CL004105,Dapta,2023-01-24,Joaquin Rocchietti,CSI-0001865,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2023,January
+CL000620,Axenya,2021-10-13,Samuel Jimenez,CSI-0001901,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2021,October
+CL003781,AgeWorld,2022-01-27,Automated Essentials,CSI-0002023,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL004567,Taxi Laser LLC,2023-08-29,Jose Pinto,CSI-0002050,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL002320,BW Miami,2022-03-07,Automated Essentials,CSI-0002062,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL000004,Truora,2021-10-14,Jose Pinto,CSI-0002110,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2021,October
+CL004849,BrandLive,2022-03-07,Laura Del Gordo,CSI-0002353,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,March
+CL005055,Seidor Colombia,2022-02-08,Automated Essentials,CSI-0002368,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,February
+CL005418,ZURU Latam,2022-05-20,Automated Essentials,CSI-0002383,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL005459,ArtCap,2025-02-12,Automated Essentials,CSI-0002387,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,February
+CL004674,Protegetuviaje.com,2022-04-05,Alejandra Arroyo,CSI-0002389,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,April
+CL004947,ADC TECH NETHERLANDS B.V.,2024-02-16,Luis Miguel Alzate Valencia,CSI-0002398,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2024,February
+CL005431,Digital Petroleum,2025-01-23,Automated Essentials,CSI-0002400,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL005394,Wireframe Technologies Ltd,2025-01-02,Automated Essentials,CSI-0002401,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL005385,Auronix,2022-03-31,Laura Del Gordo,CSI-0002407,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,March
+CL000900,DD3 Capital Partners,2022-01-24,Alejandra Arroyo,CSI-0002420,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL005135,Insidea.com,2023-12-26,Karoll Cabrera,CSI-0002472,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2023,December
+CL002866,Emonk,2022-05-26,Giuliana Fontes,CSI-0002480,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2022,May
+CL005457,limatransportes.com.co,2024-12-24,Automated Essentials,CSI-0002502,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2024,December
+CL000519,Castor (Inversiones Mercurio),2021-10-15,Automated Essentials,CSI-0002514,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL004719,Opcion Yo,2022-02-01,Samuel Jimenez,CSI-0002528,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,February
+CL001773,FJM INVERSIONES S.A.S.,2022-03-02,Giuliana Fontes,CSI-0002534,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL005362,Simplest Guru,2024-08-29,Alejandra Arroyo,CSI-0002540,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL004766,Grand Sports,2024-01-16,Jose Pinto,CSI-0002542,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2024,January
+CL002420,smartBeemo LLC,2021-09-24,Jose Pinto,CSI-0002553,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2021,September
+CL005477,WIND CONSULTING,2025-02-20,Joaquin Rocchietti,CSI-0002562,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,February
+CL003814,Cheetah Conservation Fund,2022-10-14,Giuliana Fontes,CSI-0002568,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+cl004570,Rootstack,2021-11-02,Jose Pinto,CSI-0002570,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL004223,Colsugar S.A.S,2022-08-12,Giuliana Fontes,CSI-0002590,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,August
+CL000675,killb.com,2021-10-06,Giuliana Fontes,CSI-0002592,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL004910,metarad.partners,2024-02-14,Karoll Cabrera,CSI-0002601,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,February
+CL000010,Instaleap,2021-10-15,Jose Pinto,CSI-0002623,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2021,October
+CL000523,EDUNEXT SAS,2021-10-13,Laura Del Gordo,CSI-0002628,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL003980,AdsFactory,2022-10-24,Joaquin Rocchietti,CSI-0002631,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,October
+CL005212,Chiper OS Limited,2024-08-28,Alejandra Arroyo,CSI-0002686,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL005054,Defontana,2022-05-18,Joaquin Rocchietti,CSI-0002782,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL004737,Arkangel.ai,2023-11-30,Karoll Cabrera,CSI-0002846,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2023,November
+CL000405,Influur,2021-10-15,Samuel Jimenez,CSI-0002851,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL004744,Lazo-,2023-10-04,Giuliana Fontes,CSI-0002876,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2023,October
+CL005482,Impacta VC,2024-04-23,Automated Essentials,CSI-0002890,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2024,April
+CL001050,Uala,2021-08-04,Jose Pinto,CSI-0002895,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2021,August
+CL000004,Truora,2021-10-14,Jose Pinto,CSI-0002951,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2021,October
+CL005501,sentiretaller.com,2025-01-02,Automated Essentials,CSI-0002974,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2025,January
+CL000518,Prueba - AB,2023-07-24,Diego Espinosa,CSI-0003156,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2023,July
+CL000518,Prueba - AB,2023-07-24,Diego Espinosa,CSI-0003159,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2023,July
+CL000518,Prueba - AB,2023-07-24,Diego Espinosa,CSI-0003179,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2023,July
+CL000518,Prueba - AB,2023-07-24,Diego Espinosa,CSI-0003180,Client Feedback,Operations B2C,Operations B2C,Neutral,0.5,automated,0.0,0.0,2023,July
+CL000518,Prueba - AB,2023-07-24,Diego Espinosa,CSI-0003182,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2023,July
+CL000518,Prueba - AB,2023-07-24,Diego Espinosa,CSI-0003184,Client Feedback,Operations B2C,Operations B2C,Neutral,0.5,automated,0.0,0.0,2023,July
+CL000518,Prueba - AB,2023-07-24,Diego Espinosa,CSI-0003185,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2023,July
+CL000518,Prueba - AB,2023-07-24,Diego Espinosa,CSI-0003186,Client Feedback,Operations B2C,Operations B2C,Neutral,0.5,automated,0.0,0.0,2023,July
+CL000518,Prueba - AB,2023-07-24,Diego Espinosa,CSI-0003187,Client Feedback,Operations B2C,Operations B2C,Neutral,0.5,automated,0.0,0.0,2023,July
+CL000518,Prueba - AB,2023-07-24,Diego Espinosa,CSI-0003188,Client Feedback,Operations B2C,Operations B2C,Neutral,0.5,automated,0.0,0.0,2023,July
+CL005002,cayadservices.com,2024-04-11,Automated Essentials,CSI-0003232,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2024,April
+CL005494,americagroupsrl.com,2025-01-10,Automated Essentials,CSI-0003285,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL005545,ShipCalm,2025-04-03,Giuliana Fontes,CSI-0003289,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL005532,SANTANAINS.COM,2025-04-02,Automated Essentials,CSI-0003292,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL005527,Gennesaret IT&AI Corp,2025-03-26,Automated Essentials,CSI-0003293,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,March
+CL000488,Wholemeaning,2021-10-27,Automated Essentials,CSI-0003357,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005236,Incluyeme.com S de RL de CV,2024-09-11,Automated Essentials,CSI-0003368,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL001448,Programatico,2022-01-27,Automated Essentials,CSI-0003394,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2022,January
+CL002239,Moventi,2022-03-10,Giuliana Fontes,CSI-0003485,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL005547,impelsys.com,2025-04-10,Giuliana Fontes,CSI-0003486,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL000016,SaludTools,2021-10-14,Giuliana Fontes,CSI-0003494,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL004429,Emprende Hoy LLC,2023-06-15,Laura Del Gordo,CSI-0003514,Client Feedback,Operations B2C,Operations B2C,Neutral,0.5,automated,0.0,0.0,2023,June
+CL003334,Waste 2 Worth,2022-07-05,Automated Essentials,CSI-0003524,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL005591,nia.law,2025-05-08,Automated Essentials,CSI-0003575,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,May
+CL003042,Namla,2022-06-27,Giuliana Fontes,CSI-0003582,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2022,June
+CL002770,Scanntech,2022-04-28,Joaquin Rocchietti,CSI-0003595,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,April
+CL005553,squadralabs.com,2025-04-21,Automated Essentials,CSI-0003596,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL002950,Websec,2022-04-12,Automated Essentials,CSI-0003610,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2022,April
+CL005562,Fineco,2025-04-29,Automated Essentials,CSI-0003616,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL000548,Innovit SpA,2021-10-15,Karoll Cabrera,CSI-0003635,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2021,October
+CL004151,Partner in Publishing,2023-01-25,Giuliana Fontes,CSI-0003641,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL002866,Emonk,2022-05-26,Giuliana Fontes,CSI-0003645,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL004792,Global Sports Rights Mgmt LLC (Fanatiz/1099 Sports),2024-08-12,Samuel Jimenez,CSI-0003648,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL000062,Fanatiz Inc,2021-11-09,Samuel Jimenez,CSI-0003653,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL005301,Yango,2023-01-17,Luis Miguel Alzate Valencia,CSI-0003654,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2023,January
+CL005301,Yango,2023-01-17,Luis Miguel Alzate Valencia,CSI-0003655,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL003559,Serban Group - Latam,2022-07-21,Automated Essentials,CSI-0003657,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2022,July
+CL004493,Toteat Restaurant Manager,2023-06-16,Karoll Cabrera,CSI-0003660,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,June
+CL002522,Migrante,2022-04-22,Automated Essentials,CSI-0003662,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,April
+CL003822,Bhavish Labs Pte Ltd,2022-10-19,Karoll Cabrera,CSI-0003667,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+CL005515,Mooco Studio,2025-04-03,Joaquin Rocchietti,CSI-0003673,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL004049,Mazdi Design Innovation,2022-06-17,Karoll Cabrera,CSI-0003677,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,June
+CL001582,5B - Transacciones y Transferencias. S.A.,2022-01-28,Automated Essentials,CSI-0003679,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL005308,LA CEIBA,2024-10-28,Karoll Cabrera,CSI-0003682,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,October
+CL003094,The Logistics World - B2B Latam - FLCR360 SA de CV,2022-07-01,Giuliana Fontes,CSI-0003683,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL001664,Hosco,2022-01-27,Automated Essentials,CSI-0003690,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL003041,ONIBEX,2022-02-02,Samuel Jimenez,CSI-0003693,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL005508,EC ONLINE INNOVATION BUSINESS EXPERTS DE MEXICO,2025-03-26,Samuel Jimenez,CSI-0003695,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,March
+CL005597,Flannery Law,2025-05-15,Automated Essentials,CSI-0003698,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,May
+CL001479,Ubank App,2022-01-18,Automated Essentials,CSI-0003700,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,January
+CL005544,Ember Ops,2025-04-17,Automated Essentials,CSI-0003702,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL001063,Squaads.,2021-12-10,Automated Essentials,CSI-0003704,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2021,December
+CL005563,baselabs.mx,2025-04-28,Automated Essentials,CSI-0003706,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL004402,Komet Sales LLC,2024-03-21,Karoll Cabrera,CSI-0003714,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,March
+CL004748,nutrico.io,2023-10-17,Karoll Cabrera,CSI-0003716,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,October
+CL005417,Banco Pichincha 2,2025-05-29,Jose Pinto,CSI-0003720,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,May
+CL003426,cloudpiles.com,2022-07-29,Automated Essentials,CSI-0003724,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL004831,The Victory Games,2023-01-26,Karoll Cabrera,CSI-0003726,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL004407,SUMILAR SA,2023-06-27,Automated Essentials,CSI-0003732,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,June
+CL003054,Ultimate UW,2022-05-26,Joaquin Rocchietti,CSI-0003734,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,May
+CL005546,theactioneers.com,2025-04-22,Automated Essentials,CSI-0003735,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL005599,WeAreContent,2024-05-15,Automated Essentials,CSI-0003736,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,May
+CL005594,energialemon.com,2025-05-07,Automated Essentials,CSI-0003737,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,May
+CL004315,Canaima Comunicacion,2023-05-16,Karoll Cabrera,CSI-0003741,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,May
+CL005611,Finerio,2021-10-19,Giuliana Fontes,CSI-0003746,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005605,Write.law,2025-04-24,Automated Essentials,CSI-0003747,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+cl004312,Volanto - Rankmi,2023-06-29,Automated Essentials,CSI-0003749,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2023,June
+CL005262,escala,2021-10-15,Joaquin Rocchietti,CSI-0003751,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2021,October
+CL001838,Unow Solutions,2022-02-17,Alejandra Arroyo,CSI-0003760,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL005466,coralmuajes.com,2025-02-13,Alejandra Arroyo,CSI-0003768,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,February
+CL005434,Helpia,2023-03-17,Karoll Cabrera,CSI-0003773,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2023,March
+CL004099,Reformam Network,2023-01-11,Joaquin Rocchietti,CSI-0003775,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL003336,Carreras Grupo Logístico,2022-02-15,Joaquin Rocchietti,CSI-0003777,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,February
+CL005466,coralmuajes.com,2025-02-13,Alejandra Arroyo,CSI-0003782,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,February
+CL001424,Qaroni,2021-12-16,Karoll Cabrera,CSI-0003784,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,December
+CL005182,"Quiroga Law Office, PLLC",2024-01-26,Laura Del Gordo,CSI-0003786,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL001600,Be Better Developers,2021-12-26,Karoll Cabrera,CSI-0003790,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,December
+CL004578,Mekan Holding,2023-08-21,Karoll Cabrera,CSI-0003805,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL004215,ARDOR LEARNING SPAIN 2018 SLU,2023-03-30,Joaquin Rocchietti,CSI-0003811,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,March
+CL004287,Licify,2021-12-30,Joaquin Rocchietti,CSI-0003813,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,December
+CL005255,FILADD USA LLC,2024-09-25,Alejandra Arroyo,CSI-0003816,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL004865,Tecla Coding Academy,2022-05-04,Karoll Cabrera,CSI-0003820,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL002556,Köm Agency,2022-03-01,Karoll Cabrera,CSI-0003828,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL004763,Atom Unified LLC,2023-12-22,Alejandra Arroyo,CSI-0003830,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,December
+CL005333,Voiceflip,2024-11-12,Giuliana Fontes,CSI-0003832,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,November
+CL000861,Reworth,2021-11-02,Giuliana Fontes,CSI-0004783,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL005409,Ein-Sof-Star LLC,2025-01-15,Alejandra Arroyo,CSI-0004787,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL004593,Alcubo,2023-09-21,Jose Pinto,CSI-0004795,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,September
+CL004395,Net Model SA (Tribal),2023-01-19,Jose Pinto,CSI-0004800,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL005473,LoVirtual LLC,2025-03-13,Jose Pinto,CSI-0004803,Client Feedback,Operations B2C,Operations B2C,Neutral,0.5,automated,0.0,0.0,2025,March
+CL002047,Komax S.A.,2022-03-07,Giuliana Fontes,CSI-0005095,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL004827,grupoaxo.com,2024-01-22,Automated Essentials,CSI-0005097,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL003036,Nudos,2022-02-21,Joaquin Rocchietti,CSI-0006080,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL004420,Nudos SAS,2023-12-22,Joaquin Rocchietti,CSI-0006082,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,December
+CL004891,iData Global Analytics,2022-04-18,Karoll Cabrera,CSI-0006084,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,April
+CL005224,Original Partners Global LLC,2024-09-03,Karoll Cabrera,CSI-0006086,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL002897,Witi,2022-05-24,Giuliana Fontes,CSI-0006088,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL002776,Lupa Recruiter,2022-05-16,Giuliana Fontes,CSI-0006090,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL001141,QUILSOFT,2021-09-22,Joaquin Rocchietti,CSI-0006096,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL002734,Cairex S.A. de C.V.,2022-05-11,Karoll Cabrera,CSI-0006102,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL005135,Insidea.com,2023-12-26,Karoll Cabrera,CSI-0006104,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,December
+CL002571,Allied Worldwide,2022-03-11,Automated Essentials,CSI-0006108,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL004187,Rvere,2022-06-06,Giuliana Fontes,CSI-0006110,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,June
+CL004522,NP Digital,2023-08-02,Karoll Cabrera,CSI-0006112,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL005589,vivesmart,2025-05-05,Automated Essentials,CSI-0006133,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,May
+CL005574,glovendi.es,2025-05-08,Automated Essentials,CSI-0006140,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,May
+CL004537,Sharper Process,2023-08-09,Karoll Cabrera,CSI-0006142,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL000010,Instaleap,2021-10-15,Jose Pinto,CSI-0006144,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL003801,iVisa.com,2022-08-01,Alejandra Arroyo,CSI-0006147,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,August
+CL001948,US Momentum Holdings. LLC,2022-03-11,Alejandra Arroyo,CSI-0006153,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL005495,1190 Sports Peru LLC,2025-06-17,Samuel Jimenez,CSI-0006173,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL005274,ELEVATE PROS INC,2024-10-08,Alejandra Arroyo,CSI-0006175,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,October
+CL001050,Uala,2021-08-04,Jose Pinto,CSI-0006181,Client Feedback,Operations B2C,Operations B2C,Neutral,0.5,automated,0.0,0.0,2021,August
+CL005414,wild.,2022-10-20,Joaquin Rocchietti,CSI-0006183,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+CL004943,ALGI,2022-05-26,Alejandra Arroyo,CSI-0006185,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL005262,escala,2021-10-15,Joaquin Rocchietti,CSI-0006186,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2021,October
+CL000805,Lilab,2021-09-29,Giuliana Fontes,CSI-0006190,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL002624,Dynamo Global,2021-10-05,Alejandra Arroyo,CSI-0006200,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005138,"Payvalida, payments gateway ecuador",2024-07-03,Alejandra Arroyo,CSI-0006202,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,July
+CL004587,superbets.com,2023-09-05,Karoll Cabrera,CSI-0006204,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,September
+CL005566,Just Art Media Inc,2025-05-20,Karoll Cabrera,CSI-0006207,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,May
+CL005685,sellingswag.com,2025-03-01,Karoll Cabrera,CSI-0006208,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,March
+CL005556,after30,2025-04-23,Automated Essentials,CSI-0006222,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL005681,cocinas virtuales chile spa,2025-06-17,Automated Essentials,CSI-0006223,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL005667,The Boolchand Group LLC,2025-06-02,Lucas Arenas,CSI-0006224,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL005541,Koin UY,2025-04-19,Lucas Arenas,CSI-0006225,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL001479,Ubank App,2022-01-18,Automated Essentials,CSI-0006227,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL005679,Navigamo,2025-06-18,Giuliana Fontes,CSI-0006234,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL000083,Advanced Wellness Inc.,2021-10-13,Automated Essentials,CSI-0006238,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL002475,SERVIAP USA LLC,2022-11-10,Jose Pinto,CSI-0006240,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,November
+CL002074,Softon Digital,2022-03-01,Jose Pinto,CSI-0006242,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,March
+CL005419,alpha scale talent,2025-01-20,Automated Essentials,CSI-0006246,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL005394,Wireframe Technologies Ltd,2025-01-02,Automated Essentials,CSI-0006248,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL005416,Agents4Future,2025-01-17,Karoll Cabrera,CSI-0006250,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL001961,First Crack the Code,2022-02-17,Automated Essentials,CSI-0006252,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL005624,CODEABLE USA LLC,2025-05-23,Automated Essentials,CSI-0006254,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,May
+CL002984,Positive Agency | Agencia Digital,2022-05-09,Automated Essentials,CSI-0006260,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL001966,Crack The Code 2,2022-01-19,Automated Essentials,CSI-0006262,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL005102,Blinka,2024-05-27,Automated Essentials,CSI-0006264,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,May
+CL005530,ARWEB,2024-02-27,Automated Essentials,CSI-0006266,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,February
+CL005642,Virtual Learning Academy,2023-09-11,Joaquin Rocchietti,CSI-0006272,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,September
+CL004515,EPIC IO Technologies,2023-06-09,Jose Pinto,CSI-0006274,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2023,June
+CL001514,Aqui­ tu Reforma,2021-12-16,Alejandra Arroyo,CSI-0006280,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,December
+CL005217,Ancient Gaming,2022-10-12,Karoll Cabrera,CSI-0006278,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+CL003950,Bolt Storage,2022-09-28,Alejandra Arroyo,CSI-0006282,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL005497,Broadview Communities,2022-12-16,Alejandra Arroyo,CSI-0006284,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,December
+CL002117,Chattigo,2021-11-15,Alejandra Arroyo,CSI-0006286,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL005275,Condor Technical Services (cts.aero),2024-09-17,Alejandra Arroyo,CSI-0006288,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL002543,Celcom,2021-10-13,Alejandra Arroyo,CSI-0006290,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL000900,DD3 Capital Partners,2022-01-24,Alejandra Arroyo,CSI-0006293,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL004908,ManaTech,2024-02-22,Jose Pinto,CSI-0006294,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,February
+CL004296,DIGIX,2022-04-12,Alejandra Arroyo,CSI-0006296,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,April
+CL004406,Dinterweb,2022-07-29,Alejandra Arroyo,CSI-0006298,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL001814,Epidata,2021-10-22,Alejandra Arroyo,CSI-0006300,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL002616,EX2 Outcoding,2022-02-08,Alejandra Arroyo,CSI-0006302,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL003774,FastSpring,2022-08-26,Alejandra Arroyo,CSI-0006304,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,August
+CL005536,Inselligence,2025-04-08,Alejandra Arroyo,CSI-0006314,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL004581,Femmto,2023-07-27,Alejandra Arroyo,CSI-0006306,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,July
+CL004845,Foodology Inc,2022-03-01,Alejandra Arroyo,CSI-0006308,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL001328,Homie.mx,2021-12-30,Alejandra Arroyo,CSI-0006310,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,December
+CL004861,Ikaria Partners,2024-01-15,Alejandra Arroyo,CSI-0006312,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL005033,JBMP Group,2024-04-22,Alejandra Arroyo,CSI-0006316,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,April
+CL005033,JBMP Group,2024-04-22,Alejandra Arroyo,CSI-0006318,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,April
+CL002472,KIMCHE,2022-03-31,Alejandra Arroyo,CSI-0006320,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL005101,Linktic,2022-03-04,Alejandra Arroyo,CSI-0006323,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL000704,Netactica,2021-09-28,Alejandra Arroyo,CSI-0006325,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL000465,KIWI CAMPUS INC,2021-08-09,Alejandra Arroyo,CSI-0006327,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,August
+CL005046,NEW CLOUD TECH,2024-08-08,Alejandra Arroyo,CSI-0006329,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL001756,Nimacloud,2022-01-12,Alejandra Arroyo,CSI-0006332,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL005073,NIMACLOUD SA (Uruguay),2024-08-06,Alejandra Arroyo,CSI-0006334,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL005073,NIMACLOUD SA (Uruguay),2024-08-06,Alejandra Arroyo,CSI-0006336,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL003674,OneTeam360,2022-10-05,Alejandra Arroyo,CSI-0006338,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+CL004674,Protegetuviaje.com,2022-04-05,Alejandra Arroyo,CSI-0006342,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,April
+CL004375,Pulpomatic SL,2023-06-29,Alejandra Arroyo,CSI-0006344,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,June
+CL005490,SEEED,2022-05-13,Alejandra Arroyo,CSI-0006346,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL002757,SINAPTIA,2022-05-12,Alejandra Arroyo,CSI-0006348,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL004640,spiky.ai,2023-07-24,Alejandra Arroyo,CSI-0006350,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,July
+CL002716,Talento Startup,2022-05-11,Alejandra Arroyo,CSI-0006352,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL000758,TURISMOCITY / Fontfield,2021-09-30,Alejandra Arroyo,CSI-0006355,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL005208,Vec Fleet LLC (US),2024-09-10,Alejandra Arroyo,CSI-0006357,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL004940,Western NY Exteriors,2024-03-11,Alejandra Arroyo,CSI-0006359,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,March
+CL004889,Workia Uruguay,2023-07-19,Alejandra Arroyo,CSI-0006361,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,July
+CL005377,Xmarts Group,2024-04-24,Alejandra Arroyo,CSI-0006363,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,April
+CL004224,Zilke SA,2023-10-08,Alejandra Arroyo,CSI-0006365,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,October
+CL003601,aulasneo,2022-08-02,Joaquin Rocchietti,CSI-0006369,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,August
+CL004043,Worldwide BDC LLC,2023-01-04,Joaquin Rocchietti,CSI-0006371,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL004105,Dapta,2023-01-24,Joaquin Rocchietti,CSI-0006373,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL004281,FactorDao,2023-03-24,Automated Essentials,CSI-0006375,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,March
+CL004638,Get Spanish-speaking Patients,2023-06-06,Joaquin Rocchietti,CSI-0006379,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,June
+CL004503,Zokyo,2023-07-28,Joaquin Rocchietti,CSI-0006381,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,July
+CL004517,workandstudy.travel,2023-08-02,Joaquin Rocchietti,CSI-0006383,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL005142,CertiProf,2023-08-15,Joaquin Rocchietti,CSI-0006385,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL005120,Silk Email,2021-12-30,Joaquin Rocchietti,CSI-0006388,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,December
+CL001281,People Thrust,2022-01-04,Joaquin Rocchietti,CSI-0006390,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL002570,Grupo Mok - Multi Assist,2022-01-07,Joaquin Rocchietti,CSI-0006392,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL003785,Grupo Datco,2022-01-28,Joaquin Rocchietti,CSI-0006394,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL003190,Pócima Digital,2022-02-04,Joaquin Rocchietti,CSI-0006396,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL002791,Longevo,2022-02-17,Joaquin Rocchietti,CSI-0006398,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL002593,Vidfluencer LLC,2022-04-12,Joaquin Rocchietti,CSI-0006402,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,April
+CL002932,Alegra CAN LP HQ,2022-03-18,Joaquin Rocchietti,CSI-0006404,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL004371,Conconcreto,2023-05-10,Laura Del Gordo,CSI-0006407,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,May
+CL004397,Luflox LLC,2022-04-13,Joaquin Rocchietti,CSI-0006410,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,April
+CL005054,Defontana,2022-05-18,Joaquin Rocchietti,CSI-0006412,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL002930,Hyperlocology,2022-05-20,Joaquin Rocchietti,CSI-0006414,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL004688,Elastic Innovations,2023-11-07,Joaquin Rocchietti,CSI-0006416,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,November
+CL005114,bioaccess LATAM CRO EXPERTS,2024-05-01,Joaquin Rocchietti,CSI-0006419,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,May
+CL005345,StickerYou,2024-10-15,Joaquin Rocchietti,CSI-0006423,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,October
+CL005350,Buzz CR,2024-10-30,Joaquin Rocchietti,CSI-0006425,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,October
+CL005477,WIND CONSULTING,2025-02-20,Joaquin Rocchietti,CSI-0006427,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,February
+CL002484,LEGACY SPA,2022-04-13,Automated Essentials,CSI-0006472,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,April
+CL003781,AgeWorld,2022-01-27,Automated Essentials,CSI-0006474,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL003750,TANGIBLE,2022-10-13,Automated Essentials,CSI-0006476,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+CL005326,lapzo,2023-08-23,Laura Del Gordo,CSI-0006516,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL005408,NPHub,2024-04-23,Joaquin Rocchietti,CSI-0006541,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,April
+CL000523,EDUNEXT SAS,2021-10-13,Laura Del Gordo,CSI-0006622,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL000517,Talana,2021-10-15,Laura Del Gordo,CSI-0006624,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL000895,Pax Assistance,2021-11-17,Laura Del Gordo,CSI-0006626,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL003276,SI SEÑOR AGENCIA,2022-07-18,Karoll Cabrera,CSI-0006630,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL000666,Simplee,2021-09-13,Karoll Cabrera,CSI-0006635,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL000586,PAYFY SAS,2021-10-15,Automated Essentials,CSI-0006637,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL004318,Lendable,2021-11-19,Karoll Cabrera,CSI-0006639,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL004318,Lendable,2021-11-19,Karoll Cabrera,CSI-0006641,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL002088,Madata,2022-02-01,Automated Essentials,CSI-0006645,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL004635,Finaktiva SAS,2022-02-28,Automated Essentials,CSI-0006647,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL002320,BW Miami,2022-03-07,Automated Essentials,CSI-0006649,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL005086,Gregario,2022-05-04,Automated Essentials,CSI-0006651,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL003373,Struoweb,2022-06-07,Automated Essentials,CSI-0006653,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,June
+CL004764,DOCTORANYTIME SAS,2024-01-18,Automated Essentials,CSI-0006655,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL004873,IT Society,2024-01-19,Automated Essentials,CSI-0006657,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL004936,Fidi Money Inc,2024-03-11,Karoll Cabrera,CSI-0006659,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,March
+CL004935,Mike Ruiz Law,2024-03-12,Karoll Cabrera,CSI-0006661,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,March
+CL005092,Around The Clock Logistics Inc,2024-06-05,Automated Essentials,CSI-0006663,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,June
+CL005109,CodersLab,2023-12-20,Samuel Jimenez,CSI-0006671,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,December
+CL005598,Lirmi.com,2021-09-27,Samuel Jimenez,CSI-0006673,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL000620,Axenya,2021-10-13,Samuel Jimenez,CSI-0006677,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005496,Virtue Law Group,2024-06-06,Samuel Jimenez,CSI-0006679,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,June
+CL000646,Fox Ordering,2021-09-24,Samuel Jimenez,CSI-0006681,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL003799,Chazki,2021-10-21,Samuel Jimenez,CSI-0006684,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL003357,Banco del Pichincha,2022-02-04,Jose Pinto,CSI-0006686,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+cl004570,Rootstack,2021-11-02,Jose Pinto,CSI-0006688,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL002747,Eidos,2022-09-18,Jose Pinto,CSI-0006690,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL004920,Agencia Eleven,2023-08-15,Jose Pinto,CSI-0006692,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL004567,Taxi Laser LLC,2023-08-29,Jose Pinto,CSI-0006694,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL000952,Brand Guarde,2021-12-05,Jose Pinto,CSI-0006696,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,December
+CL002970,Smartly,2022-02-03,Jose Pinto,CSI-0006698,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL005023,Jalasoft,2021-10-06,Jose Pinto,CSI-0006700,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL003358,consultores R arg,2022-03-24,Jose Pinto,CSI-0006702,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL005072,luchobranding.com,2024-05-21,Jose Pinto,CSI-0006706,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,May
+CL005362,Simplest Guru,2024-08-29,Alejandra Arroyo,CSI-0006708,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL000857,AdmazingCo,2021-09-14,Alejandra Arroyo,CSI-0006710,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL005667,The Boolchand Group LLC,2025-06-02,Lucas Arenas,CSI-0006711,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL004943,ALGI,2022-05-26,Alejandra Arroyo,CSI-0006720,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL005679,Navigamo,2025-06-18,Giuliana Fontes,CSI-0006721,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL005642,Virtual Learning Academy,2023-09-11,Joaquin Rocchietti,CSI-0006726,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,September
+CL005681,cocinas virtuales chile spa,2025-06-17,Automated Essentials,CSI-0006727,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL004901,Loris HR,2024-02-06,Joaquin Rocchietti,CSI-0006731,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,February
+cl004570,Rootstack,2021-11-02,Jose Pinto,CSI-0006733,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL000781,Ardor Learning,2021-08-09,Joaquin Rocchietti,CSI-0006736,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,August
+CL005594,energialemon.com,2025-05-07,Automated Essentials,CSI-0006738,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,May
+CL002074,Softon Digital,2022-03-01,Jose Pinto,CSI-0006739,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL004581,Femmto,2023-07-27,Alejandra Arroyo,CSI-0006810,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,July
+CL005676,JDRP HOLDINGS Movet Colombia,2025-06-17,Automated Essentials,CSI-0006821,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL005282,gruposimpli.com,2024-08-01,Jose Pinto,CSI-0006823,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL004899,TripleTen,2023-08-03,Luis Miguel Alzate Valencia,CSI-0006825,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2023,August
+CL005385,Auronix,2022-03-31,Laura Del Gordo,CSI-0006833,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,March
+CL005695,tcpip.tech,2025-06-18,Automated Essentials,CSI-0006834,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL005677,Oversoft,2025-05-23,Automated Essentials,CSI-0006837,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,May
+CL002546,Storicard,2021-11-03,Alejandra Arroyo,CSI-0006839,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL005062,PowerUp Technology (Storicard),2024-08-08,Alejandra Arroyo,CSI-0006841,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL004220,Rapiboy Latam,2023-03-08,Alejandra Arroyo,CSI-0006843,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,March
+CL005168,Rapiboy MX (Future of Delivery SA de CV),2024-07-25,Alejandra Arroyo,CSI-0006845,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,July
+CL000165,LA HAUS S.A.S.,2021-10-15,Jose Pinto,CSI-0006850,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL003840,La Haus Tech Inc,2023-03-23,Jose Pinto,CSI-0006852,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,March
+CL005712,WSG,2022-02-07,Automated Essentials,CSI-0006858,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL000827,Mediastream,2021-08-09,Giuliana Fontes,CSI-0006861,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,August
+CL005529,calidadinsurance.com,2024-09-12,Karoll Cabrera,CSI-0006868,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL004889,Workia Uruguay,2023-07-19,Alejandra Arroyo,CSI-0006874,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,July
+CL001495,Funnelchat Llc,2022-02-18,Alejandra Arroyo,CSI-0006876,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL004581,Femmto,2023-07-27,Alejandra Arroyo,CSI-0006878,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,July
+CL004861,Ikaria Partners,2024-01-15,Alejandra Arroyo,CSI-0006880,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL004102,Bamboo Payment Systems,2023-01-19,Joaquin Rocchietti,CSI-0006892,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,January
+CL004001,Heippi,2022-12-22,Automated Essentials,CSI-0006894,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,December
+CL005733,TruStep chile,2025-07-14,Automated Essentials,CSI-0006897,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,July
+CL005665,Guevara Insurance,2025-06-09,Automated Essentials,CSI-0006900,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL005062,PowerUp Technology (Storicard),2024-08-08,Alejandra Arroyo,CSI-0006911,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL002546,Storicard,2021-11-03,Alejandra Arroyo,CSI-0006913,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL005054,Defontana,2022-05-18,Joaquin Rocchietti,CSI-0006915,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL005728,Telus Inc,2025-07-16,Joaquin Rocchietti,CSI-0006919,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,July
+CL002934,Localpayment,2022-05-23,Joaquin Rocchietti,CSI-0006922,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,May
+CL003542,AULA INTERCULTURAL SL,2022-08-26,Automated Essentials,CSI-0006929,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,August
+CL004680,Ackoo (We Are Hiring),2022-07-13,Automated Essentials,CSI-0006933,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL004114,Keep Going Resources,2022-11-03,Automated Essentials,CSI-0006935,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,November
+CL003438,Provectus,2022-06-23,Joaquin Rocchietti,CSI-0006937,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,June
+CL005012,Novacomp - Frontera,2022-02-16,Joaquin Rocchietti,CSI-0006939,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL003476,Aper,2022-07-21,Joaquin Rocchietti,CSI-0006941,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL003601,aulasneo,2022-08-02,Joaquin Rocchietti,CSI-0006943,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,August
+CL004789,Wallarm,2022-02-01,Joaquin Rocchietti,CSI-0006945,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL003540,IG Networks,2021-12-26,Joaquin Rocchietti,CSI-0006947,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,December
+CL005362,Simplest Guru,2024-08-29,Alejandra Arroyo,CSI-0006950,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL003928,Softgic,2022-11-09,Alejandra Arroyo,CSI-0006953,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,November
+CL005236,Incluyeme.com S de RL de CV,2024-09-11,Automated Essentials,CSI-0006958,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL005168,Rapiboy MX (Future of Delivery SA de CV),2024-07-25,Alejandra Arroyo,CSI-0006960,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,July
+CL004399,Colombo & Hurd,2023-05-24,Samuel Jimenez,CSI-0006962,Client Feedback,Operations B2C,Operations B2C,Neutral,0.5,automated,0.0,0.0,2023,May
+CL001966,Crack The Code 2,2022-01-19,Automated Essentials,CSI-0006975,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL005565,TSOFT URUGUAY SA,2025-07-30,Joaquin Rocchietti,CSI-0006993,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,July
+CL005255,FILADD USA LLC,2024-09-25,Alejandra Arroyo,CSI-0006996,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL003547,Anida Latam,2022-09-08,Alejandra Arroyo,CSI-0006998,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL004023,Goula Colombia,2022-11-02,Karoll Cabrera,CSI-0007002,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,November
+CL001966,Crack The Code 2,2022-01-19,Automated Essentials,CSI-0007004,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL002173,Oowlish US,2022-03-18,Automated Essentials,CSI-0007006,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL005286,onerpm.com,2024-09-16,Karoll Cabrera,CSI-0007008,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL003105,Mattilda.io,2022-05-13,Giuliana Fontes,CSI-0007010,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL005007,Jump Cube Technologies LLC,2024-09-26,Giuliana Fontes,CSI-0007016,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL005697,HexaSystems Inc,2025-02-05,Karoll Cabrera,CSI-0007020,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,February
+CL002811,Awtana SpA,2023-05-30,Giuliana Fontes,CSI-0007022,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,May
+CL000016,SaludTools,2021-10-14,Giuliana Fontes,CSI-0007024,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL004947,ADC TECH NETHERLANDS B.V.,2024-02-16,Luis Miguel Alzate Valencia,CSI-0007027,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,February
+CL005190,Arkano Uruguay,2024-08-14,Karoll Cabrera,CSI-0007029,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL005182,"Quiroga Law Office, PLLC",2024-01-26,Laura Del Gordo,CSI-0007031,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL000244,Cargo five,2021-10-13,Lucas Arenas,CSI-0007039,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL002030,Xertica Labs,2022-01-16,Jose Pinto,CSI-0007043,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL002420,smartBeemo LLC,2021-09-24,Jose Pinto,CSI-0007044,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL001605,Pirani,2022-01-06,Automated Essentials,CSI-0007051,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL003416,BYONDIT,2022-07-12,Automated Essentials,CSI-0007056,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL001282,ALLWARE,2021-10-24,Automated Essentials,CSI-0007058,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005004,Ecomsur chile,2024-04-11,Laura Del Gordo,CSI-0007060,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2024,April
+CL004849,BrandLive,2022-03-07,Laura Del Gordo,CSI-0007062,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,March
+CL001756,Nimacloud,2022-01-12,Alejandra Arroyo,CSI-0007064,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL005073,NIMACLOUD SA (Uruguay),2024-08-06,Alejandra Arroyo,CSI-0007066,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL005275,Condor Technical Services (cts.aero),2024-09-17,Alejandra Arroyo,CSI-0007068,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL005266,Buentipo Anchor,2021-10-28,Alejandra Arroyo,CSI-0007071,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL003479,CLAXTON LAW GROUP,2022-08-17,Alejandra Arroyo,CSI-0007073,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,August
+CL004948,Meet My Assistant,2024-03-04,Alejandra Arroyo,CSI-0007075,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,March
+CL003290,JetSMART Airlines,2022-07-05,Automated Essentials,CSI-0007076,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL003559,Serban Group - Latam,2022-07-21,Automated Essentials,CSI-0007077,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL003559,Serban Group - Latam,2022-07-21,Automated Essentials,CSI-0007078,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL003426,cloudpiles.com,2022-07-29,Automated Essentials,CSI-0007079,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL003576,INGENIUM PSS,2022-09-01,Automated Essentials,CSI-0007080,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL003576,INGENIUM PSS,2022-09-01,Automated Essentials,CSI-0007081,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL003426,cloudpiles.com,2022-07-29,Automated Essentials,CSI-0007082,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL004051,"IT Impact, Inc.",2022-12-01,Automated Essentials,CSI-0007083,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,December
+CL004051,"IT Impact, Inc.",2022-12-01,Automated Essentials,CSI-0007084,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,December
+CL004051,"IT Impact, Inc.",2022-12-01,Automated Essentials,CSI-0007085,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,December
+CL004051,"IT Impact, Inc.",2022-12-01,Automated Essentials,CSI-0007086,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,December
+CL003321,Alus Comercializadora,2023-04-05,Automated Essentials,CSI-0007087,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,April
+CL004676,OneSeven Tech,2023-10-13,Automated Essentials,CSI-0007088,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,October
+CL004681,Stock Distribuidora,2023-10-26,Automated Essentials,CSI-0007089,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,October
+CL000848,TO Brasil,2021-09-24,Automated Essentials,CSI-0007090,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL000980,Porth,2021-11-10,Automated Essentials,CSI-0007091,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL000901,World Telehealth Initiative,2022-01-26,Automated Essentials,CSI-0007092,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL005609,Celeritech,2022-01-28,Automated Essentials,CSI-0007093,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL000959,Inversiones y Asesorias Cloud Solutions Ltda,2022-02-01,Automated Essentials,CSI-0007094,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL004635,Finaktiva SAS,2022-02-28,Automated Essentials,CSI-0007095,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL004635,Finaktiva SAS,2022-02-28,Automated Essentials,CSI-0007096,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL001915,Seabery,2022-02-23,Automated Essentials,CSI-0007097,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL004635,Finaktiva SAS,2022-02-28,Automated Essentials,CSI-0007099,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL003820,DreamShaper,2022-02-17,Automated Essentials,CSI-0007100,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL002571,Allied Worldwide,2022-03-11,Automated Essentials,CSI-0007101,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL002003,Hosteltáctil - El TPV de la hostelería,2022-05-30,Automated Essentials,CSI-0007102,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL005348,Integra IT,2024-03-11,Automated Essentials,CSI-0007103,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,March
+CL005005,Aura Vitamina,2024-04-16,Automated Essentials,CSI-0007104,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,April
+CL005092,Around The Clock Logistics Inc,2024-06-05,Automated Essentials,CSI-0007105,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,June
+CL005092,Around The Clock Logistics Inc,2024-06-05,Automated Essentials,CSI-0007106,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,June
+CL005220,eternalhealth.com,2024-08-05,Automated Essentials,CSI-0007107,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL005220,eternalhealth.com,2024-08-05,Automated Essentials,CSI-0007108,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL005330,olmix.com,2024-09-26,Automated Essentials,CSI-0007109,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL005330,olmix.com,2024-09-26,Automated Essentials,CSI-0007110,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL005220,eternalhealth.com,2024-08-05,Automated Essentials,CSI-0007111,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL005330,olmix.com,2024-09-26,Automated Essentials,CSI-0007112,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL005359,Sul Lee Law Firm,2024-09-26,Automated Essentials,CSI-0007113,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL005330,olmix.com,2024-09-26,Automated Essentials,CSI-0007114,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL003547,Anida Latam,2022-09-08,Alejandra Arroyo,CSI-0007115,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL003547,Anida Latam,2022-09-08,Alejandra Arroyo,CSI-0007116,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL005472,FENIXIA CONSULTING S.A.C.,2025-02-24,Automated Essentials,CSI-0007117,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,February
+CL005639,Amplo Kaya,2025-01-20,Automated Essentials,CSI-0007118,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL005475,apidesign.com,2025-01-24,Automated Essentials,CSI-0007119,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL003373,Struoweb,2022-06-07,Automated Essentials,CSI-0007120,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,June
+CL003637,RegioHelden GmbH,2022-09-28,Automated Essentials,CSI-0007121,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL003637,RegioHelden GmbH,2022-09-28,Automated Essentials,CSI-0007122,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL005115,batuecas.es,2024-05-23,Automated Essentials,CSI-0007123,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,May
+CL005463,Grupo convierte mas 2 (2 villas),2025-02-17,Automated Essentials,CSI-0007124,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,February
+CL004764,DOCTORANYTIME SAS,2024-01-18,Automated Essentials,CSI-0007125,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL000280,PLURIA INTERNATIONAL S.A.,2021-10-14,Joaquin Rocchietti,CSI-0007129,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005262,escala,2021-10-15,Joaquin Rocchietti,CSI-0007131,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL002770,Scanntech,2022-04-28,Joaquin Rocchietti,CSI-0007133,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,April
+CL002239,Moventi,2022-03-10,Giuliana Fontes,CSI-0007137,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL002875,TECHO Internacional,2022-02-04,Giuliana Fontes,CSI-0007177,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL000403,Holding RappiPay S.A.S.,2021-10-15,Samuel Jimenez,CSI-0007174,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL004553,plexicus.com,2023-08-22,Automated Essentials,CSI-0007179,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,August
+CL002941,Telemundo Atlanta,2022-05-23,Giuliana Fontes,CSI-0007181,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL002047,Komax S.A.,2022-03-07,Giuliana Fontes,CSI-0007183,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL002420,smartBeemo LLC,2021-09-24,Jose Pinto,CSI-0007185,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL002475,SERVIAP USA LLC,2022-11-10,Jose Pinto,CSI-0007187,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,November
+CL004908,ManaTech,2024-02-22,Jose Pinto,CSI-0007189,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,February
+CL004218,Team Cubation,2022-01-06,Jose Pinto,CSI-0007191,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,January
+CL004862,estudioalfa.com,2024-02-06,Karoll Cabrera,CSI-0007195,Client Feedback,Operations B2B,Operations B2B,Neutral,0.5,automated,0.0,0.0,2024,February
+CL005660,buentipo panama,2025-06-09,Alejandra Arroyo,CSI-0007197,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL005611,Finerio,2021-10-19,Giuliana Fontes,CSI-0007213,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005385,Auronix,2022-03-31,Laura Del Gordo,CSI-0007214,Client Feedback,Operations B2C,Operations B2C,Neutral,0.5,automated,0.0,0.0,2022,March
+CL005309,EF VENTURE,2024-10-31,Automated Essentials,CSI-0007218,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,October
+CL005360,Cuatroi,2022-03-01,Giuliana Fontes,CSI-0007220,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,March
+CL003461,Glosol,2022-08-30,Joaquin Rocchietti,CSI-0007222,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,August
+CL003723,VADIUN LLC,2023-07-04,Joaquin Rocchietti,CSI-0007224,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,July
+CL005710,La Cocina Que Suena,2025-04-17,Joaquin Rocchietti,CSI-0007226,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL005362,Simplest Guru,2024-08-29,Alejandra Arroyo,CSI-0007228,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,August
+CL005843,Consultoria y Tecnologia RIS,2024-12-16,Karoll Cabrera,CSI-0007230,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,December
+CL003559,Serban Group - Latam,2022-07-21,Automated Essentials,CSI-0007237,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL003547,Anida Latam,2022-09-08,Alejandra Arroyo,CSI-0007238,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL003547,Anida Latam,2022-09-08,Alejandra Arroyo,CSI-0007239,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,September
+CL005472,FENIXIA CONSULTING S.A.C.,2025-02-24,Automated Essentials,CSI-0007240,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,February
+CL005562,Fineco,2025-04-29,Automated Essentials,CSI-0007241,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,April
+CL005639,Amplo Kaya,2025-01-20,Automated Essentials,CSI-0007242,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL005330,olmix.com,2024-09-26,Automated Essentials,CSI-0007243,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL004905,SoyMacondo,2024-02-21,Automated Essentials,CSI-0007244,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,February
+CL005348,Integra IT,2024-03-11,Automated Essentials,CSI-0007245,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,March
+CL005055,Seidor Colombia,2022-02-08,Automated Essentials,CSI-0007246,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL004635,Finaktiva SAS,2022-02-28,Automated Essentials,CSI-0007247,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL004827,grupoaxo.com,2024-01-22,Automated Essentials,CSI-0007248,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL004484,faast.cl,2023-07-22,Automated Essentials,CSI-0007249,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,July
+CL003321,Alus Comercializadora,2023-04-05,Automated Essentials,CSI-0007250,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,April
+CL003321,Alus Comercializadora,2023-04-05,Automated Essentials,CSI-0007251,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,April
+CL003321,Alus Comercializadora,2023-04-05,Automated Essentials,CSI-0007253,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,April
+CL003321,Alus Comercializadora,2023-04-05,Automated Essentials,CSI-0007254,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,April
+CL003290,JetSMART Airlines,2022-07-05,Automated Essentials,CSI-0007256,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL003559,Serban Group - Latam,2022-07-21,Automated Essentials,CSI-0007257,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,July
+CL002920,Alternativas Inteligentes S.A.,2022-06-01,Automated Essentials,CSI-0007258,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,June
+CL003820,DreamShaper,2022-02-17,Automated Essentials,CSI-0007259,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL000146,Satrack In de Colombia Servisat,2021-10-14,Automated Essentials,CSI-0007260,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005675,Immarketing,2025-06-17,Automated Essentials,CSI-0007261,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,June
+CL005647,Remoters.me,2024-03-19,Samuel Jimenez,CSI-0007274,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,March
+CL005787,Servicios Computacionales Novacomp S.A.,2024-11-06,Joaquin Rocchietti,CSI-0007288,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,November
+CL005710,La Cocina Que Suena,2025-04-17,Joaquin Rocchietti,CSI-0007300,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2025,April
+CL004039,Yalutec,2021-10-14,Samuel Jimenez,CSI-0007304,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005647,Remoters.me,2024-03-19,Samuel Jimenez,CSI-0007306,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,March
+CL000405,Influur,2021-10-15,Samuel Jimenez,CSI-0007308,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL000403,Holding RappiPay S.A.S.,2021-10-15,Samuel Jimenez,CSI-0007310,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005137,Devsu,2021-11-18,Samuel Jimenez,CSI-0007312,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL004813,creai.mx,2024-01-09,Laura Del Gordo,CSI-0007314,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL005388,Creai Panama,2024-12-23,Laura Del Gordo,CSI-0007316,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,December
+CL000620,Axenya,2021-10-13,Samuel Jimenez,CSI-0007318,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,October
+CL005623,DRAFTEA TECHNOLOGIES,2025-07-29,Alejandra Arroyo,CSI-0007323,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,July
+CL000704,Netactica,2021-09-28,Alejandra Arroyo,CSI-0007325,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,September
+CL004581,Femmto,2023-07-27,Alejandra Arroyo,CSI-0007327,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,July
+CL005409,Ein-Sof-Star LLC,2025-01-15,Alejandra Arroyo,CSI-0007332,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,January
+CL000857,AdmazingCo,2021-09-14,Alejandra Arroyo,CSI-0007341,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2021,September
+CL003110,Get Staffed Up,2022-06-21,Samuel Jimenez,CSI-0007344,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,June
+CL005255,FILADD USA LLC,2024-09-25,Alejandra Arroyo,CSI-0007347,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL004973,Virtual Assistance Latin America LLC,2022-02-16,Alejandra Arroyo,CSI-0007349,Client Feedback,Financial Services,Financial Services,Neutral,0.5,automated,0.0,0.0,2022,February
+CL005109,CodersLab,2023-12-20,Samuel Jimenez,CSI-0007351,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,December
+CL004940,Western NY Exteriors,2024-03-11,Alejandra Arroyo,CSI-0007382,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,March
+CL005137,Devsu,2021-11-18,Samuel Jimenez,CSI-0007387,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2021,November
+CL005330,olmix.com,2024-09-26,Automated Essentials,CSI-0007389,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,September
+CL002530,asap developers,2022-02-23,Alejandra Arroyo,CSI-0007391,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL005823,NUBIRAL COL S.A.S.,2025-08-01,Samuel Jimenez,CSI-0007399,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,August
+CL005067,Nubiral Mexico,2024-05-22,Samuel Jimenez,CSI-0007401,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,May
+CL005508,EC ONLINE INNOVATION BUSINESS EXPERTS DE MEXICO,2025-03-26,Samuel Jimenez,CSI-0007407,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2025,March
+CL003041,ONIBEX,2022-02-02,Samuel Jimenez,CSI-0007409,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,February
+CL001108,TRD Retail Development Corp,2022-04-21,Joaquin Rocchietti,CSI-0007413,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,April
+CL004420,Nudos SAS,2023-12-22,Joaquin Rocchietti,CSI-0007415,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2023,December
+CL002930,Hyperlocology,2022-05-20,Joaquin Rocchietti,CSI-0007417,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,May
+CL004938,Clara - New,2024-01-18,Joaquin Rocchietti,CSI-0007419,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,January
+CL005414,wild.,2022-10-20,Joaquin Rocchietti,CSI-0007421,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2022,October
+CL005368,ManyRequests,2024-12-05,Automated Essentials,CSI-0007427,Client Feedback,Customer Success,Customer Success,Positive,0.5719,automated,0.5719,0.3,2024,December

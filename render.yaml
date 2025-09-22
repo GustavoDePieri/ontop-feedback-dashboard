@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ontop-feedback-dashboard
+    env: python
+    buildCommand: "pip install -r requirements.txt && python setup.py"
+    startCommand: "streamlit run dashboard.py --server.port $PORT --server.address 0.0.0.0 --server.headless true --server.enableCORS false --server.enableXsrfProtection false"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.18
+      - key: STREAMLIT_SERVER_PORT
+        sync: false
+        value: $PORT
