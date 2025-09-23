@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import seaborn as sns
 import matplotlib.pyplot as plt
-from wordcloud import WordCloud
+# from wordcloud import WordCloud  # Removed for compatibility
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -378,31 +378,49 @@ def create_account_analysis(df):
         st.plotly_chart(fig_owner_sent, use_container_width=True)
 
 def create_wordcloud_analysis(df):
-    """Create word clouds for different sentiments"""
+    """Create keyword analysis for different sentiments using bar charts"""
     col1, col2, col3 = st.columns(3)
     
     sentiments = ['Positive', 'Neutral', 'Negative']
-    colors = ['Greens', 'Oranges', 'Reds']
+    colors = ['#2ecc71', '#f39c12', '#e74c3c']
     
     for i, (sentiment, color) in enumerate(zip(sentiments, colors)):
         with [col1, col2, col3][i]:
-            sentiment_text = ' '.join(df[df['Sentiment'] == sentiment]['Feedback'])
+            sentiment_data = df[df['Sentiment'] == sentiment]
             
-            if len(sentiment_text) > 0:
-                wordcloud = WordCloud(
-                    width=400, 
-                    height=300, 
-                    background_color='white',
-                    colormap=color,
-                    max_words=50
-                ).generate(sentiment_text)
+            if len(sentiment_data) > 0:
+                # Extract top keywords using simple word frequency
+                all_text = ' '.join(sentiment_data['Feedback'].str.lower())
+                words = re.findall(r'\b[a-zA-Z]{4,}\b', all_text)
                 
-                fig, ax = plt.subplots(figsize=(8, 6))
-                ax.imshow(wordcloud, interpolation='bilinear')
-                ax.axis('off')
-                ax.set_title(f'{sentiment} Feedback Keywords', fontsize=16, fontweight='bold')
-                st.pyplot(fig)
-                plt.close()
+                # Common stop words to filter out
+                stop_words = {'that', 'with', 'have', 'this', 'will', 'from', 'they', 'been', 'were', 'said', 'each', 'which', 'their', 'time', 'about', 'would', 'there', 'could', 'other', 'more', 'very', 'what', 'know', 'just', 'first', 'into', 'over', 'think', 'also', 'your', 'work', 'life', 'only', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use'}
+                
+                # Filter and count words
+                filtered_words = [word for word in words if word not in stop_words and len(word) > 3]
+                word_freq = Counter(filtered_words).most_common(10)
+                
+                if word_freq:
+                    words_list, counts = zip(*word_freq)
+                    
+                    fig = px.bar(
+                        x=list(counts),
+                        y=list(words_list),
+                        orientation='h',
+                        title=f'{sentiment} Keywords',
+                        color_discrete_sequence=[color]
+                    )
+                    fig.update_layout(
+                        height=400,
+                        showlegend=False,
+                        xaxis_title="Frequency",
+                        yaxis_title="Keywords"
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.info(f"No keywords found for {sentiment} sentiment")
+            else:
+                st.info(f"No {sentiment} feedback found")
 
 def create_topic_analysis(insights):
     """Create topic modeling analysis with pre-computed insights"""
@@ -883,8 +901,8 @@ def main():
     
     st.markdown("---")
     
-    # Word cloud analysis
-    st.subheader("☁️ Keyword Analysis")
+    # Keyword analysis (replacing word clouds with bar charts for compatibility)
+    st.subheader("📊 Keyword Analysis")
     create_wordcloud_analysis(df)
     
     st.markdown("---")
