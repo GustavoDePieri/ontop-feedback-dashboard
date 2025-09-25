@@ -61,7 +61,7 @@ def get_google_sheets_client():
         return None
 
 @st.cache_data(ttl=300)  # Cache for 5 minutes
-def load_data_from_google_sheets(sheet_name="Sheet1"):
+def load_data_from_google_sheets(sheet_name=None):
     """
     Load data from Google Sheets
     
@@ -82,7 +82,18 @@ def load_data_from_google_sheets(sheet_name="Sheet1"):
             
         # Open the spreadsheet
         sheet = client.open_by_key(SHEET_ID)
-        worksheet = sheet.worksheet(sheet_name)
+        
+        # Try to get the worksheet - if no sheet_name provided, use the first sheet
+        if sheet_name:
+            try:
+                worksheet = sheet.worksheet(sheet_name)
+            except:
+                st.warning(f"Sheet '{sheet_name}' not found. Using first available sheet.")
+                worksheet = sheet.get_worksheet(0)
+        else:
+            # Use the first sheet available
+            worksheet = sheet.get_worksheet(0)
+            st.info(f"Using sheet: '{worksheet.title}'")
         
         # Get all records
         records = worksheet.get_all_records()
@@ -100,16 +111,32 @@ def load_data_from_google_sheets(sheet_name="Sheet1"):
         # Print available columns for debugging
         st.info(f"Available columns: {list(df.columns)}")
         
-        # Map columns to expected names
+        # Map columns to expected names (based on actual Google Sheet structure)
         column_mapping = {
             'Platform Client ID': 'Platform Client ID',
-            'Account Name': 'Account Name',
+            'Account Name': 'Account Name', 
             'Created Date': 'Created Date',
             'Account Owner': 'Account Owner',
             'CS Insight: CS Insights Name': 'Feedback directed to',
             'CS Insight: Record Type': 'Record Type',
             'Feedback': 'Feedback'
         }
+        
+        # Debug: Show actual columns from sheet
+        st.info(f"Columns found in sheet: {list(df.columns)}")
+        
+        # Check if all expected columns exist
+        missing_cols = []
+        for col in column_mapping.keys():
+            if col not in df.columns:
+                missing_cols.append(col)
+        
+        if missing_cols:
+            st.error(f"Missing columns in Google Sheet: {missing_cols}")
+            st.info("Please ensure your Google Sheet has these exact column headers:")
+            for col in column_mapping.keys():
+                st.write(f"- {col}")
+            return None
         
         # Rename columns
         df = df.rename(columns=column_mapping)
@@ -189,7 +216,9 @@ def test_google_sheets_connection():
             return False, "Failed to create client"
             
         sheet = client.open_by_key(SHEET_ID)
-        worksheet = sheet.worksheet("Sheet1")
+        # Use first worksheet available
+        worksheet = sheet.get_worksheet(0)
+        st.info(f"Testing connection to sheet: '{worksheet.title}'")
         
         # Try to get first few rows
         sample_data = worksheet.get_all_records(head=5)
