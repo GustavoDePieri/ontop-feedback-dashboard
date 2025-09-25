@@ -2,11 +2,10 @@ services:
   - type: web
     name: ontop-feedback-dashboard
     env: python
+    runtime: python-3.11.7
     buildCommand: pip install -r requirements.txt
     startCommand: streamlit run dashboard.py --server.port $PORT --server.address 0.0.0.0 --server.headless true --server.enableCORS false --server.enableXsrfProtection false
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.7
       - key: GOOGLE_PROJECT_ID
         sync: false
       - key: GOOGLE_PRIVATE_KEY_ID
