@@ -3,14 +3,14 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-# import seaborn as sns  # Removed for compatibility
+import seaborn as sns
 import matplotlib.pyplot as plt
-# from wordcloud import WordCloud  # Removed for compatibility
+from wordcloud import WordCloud
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-# from sklearn.feature_extraction.text import TfidfVectorizer  # Removed for compatibility
-# from sklearn.cluster import KMeans  # Removed for compatibility
-# from sklearn.decomposition import LatentDirichletAllocation  # Removed for compatibility
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+from sklearn.decomposition import LatentDirichletAllocation
 import numpy as np
 import nltk
 from collections import Counter
@@ -20,6 +20,14 @@ import warnings
 import os
 import sys
 warnings.filterwarnings('ignore')
+
+# Import our Google Sheets loader
+try:
+    from google_sheets_loader import load_data_from_google_sheets, get_data_freshness, test_google_sheets_connection
+    GOOGLE_SHEETS_AVAILABLE = True
+except ImportError:
+    GOOGLE_SHEETS_AVAILABLE = False
+    st.warning("Google Sheets integration not available. Using CSV fallback.")
 
 # Production optimizations
 plt.switch_backend('Agg')  # Use non-interactive backend for matplotlib
@@ -238,7 +246,35 @@ def perform_sentiment_analysis(df):
     
     return df
 
-# extract_topics function removed - sklearn dependency not compatible with Python 3.13
+@st.cache_data
+def extract_topics(df, n_topics=5):
+    """Extract topics using LDA"""
+    # Preprocess text for topic modeling
+    feedback_text = df['Feedback'].str.lower()
+    feedback_text = feedback_text.str.replace(r'[^a-zA-Z\s]', '', regex=True)
+    
+    # TF-IDF Vectorization
+    vectorizer = TfidfVectorizer(max_features=100, stop_words='english', ngram_range=(1, 2))
+    tfidf_matrix = vectorizer.fit_transform(feedback_text)
+    
+    # LDA Topic Modeling
+    lda = LatentDirichletAllocation(n_components=n_topics, random_state=42)
+    lda.fit(tfidf_matrix)
+    
+    # Get feature names
+    feature_names = vectorizer.get_feature_names_out()
+    
+    # Extract topics
+    topics = []
+    for topic_idx, topic in enumerate(lda.components_):
+        top_words = [feature_names[i] for i in topic.argsort()[-10:][::-1]]
+        topics.append({
+            'topic_id': topic_idx,
+            'words': top_words,
+            'description': f"Topic {topic_idx + 1}: {', '.join(top_words[:5])}"
+        })
+    
+    return topics, lda, vectorizer
 
 def create_sentiment_overview(df):
     """Create sentiment overview visualizations"""
