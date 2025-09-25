@@ -46,11 +46,11 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Streamlit
+# Streamlit secrets (contains sensitive data)
 .streamlit/secrets.toml
 
-# Data files (uncomment if you don't want to commit data)
-# *.csv
+# Vercel
+.vercel
 
 # Logs
 *.log
@@ -79,3 +79,7 @@ coverage.xml
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Local development files
+test_*.py
+*_test.py
