@@ -3,7 +3,7 @@ Main entry point for Streamlit app
 This file is required for Vercel deployment
 """
 
-from dashboard import main
+# Import and run the dashboard
+import dashboard
 
-if __name__ == "__main__":
-    main()
+# The main function will be called automatically by Streamlit
