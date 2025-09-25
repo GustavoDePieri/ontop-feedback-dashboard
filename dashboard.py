@@ -5,7 +5,12 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import seaborn as sns
 import matplotlib.pyplot as plt
-from wordcloud import WordCloud
+# WordCloud import - handle gracefully if not available
+try:
+    from wordcloud import WordCloud
+    WORDCLOUD_AVAILABLE = True
+except ImportError:
+    WORDCLOUD_AVAILABLE = False
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from sklearn.feature_extraction.text import TfidfVectorizer
