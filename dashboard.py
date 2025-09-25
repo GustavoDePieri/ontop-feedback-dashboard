@@ -3,8 +3,15 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import seaborn as sns
-import matplotlib.pyplot as plt
+# Optional imports - handle gracefully if not available
+try:
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    MATPLOTLIB_AVAILABLE = True
+    # Production optimizations
+    plt.switch_backend('Agg')  # Use non-interactive backend for matplotlib
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
 # WordCloud import - handle gracefully if not available
 try:
     from wordcloud import WordCloud
@@ -34,8 +41,7 @@ except ImportError:
     GOOGLE_SHEETS_AVAILABLE = False
     st.warning("Google Sheets integration not available. Using CSV fallback.")
 
-# Production optimizations
-plt.switch_backend('Agg')  # Use non-interactive backend for matplotlib
+# Production optimizations (handled in import section above)
 
 # Ensure NLTK data is available
 def ensure_nltk_data():
