@@ -20,10 +20,20 @@ except ImportError:
     WORDCLOUD_AVAILABLE = False
 from textblob import TextBlob
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.cluster import KMeans
-from sklearn.decomposition import LatentDirichletAllocation
-import numpy as np
+# ML imports - handle gracefully if not available
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.cluster import KMeans
+    from sklearn.decomposition import LatentDirichletAllocation
+    SKLEARN_AVAILABLE = True
+except ImportError:
+    SKLEARN_AVAILABLE = False
+# NumPy import - handle gracefully if not available
+try:
+    import numpy as np
+    NUMPY_AVAILABLE = True
+except ImportError:
+    NUMPY_AVAILABLE = False
 import nltk
 from collections import Counter
 import re
@@ -259,7 +269,32 @@ def perform_sentiment_analysis(df):
 
 @st.cache_data
 def extract_topics(df, n_topics=5):
-    """Extract topics using LDA"""
+    """Extract topics using LDA or simple word frequency if sklearn not available"""
+    if not SKLEARN_AVAILABLE:
+        # Fallback: Simple word frequency analysis by sentiment
+        topics = []
+        sentiments = df['Sentiment'].unique()
+        for i, sentiment in enumerate(sentiments[:n_topics]):
+            sentiment_text = ' '.join(df[df['Sentiment'] == sentiment]['Feedback'].str.lower())
+            words = re.findall(r'\b[a-zA-Z]{4,}\b', sentiment_text)
+            
+            # Common stop words to filter out
+            stop_words = {'that', 'with', 'have', 'this', 'will', 'from', 'they', 'been', 'were', 'said', 'each', 'which', 'their', 'time', 'about', 'would', 'there', 'could', 'other', 'more', 'very', 'what', 'know', 'just', 'first', 'into', 'over', 'think', 'also', 'your', 'work', 'life', 'only', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use'}
+            
+            filtered_words = [word for word in words if word not in stop_words and len(word) > 3]
+            word_freq = Counter(filtered_words).most_common(10)
+            
+            if word_freq:
+                top_words = [word for word, count in word_freq]
+                topics.append({
+                    'topic_id': i,
+                    'words': top_words,
+                    'description': f"{sentiment} Feedback: {', '.join(top_words[:5])}"
+                })
+        
+        return topics, None, None
+    
+    # Original sklearn-based implementation
     # Preprocess text for topic modeling
     feedback_text = df['Feedback'].str.lower()
     feedback_text = feedback_text.str.replace(r'[^a-zA-Z\s]', '', regex=True)
