@@ -2,14 +2,6 @@ streamlit
 pandas
 plotly
 textblob
-nltk
 vaderSentiment
-altair
-chardet
 gspread
 google-auth
-google-auth-oauthlib
-google-auth-httplib2
-oauth2client
-httplib2
-cachetools

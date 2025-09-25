@@ -34,7 +34,12 @@ try:
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False
-import nltk
+# NLTK import - handle gracefully if not available
+try:
+    import nltk
+    NLTK_AVAILABLE = True
+except ImportError:
+    NLTK_AVAILABLE = False
 from collections import Counter
 import re
 from datetime import datetime, timedelta
@@ -56,6 +61,8 @@ except ImportError:
 # Ensure NLTK data is available
 def ensure_nltk_data():
     """Ensure required NLTK data is downloaded"""
+    if not NLTK_AVAILABLE:
+        return
     try:
         nltk.data.find('tokenizers/punkt')
         nltk.data.find('corpora/stopwords')
