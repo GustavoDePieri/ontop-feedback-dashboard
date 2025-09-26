@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow">
+    <header class="bg-white dark:bg-slate-800 shadow-sm dark:shadow-slate-900/10 transition-colors duration-300">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center py-6">
           <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100 transition-colors duration-200">
               Dashboard Overview
             </h1>
-            <p class="mt-2 text-gray-600 dark:text-gray-300">
+            <p class="mt-2 text-gray-600 dark:text-slate-300 transition-colors duration-200">
               Real-time insights from Salesforce feedback data
             </p>
           </div>
@@ -17,7 +17,7 @@
             <!-- Dark Mode Toggle -->
             <button
               @click="toggleDarkMode"
-              class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+              class="p-2 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-lg transition-all duration-200"
               title="Toggle dark mode"
             >
               <svg v-if="!isDarkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -31,7 +31,7 @@
             <!-- Logout Button -->
             <button
               @click="handleLogout"
-              class="p-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
+              class="p-2 text-gray-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all duration-200"
               title="Logout"
             >
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -39,7 +39,7 @@
               </svg>
             </button>
             
-            <div class="border-l border-gray-300 dark:border-gray-600 h-6"></div>
+            <div class="border-l border-gray-300 dark:border-slate-600 h-6"></div>
             
             <button 
               @click="refreshData" 
@@ -50,7 +50,7 @@
             </button>
             <button 
               @click="testConnection"
-              class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-900 dark:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+              class="bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-900 dark:text-slate-100 font-medium py-2 px-4 rounded-lg transition-all duration-200"
             >
               Test Connection
             </button>
@@ -60,10 +60,10 @@
     </header>
 
     <!-- Advanced Filters -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <div class="bg-white dark:bg-slate-800/50 shadow-sm border-b border-gray-200 dark:border-slate-700/50 transition-colors duration-300">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-medium text-gray-900 dark:text-white">Filters</h2>
+          <h2 class="text-lg font-medium text-gray-900 dark:text-slate-100 transition-colors duration-200">Filters</h2>
           <button 
             @click="clearAllFilters"
             v-if="hasActiveFilters"
@@ -179,36 +179,36 @@
       </div>
     </div>
 
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 transition-colors duration-300">
       <!-- Status Message -->
-      <div class="mb-6 p-4 rounded-lg" :class="{
-        'bg-blue-50 border border-blue-200': loading,
-        'bg-red-50 border border-red-200': error,
-        'bg-green-50 border border-green-200': !loading && !error && feedbackData.length > 0,
-        'bg-yellow-50 border border-yellow-200': !loading && !error && feedbackData.length === 0
+      <div class="mb-6 p-4 rounded-lg transition-colors duration-200" :class="{
+        'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800': loading,
+        'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800': error,
+        'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800': !loading && !error && feedbackData.length > 0,
+        'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800': !loading && !error && feedbackData.length === 0
       }">
-        <div v-if="loading" class="text-blue-800">
+        <div v-if="loading" class="text-blue-800 dark:text-blue-200">
           🔄 Loading feedback data...
         </div>
-        <div v-else-if="error" class="text-red-800">
+        <div v-else-if="error" class="text-red-800 dark:text-red-200">
           ❌ Error: {{ error }}
         </div>
-        <div v-else-if="feedbackData.length > 0" class="text-green-800">
+        <div v-else-if="feedbackData.length > 0" class="text-green-800 dark:text-green-200">
           ✅ Successfully loaded {{ feedbackData.length }} feedback items
           <span v-if="hasActiveFilters" class="block text-sm mt-1">
             📊 {{ filteredFeedbackData.length }} items match current filters
           </span>
         </div>
-        <div v-else class="text-yellow-800">
+        <div v-else class="text-yellow-800 dark:text-yellow-200">
           ⚠️ No feedback data found. Click "Test Connection" to check your Google Sheets connection.
         </div>
       </div>
 
       <!-- Report Generation -->
-      <div v-if="!loading && !error && feedbackData.length > 0" class="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6 shadow-sm">
+      <div v-if="!loading && !error && feedbackData.length > 0" class="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-700 border border-blue-200 dark:border-slate-600 rounded-xl p-6 shadow-sm transition-colors duration-300">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h3 class="text-gray-900 font-bold text-lg flex items-center">
+            <h3 class="text-gray-900 dark:text-slate-100 font-bold text-lg flex items-center transition-colors duration-200">
               <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
                 <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -216,7 +216,7 @@
               </div>
               Professional Reports
             </h3>
-            <p class="text-gray-600 text-sm mt-1 ml-13">Generate comprehensive analytics reports perfect for presentations and meetings</p>
+            <p class="text-gray-600 dark:text-slate-300 text-sm mt-1 ml-13 transition-colors duration-200">Generate comprehensive analytics reports perfect for presentations and meetings</p>
           </div>
           <button
             @click="showReportModal = true"
