@@ -651,53 +651,48 @@
               Sentiment Distribution
             </h3>
             <div v-if="sentimentSummary.totalItems > 0">
-              <!-- Debug info -->
-              <div class="mb-4 p-2 bg-gray-100 dark:bg-slate-800 rounded text-xs">
-                Debug: {{ sentimentSummary }}
-              </div>
-              
-              <!-- Ultra Simple Chart -->
+              <!-- Sentiment Chart -->
               <div class="space-y-4">
                 <!-- Positive Bar -->
-                <div class="flex items-center">
+                  <div class="flex items-center group">
                   <div class="w-20 text-sm font-medium text-gray-700 dark:text-slate-300">Positive</div>
-                  <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3">
+                  <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3 overflow-hidden">
                     <div 
-                      class="bg-green-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      class="bg-green-500 h-6 rounded-full flex items-center justify-end pr-2 transition-all duration-1000 ease-out hover:bg-green-600"
                       :style="{ width: sentimentPercentages.positive + '%' }"
                     >
                       <span class="text-white text-xs font-medium">{{ sentimentSummary.positive }}</span>
                     </div>
                   </div>
-                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400">{{ sentimentPercentages.positive }}%</div>
+                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400 group-hover:text-green-600 transition-colors">{{ sentimentPercentages.positive }}%</div>
                 </div>
                 
                 <!-- Neutral Bar -->
-                <div class="flex items-center">
+                <div class="flex items-center group">
                   <div class="w-20 text-sm font-medium text-gray-700 dark:text-slate-300">Neutral</div>
-                  <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3">
+                  <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3 overflow-hidden">
                     <div 
-                      class="bg-yellow-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      class="bg-yellow-500 h-6 rounded-full flex items-center justify-end pr-2 transition-all duration-1000 ease-out hover:bg-yellow-600"
                       :style="{ width: sentimentPercentages.neutral + '%' }"
                     >
                       <span class="text-white text-xs font-medium">{{ sentimentSummary.neutral }}</span>
                     </div>
                   </div>
-                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400">{{ sentimentPercentages.neutral }}%</div>
+                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400 group-hover:text-yellow-600 transition-colors">{{ sentimentPercentages.neutral }}%</div>
                 </div>
                 
                 <!-- Negative Bar -->
-                <div class="flex items-center">
+                <div class="flex items-center group">
                   <div class="w-20 text-sm font-medium text-gray-700 dark:text-slate-300">Negative</div>
-                  <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3">
+                  <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3 overflow-hidden">
                     <div 
-                      class="bg-red-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      class="bg-red-500 h-6 rounded-full flex items-center justify-end pr-2 transition-all duration-1000 ease-out hover:bg-red-600"
                       :style="{ width: Math.max(sentimentPercentages.negative, 5) + '%' }"
                     >
                       <span class="text-white text-xs font-medium">{{ sentimentSummary.negative }}</span>
                     </div>
                   </div>
-                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400">{{ sentimentPercentages.negative }}%</div>
+                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400 group-hover:text-red-600 transition-colors">{{ sentimentPercentages.negative }}%</div>
                 </div>
                 
                 <!-- Total -->
@@ -708,9 +703,6 @@
               </div>
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
-              <div class="mb-4 p-2 bg-red-100 dark:bg-red-900/20 rounded text-xs">
-                Debug: No data - {{ sentimentSummary }}
-              </div>
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
@@ -731,28 +723,23 @@
               Feedback Trends (Last 30 Days)
             </h3>
             <div v-if="feedbackTrendsData.length > 0">
-              <!-- Debug info -->
-              <div class="mb-4 p-2 bg-gray-100 dark:bg-slate-800 rounded text-xs">
-                Debug: {{ feedbackTrendsData.length }} trend points
-              </div>
-              
-              <!-- Ultra Simple Trends -->
+              <!-- Trends Chart -->
               <div class="space-y-4">
                 <!-- Recent Activity Summary -->
                 <div class="grid grid-cols-3 gap-4 text-center">
-                  <div class="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+                  <div class="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200 cursor-pointer">
                     <div class="text-lg font-bold text-green-600 dark:text-green-400">
                       {{ feedbackTrendsData.reduce((sum, day) => sum + day.positive, 0) }}
                     </div>
                     <div class="text-xs text-green-600 dark:text-green-400">Positive</div>
                   </div>
-                  <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
+                  <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors duration-200 cursor-pointer">
                     <div class="text-lg font-bold text-yellow-600 dark:text-yellow-400">
                       {{ feedbackTrendsData.reduce((sum, day) => sum + day.neutral, 0) }}
                     </div>
                     <div class="text-xs text-yellow-600 dark:text-yellow-400">Neutral</div>
                   </div>
-                  <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+                  <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200 cursor-pointer">
                     <div class="text-lg font-bold text-red-600 dark:text-red-400">
                       {{ feedbackTrendsData.reduce((sum, day) => sum + day.negative, 0) }}
                     </div>
@@ -767,12 +754,12 @@
                     <div 
                       v-for="(day, index) in feedbackTrendsData.slice(-7)" 
                       :key="index"
-                      class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium"
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium cursor-pointer transform hover:scale-110 transition-all duration-200 shadow-sm hover:shadow-md"
                       :class="{
-                        'bg-green-500 text-white': day.positive > day.neutral && day.positive > day.negative,
-                        'bg-yellow-500 text-white': day.neutral > day.positive && day.neutral > day.negative,
-                        'bg-red-500 text-white': day.negative > day.positive && day.negative > day.neutral,
-                        'bg-gray-300 dark:bg-slate-600 text-gray-600 dark:text-slate-300': day.positive === 0 && day.neutral === 0 && day.negative === 0
+                        'bg-green-500 text-white hover:bg-green-600': day.positive > day.neutral && day.positive > day.negative,
+                        'bg-yellow-500 text-white hover:bg-yellow-600': day.neutral > day.positive && day.neutral > day.negative,
+                        'bg-red-500 text-white hover:bg-red-600': day.negative > day.positive && day.negative > day.neutral,
+                        'bg-gray-300 dark:bg-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-400 dark:hover:bg-slate-500': day.positive === 0 && day.neutral === 0 && day.negative === 0
                       }"
                       :title="`${new Date(day.date).toLocaleDateString()}: +${day.positive} ~${day.neutral} -${day.negative}`"
                     >
@@ -783,9 +770,6 @@
               </div>
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
-              <div class="mb-4 p-2 bg-red-100 dark:bg-red-900/20 rounded text-xs">
-                Debug: No trends - Length: {{ feedbackTrendsData.length }}
-              </div>
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
@@ -811,7 +795,7 @@
                 <div 
                   v-for="(subcategory, index) in topSubcategories.slice(0, 8)" 
                   :key="subcategory.name"
-                  class="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 rounded-lg"
+                  class="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors duration-200 cursor-pointer"
                 >
                   <div class="flex items-center">
                     <div 
@@ -855,7 +839,7 @@
                 <div 
                   v-for="(category, index) in topCategoryFormulas.slice(0, 6)" 
                   :key="category.name"
-                  class="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 rounded-lg"
+                  class="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors duration-200 cursor-pointer"
                 >
                   <div class="flex items-center">
                     <div 
@@ -899,7 +883,7 @@
                 <div 
                   v-for="(item, index) in feedbackDirectedToAnalytics.slice(0, 6)" 
                   :key="item.name"
-                  class="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 rounded-lg"
+                  class="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors duration-200 cursor-pointer"
                 >
                   <div class="flex items-center">
                     <div 
