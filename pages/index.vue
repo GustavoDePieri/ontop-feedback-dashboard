@@ -76,10 +76,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Account Manager Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Account Manager</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Account Manager</label>
             <select 
               v-model="filters.accountManager"
-              class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Managers</option>
               <option v-for="manager in uniqueAccountManagers" :key="manager.name" :value="manager.name">
@@ -90,10 +90,10 @@
 
           <!-- Date Period Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Date Period</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Date Period</label>
             <select 
               v-model="filters.datePeriod"
-              class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Time</option>
               <option value="today">Today</option>
@@ -110,18 +110,18 @@
 
           <!-- Custom Date Range (shown when custom is selected) -->
           <div v-if="filters.datePeriod === 'custom'" class="md:col-span-2 lg:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Custom Date Range</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Custom Date Range</label>
             <div class="grid grid-cols-2 gap-2">
               <input
                 v-model="filters.startDate"
                 type="date"
-                class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Start Date"
               />
               <input
                 v-model="filters.endDate"
                 type="date"
-                class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="End Date"
               />
             </div>
@@ -129,16 +129,16 @@
 
           <!-- Platform Client ID Search -->
           <div :class="filters.datePeriod === 'custom' ? '' : 'md:col-span-2'">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Platform Client ID</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Platform Client ID</label>
             <div class="relative">
               <input
                 v-model="filters.platformClientId"
                 type="text"
                 placeholder="Search by Platform Client ID..."
-                class="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="h-4 w-4 text-gray-400 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -148,32 +148,32 @@
 
         <!-- Active Filters Display -->
         <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap gap-2">
-          <span class="text-sm text-gray-500">Active filters:</span>
+          <span class="text-sm text-gray-500 dark:text-slate-400">Active filters:</span>
           <span 
             v-if="filters.accountManager"
-            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
           >
             Manager: {{ filters.accountManager }}
-            <button @click="filters.accountManager = ''" class="ml-1 text-blue-600 hover:text-blue-800">×</button>
+            <button @click="filters.accountManager = ''" class="ml-1 text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100">×</button>
           </span>
           <span 
             v-if="filters.datePeriod"
-            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
           >
             Period: {{ getDatePeriodLabel(filters.datePeriod) }}
-            <button @click="clearDateFilter" class="ml-1 text-green-600 hover:text-green-800">×</button>
+            <button @click="clearDateFilter" class="ml-1 text-green-600 dark:text-green-300 hover:text-green-800 dark:hover:text-green-100">×</button>
           </span>
           <span 
             v-if="filters.platformClientId"
-            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200"
           >
             Client ID: {{ filters.platformClientId }}
-            <button @click="filters.platformClientId = ''" class="ml-1 text-purple-600 hover:text-purple-800">×</button>
+            <button @click="filters.platformClientId = ''" class="ml-1 text-purple-600 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-100">×</button>
           </span>
         </div>
 
         <!-- Results Count -->
-        <div v-if="hasActiveFilters" class="mt-3 text-sm text-gray-600">
+        <div v-if="hasActiveFilters" class="mt-3 text-sm text-gray-600 dark:text-slate-300">
           Showing {{ filteredFeedbackData.length }} of {{ feedbackData.length }} feedback items
         </div>
       </div>
@@ -213,11 +213,11 @@
                 <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-              </div>
+        </div>
               Professional Reports
             </h3>
             <p class="text-gray-600 dark:text-slate-300 text-sm mt-1 ml-13 transition-colors duration-200">Generate comprehensive analytics reports perfect for presentations and meetings</p>
-          </div>
+        </div>
           <button
             @click="showReportModal = true"
             class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
@@ -228,7 +228,7 @@
             Create Report
           </button>
         </div>
-      </div>
+        </div>
 
       <!-- Report Selection Modal -->
       <ReportModal 
@@ -260,10 +260,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Total Feedback</dt>
+                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Total Feedback</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900">{{ feedbackData.length }}</div>
-                    <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600">
+                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ feedbackData.length }}</div>
+                    <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600 dark:text-green-400">
                       <svg class="self-center flex-shrink-0 h-3 w-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                       </svg>
@@ -290,10 +290,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Positive Sentiment</dt>
+                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Positive Sentiment</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900">{{ sentimentSummary.positive }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500">
+                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.positive }}</div>
+                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
                       ({{ sentimentPercentages.positive }}%)
                     </div>
                   </dd>
@@ -319,10 +319,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Neutral Sentiment</dt>
+                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Neutral Sentiment</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900">{{ sentimentSummary.neutral }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500">
+                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.neutral }}</div>
+                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
                       ({{ sentimentPercentages.neutral }}%)
                     </div>
                   </dd>
@@ -348,10 +348,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Negative Sentiment</dt>
+                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Negative Sentiment</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900">{{ sentimentSummary.negative }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500">
+                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.negative }}</div>
+                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
                       ({{ sentimentPercentages.negative }}%)
                     </div>
                   </dd>
@@ -370,22 +370,22 @@
         <AppCard>
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-lg font-medium text-gray-900">Feedback Calendar</h3>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100">Feedback Calendar</h3>
               <div class="flex items-center space-x-2">
                 <button 
                   @click="previousMonth"
-                  class="p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
+                  class="p-2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                 >
                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
-                <h4 class="text-lg font-semibold text-gray-900 min-w-[140px] text-center">
+                <h4 class="text-lg font-semibold text-gray-900 dark:text-slate-100 min-w-[140px] text-center">
                   {{ currentCalendarMonth }}
                 </h4>
                 <button 
                   @click="nextMonth"
-                  class="p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
+                  class="p-2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                 >
                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -400,7 +400,7 @@
               <div 
                 v-for="day in dayHeaders" 
                 :key="day"
-                class="p-3 text-center text-sm font-medium text-gray-500 border-b border-gray-200"
+                class="p-3 text-center text-sm font-medium text-gray-500 dark:text-slate-400 border-b border-gray-200 dark:border-slate-700"
               >
                 {{ day }}
               </div>
@@ -410,10 +410,10 @@
                 v-for="(day, index) in calendarDays"
                 :key="index"
                 @click="day.date && day.feedbackCount > 0 ? selectCalendarDay(day.date) : null"
-                class="relative p-2 h-16 border border-gray-100 transition-all duration-200"
+                class="relative p-2 h-16 border border-gray-100 dark:border-slate-700 transition-all duration-200"
                 :class="{
-                  'bg-gray-50 text-gray-400': !day.inCurrentMonth,
-                  'bg-white text-gray-900 hover:bg-gray-50': day.inCurrentMonth && day.feedbackCount === 0,
+                  'bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-slate-600': !day.inCurrentMonth,
+                  'bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 hover:bg-gray-50 dark:hover:bg-slate-700': day.inCurrentMonth && day.feedbackCount === 0,
                   'bg-green-50 text-green-900 hover:bg-green-100 cursor-pointer ring-1 ring-green-200': day.feedbackCount > 0 && day.dominantSentiment === 'positive',
                   'bg-red-50 text-red-900 hover:bg-red-100 cursor-pointer ring-1 ring-red-200': day.feedbackCount > 0 && day.dominantSentiment === 'negative',
                   'bg-yellow-50 text-yellow-900 hover:bg-yellow-100 cursor-pointer ring-1 ring-yellow-200': day.feedbackCount > 0 && day.dominantSentiment === 'neutral',
@@ -422,7 +422,7 @@
                 }"
               >
                 <div v-if="day.date" class="flex flex-col h-full">
-                  <span class="text-sm font-medium">{{ day.date.getDate() }}</span>
+                  <span class="text-sm font-medium text-gray-900 dark:text-slate-100">{{ day.date.getDate() }}</span>
                   <div v-if="day.feedbackCount > 0" class="flex-1 flex items-end justify-center">
                     <div class="flex items-center space-x-1">
                       <div class="w-2 h-2 rounded-full bg-current opacity-60"></div>
@@ -434,7 +434,7 @@
             </div>
 
             <!-- Calendar Legend -->
-            <div class="mt-4 flex items-center justify-center flex-wrap gap-4 text-sm text-gray-600">
+            <div class="mt-4 flex items-center justify-center flex-wrap gap-4 text-sm text-gray-600 dark:text-slate-300">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 rounded bg-green-500"></div>
                 <span>Positive feedback</span>
@@ -463,15 +463,15 @@
       <!-- Selected Day Feedback -->
       <div v-if="selectedDate && selectedDateFeedback.length > 0" class="mb-8" data-selected-day-feedback>
         <AppCard>
-          <div class="px-6 py-4 border-b border-gray-200">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
             <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium text-gray-900">
+              <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100">
                 Feedback for {{ formatSelectedDate(selectedDate) }}
-                <span class="ml-2 text-sm text-gray-500">({{ selectedDateFeedback.length }} items)</span>
+                <span class="ml-2 text-sm text-gray-500 dark:text-slate-400">({{ selectedDateFeedback.length }} items)</span>
               </h3>
               <button 
                 @click="clearSelectedDate"
-                class="text-sm text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md transition-colors"
+                class="text-sm text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 px-3 py-1 rounded-md transition-colors"
               >
                 Clear Selection
               </button>
@@ -560,14 +560,14 @@
         <!-- Feedback Trends Chart -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Feedback Trends (Last 30 Days)</h3>
-            <div class="h-64 flex items-center justify-center text-gray-500">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Feedback Trends (Last 30 Days)</h3>
+            <div class="h-64 flex items-center justify-center text-gray-500 dark:text-slate-400">
               <div class="text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">Time Series Chart</h3>
-                <p class="mt-1 text-sm text-gray-500">Coming soon - Feedback trends over time</p>
+                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-slate-100">Time Series Chart</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Coming soon - Feedback trends over time</p>
               </div>
             </div>
           </div>
@@ -577,8 +577,8 @@
       <!-- Weekly Overview Section -->
       <div v-if="feedbackData.length > 0" class="mb-8">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-gray-900">This Week's Overview</h2>
-          <div class="flex items-center space-x-2 text-sm text-gray-500">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100">This Week's Overview</h2>
+          <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-slate-400">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
@@ -945,13 +945,13 @@
             <p class="text-sm text-gray-900">{{ item.feedback }}</p>
             <div class="flex items-center justify-between mt-1">
               <p class="text-xs text-gray-500">
-                {{ item.accountName }} • {{ formatDate(item.createdDate) }} • 
-                <span :class="{
-                  'text-green-600': item.sentiment === 'Positive',
-                  'text-yellow-600': item.sentiment === 'Neutral',
-                  'text-red-600': item.sentiment === 'Negative'
-                }">{{ item.sentiment }}</span>
-              </p>
+              {{ item.accountName }} • {{ formatDate(item.createdDate) }} • 
+              <span :class="{
+                'text-green-600': item.sentiment === 'Positive',
+                'text-yellow-600': item.sentiment === 'Neutral',
+                'text-red-600': item.sentiment === 'Negative'
+              }">{{ item.sentiment }}</span>
+            </p>
               <button
                 @click="copyFeedback(item)"
                 class="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
