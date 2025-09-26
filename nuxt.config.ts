@@ -1,0 +1,24 @@
+export default defineNuxtConfig({
+  devtools: { enabled: true },
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@pinia/nuxt'
+  ],
+  css: ['~/assets/css/main.css'],
+  runtimeConfig: {
+    // Server-side environment variables
+    googleProjectId: process.env.GOOGLE_PROJECT_ID,
+    googlePrivateKey: process.env.GOOGLE_PRIVATE_KEY,
+    googleClientEmail: process.env.GOOGLE_CLIENT_EMAIL,
+    googleClientId: process.env.GOOGLE_CLIENT_ID,
+    googlePrivateKeyId: process.env.GOOGLE_PRIVATE_KEY_ID,
+    googleSheetsId: '1VfTbd2J91PgIj5skhUbqOst1oLgXEuoyLTqxCOPLJ2Q',
+    public: {
+      // Client-side environment variables
+      appName: 'Ontop Feedback Analytics'
+    }
+  },
+  typescript: {
+    strict: true
+  }
+})

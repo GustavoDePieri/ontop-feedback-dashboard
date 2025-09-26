@@ -1,85 +1,24 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
 
-# Virtual environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Streamlit secrets (contains sensitive data)
-.streamlit/secrets.toml
-
-# Vercel
-.vercel
+# Node dependencies
+node_modules
 
 # Logs
+logs
 *.log
-logs/
 
-# Temporary files
-tmp/
-temp/
-*.tmp
+# Misc
+.DS_Store
+.fleet
+.idea
 
-# Jupyter Notebooks
-.ipynb_checkpoints
-
-# pytest
-.pytest_cache/
-
-# Coverage reports
-htmlcov/
-.coverage
-.coverage.*
-coverage.xml
-*.cover
-.hypothesis/
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Local development files
-test_*.py
-*_test.py
+# Local env files
+.env
+.env.*
+!.env.example
