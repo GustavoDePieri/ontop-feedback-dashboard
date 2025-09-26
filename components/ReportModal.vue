@@ -196,7 +196,7 @@ const props = defineProps({
   feedbackData: Array
 })
 
-const emit = defineEmits(['close', 'generate'])
+const emit = defineEmits(['close', 'generate', 'show-report'])
 
 // Reactive data
 const selectedType = ref(null)
@@ -241,16 +241,16 @@ const generateReport = async () => {
   showSuccess.value = false
   
   try {
-    // Emit to parent component to handle the actual generation
-    await emit('generate', selectedType.value)
+    // Emit to parent component to handle the actual generation and show report
+    await emit('show-report', selectedType.value)
     
     // Show success message
     showSuccess.value = true
     
-    // Auto-close after 3 seconds
+    // Auto-close after 2 seconds
     setTimeout(() => {
       closeModal()
-    }, 3000)
+    }, 2000)
     
   } catch (error) {
     console.error('Report generation failed:', error)

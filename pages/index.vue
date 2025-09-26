@@ -203,12 +203,19 @@
         </div>
       </div>
 
-      <!-- Report Modal -->
+      <!-- Report Selection Modal -->
       <ReportModal 
         :is-open="showReportModal" 
         :feedback-data="feedbackData"
         @close="showReportModal = false"
-        @generate="handleReportGeneration"
+        @show-report="handleShowReport"
+      />
+
+      <!-- Report Display Modal -->
+      <ReportDisplayModal
+        :is-open="showReportDisplay"
+        :report-data="currentReportData"
+        @close="showReportDisplay = false"
       />
 
       <!-- Advanced Stats Grid -->
@@ -958,6 +965,8 @@ const lastUpdated = ref(null)
 // Report generation
 const generatingReport = ref(false)
 const showReportModal = ref(false)
+const showReportDisplay = ref(false)
+const currentReportData = ref(null)
 
 // Filtering and pagination
 const selectedSentiment = ref(null)
@@ -1973,9 +1982,141 @@ const formatDateForFilename = (date) => {
   return date.toISOString().split('T')[0]
 }
 
-// Handle report generation from modal
-const handleReportGeneration = async (type) => {
-  await generateReport(type)
+// Handle showing report in popup modal
+const handleShowReport = async (type) => {
+  try {
+    // Generate structured report data for the popup
+    const reportData = generateStructuredReportData(type)
+    currentReportData.value = reportData
+    showReportDisplay.value = true
+  } catch (error) {
+    console.error('Failed to generate report:', error)
+    error.value = `Failed to generate ${type} report. Please try again.`
+  }
+}
+
+// Generate structured report data for popup display
+const generateStructuredReportData = (type) => {
+  // Determine date range based on report type
+  const now = new Date()
+  let startDate, endDate, reportTitle
+  
+  if (type === 'weekly') {
+    // Get current week (Sunday to Saturday)
+    const currentDay = now.getDay()
+    startDate = new Date(now)
+    startDate.setDate(now.getDate() - currentDay)
+    startDate.setHours(0, 0, 0, 0)
+    
+    endDate = new Date(startDate)
+    endDate.setDate(startDate.getDate() + 6)
+    endDate.setHours(23, 59, 59, 999)
+    
+    reportTitle = `Weekly Feedback Report - Week of ${formatDate(startDate)}`
+  } else if (type === 'monthly') {
+    // Get current month
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+    
+    reportTitle = `Monthly Feedback Report - ${startDate.toLocaleString('default', { month: 'long', year: 'numeric' })}`
+  }
+  
+  // Filter data for the report period
+  const reportData = feedbackData.value.filter(item => {
+    const itemDate = new Date(item.createdDate)
+    return itemDate >= startDate && itemDate <= endDate
+  })
+  
+  const totalFeedback = reportData.length
+  const sentimentCounts = {
+    positive: reportData.filter(item => item.sentiment === 'Positive').length,
+    neutral: reportData.filter(item => item.sentiment === 'Neutral').length,
+    negative: reportData.filter(item => item.sentiment === 'Negative').length
+  }
+  
+  // Account manager stats
+  const managerStats = {}
+  reportData.forEach(item => {
+    const manager = item.accountOwner || 'Unassigned'
+    if (!managerStats[manager]) {
+      managerStats[manager] = { total: 0, positive: 0, neutral: 0, negative: 0 }
+    }
+    managerStats[manager].total++
+    managerStats[manager][item.sentiment.toLowerCase()]++
+  })
+  
+  const managers = Object.entries(managerStats)
+    .sort(([,a], [,b]) => b.total - a.total)
+    .map(([name, stats]) => ({
+      name,
+      total: stats.total,
+      positive: stats.positive,
+      neutral: stats.neutral,
+      negative: stats.negative,
+      positiveRate: stats.total > 0 ? Math.round((stats.positive / stats.total) * 100) : 0
+    }))
+  
+  // Top accounts by feedback volume
+  const accountStats = {}
+  reportData.forEach(item => {
+    const account = item.accountName || 'Unknown'
+    accountStats[account] = (accountStats[account] || 0) + 1
+  })
+  const topAccounts = Object.entries(accountStats)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 10)
+    .map(([name, count]) => ({ name, count }))
+  
+  // Generate insights
+  const insights = []
+  if (totalFeedback === 0) {
+    insights.push('No feedback collected during this period')
+    insights.push('Consider reaching out to clients for feedback')
+    insights.push('Review feedback collection processes')
+  } else {
+    const positiveRate = Math.round((sentimentCounts.positive / totalFeedback) * 100)
+    const negativeRate = Math.round((sentimentCounts.negative / totalFeedback) * 100)
+    
+    if (positiveRate >= 70) {
+      insights.push(`Excellent customer satisfaction with ${positiveRate}% positive feedback`)
+      insights.push('Continue current service quality standards')
+    } else if (positiveRate >= 50) {
+      insights.push(`Moderate customer satisfaction at ${positiveRate}% positive feedback`)
+      insights.push('Opportunity for improvement in service quality')
+    } else {
+      insights.push(`Low customer satisfaction at ${positiveRate}% positive feedback`)
+      insights.push('Immediate action required to address service issues')
+    }
+    
+    if (negativeRate > 20) {
+      insights.push(`High negative feedback rate (${negativeRate}%) requires immediate attention`)
+      insights.push('Review negative feedback details and implement corrective actions')
+    }
+    
+    // Manager-specific insights
+    const topManager = managers[0]
+    if (topManager) {
+      insights.push(`${topManager.name} leads in feedback collection with ${topManager.total} responses`)
+    }
+  }
+  
+  return {
+    type,
+    title: reportTitle,
+    dateRange: `${formatDate(startDate)} - ${formatDate(endDate)}`,
+    summary: {
+      total: totalFeedback,
+      positive: sentimentCounts.positive,
+      neutral: sentimentCounts.neutral,
+      negative: sentimentCounts.negative,
+      positivePercent: totalFeedback > 0 ? Math.round((sentimentCounts.positive / totalFeedback) * 100) : 0,
+      neutralPercent: totalFeedback > 0 ? Math.round((sentimentCounts.neutral / totalFeedback) * 100) : 0,
+      negativePercent: totalFeedback > 0 ? Math.round((sentimentCounts.negative / totalFeedback) * 100) : 0
+    },
+    managers,
+    topAccounts,
+    insights
+  }
 }
 
 // Initialize data on mount
