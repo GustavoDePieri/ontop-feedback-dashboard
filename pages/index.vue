@@ -177,6 +177,51 @@
         </div>
       </div>
 
+      <!-- Report Generation -->
+      <div v-if="!loading && !error && feedbackData.length > 0" class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h3 class="text-blue-900 font-medium flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Generate Reports
+            </h3>
+            <p class="text-blue-700 text-sm mt-1">Export comprehensive analytics reports for meetings and reviews</p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <button
+              @click="generateReport('weekly')"
+              :disabled="generatingReport"
+              class="flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg v-if="!generatingReport" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <svg v-else class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Weekly Report
+            </button>
+            <button
+              @click="generateReport('monthly')"
+              :disabled="generatingReport"
+              class="flex items-center justify-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg v-if="!generatingReport" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <svg v-else class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Monthly Report
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Advanced Stats Grid -->
       <div v-if="feedbackData.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Total Feedback -->
@@ -920,6 +965,9 @@ const feedbackData = ref([])
 const loading = ref(false)
 const error = ref('')
 const lastUpdated = ref(null)
+
+// Report generation
+const generatingReport = ref(false)
 
 // Filtering and pagination
 const selectedSentiment = ref(null)
@@ -1708,6 +1756,231 @@ const copyFeedback = async (feedback) => {
     document.execCommand('copy')
     document.body.removeChild(textArea)
   }
+}
+
+// Report generation method
+const generateReport = async (type) => {
+  generatingReport.value = true
+  
+  try {
+    // Determine date range based on report type
+    const now = new Date()
+    let startDate, endDate, reportTitle
+    
+    if (type === 'weekly') {
+      // Get current week (Sunday to Saturday)
+      const currentDay = now.getDay()
+      startDate = new Date(now)
+      startDate.setDate(now.getDate() - currentDay)
+      startDate.setHours(0, 0, 0, 0)
+      
+      endDate = new Date(startDate)
+      endDate.setDate(startDate.getDate() + 6)
+      endDate.setHours(23, 59, 59, 999)
+      
+      reportTitle = `Weekly Feedback Report - Week of ${formatDate(startDate)}`
+    } else if (type === 'monthly') {
+      // Get current month
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+      
+      reportTitle = `Monthly Feedback Report - ${startDate.toLocaleString('default', { month: 'long', year: 'numeric' })}`
+    }
+    
+    // Filter data for the report period
+    const reportData = feedbackData.value.filter(item => {
+      const itemDate = new Date(item.createdDate)
+      return itemDate >= startDate && itemDate <= endDate
+    })
+    
+    // Generate report content
+    const reportContent = generateReportContent(reportData, type, reportTitle, startDate, endDate)
+    
+    // Download as text file
+    downloadReport(reportContent, `${type}-report-${formatDateForFilename(now)}.txt`)
+    
+    console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} report generated successfully`)
+    
+  } catch (err) {
+    console.error('Failed to generate report:', err)
+    error.value = `Failed to generate ${type} report. Please try again.`
+  } finally {
+    generatingReport.value = false
+  }
+}
+
+// Generate report content
+const generateReportContent = (data, type, title, startDate, endDate) => {
+  const totalFeedback = data.length
+  const sentimentCounts = {
+    positive: data.filter(item => item.sentiment === 'Positive').length,
+    neutral: data.filter(item => item.sentiment === 'Neutral').length,
+    negative: data.filter(item => item.sentiment === 'Negative').length
+  }
+  
+  // Account manager stats
+  const managerStats = {}
+  data.forEach(item => {
+    const manager = item.accountOwner || 'Unassigned'
+    if (!managerStats[manager]) {
+      managerStats[manager] = { total: 0, positive: 0, neutral: 0, negative: 0 }
+    }
+    managerStats[manager].total++
+    managerStats[manager][item.sentiment.toLowerCase()]++
+  })
+  
+  // Top accounts by feedback volume
+  const accountStats = {}
+  data.forEach(item => {
+    const account = item.accountName || 'Unknown'
+    accountStats[account] = (accountStats[account] || 0) + 1
+  })
+  const topAccounts = Object.entries(accountStats)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 10)
+  
+  // Generate report text
+  let report = `
+═══════════════════════════════════════════════════════
+${title}
+═══════════════════════════════════════════════════════
+Generated on: ${new Date().toLocaleString()}
+Report Period: ${formatDate(startDate)} - ${formatDate(endDate)}
+
+📊 EXECUTIVE SUMMARY
+───────────────────────────────────────────────────────
+Total Feedback Collected: ${totalFeedback}
+Positive Sentiment: ${sentimentCounts.positive} (${totalFeedback > 0 ? Math.round((sentimentCounts.positive / totalFeedback) * 100) : 0}%)
+Neutral Sentiment: ${sentimentCounts.neutral} (${totalFeedback > 0 ? Math.round((sentimentCounts.neutral / totalFeedback) * 100) : 0}%)
+Negative Sentiment: ${sentimentCounts.negative} (${totalFeedback > 0 ? Math.round((sentimentCounts.negative / totalFeedback) * 100) : 0}%)
+
+👥 ACCOUNT MANAGER PERFORMANCE
+───────────────────────────────────────────────────────`
+
+  Object.entries(managerStats)
+    .sort(([,a], [,b]) => b.total - a.total)
+    .forEach(([manager, stats]) => {
+      const positiveRate = stats.total > 0 ? Math.round((stats.positive / stats.total) * 100) : 0
+      report += `
+${manager}: ${stats.total} feedback (${positiveRate}% positive)
+  • Positive: ${stats.positive}  • Neutral: ${stats.neutral}  • Negative: ${stats.negative}`
+    })
+
+  report += `
+
+🏢 TOP ACCOUNTS BY FEEDBACK VOLUME
+───────────────────────────────────────────────────────`
+
+  topAccounts.forEach(([account, count], index) => {
+    report += `
+${index + 1}. ${account}: ${count} feedback${count !== 1 ? 's' : ''}`
+  })
+
+  if (sentimentCounts.negative > 0) {
+    const negativeFeedback = data.filter(item => item.sentiment === 'Negative')
+    report += `
+
+🚨 NEGATIVE FEEDBACK REQUIRING ATTENTION
+───────────────────────────────────────────────────────`
+    
+    negativeFeedback.forEach((item, index) => {
+      report += `
+${index + 1}. Account: ${item.accountName}
+   Manager: ${item.accountOwner || 'Unassigned'}
+   Date: ${formatDate(item.createdDate)}
+   Client ID: ${item.platformClientId}
+   Feedback: ${item.feedback}
+   ───────────────────────────────────────────────────────`
+    })
+  }
+
+  // Recent positive highlights
+  if (sentimentCounts.positive > 0) {
+    const positiveFeedback = data.filter(item => item.sentiment === 'Positive').slice(0, 5)
+    report += `
+
+✨ POSITIVE FEEDBACK HIGHLIGHTS
+───────────────────────────────────────────────────────`
+    
+    positiveFeedback.forEach((item, index) => {
+      report += `
+${index + 1}. Account: ${item.accountName}
+   Manager: ${item.accountOwner || 'Unassigned'}
+   Date: ${formatDate(item.createdDate)}
+   Feedback: ${item.feedback}
+   ───────────────────────────────────────────────────────`
+    })
+  }
+
+  report += `
+
+📈 KEY INSIGHTS & RECOMMENDATIONS
+───────────────────────────────────────────────────────`
+
+  // Generate insights based on data
+  if (totalFeedback === 0) {
+    report += `
+• No feedback collected during this period
+• Consider reaching out to clients for feedback
+• Review feedback collection processes`
+  } else {
+    const positiveRate = Math.round((sentimentCounts.positive / totalFeedback) * 100)
+    const negativeRate = Math.round((sentimentCounts.negative / totalFeedback) * 100)
+    
+    if (positiveRate >= 70) {
+      report += `
+• Excellent customer satisfaction with ${positiveRate}% positive feedback
+• Continue current service quality standards`
+    } else if (positiveRate >= 50) {
+      report += `
+• Moderate customer satisfaction at ${positiveRate}% positive feedback
+• Opportunity for improvement in service quality`
+    } else {
+      report += `
+• Low customer satisfaction at ${positiveRate}% positive feedback
+• Immediate action required to address service issues`
+    }
+    
+    if (negativeRate > 20) {
+      report += `
+• High negative feedback rate (${negativeRate}%) requires immediate attention
+• Review negative feedback details and implement corrective actions`
+    }
+    
+    // Manager-specific insights
+    const topManager = Object.entries(managerStats).sort(([,a], [,b]) => b.total - a.total)[0]
+    if (topManager) {
+      report += `
+• ${topManager[0]} leads in feedback collection with ${topManager[1].total} responses`
+    }
+  }
+
+  report += `
+
+═══════════════════════════════════════════════════════
+End of Report
+═══════════════════════════════════════════════════════
+`
+
+  return report
+}
+
+// Download report as file
+const downloadReport = (content, filename) => {
+  const blob = new Blob([content], { type: 'text/plain' })
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(url)
+}
+
+// Format date for filename
+const formatDateForFilename = (date) => {
+  return date.toISOString().split('T')[0]
 }
 
 // Initialize data on mount
