@@ -647,6 +647,14 @@
           </div>
         </AppCard>
 
+        <!-- Feedback Trends Chart -->
+        <AppCard>
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Feedback Trends (Last 30 Days)</h3>
+            <TimeSeriesChart :data="feedbackTrendsData" />
+          </div>
+        </AppCard>
+
         <!-- Subcategory Distribution -->
         <AppCard>
           <div class="p-6">
@@ -2488,6 +2496,42 @@ const topSubcategories = computed(() => {
         }))
         .sort((a, b) => b.total - a.total)
     })
+
+// Chart data computed properties
+const feedbackTrendsData = computed(() => {
+  const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  if (!sourceData.length) return []
+  
+  // Get last 30 days of data
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  
+  const recentData = sourceData.filter(item => {
+    const itemDate = new Date(item.createdDate)
+    return itemDate >= thirtyDaysAgo
+  })
+  
+  // Group by date
+  const groupedByDate = recentData.reduce((acc, item) => {
+    const date = new Date(item.createdDate).toISOString().split('T')[0]
+    if (!acc[date]) {
+      acc[date] = { positive: 0, neutral: 0, negative: 0 }
+    }
+    
+    if (item.sentiment === 'Positive') acc[date].positive++
+    else if (item.sentiment === 'Neutral') acc[date].neutral++
+    else acc[date].negative++
+    
+    return acc
+  }, {} as Record<string, { positive: number; neutral: number; negative: number }>)
+  
+  return Object.entries(groupedByDate)
+    .map(([date, sentiments]) => ({
+      date,
+      ...sentiments
+    }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+})
 
 // Financial analytics computed properties
 const hasFinancialData = computed(() => {
