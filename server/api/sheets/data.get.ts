@@ -44,11 +44,41 @@ export default defineEventHandler(async (event) => {
       let createdDate: Date
       try {
         const dateStr = row[6] || '' // Column G
-        createdDate = new Date(dateStr)
-        if (isNaN(createdDate.getTime())) {
+        console.log(`Raw date string: "${dateStr}"`)
+        
+        if (!dateStr) {
           createdDate = new Date()
+        } else {
+          // Try multiple date parsing approaches
+          createdDate = new Date(dateStr)
+          
+          // If that fails, try parsing as MM/DD/YYYY
+          if (isNaN(createdDate.getTime())) {
+            const parts = dateStr.split('/')
+            if (parts.length === 3) {
+              // Assume MM/DD/YYYY format
+              const month = parseInt(parts[0]) - 1 // Month is 0-based
+              const day = parseInt(parts[1])
+              const year = parseInt(parts[2])
+              createdDate = new Date(year, month, day)
+            }
+          }
+          
+          // If still invalid, try other common formats
+          if (isNaN(createdDate.getTime())) {
+            createdDate = new Date(dateStr.replace(/-/g, '/'))
+          }
+          
+          // Last resort - use current date
+          if (isNaN(createdDate.getTime())) {
+            console.warn(`Could not parse date: "${dateStr}", using current date`)
+            createdDate = new Date()
+          }
         }
-      } catch {
+        
+        console.log(`Parsed date: ${createdDate.toISOString()} (${createdDate.toLocaleDateString()})`)
+      } catch (error) {
+        console.error(`Date parsing error for "${row[6]}":`, error)
         createdDate = new Date()
       }
 
