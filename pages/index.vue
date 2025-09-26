@@ -127,6 +127,20 @@
             </div>
           </div>
 
+          <!-- Feedback Directed To Filter -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Feedback Directed To</label>
+            <select 
+              v-model="filters.feedbackDirectedTo"
+              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Teams</option>
+              <option v-for="team in uniqueFeedbackDirections" :key="team.name" :value="team.name">
+                {{ team.name }} ({{ team.count }} feedback{{ team.count !== 1 ? 's' : '' }})
+              </option>
+            </select>
+          </div>
+
           <!-- Platform Client ID Search -->
           <div :class="filters.datePeriod === 'custom' ? '' : 'md:col-span-2'">
             <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Platform Client ID</label>
@@ -162,6 +176,13 @@
           >
             Period: {{ getDatePeriodLabel(filters.datePeriod) }}
             <button @click="clearDateFilter" class="ml-1 text-green-600 dark:text-green-300 hover:text-green-800 dark:hover:text-green-100">×</button>
+          </span>
+          <span 
+            v-if="filters.feedbackDirectedTo"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200"
+          >
+            Directed To: {{ filters.feedbackDirectedTo }}
+            <button @click="filters.feedbackDirectedTo = ''" class="ml-1 text-indigo-600 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-indigo-100">×</button>
           </span>
           <span 
             v-if="filters.platformClientId"
@@ -1435,6 +1456,7 @@ const filters = reactive({
   datePeriod: '',
   startDate: '',
   endDate: '',
+  feedbackDirectedTo: '',
   platformClientId: ''
 })
 
@@ -1456,8 +1478,20 @@ const uniqueAccountManagers = computed(() => {
     .map(([manager, count]) => ({ name: manager, count }))
 })
 
+const uniqueFeedbackDirections = computed(() => {
+  const directionCounts = new Map()
+  feedbackData.value.forEach(item => {
+    const direction = item.feedbackDirectedTo || 'Unspecified'
+    directionCounts.set(direction, (directionCounts.get(direction) || 0) + 1)
+  })
+  
+  return Array.from(directionCounts.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([direction, count]) => ({ name: direction, count }))
+})
+
 const hasActiveFilters = computed(() => {
-  return filters.accountManager || filters.datePeriod || filters.platformClientId
+  return filters.accountManager || filters.datePeriod || filters.feedbackDirectedTo || filters.platformClientId
 })
 
 const filteredFeedbackData = computed(() => {
@@ -1553,6 +1587,14 @@ const filteredFeedbackData = computed(() => {
         return true
       })
     }
+  }
+
+  // Filter by feedback directed to
+  if (filters.feedbackDirectedTo) {
+    filtered = filtered.filter(item => {
+      const direction = item.feedbackDirectedTo || 'Unspecified'
+      return direction === filters.feedbackDirectedTo
+    })
   }
 
   // Filter by Platform Client ID
@@ -2123,6 +2165,7 @@ const clearAllFilters = () => {
   filters.datePeriod = ''
   filters.startDate = ''
   filters.endDate = ''
+  filters.feedbackDirectedTo = ''
   filters.platformClientId = ''
   selectedSentiment.value = null
   currentPage.value = 1
