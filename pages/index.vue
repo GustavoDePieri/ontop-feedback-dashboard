@@ -651,9 +651,16 @@
               Sentiment Distribution
             </h3>
             <div v-if="sentimentSummary.totalItems > 0">
-              <SentimentChart :data="sentimentSummary" />
+              <!-- Debug info -->
+              <div class="mb-4 p-2 bg-gray-100 dark:bg-slate-800 rounded text-xs">
+                Debug: {{ sentimentSummary }}
+              </div>
+              <SimpleDoughnutChart :data="sentimentSummary" />
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
+              <div class="mb-4 p-2 bg-red-100 dark:bg-red-900/20 rounded text-xs">
+                Debug: No data - {{ sentimentSummary }}
+              </div>
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
@@ -674,9 +681,16 @@
               Feedback Trends (Last 30 Days)
             </h3>
             <div v-if="feedbackTrendsData.length > 0">
-              <TimeSeriesChart :data="feedbackTrendsData" />
+              <!-- Debug info -->
+              <div class="mb-4 p-2 bg-gray-100 dark:bg-slate-800 rounded text-xs">
+                Debug: {{ feedbackTrendsData.length }} trend points
+              </div>
+              <SimpleLineChart :data="feedbackTrendsData" title="30-Day Trends" />
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
+              <div class="mb-4 p-2 bg-red-100 dark:bg-red-900/20 rounded text-xs">
+                Debug: No trends - Length: {{ feedbackTrendsData.length }}
+              </div>
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
@@ -697,9 +711,10 @@
               Feedback Subcategories
             </h3>
             <div v-if="topSubcategories.length > 0">
-              <BarChart 
+              <SimpleBarChart 
                 :data="topSubcategories.slice(0, 8)" 
                 :colors="['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#84CC16', '#F97316']"
+                title="Subcategories"
               />
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
@@ -723,9 +738,10 @@
               Category Classifications
             </h3>
             <div v-if="topCategoryFormulas.length > 0">
-              <BarChart 
+              <SimpleBarChart 
                 :data="topCategoryFormulas.slice(0, 6)" 
                 :colors="['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4']"
+                title="Categories"
               />
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
@@ -749,9 +765,10 @@
               Feedback Directed To
             </h3>
             <div v-if="feedbackDirectedToAnalytics.length > 0">
-              <BarChart 
+              <SimpleBarChart 
                 :data="feedbackDirectedToAnalytics.slice(0, 6)" 
                 :colors="['#6366F1', '#EC4899', '#14B8A6', '#F59E0B', '#EF4444', '#8B5CF6']"
+                title="Feedback Direction"
               />
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
