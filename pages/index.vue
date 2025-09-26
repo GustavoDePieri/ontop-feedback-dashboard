@@ -204,32 +204,6 @@
         </div>
       </div>
 
-      <!-- Report Generation -->
-      <div v-if="!loading && !error && feedbackData.length > 0" class="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-700 border border-blue-200 dark:border-slate-600 rounded-xl p-6 shadow-sm transition-colors duration-300">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h3 class="text-gray-900 dark:text-slate-100 font-bold text-lg flex items-center transition-colors duration-200">
-              <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-        </div>
-              Professional Reports
-            </h3>
-            <p class="text-gray-600 dark:text-slate-300 text-sm mt-1 ml-13 transition-colors duration-200">Generate comprehensive analytics reports perfect for presentations and meetings</p>
-        </div>
-          <button
-            @click="showReportModal = true"
-            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
-          >
-            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Create Report
-          </button>
-        </div>
-        </div>
-
       <!-- Report Selection Modal -->
       <ReportModal 
         :is-open="showReportModal" 
@@ -245,8 +219,15 @@
         @close="showReportDisplay = false"
       />
 
-      <!-- Advanced Stats Grid -->
-      <div v-if="feedbackData.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Executive Summary Dashboard -->
+      <div v-if="feedbackData.length > 0" class="mb-8">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100">Executive Summary</h2>
+          <p class="text-gray-600 dark:text-slate-300 text-sm mt-1">Key performance indicators and business metrics</p>
+        </div>
+
+        <!-- Primary KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <!-- Total Feedback -->
         <AppCard>
           <div class="p-6">
@@ -545,83 +526,10 @@
             </div>
           </div>
         </AppCard>
-      </div>
-
-      <!-- Enterprise Analytics Grid -->
-      <div v-if="feedbackData.length > 0" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-        <!-- Sentiment Analysis Chart -->
-        <AppCard>
-          <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Sentiment Distribution</h3>
-            <SentimentChart :data="sentimentSummary" />
-          </div>
-        </AppCard>
-
-        <!-- Subcategory Distribution -->
-        <AppCard>
-          <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Feedback Subcategories</h3>
-            <div class="space-y-3">
-              <div v-for="subcategory in topSubcategories" :key="subcategory.name" class="flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                  <div class="w-3 h-3 rounded-full" :class="{
-                    'bg-blue-500': subcategory.name && subcategory.name.includes('Compliance'),
-                    'bg-green-500': subcategory.name && subcategory.name.includes('Product'),
-                    'bg-purple-500': subcategory.name && subcategory.name.includes('Operational'),
-                    'bg-orange-500': subcategory.name && subcategory.name.includes('Other'),
-                    'bg-red-500': subcategory.name && subcategory.name.includes('Missing'),
-                    'bg-gray-500': !subcategory.name || (!subcategory.name.includes('Compliance') && !subcategory.name.includes('Product') && !subcategory.name.includes('Operational') && !subcategory.name.includes('Other') && !subcategory.name.includes('Missing'))
-                  }"></div>
-                  <span class="text-sm text-gray-900 dark:text-slate-100 font-medium">{{ subcategory.name || 'Uncategorized' }}</span>
-                </div>
-                <div class="text-right">
-                  <span class="text-sm font-semibold text-gray-900 dark:text-slate-100">{{ subcategory.count }}</span>
-                  <span class="text-xs text-gray-500 dark:text-slate-400 ml-1">({{ subcategory.percentage }}%)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </AppCard>
-
-        <!-- Category Formula Distribution -->
-        <AppCard>
-          <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Category Classifications</h3>
-            <div class="space-y-3">
-              <div v-for="category in topCategoryFormulas" :key="category.name" class="flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                  <div class="w-3 h-3 rounded-full" :class="{
-                    'bg-emerald-500': category.name === 'New Entity',
-                    'bg-blue-500': category.name === 'Operational',
-                    'bg-amber-500': category.name === 'Product Fit',
-                    'bg-red-500': category.name === 'Other Category',
-                    'bg-gray-500': !['New Entity', 'Operational', 'Product Fit', 'Other Category'].includes(category.name)
-                  }"></div>
-                  <span class="text-sm text-gray-900 dark:text-slate-100 font-medium">{{ category.name || 'Unclassified' }}</span>
-                </div>
-                <div class="text-right">
-                  <span class="text-sm font-semibold text-gray-900 dark:text-slate-100">{{ category.count }}</span>
-                  <span class="text-xs text-gray-500 dark:text-slate-400 ml-1">({{ category.percentage }}%)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </AppCard>
-      </div>
-
-      <!-- Financial Analytics Section -->
-      <div v-if="hasFinancialData" class="mb-8">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100">Financial Analytics</h2>
-          <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-slate-400">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-            </svg>
-            <span>Revenue Impact Analysis</span>
-          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <!-- Financial KPIs (if available) -->
+        <div v-if="hasFinancialData" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Total MRR -->
           <AppCard>
             <div class="p-6">
@@ -715,8 +623,72 @@
             </div>
           </AppCard>
         </div>
+      </div>
 
-        <!-- Top Accounts by Revenue -->
+      <!-- Analytics & Categorization -->
+      <div v-if="feedbackData.length > 0" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+        <!-- Sentiment Analysis Chart -->
+        <AppCard>
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Sentiment Distribution</h3>
+            <SentimentChart :data="sentimentSummary" />
+          </div>
+        </AppCard>
+
+        <!-- Subcategory Distribution -->
+        <AppCard>
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Feedback Subcategories</h3>
+            <div class="space-y-3">
+              <div v-for="subcategory in topSubcategories" :key="subcategory.name" class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <div class="w-3 h-3 rounded-full" :class="{
+                    'bg-blue-500': subcategory.name && subcategory.name.includes('Compliance'),
+                    'bg-green-500': subcategory.name && subcategory.name.includes('Product'),
+                    'bg-purple-500': subcategory.name && subcategory.name.includes('Operational'),
+                    'bg-orange-500': subcategory.name && subcategory.name.includes('Other'),
+                    'bg-red-500': subcategory.name && subcategory.name.includes('Missing'),
+                    'bg-gray-500': !subcategory.name || (!subcategory.name.includes('Compliance') && !subcategory.name.includes('Product') && !subcategory.name.includes('Operational') && !subcategory.name.includes('Other') && !subcategory.name.includes('Missing'))
+                  }"></div>
+                  <span class="text-sm text-gray-900 dark:text-slate-100 font-medium">{{ subcategory.name || 'Uncategorized' }}</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-sm font-semibold text-gray-900 dark:text-slate-100">{{ subcategory.count }}</span>
+                  <span class="text-xs text-gray-500 dark:text-slate-400 ml-1">({{ subcategory.percentage }}%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </AppCard>
+
+        <!-- Category Formula Distribution -->
+        <AppCard>
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Category Classifications</h3>
+            <div class="space-y-3">
+              <div v-for="category in topCategoryFormulas" :key="category.name" class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <div class="w-3 h-3 rounded-full" :class="{
+                    'bg-emerald-500': category.name === 'New Entity',
+                    'bg-blue-500': category.name === 'Operational',
+                    'bg-amber-500': category.name === 'Product Fit',
+                    'bg-red-500': category.name === 'Other Category',
+                    'bg-gray-500': !['New Entity', 'Operational', 'Product Fit', 'Other Category'].includes(category.name)
+                  }"></div>
+                  <span class="text-sm text-gray-900 dark:text-slate-100 font-medium">{{ category.name || 'Unclassified' }}</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-sm font-semibold text-gray-900 dark:text-slate-100">{{ category.count }}</span>
+                  <span class="text-xs text-gray-500 dark:text-slate-400 ml-1">({{ category.percentage }}%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </AppCard>
+      </div>
+
+      <!-- Revenue Impact Analysis -->
+      <div v-if="hasFinancialData" class="mb-8">
         <AppCard>
           <div class="p-6">
             <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Top Accounts by Revenue Impact</h3>
@@ -1158,6 +1130,32 @@
       <!-- Data Freshness -->
       <div v-if="lastUpdated" class="text-center text-sm text-gray-500 mt-6">
         Last updated: {{ formatDate(lastUpdated) }}
+      </div>
+
+      <!-- Report Generation -->
+      <div v-if="!loading && !error && feedbackData.length > 0" class="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-700 border border-blue-200 dark:border-slate-600 rounded-xl p-6 shadow-sm transition-colors duration-300">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h3 class="text-gray-900 dark:text-slate-100 font-bold text-lg flex items-center transition-colors duration-200">
+              <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              Professional Reports
+            </h3>
+            <p class="text-gray-600 dark:text-slate-300 text-sm mt-1 ml-13 transition-colors duration-200">Generate comprehensive analytics reports perfect for presentations and meetings</p>
+          </div>
+          <button
+            @click="showReportModal = true"
+            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Create Report
+          </button>
+        </div>
       </div>
     </main>
   </div>
