@@ -32,6 +32,126 @@
       </div>
     </header>
 
+    <!-- Advanced Filters -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-medium text-gray-900">Filters</h2>
+          <button 
+            @click="clearAllFilters"
+            v-if="hasActiveFilters"
+            class="text-sm text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition-colors"
+          >
+            Clear All Filters
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Account Manager Filter -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Account Manager</label>
+            <select 
+              v-model="filters.accountManager"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Managers</option>
+              <option v-for="manager in uniqueAccountManagers" :key="manager" :value="manager">
+                {{ manager }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Date Period Filter -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Date Period</label>
+            <select 
+              v-model="filters.datePeriod"
+              class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Time</option>
+              <option value="today">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="this-week">This Week</option>
+              <option value="last-week">Last Week</option>
+              <option value="this-month">This Month</option>
+              <option value="last-month">Last Month</option>
+              <option value="last-30-days">Last 30 Days</option>
+              <option value="last-90-days">Last 90 Days</option>
+              <option value="custom">Custom Range</option>
+            </select>
+          </div>
+
+          <!-- Custom Date Range (shown when custom is selected) -->
+          <div v-if="filters.datePeriod === 'custom'" class="md:col-span-2 lg:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Custom Date Range</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input
+                v-model="filters.startDate"
+                type="date"
+                class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Start Date"
+              />
+              <input
+                v-model="filters.endDate"
+                type="date"
+                class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="End Date"
+              />
+            </div>
+          </div>
+
+          <!-- Platform Client ID Search -->
+          <div :class="filters.datePeriod === 'custom' ? '' : 'md:col-span-2'">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Platform Client ID</label>
+            <div class="relative">
+              <input
+                v-model="filters.platformClientId"
+                type="text"
+                placeholder="Search by Platform Client ID..."
+                class="w-full border border-gray-300 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Filters Display -->
+        <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap gap-2">
+          <span class="text-sm text-gray-500">Active filters:</span>
+          <span 
+            v-if="filters.accountManager"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+          >
+            Manager: {{ filters.accountManager }}
+            <button @click="filters.accountManager = ''" class="ml-1 text-blue-600 hover:text-blue-800">×</button>
+          </span>
+          <span 
+            v-if="filters.datePeriod"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+          >
+            Period: {{ getDatePeriodLabel(filters.datePeriod) }}
+            <button @click="clearDateFilter" class="ml-1 text-green-600 hover:text-green-800">×</button>
+          </span>
+          <span 
+            v-if="filters.platformClientId"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
+          >
+            Client ID: {{ filters.platformClientId }}
+            <button @click="filters.platformClientId = ''" class="ml-1 text-purple-600 hover:text-purple-800">×</button>
+          </span>
+        </div>
+
+        <!-- Results Count -->
+        <div v-if="hasActiveFilters" class="mt-3 text-sm text-gray-600">
+          Showing {{ filteredFeedbackData.length }} of {{ feedbackData.length }} feedback items
+        </div>
+      </div>
+    </div>
+
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <!-- Status Message -->
       <div class="mb-6 p-4 rounded-lg" :class="{
@@ -48,6 +168,9 @@
         </div>
         <div v-else-if="feedbackData.length > 0" class="text-green-800">
           ✅ Successfully loaded {{ feedbackData.length }} feedback items
+          <span v-if="hasActiveFilters" class="block text-sm mt-1">
+            📊 {{ filteredFeedbackData.length }} items match current filters
+          </span>
         </div>
         <div v-else class="text-yellow-800">
           ⚠️ No feedback data found. Click "Test Connection" to check your Google Sheets connection.
@@ -610,21 +733,152 @@ const selectedSentiment = ref(null)
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
 
+// Advanced filters
+const filters = reactive({
+  accountManager: '',
+  datePeriod: '',
+  startDate: '',
+  endDate: '',
+  platformClientId: ''
+})
+
 // Computed data
+// Filter helper computed properties
+const uniqueAccountManagers = computed(() => {
+  const managers = new Set()
+  feedbackData.value.forEach(item => {
+    const manager = item.accountOwner || 'Unassigned'
+    managers.add(manager)
+  })
+  return Array.from(managers).sort()
+})
+
+const hasActiveFilters = computed(() => {
+  return filters.accountManager || filters.datePeriod || filters.platformClientId
+})
+
+const filteredFeedbackData = computed(() => {
+  let filtered = feedbackData.value
+
+  // Filter by account manager
+  if (filters.accountManager) {
+    filtered = filtered.filter(item => {
+      const manager = item.accountOwner || 'Unassigned'
+      return manager === filters.accountManager
+    })
+  }
+
+  // Filter by date period
+  if (filters.datePeriod) {
+    const now = new Date()
+    let startDate, endDate
+
+    switch (filters.datePeriod) {
+      case 'today':
+        startDate = new Date(now)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'yesterday':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - 1)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setDate(now.getDate() - 1)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'this-week':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - now.getDay())
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'last-week':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - now.getDay() - 7)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setDate(now.getDate() - now.getDay() - 1)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'this-month':
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+        break
+      case 'last-month':
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        endDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999)
+        break
+      case 'last-30-days':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - 30)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'last-90-days':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - 90)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'custom':
+        if (filters.startDate) {
+          startDate = new Date(filters.startDate)
+          startDate.setHours(0, 0, 0, 0)
+        }
+        if (filters.endDate) {
+          endDate = new Date(filters.endDate)
+          endDate.setHours(23, 59, 59, 999)
+        }
+        break
+    }
+
+    if (startDate || endDate) {
+      filtered = filtered.filter(item => {
+        const itemDate = new Date(item.createdDate)
+        if (startDate && endDate) {
+          return itemDate >= startDate && itemDate <= endDate
+        } else if (startDate) {
+          return itemDate >= startDate
+        } else if (endDate) {
+          return itemDate <= endDate
+        }
+        return true
+      })
+    }
+  }
+
+  // Filter by Platform Client ID
+  if (filters.platformClientId) {
+    const searchTerm = filters.platformClientId.toLowerCase()
+    filtered = filtered.filter(item => {
+      return item.platformClientId.toLowerCase().includes(searchTerm)
+    })
+  }
+
+  return filtered
+})
+
 const sentimentSummary = computed(() => {
-  if (!feedbackData.value.length) {
+  const data = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  
+  if (!data.length) {
     return { positive: 0, neutral: 0, negative: 0, totalItems: 0 }
   }
   
-  const positive = feedbackData.value.filter(item => item.sentiment === 'Positive').length
-  const neutral = feedbackData.value.filter(item => item.sentiment === 'Neutral').length
-  const negative = feedbackData.value.filter(item => item.sentiment === 'Negative').length
+  const positive = data.filter(item => item.sentiment === 'Positive').length
+  const neutral = data.filter(item => item.sentiment === 'Neutral').length
+  const negative = data.filter(item => item.sentiment === 'Negative').length
   
   return {
     positive,
     neutral,
     negative,
-    totalItems: feedbackData.value.length
+    totalItems: data.length
   }
 })
 
@@ -645,12 +899,13 @@ const weeklyGrowth = computed(() => {
 })
 
 const topKeywords = computed(() => {
-  if (!feedbackData.value.length) return []
+  const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  if (!sourceData.length) return []
   
   const wordCount = new Map()
   const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them'])
   
-  feedbackData.value.forEach(item => {
+  sourceData.forEach(item => {
     const words = item.feedback.toLowerCase()
       .replace(/[^\w\s]/g, '')
       .split(/\s+/)
@@ -667,17 +922,18 @@ const topKeywords = computed(() => {
     .map(([word, count]) => ({
       word,
       count,
-      percentage: Math.min(100, (count / feedbackData.value.length) * 100 * 5)
+      percentage: Math.min(100, (count / sourceData.length) * 100 * 5)
     }))
   
   return sortedWords
 })
 
 const topAccounts = computed(() => {
-  if (!feedbackData.value.length) return []
+  const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  if (!sourceData.length) return []
   
   const accountCount = new Map()
-  feedbackData.value.forEach(item => {
+  sourceData.forEach(item => {
     const name = item.accountName
     accountCount.set(name, (accountCount.get(name) || 0) + 1)
   })
@@ -701,14 +957,15 @@ const currentWeekRange = computed(() => {
 })
 
 const thisWeekFeedback = computed(() => {
-  if (!feedbackData.value.length) return []
+  const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  if (!sourceData.length) return []
   
   const now = new Date()
   const startOfWeek = new Date(now)
   startOfWeek.setDate(now.getDate() - now.getDay())
   startOfWeek.setHours(0, 0, 0, 0)
   
-  return feedbackData.value.filter(item => {
+  return sourceData.filter(item => {
     const itemDate = new Date(item.createdDate)
     return itemDate >= startOfWeek
   })
@@ -939,16 +1196,21 @@ const weeklyInsights = computed(() => {
   return { wins: wins.slice(0, 4), actions: actions.slice(0, 4) }
 })
 
-const recentFeedback = computed(() => 
-  feedbackData.value
+const recentFeedback = computed(() => {
+  const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  return sourceData
     .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
     .slice(0, 5)
-)
+})
 
 // Filtering computed properties
 const filteredFeedback = computed(() => {
   if (!selectedSentiment.value) return []
-  return feedbackData.value
+  
+  // Use filtered data if filters are active, otherwise use all data
+  const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  
+  return sourceData
     .filter(item => item.sentiment === selectedSentiment.value)
     .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
 })
@@ -1047,6 +1309,38 @@ const showFeedbackBySentiment = (sentiment: 'Positive' | 'Neutral' | 'Negative')
 const clearFilter = () => {
   selectedSentiment.value = null
   currentPage.value = 1
+}
+
+// Advanced filter methods
+const clearAllFilters = () => {
+  filters.accountManager = ''
+  filters.datePeriod = ''
+  filters.startDate = ''
+  filters.endDate = ''
+  filters.platformClientId = ''
+  selectedSentiment.value = null
+  currentPage.value = 1
+}
+
+const clearDateFilter = () => {
+  filters.datePeriod = ''
+  filters.startDate = ''
+  filters.endDate = ''
+}
+
+const getDatePeriodLabel = (period) => {
+  const labels = {
+    'today': 'Today',
+    'yesterday': 'Yesterday',
+    'this-week': 'This Week',
+    'last-week': 'Last Week',
+    'this-month': 'This Month',
+    'last-month': 'Last Month',
+    'last-30-days': 'Last 30 Days',
+    'last-90-days': 'Last 90 Days',
+    'custom': 'Custom Range'
+  }
+  return labels[period] || period
 }
 
 // Initialize data on mount
