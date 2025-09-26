@@ -232,8 +232,6 @@
 </template>
 
 <script setup lang="ts">
-import { format } from 'date-fns'
-
 // Page metadata
 useHead({
   title: 'Dashboard - Ontop Feedback Analytics',
@@ -242,14 +240,29 @@ useHead({
   ]
 })
 
-// Composables
-const { data: feedbackData, loading, error, lastUpdated, fetchData, testConnection: testGoogleSheetsConnection } = useGoogleSheets()
-const { getSentimentSummary } = useSentimentAnalysis()
+// Reactive data
+const feedbackData = ref([])
+const loading = ref(false)
+const error = ref('')
+const lastUpdated = ref(null)
 
 // Computed data
-const sentimentSummary = computed(() => 
-  getSentimentSummary(feedbackData.value)
-)
+const sentimentSummary = computed(() => {
+  if (!feedbackData.value.length) {
+    return { positive: 0, neutral: 0, negative: 0, totalItems: 0 }
+  }
+  
+  const positive = feedbackData.value.filter(item => item.sentiment === 'Positive').length
+  const neutral = feedbackData.value.filter(item => item.sentiment === 'Neutral').length
+  const negative = feedbackData.value.filter(item => item.sentiment === 'Negative').length
+  
+  return {
+    positive,
+    neutral,
+    negative,
+    totalItems: feedbackData.value.length
+  }
+})
 
 const recentFeedback = computed(() => 
   feedbackData.value
@@ -259,12 +272,24 @@ const recentFeedback = computed(() =>
 
 // Methods
 const refreshData = async () => {
-  await fetchData()
+  loading.value = true
+  error.value = ''
+  
+  try {
+    const response = await $fetch('/api/sheets/data')
+    feedbackData.value = response.data || []
+    lastUpdated.value = new Date()
+  } catch (err: any) {
+    error.value = err.message || 'Failed to fetch data'
+    console.error('Error fetching data:', err)
+  } finally {
+    loading.value = false
+  }
 }
 
 const testConnection = async () => {
   try {
-    const result = await testGoogleSheetsConnection()
+    const result = await $fetch('/api/sheets/test')
     if (result.success) {
       alert('✅ Google Sheets connection successful!')
     } else {
@@ -276,12 +301,18 @@ const testConnection = async () => {
 }
 
 const formatDate = (date: string | Date) => {
-  return format(new Date(date), 'MMM dd, yyyy HH:mm')
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 // Initialize data on mount
 onMounted(() => {
-  fetchData()
+  refreshData()
 })
 </script>
 

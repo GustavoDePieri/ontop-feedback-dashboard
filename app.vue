@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Force showing pages instead of welcome -->
     <NuxtPage />
   </div>
 </template>
