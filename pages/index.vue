@@ -87,7 +87,7 @@
         </AppCard>
 
         <!-- Positive Sentiment -->
-        <AppCard>
+        <AppCard :hover="true" class="cursor-pointer transition-transform hover:scale-105" @click="showFeedbackBySentiment('Positive')">
           <div class="p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
@@ -109,11 +109,14 @@
                 </dl>
               </div>
             </div>
+            <div class="mt-2">
+              <p class="text-xs text-green-600 font-medium">Click to view all positive feedback</p>
+            </div>
           </div>
         </AppCard>
 
         <!-- Neutral Sentiment -->
-        <AppCard>
+        <AppCard :hover="true" class="cursor-pointer transition-transform hover:scale-105" @click="showFeedbackBySentiment('Neutral')">
           <div class="p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
@@ -135,11 +138,14 @@
                 </dl>
               </div>
             </div>
+            <div class="mt-2">
+              <p class="text-xs text-yellow-600 font-medium">Click to view all neutral feedback</p>
+            </div>
           </div>
         </AppCard>
 
         <!-- Negative Sentiment -->
-        <AppCard>
+        <AppCard :hover="true" class="cursor-pointer transition-transform hover:scale-105" @click="showFeedbackBySentiment('Negative')">
           <div class="p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
@@ -160,6 +166,9 @@
                   </dd>
                 </dl>
               </div>
+            </div>
+            <div class="mt-2">
+              <p class="text-xs text-red-600 font-medium">Click to view all negative feedback</p>
             </div>
           </div>
         </AppCard>
@@ -394,8 +403,145 @@
         </AppCard>
       </div>
 
+      <!-- Filtered Feedback Section -->
+      <div v-if="selectedSentiment && filteredFeedback.length > 0" class="mb-8" data-sentiment-filter>
+        <AppCard>
+          <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-medium text-gray-900">
+                {{ selectedSentiment }} Feedback ({{ filteredFeedback.length }} items)
+              </h3>
+              <button 
+                @click="clearFilter"
+                class="text-sm text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md transition-colors"
+              >
+                Clear Filter
+              </button>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="grid gap-4">
+              <div 
+                v-for="item in paginatedFeedback" 
+                :key="item.id"
+                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                :class="{
+                  'border-green-200 bg-green-50': item.sentiment === 'Positive',
+                  'border-yellow-200 bg-yellow-50': item.sentiment === 'Neutral',
+                  'border-red-200 bg-red-50': item.sentiment === 'Negative'
+                }"
+              >
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <p class="text-sm text-gray-900 leading-relaxed">{{ item.feedback }}</p>
+                    <div class="flex items-center space-x-4 mt-3 text-xs text-gray-600">
+                      <span class="flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h4M9 7h6m-6 4h6m-6 4h6" />
+                        </svg>
+                        {{ item.accountName }}
+                      </span>
+                      <span class="flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        {{ item.accountOwner || 'Unassigned' }}
+                      </span>
+                      <span class="flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {{ formatDate(item.createdDate) }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="ml-4 flex-shrink-0">
+                    <span 
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      :class="{
+                        'bg-green-100 text-green-800': item.sentiment === 'Positive',
+                        'bg-yellow-100 text-yellow-800': item.sentiment === 'Neutral',
+                        'bg-red-100 text-red-800': item.sentiment === 'Negative'
+                      }"
+                    >
+                      {{ item.sentiment }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div v-if="filteredFeedback.length > itemsPerPage" class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-6">
+              <div class="flex flex-1 justify-between sm:hidden">
+                <button 
+                  @click="currentPage--" 
+                  :disabled="currentPage === 1"
+                  class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <button 
+                  @click="currentPage++" 
+                  :disabled="currentPage >= totalPages"
+                  class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+              <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-sm text-gray-700">
+                    Showing
+                    <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+                    to
+                    <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredFeedback.length) }}</span>
+                    of
+                    <span class="font-medium">{{ filteredFeedback.length }}</span>
+                    results
+                  </p>
+                </div>
+                <div>
+                  <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                    <button 
+                      @click="currentPage--" 
+                      :disabled="currentPage === 1"
+                      class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span class="sr-only">Previous</span>
+                      <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <button 
+                      v-for="page in visiblePages" 
+                      :key="page"
+                      @click="currentPage = page"
+                      :class="page === currentPage ? 'bg-blue-600 text-white' : 'text-gray-900 hover:bg-gray-50'"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0"
+                    >
+                      {{ page }}
+                    </button>
+                    <button 
+                      @click="currentPage++" 
+                      :disabled="currentPage >= totalPages"
+                      class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span class="sr-only">Next</span>
+                      <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </AppCard>
+      </div>
+
       <!-- Recent Feedback -->
-      <div v-if="feedbackData.length > 0" class="bg-white rounded-lg shadow">
+      <div v-if="feedbackData.length > 0 && !selectedSentiment" class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
           <h3 class="text-lg font-medium text-gray-900">Recent Feedback</h3>
         </div>
@@ -445,6 +591,11 @@ const feedbackData = ref([])
 const loading = ref(false)
 const error = ref('')
 const lastUpdated = ref(null)
+
+// Filtering and pagination
+const selectedSentiment = ref(null)
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
 
 // Computed data
 const sentimentSummary = computed(() => {
@@ -709,6 +860,52 @@ const recentFeedback = computed(() =>
     .slice(0, 5)
 )
 
+// Filtering computed properties
+const filteredFeedback = computed(() => {
+  if (!selectedSentiment.value) return []
+  return feedbackData.value
+    .filter(item => item.sentiment === selectedSentiment.value)
+    .sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredFeedback.value.length / itemsPerPage.value)
+})
+
+const paginatedFeedback = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredFeedback.value.slice(start, end)
+})
+
+const visiblePages = computed(() => {
+  const total = totalPages.value
+  const current = currentPage.value
+  const delta = 2
+  const range = []
+  const rangeWithDots = []
+
+  for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+    range.push(i)
+  }
+
+  if (current - delta > 2) {
+    rangeWithDots.push(1, '...')
+  } else {
+    rangeWithDots.push(1)
+  }
+
+  rangeWithDots.push(...range)
+
+  if (current + delta < total - 1) {
+    rangeWithDots.push('...', total)
+  } else {
+    rangeWithDots.push(total)
+  }
+
+  return rangeWithDots.filter(page => page !== '...' && page <= total)
+})
+
 // Methods
 const refreshData = async () => {
   loading.value = true
@@ -747,6 +944,24 @@ const formatDate = (date: string | Date) => {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+// Filtering methods
+const showFeedbackBySentiment = (sentiment: 'Positive' | 'Neutral' | 'Negative') => {
+  selectedSentiment.value = sentiment
+  currentPage.value = 1
+  // Scroll to filtered feedback section
+  nextTick(() => {
+    const element = document.querySelector('[data-sentiment-filter]')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  })
+}
+
+const clearFilter = () => {
+  selectedSentiment.value = null
+  currentPage.value = 1
 }
 
 // Initialize data on mount
