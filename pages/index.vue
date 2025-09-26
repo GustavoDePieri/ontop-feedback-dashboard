@@ -547,28 +547,217 @@
         </AppCard>
       </div>
 
-      <!-- Charts Grid -->
-      <div v-if="feedbackData.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Enterprise Analytics Grid -->
+      <div v-if="feedbackData.length > 0" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
         <!-- Sentiment Analysis Chart -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Sentiment Distribution</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Sentiment Distribution</h3>
             <SentimentChart :data="sentimentSummary" />
           </div>
         </AppCard>
 
-        <!-- Feedback Trends Chart -->
+        <!-- Subcategory Distribution -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Feedback Trends (Last 30 Days)</h3>
-            <div class="h-64 flex items-center justify-center text-gray-500 dark:text-slate-400">
-              <div class="text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-slate-100">Time Series Chart</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Coming soon - Feedback trends over time</p>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Feedback Subcategories</h3>
+            <div class="space-y-3">
+              <div v-for="subcategory in topSubcategories" :key="subcategory.name" class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <div class="w-3 h-3 rounded-full" :class="{
+                    'bg-blue-500': subcategory.name && subcategory.name.includes('Compliance'),
+                    'bg-green-500': subcategory.name && subcategory.name.includes('Product'),
+                    'bg-purple-500': subcategory.name && subcategory.name.includes('Operational'),
+                    'bg-orange-500': subcategory.name && subcategory.name.includes('Other'),
+                    'bg-red-500': subcategory.name && subcategory.name.includes('Missing'),
+                    'bg-gray-500': !subcategory.name || (!subcategory.name.includes('Compliance') && !subcategory.name.includes('Product') && !subcategory.name.includes('Operational') && !subcategory.name.includes('Other') && !subcategory.name.includes('Missing'))
+                  }"></div>
+                  <span class="text-sm text-gray-900 dark:text-slate-100 font-medium">{{ subcategory.name || 'Uncategorized' }}</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-sm font-semibold text-gray-900 dark:text-slate-100">{{ subcategory.count }}</span>
+                  <span class="text-xs text-gray-500 dark:text-slate-400 ml-1">({{ subcategory.percentage }}%)</span>
+                </div>
               </div>
+            </div>
+          </div>
+        </AppCard>
+
+        <!-- Category Formula Distribution -->
+        <AppCard>
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Category Classifications</h3>
+            <div class="space-y-3">
+              <div v-for="category in topCategoryFormulas" :key="category.name" class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <div class="w-3 h-3 rounded-full" :class="{
+                    'bg-emerald-500': category.name === 'New Entity',
+                    'bg-blue-500': category.name === 'Operational',
+                    'bg-amber-500': category.name === 'Product Fit',
+                    'bg-red-500': category.name === 'Other Category',
+                    'bg-gray-500': !['New Entity', 'Operational', 'Product Fit', 'Other Category'].includes(category.name)
+                  }"></div>
+                  <span class="text-sm text-gray-900 dark:text-slate-100 font-medium">{{ category.name || 'Unclassified' }}</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-sm font-semibold text-gray-900 dark:text-slate-100">{{ category.count }}</span>
+                  <span class="text-xs text-gray-500 dark:text-slate-400 ml-1">({{ category.percentage }}%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </AppCard>
+      </div>
+
+      <!-- Financial Analytics Section -->
+      <div v-if="hasFinancialData" class="mb-8">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100">Financial Analytics</h2>
+          <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-slate-400">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+            <span>Revenue Impact Analysis</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <!-- Total MRR -->
+          <AppCard>
+            <div class="p-6">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-md flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Total MRR</dt>
+                    <dd class="flex items-baseline">
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">${{ totalMrr.toLocaleString() }}</div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </AppCard>
+
+          <!-- Total TPV -->
+          <AppCard>
+            <div class="p-6">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-md flex items-center justify-center">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Total TPV</dt>
+                    <dd class="flex items-baseline">
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">${{ totalTpv.toLocaleString() }}</div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </AppCard>
+
+          <!-- Average MRR per Account -->
+          <AppCard>
+            <div class="p-6">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-md flex items-center justify-center">
+                    <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Avg MRR/Account</dt>
+                    <dd class="flex items-baseline">
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">${{ avgMrrPerAccount.toLocaleString() }}</div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </AppCard>
+
+          <!-- High-Value Accounts -->
+          <AppCard>
+            <div class="p-6">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded-md flex items-center justify-center">
+                    <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">High-Value Accounts</dt>
+                    <dd class="flex items-baseline">
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ highValueAccounts }}</div>
+                      <div class="ml-2 text-sm text-gray-500 dark:text-slate-400">accounts</div>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </AppCard>
+        </div>
+
+        <!-- Top Accounts by Revenue -->
+        <AppCard>
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Top Accounts by Revenue Impact</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full">
+                <thead>
+                  <tr class="border-b border-gray-200 dark:border-slate-700">
+                    <th class="text-left py-3 px-4 font-medium text-gray-900 dark:text-slate-100">Account</th>
+                    <th class="text-left py-3 px-4 font-medium text-gray-900 dark:text-slate-100">Account Owner</th>
+                    <th class="text-right py-3 px-4 font-medium text-gray-900 dark:text-slate-100">MRR</th>
+                    <th class="text-right py-3 px-4 font-medium text-gray-900 dark:text-slate-100">TPV</th>
+                    <th class="text-center py-3 px-4 font-medium text-gray-900 dark:text-slate-100">Feedback Count</th>
+                    <th class="text-center py-3 px-4 font-medium text-gray-900 dark:text-slate-100">Sentiment</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-slate-700">
+                  <tr v-for="account in topRevenueAccounts" :key="account.name" :class="{ 'bg-yellow-50 dark:bg-yellow-900/10': account.name === 'Gerardo Consulting CCL' }">
+                    <td class="py-3 px-4">
+                      <div class="flex items-center">
+                        <span class="text-sm font-medium text-gray-900 dark:text-slate-100">{{ account.name }}</span>
+                        <span v-if="account.name === 'Gerardo Consulting CCL'" class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+                          Testing Account
+                        </span>
+                      </div>
+                    </td>
+                    <td class="py-3 px-4 text-sm text-gray-600 dark:text-slate-300">{{ account.owner }}</td>
+                    <td class="py-3 px-4 text-right text-sm font-medium text-green-600 dark:text-green-400">${{ account.mrr.toLocaleString() }}</td>
+                    <td class="py-3 px-4 text-right text-sm font-medium text-blue-600 dark:text-blue-400">${{ account.tpv.toLocaleString() }}</td>
+                    <td class="py-3 px-4 text-center text-sm text-gray-900 dark:text-slate-100">{{ account.feedbackCount }}</td>
+                    <td class="py-3 px-4 text-center">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="{
+                        'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': account.dominantSentiment === 'Positive',
+                        'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200': account.dominantSentiment === 'Neutral',
+                        'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200': account.dominantSentiment === 'Negative'
+                      }">
+                        {{ account.dominantSentiment }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </AppCard>
@@ -2164,6 +2353,137 @@ const handleLogout = async () => {
   // Redirect to login page
   await navigateTo('/login')
 }
+
+// Helper function for sentiment analysis
+const getDominantSentiment = (sentiments) => {
+  const { positive, neutral, negative } = sentiments
+  if (positive >= neutral && positive >= negative) return 'Positive'
+  if (negative >= neutral) return 'Negative'
+  return 'Neutral'
+}
+
+// Enterprise analytics computed properties
+const topSubcategories = computed(() => {
+  const subcategoryCount = new Map()
+  const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  
+  sourceData.forEach(item => {
+    const subcategory = item.subcategory || 'Uncategorized'
+    subcategoryCount.set(subcategory, (subcategoryCount.get(subcategory) || 0) + 1)
+  })
+  
+  const total = sourceData.length || 1
+  return Array.from(subcategoryCount.entries())
+    .map(([name, count]) => ({
+      name,
+      count,
+      percentage: Math.round((count / total) * 100)
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10)
+})
+
+const topCategoryFormulas = computed(() => {
+  const categoryCount = new Map()
+  const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  
+  sourceData.forEach(item => {
+    const category = item.categoryFormulaText || 'Unclassified'
+    categoryCount.set(category, (categoryCount.get(category) || 0) + 1)
+  })
+  
+  const total = sourceData.length || 1
+  return Array.from(categoryCount.entries())
+    .map(([name, count]) => ({
+      name,
+      count,
+      percentage: Math.round((count / total) * 100)
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10)
+})
+
+// Financial analytics computed properties
+const hasFinancialData = computed(() => {
+  return feedbackData.value.some(item => item.realMrrLastMonth || item.lastInvoicedTpv)
+})
+
+const totalMrr = computed(() => {
+  const uniqueAccounts = new Map()
+  feedbackData.value.forEach(item => {
+    if (item.realMrrLastMonth && item.accountName) {
+      uniqueAccounts.set(item.accountName, item.realMrrLastMonth)
+    }
+  })
+  return Array.from(uniqueAccounts.values()).reduce((sum, mrr) => sum + mrr, 0)
+})
+
+const totalTpv = computed(() => {
+  const uniqueAccounts = new Map()
+  feedbackData.value.forEach(item => {
+    if (item.lastInvoicedTpv && item.accountName) {
+      uniqueAccounts.set(item.accountName, item.lastInvoicedTpv)
+    }
+  })
+  return Array.from(uniqueAccounts.values()).reduce((sum, tpv) => sum + tpv, 0)
+})
+
+const avgMrrPerAccount = computed(() => {
+  const accountsWithMrr = new Set()
+  feedbackData.value.forEach(item => {
+    if (item.realMrrLastMonth && item.accountName) {
+      accountsWithMrr.add(item.accountName)
+    }
+  })
+  return accountsWithMrr.size > 0 ? Math.round(totalMrr.value / accountsWithMrr.size) : 0
+})
+
+const highValueAccounts = computed(() => {
+  const accountMrr = new Map()
+  feedbackData.value.forEach(item => {
+    if (item.realMrrLastMonth && item.accountName) {
+      accountMrr.set(item.accountName, item.realMrrLastMonth)
+    }
+  })
+  // High-value threshold: above average MRR
+  const avgMrr = avgMrrPerAccount.value
+  return Array.from(accountMrr.values()).filter(mrr => mrr > avgMrr).length
+})
+
+const topRevenueAccounts = computed(() => {
+  const accountStats = new Map()
+  
+  feedbackData.value.forEach(item => {
+    if (!item.accountName) return
+    
+    if (!accountStats.has(item.accountName)) {
+      accountStats.set(item.accountName, {
+        name: item.accountName,
+        owner: item.accountOwner || 'Unassigned',
+        mrr: item.realMrrLastMonth || 0,
+        tpv: item.lastInvoicedTpv || 0,
+        feedbackCount: 0,
+        sentiments: { positive: 0, neutral: 0, negative: 0 }
+      })
+    }
+    
+    const account = accountStats.get(item.accountName)
+    account.feedbackCount++
+    
+    if (item.sentiment) {
+      account.sentiments[item.sentiment.toLowerCase()]++
+    }
+  })
+  
+  return Array.from(accountStats.values())
+    .filter(account => account.mrr > 0 || account.tpv > 0)
+    .map(account => ({
+      ...account,
+      dominantSentiment: getDominantSentiment(account.sentiments)
+    }))
+    .sort((a, b) => (b.mrr + b.tpv) - (a.mrr + a.tpv))
+    .slice(0, 10)
+})
 
 // Initialize data on mount
 onMounted(() => {
