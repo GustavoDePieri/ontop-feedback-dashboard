@@ -1353,8 +1353,68 @@
         </AppCard>
       </div>
 
+      <!-- Today's Feedback -->
+      <div v-if="todaysFeedback.length > 0 && !selectedSentiment && !hasActiveFilters" class="bg-white dark:bg-slate-800 rounded-lg shadow mb-8">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-600">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100">📅 Today's Feedback</h3>
+            <span class="text-sm text-gray-500 dark:text-slate-400">
+              {{ todaysFeedback.length }} item{{ todaysFeedback.length !== 1 ? 's' : '' }} today
+            </span>
+          </div>
+        </div>
+        <div class="p-6 space-y-4">
+          <div 
+            v-for="item in todaysFeedback.slice(0, 5)" 
+            :key="item.id"
+            class="p-4 border border-blue-200 dark:border-blue-600 rounded-lg bg-blue-50 dark:bg-blue-900/10"
+          >
+            <div class="flex items-start justify-between mb-2">
+              <div class="flex items-center space-x-2">
+                <span class="text-sm font-medium text-gray-900 dark:text-slate-100">{{ item.accountName || 'Unknown Account' }}</span>
+                <span 
+                  class="px-2 py-1 rounded-full text-xs font-medium"
+                  :class="{
+                    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': item.sentiment === 'Positive',
+                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400': item.sentiment === 'Neutral',
+                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': item.sentiment === 'Negative'
+                  }"
+                >
+                  {{ item.sentiment }}
+                </span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-xs text-gray-500 dark:text-slate-400">{{ formatTime(item.createdDate) }}</span>
+                <button 
+                  @click="copyFeedback(item.feedback)"
+                  class="text-gray-400 hover:text-blue-600 dark:text-slate-500 dark:hover:text-blue-400 transition-colors duration-200"
+                  title="Copy feedback"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <p class="text-gray-700 dark:text-slate-300 text-sm">{{ item.feedback }}</p>
+            <div class="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-slate-400">
+              <span>Account Manager: {{ item.accountOwner || 'Unassigned' }}</span>
+              <span v-if="item.feedbackDirectedTo">Directed to: {{ item.feedbackDirectedTo }}</span>
+            </div>
+          </div>
+          <div v-if="todaysFeedback.length > 5" class="text-center">
+            <button 
+              @click="showTodaysFilter" 
+              class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+            >
+              View all {{ todaysFeedback.length }} items from today →
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Recent Feedback -->
-      <div v-if="feedbackData.length > 0 && !selectedSentiment" class="bg-white rounded-lg shadow">
+      <div v-if="feedbackData.length > 0 && !selectedSentiment" class="bg-white dark:bg-slate-800 rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
           <h3 class="text-lg font-medium text-gray-900">Recent Feedback</h3>
         </div>
@@ -1518,10 +1578,10 @@ const filteredFeedbackData = computed(() => {
 
     switch (filters.datePeriod) {
       case 'today':
-        startDate = new Date(now)
-        startDate.setHours(0, 0, 0, 0)
-        endDate = new Date(now)
-        endDate.setHours(23, 59, 59, 999)
+        // Create dates in local timezone for better comparison
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+        console.log(`🔍 Today filter - Start: ${startDate.toISOString()}, End: ${endDate.toISOString()}`)
         break
       case 'yesterday':
         startDate = new Date(now)
@@ -1581,17 +1641,28 @@ const filteredFeedbackData = computed(() => {
     }
 
     if (startDate || endDate) {
-      filtered = filtered.filter(item => {
+      console.log(`🔍 Filtering ${filtered.length} items by date range`)
+      filtered = filtered.filter((item, index) => {
         const itemDate = new Date(item.createdDate)
-        if (startDate && endDate) {
-          return itemDate >= startDate && itemDate <= endDate
-        } else if (startDate) {
-          return itemDate >= startDate
-        } else if (endDate) {
-          return itemDate <= endDate
+        const isInRange = (() => {
+          if (startDate && endDate) {
+            return itemDate >= startDate && itemDate <= endDate
+          } else if (startDate) {
+            return itemDate >= startDate
+          } else if (endDate) {
+            return itemDate <= endDate
+          }
+          return true
+        })()
+        
+        // Debug first few items when filtering for today
+        if (filters.datePeriod === 'today' && index < 5) {
+          console.log(`🔍 Item ${index}: ${itemDate.toISOString()} (${itemDate.toLocaleDateString()}) - In range: ${isInRange}`)
         }
-        return true
+        
+        return isInRange
       })
+      console.log(`🔍 After date filtering: ${filtered.length} items`)
     }
   }
 
@@ -2057,6 +2128,27 @@ const recentFeedback = computed(() => {
     .slice(0, 5)
 })
 
+const todaysFeedback = computed(() => {
+  if (!feedbackData.value.length) return []
+  
+  const today = new Date()
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
+  const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999)
+  
+  const todaysItems = feedbackData.value.filter(item => {
+    const itemDate = new Date(item.createdDate)
+    const isToday = itemDate >= todayStart && itemDate <= todayEnd
+    return isToday
+  })
+  
+  console.log(`📅 Today's feedback: ${todaysItems.length} items found (Server showed 6)`)
+  todaysItems.forEach((item, i) => {
+    if (i < 3) console.log(`📅 Today item ${i}: ${new Date(item.createdDate).toLocaleString()}`)
+  })
+  
+  return todaysItems.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
+})
+
 // Filtering computed properties
 const filteredFeedback = computed(() => {
   if (!selectedSentiment.value) return []
@@ -2219,6 +2311,19 @@ const getDatePeriodLabel = (period) => {
     'custom': 'Custom Range'
   }
   return labels[period] || period
+}
+
+const showTodaysFilter = () => {
+  filters.datePeriod = 'today'
+  selectedSentiment.value = null
+  currentPage.value = 1
+  // Scroll to filtered feedback section
+  nextTick(() => {
+    const element = document.querySelector('[data-sentiment-filter]')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  })
 }
 
 // Calendar methods
