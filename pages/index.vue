@@ -178,49 +178,38 @@
       </div>
 
       <!-- Report Generation -->
-      <div v-if="!loading && !error && feedbackData.length > 0" class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div v-if="!loading && !error && feedbackData.length > 0" class="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6 shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h3 class="text-blue-900 font-medium flex items-center">
-              <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Generate Reports
+            <h3 class="text-gray-900 font-bold text-lg flex items-center">
+              <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              Professional Reports
             </h3>
-            <p class="text-blue-700 text-sm mt-1">Export comprehensive analytics reports for meetings and reviews</p>
+            <p class="text-gray-600 text-sm mt-1 ml-13">Generate comprehensive analytics reports perfect for presentations and meetings</p>
           </div>
-          <div class="flex flex-col sm:flex-row gap-2">
-            <button
-              @click="generateReport('weekly')"
-              :disabled="generatingReport"
-              class="flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <svg v-if="!generatingReport" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <svg v-else class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Weekly Report
-            </button>
-            <button
-              @click="generateReport('monthly')"
-              :disabled="generatingReport"
-              class="flex items-center justify-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <svg v-if="!generatingReport" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <svg v-else class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Monthly Report
-            </button>
-          </div>
+          <button
+            @click="showReportModal = true"
+            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Create Report
+          </button>
         </div>
       </div>
+
+      <!-- Report Modal -->
+      <ReportModal 
+        :is-open="showReportModal" 
+        :feedback-data="feedbackData"
+        @close="showReportModal = false"
+        @generate="handleReportGeneration"
+      />
 
       <!-- Advanced Stats Grid -->
       <div v-if="feedbackData.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -968,6 +957,7 @@ const lastUpdated = ref(null)
 
 // Report generation
 const generatingReport = ref(false)
+const showReportModal = ref(false)
 
 // Filtering and pagination
 const selectedSentiment = ref(null)
@@ -1981,6 +1971,11 @@ const downloadReport = (content, filename) => {
 // Format date for filename
 const formatDateForFilename = (date) => {
   return date.toISOString().split('T')[0]
+}
+
+// Handle report generation from modal
+const handleReportGeneration = async (type) => {
+  await generateReport(type)
 }
 
 // Initialize data on mount
