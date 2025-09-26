@@ -1,5 +1,5 @@
 <template>
-  <div class="relative h-64">
+  <div class="relative h-80">
     <canvas ref="chartRef"></canvas>
   </div>
 </template>
