@@ -77,76 +77,76 @@
         </div>
 
         <!-- Report Content -->
-        <div class="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-800">
+        <div class="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-800">
           <!-- Executive Summary -->
-          <div class="mb-8">
-            <div class="flex items-center mb-4">
-              <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="mb-4">
+            <div class="flex items-center mb-2">
+              <div class="w-6 h-6 bg-blue-500 rounded flex items-center justify-center mr-2">
+                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <h4 class="text-lg font-bold text-gray-900 dark:text-white">Executive Summary</h4>
+              <h4 class="text-sm font-bold text-gray-900 dark:text-white">Executive Summary</h4>
             </div>
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 text-center border border-blue-200 dark:border-blue-800">
-                <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">{{ reportData.summary.total }}</div>
-                <div class="text-sm font-medium text-blue-700 dark:text-blue-300">Total Feedback</div>
+            <div class="grid grid-cols-4 gap-3 mb-4">
+              <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-center border border-blue-200 dark:border-blue-800">
+                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ reportData.summary.total }}</div>
+                <div class="text-xs font-medium text-blue-700 dark:text-blue-300">Total Feedback</div>
               </div>
-              <div class="bg-green-50 dark:bg-green-900/20 rounded-xl p-6 text-center border border-green-200 dark:border-green-800">
-                <div class="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">{{ reportData.summary.positive }}</div>
-                <div class="text-sm font-medium text-green-700 dark:text-green-300">Positive ({{ reportData.summary.positivePercent }}%)</div>
+              <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 text-center border border-green-200 dark:border-green-800">
+                <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ reportData.summary.positive }}</div>
+                <div class="text-xs font-medium text-green-700 dark:text-green-300">Positive ({{ reportData.summary.positivePercent }}%)</div>
               </div>
-              <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-6 text-center border border-yellow-200 dark:border-yellow-800">
-                <div class="text-4xl font-bold text-yellow-600 dark:text-yellow-400 mb-2">{{ reportData.summary.neutral }}</div>
-                <div class="text-sm font-medium text-yellow-700 dark:text-yellow-300">Neutral ({{ reportData.summary.neutralPercent }}%)</div>
+              <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3 text-center border border-yellow-200 dark:border-yellow-800">
+                <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ reportData.summary.neutral }}</div>
+                <div class="text-xs font-medium text-yellow-700 dark:text-yellow-300">Neutral ({{ reportData.summary.neutralPercent }}%)</div>
               </div>
-              <div class="bg-red-50 dark:bg-red-900/20 rounded-xl p-6 text-center border border-red-200 dark:border-red-800">
-                <div class="text-4xl font-bold text-red-600 dark:text-red-400 mb-2">{{ reportData.summary.negative }}</div>
-                <div class="text-sm font-medium text-red-700 dark:text-red-300">Negative ({{ reportData.summary.negativePercent }}%)</div>
+              <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 text-center border border-red-200 dark:border-red-800">
+                <div class="text-2xl font-bold text-red-600 dark:text-red-400">{{ reportData.summary.negative }}</div>
+                <div class="text-xs font-medium text-red-700 dark:text-red-300">Negative ({{ reportData.summary.negativePercent }}%)</div>
               </div>
             </div>
           </div>
 
           <!-- Account Manager Performance -->
-          <div class="mb-8" v-if="reportData.managers && reportData.managers.length > 0">
-            <div class="flex items-center mb-4">
-              <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="mb-4" v-if="reportData.managers && reportData.managers.length > 0">
+            <div class="flex items-center mb-2">
+              <div class="w-6 h-6 bg-purple-500 rounded flex items-center justify-center mr-2">
+                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <h4 class="text-lg font-bold text-gray-900 dark:text-white">Account Manager Performance</h4>
+              <h4 class="text-sm font-bold text-gray-900 dark:text-white">Account Manager Performance</h4>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div v-for="manager in reportData.managers" :key="manager.name" class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
-                <div class="flex items-center justify-between mb-4">
-                  <h5 class="text-lg font-semibold text-gray-900 dark:text-white">{{ manager.name }}</h5>
-                  <span class="text-sm font-medium px-3 py-1.5 rounded-full"
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+              <div v-for="manager in reportData.managers" :key="manager.name" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                <div class="flex items-center justify-between mb-2">
+                  <h5 class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ manager.name }}</h5>
+                  <span class="text-xs font-medium px-2 py-1 rounded-full"
                         :class="{
                           'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400': manager.positiveRate >= 70,
                           'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400': manager.positiveRate >= 50 && manager.positiveRate < 70,
                           'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400': manager.positiveRate < 50
                         }">
-                    {{ manager.positiveRate }}% Positive
+                    {{ manager.positiveRate }}%
                   </span>
                 </div>
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                  <div class="bg-white dark:bg-gray-600 rounded-lg p-3 text-center">
-                    <div class="text-lg font-bold text-gray-900 dark:text-white">{{ manager.total }}</div>
-                    <div class="text-gray-600 dark:text-gray-300">Total</div>
+                <div class="grid grid-cols-4 gap-1 text-xs">
+                  <div class="bg-white dark:bg-gray-600 rounded p-1 text-center">
+                    <div class="font-bold text-gray-900 dark:text-white">{{ manager.total }}</div>
+                    <div class="text-gray-600 dark:text-gray-300 text-xs">Total</div>
                   </div>
-                  <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 text-center">
-                    <div class="text-lg font-bold text-green-600 dark:text-green-400">{{ manager.positive }}</div>
-                    <div class="text-green-700 dark:text-green-300">Positive</div>
+                  <div class="bg-green-50 dark:bg-green-900/20 rounded p-1 text-center">
+                    <div class="font-bold text-green-600 dark:text-green-400">{{ manager.positive }}</div>
+                    <div class="text-green-700 dark:text-green-300 text-xs">+</div>
                   </div>
-                  <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3 text-center">
-                    <div class="text-lg font-bold text-yellow-600 dark:text-yellow-400">{{ manager.neutral }}</div>
-                    <div class="text-yellow-700 dark:text-yellow-300">Neutral</div>
+                  <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded p-1 text-center">
+                    <div class="font-bold text-yellow-600 dark:text-yellow-400">{{ manager.neutral }}</div>
+                    <div class="text-yellow-700 dark:text-yellow-300 text-xs">~</div>
                   </div>
-                  <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 text-center">
-                    <div class="text-lg font-bold text-red-600 dark:text-red-400">{{ manager.negative }}</div>
-                    <div class="text-red-700 dark:text-red-300">Negative</div>
+                  <div class="bg-red-50 dark:bg-red-900/20 rounded p-1 text-center">
+                    <div class="font-bold text-red-600 dark:text-red-400">{{ manager.negative }}</div>
+                    <div class="text-red-700 dark:text-red-300 text-xs">-</div>
                   </div>
                 </div>
               </div>
@@ -154,55 +154,53 @@
           </div>
 
           <!-- Top Accounts -->
-          <div class="mb-8" v-if="reportData.topAccounts && reportData.topAccounts.length > 0">
-            <div class="flex items-center mb-4">
-              <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="mb-4" v-if="reportData.topAccounts && reportData.topAccounts.length > 0">
+            <div class="flex items-center mb-2">
+              <div class="w-6 h-6 bg-indigo-500 rounded flex items-center justify-center mr-2">
+                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h4 class="text-lg font-bold text-gray-900 dark:text-white">Top Accounts by Feedback Volume</h4>
+              <h4 class="text-sm font-bold text-gray-900 dark:text-white">Top Accounts by Feedback Volume</h4>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
               <div v-for="(account, index) in reportData.topAccounts.slice(0, 12)" :key="account.name" 
-                   class="flex items-center justify-between bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
-                <div class="flex items-center">
-                  <span class="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center text-sm font-bold mr-3">
-                    {{ index + 1 }}
-                  </span>
-                  <div>
-                    <div class="font-medium text-gray-900 dark:text-white">{{ account.name }}</div>
-                    <div class="text-sm text-indigo-600 dark:text-indigo-400 font-semibold">{{ account.count }} feedback{{ account.count !== 1 ? 's' : '' }}</div>
-                  </div>
+                   class="flex items-center bg-gray-50 dark:bg-gray-700 rounded-lg p-2 border border-gray-200 dark:border-gray-600">
+                <span class="w-6 h-6 bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center text-xs font-bold mr-2 flex-shrink-0">
+                  {{ index + 1 }}
+                </span>
+                <div class="min-w-0 flex-1">
+                  <div class="font-medium text-gray-900 dark:text-white text-xs truncate">{{ account.name }}</div>
+                  <div class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">{{ account.count }}</div>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Key Insights -->
-          <div class="mb-6">
-            <div class="flex items-center mb-4">
-              <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div class="mb-4">
+            <div class="flex items-center mb-2">
+              <div class="w-6 h-6 bg-green-500 rounded flex items-center justify-center mr-2">
+                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <h4 class="text-lg font-bold text-gray-900 dark:text-white">Key Insights & Recommendations</h4>
+              <h4 class="text-sm font-bold text-gray-900 dark:text-white">Key Insights & Recommendations</h4>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
               <div v-for="insight in reportData.insights" :key="insight" 
-                   class="flex items-start bg-green-50 dark:bg-green-900/20 rounded-xl p-5 border border-green-200 dark:border-green-800">
-                <svg class="w-6 h-6 text-green-500 mr-4 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   class="flex items-start bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-200 dark:border-green-800">
+                <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{{ insight }}</p>
+                <p class="text-gray-700 dark:text-gray-300 text-xs leading-relaxed">{{ insight }}</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Footer -->
-        <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4">
+        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3">
           <div class="flex items-center justify-between">
             <p class="text-sm text-gray-600 dark:text-gray-300">
               Generated on {{ new Date().toLocaleString() }}
