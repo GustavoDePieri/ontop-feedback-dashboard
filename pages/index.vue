@@ -220,11 +220,24 @@
               <h3 class="text-lg font-medium text-gray-900 mb-4">Weekly Summary</h3>
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                  <span class="text-sm text-gray-600">Total Feedback This Week</span>
+                  <div>
+                    <span class="text-sm text-gray-600">Total Feedback This Week</span>
+                    <p class="text-xs text-gray-400">vs. last week ({{ weeklyStats.lastWeekTotal }})</p>
+                  </div>
                   <div class="flex items-center space-x-2">
                     <span class="text-lg font-semibold text-gray-900">{{ weeklyStats.totalFeedback }}</span>
-                    <span class="text-xs px-2 py-1 rounded-full" :class="weeklyStats.totalGrowth >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                    <span 
+                      v-if="weeklyStats.totalGrowth !== 0" 
+                      class="text-xs px-2 py-1 rounded-full" 
+                      :class="weeklyStats.totalGrowth >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                    >
                       {{ weeklyStats.totalGrowth >= 0 ? '+' : '' }}{{ weeklyStats.totalGrowth }}%
+                    </span>
+                    <span 
+                      v-else 
+                      class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600"
+                    >
+                      No change
                     </span>
                   </div>
                 </div>
@@ -535,8 +548,8 @@
                   </nav>
                 </div>
               </div>
-            </div>
-          </div>
+        </div>
+        </div>
         </AppCard>
       </div>
 
@@ -701,32 +714,58 @@ const thisWeekFeedback = computed(() => {
   })
 })
 
+const lastWeekFeedback = computed(() => {
+  if (!feedbackData.value.length) return []
+  
+  const now = new Date()
+  const startOfThisWeek = new Date(now)
+  startOfThisWeek.setDate(now.getDate() - now.getDay())
+  startOfThisWeek.setHours(0, 0, 0, 0)
+  
+  const startOfLastWeek = new Date(startOfThisWeek)
+  startOfLastWeek.setDate(startOfThisWeek.getDate() - 7)
+  
+  return feedbackData.value.filter(item => {
+    const itemDate = new Date(item.createdDate)
+    return itemDate >= startOfLastWeek && itemDate < startOfThisWeek
+  })
+})
+
 const weeklyStats = computed(() => {
   const thisWeek = thisWeekFeedback.value
+  const lastWeek = lastWeekFeedback.value
+  
   const totalFeedback = thisWeek.length
+  const lastWeekTotal = lastWeek.length
   const positiveCount = thisWeek.filter(item => item.sentiment === 'Positive').length
   const positivePercentage = totalFeedback > 0 ? Math.round((positiveCount / totalFeedback) * 100) : 0
   
-  // Mock weekly growth (you can calculate actual growth vs previous week)
-  const totalGrowth = Math.floor(Math.random() * 30) - 10 // Random between -10 and +20
+  // Calculate actual weekly growth
+  let totalGrowth = 0
+  if (lastWeekTotal > 0) {
+    totalGrowth = Math.round(((totalFeedback - lastWeekTotal) / lastWeekTotal) * 100)
+  } else if (totalFeedback > 0) {
+    totalGrowth = 100 // If no feedback last week but some this week, it's 100% growth
+  }
   
-  // Find most active day
+  // Find most active day this week
   const dayCount = new Map()
   thisWeek.forEach(item => {
     const day = new Date(item.createdDate).toLocaleDateString('en-US', { weekday: 'long' })
     dayCount.set(day, (dayCount.get(day) || 0) + 1)
   })
-  const mostActiveDay = Array.from(dayCount.entries()).sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A'
+  const mostActiveDay = Array.from(dayCount.entries()).sort(([,a], [,b]) => b - a)[0]?.[0] || 'No activity'
   
   // Find top account this week
   const weeklyAccountCount = new Map()
   thisWeek.forEach(item => {
     weeklyAccountCount.set(item.accountName, (weeklyAccountCount.get(item.accountName) || 0) + 1)
   })
-  const topAccount = Array.from(weeklyAccountCount.entries()).sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A'
+  const topAccount = Array.from(weeklyAccountCount.entries()).sort(([,a], [,b]) => b - a)[0]?.[0] || 'No feedback'
   
   return {
     totalFeedback,
+    lastWeekTotal,
     positiveCount,
     positivePercentage,
     totalGrowth,
@@ -736,15 +775,17 @@ const weeklyStats = computed(() => {
 })
 
 const accountManagerStats = computed(() => {
-  if (!feedbackData.value.length) return []
+  if (!thisWeekFeedback.value.length) return []
   
-  // Group feedback by account owner (account manager)
-  const managerCount = new Map()
+  // Group THIS WEEK's feedback by account owner (account manager)
+  const thisWeekManagerCount = new Map()
+  const lastWeekManagerCount = new Map()
   const managerAccounts = new Map()
   
-  feedbackData.value.forEach(item => {
+  // Count this week's feedback
+  thisWeekFeedback.value.forEach(item => {
     const manager = item.accountOwner || 'Unassigned'
-    managerCount.set(manager, (managerCount.get(manager) || 0) + 1)
+    thisWeekManagerCount.set(manager, (thisWeekManagerCount.get(manager) || 0) + 1)
     
     if (!managerAccounts.has(manager)) {
       managerAccounts.set(manager, new Set())
@@ -752,18 +793,35 @@ const accountManagerStats = computed(() => {
     managerAccounts.get(manager).add(item.accountName)
   })
   
-  const maxCount = Math.max(...managerCount.values())
+  // Count last week's feedback for comparison
+  lastWeekFeedback.value.forEach(item => {
+    const manager = item.accountOwner || 'Unassigned'
+    lastWeekManagerCount.set(manager, (lastWeekManagerCount.get(manager) || 0) + 1)
+  })
   
-  return Array.from(managerCount.entries())
+  const maxCount = Math.max(...thisWeekManagerCount.values(), 1)
+  
+  return Array.from(thisWeekManagerCount.entries())
     .sort(([,a], [,b]) => b - a)
     .slice(0, 6)
-    .map(([name, feedbackCount]) => ({
-      name: name || 'Unassigned',
-      feedbackCount,
-      accounts: managerAccounts.get(name)?.size || 0,
-      percentage: maxCount > 0 ? (feedbackCount / maxCount) * 100 : 0,
-      weeklyGrowth: Math.floor(Math.random() * 40) - 15 // Mock weekly growth
-    }))
+    .map(([name, feedbackCount]) => {
+      const lastWeekCount = lastWeekManagerCount.get(name) || 0
+      let weeklyGrowth = 0
+      
+      if (lastWeekCount > 0) {
+        weeklyGrowth = Math.round(((feedbackCount - lastWeekCount) / lastWeekCount) * 100)
+      } else if (feedbackCount > 0) {
+        weeklyGrowth = 100 // New activity this week
+      }
+      
+      return {
+        name: name || 'Unassigned',
+        feedbackCount,
+        accounts: managerAccounts.get(name)?.size || 0,
+        percentage: (feedbackCount / maxCount) * 100,
+        weeklyGrowth
+      }
+    })
 })
 
 const weeklyTimeline = computed(() => {
@@ -802,30 +860,56 @@ const weeklyTimeline = computed(() => {
 
 const weeklyInsights = computed(() => {
   const thisWeek = thisWeekFeedback.value
+  const lastWeek = lastWeekFeedback.value
   const positiveCount = thisWeek.filter(item => item.sentiment === 'Positive').length
   const totalCount = thisWeek.length
+  const lastWeekCount = lastWeek.length
   const positiveRate = totalCount > 0 ? Math.round((positiveCount / totalCount) * 100) : 0
   
   const wins = []
   const actions = []
   
-  // Generate dynamic insights based on data
+  // Handle case when no feedback this week
+  if (totalCount === 0) {
+    if (lastWeekCount === 0) {
+      actions.push('No feedback received this week or last week')
+      actions.push('Consider reaching out to clients for feedback')
+      actions.push('Review feedback collection processes')
+    } else {
+      actions.push(`Feedback dropped from ${lastWeekCount} last week to 0 this week`)
+      actions.push('Urgent: Investigate why feedback collection stopped')
+      actions.push('Contact account managers about client engagement')
+    }
+    
+    wins.push('Opportunity to improve feedback collection strategy')
+    return { wins: wins.slice(0, 4), actions: actions.slice(0, 4) }
+  }
+  
+  // Generate insights when there is feedback
   if (positiveRate > 80) {
     wins.push(`Excellent sentiment this week: ${positiveRate}% positive feedback`)
   }
   
-  if (totalCount > 50) {
-    wins.push(`High engagement: ${totalCount} feedback items collected`)
+  if (totalCount > lastWeekCount && lastWeekCount > 0) {
+    wins.push(`Feedback increased by ${totalCount - lastWeekCount} items vs last week`)
+  }
+  
+  if (totalCount >= 10) {
+    wins.push(`Good engagement: ${totalCount} feedback items collected this week`)
   }
   
   // Top performing account manager
   const topManager = accountManagerStats.value[0]
-  if (topManager) {
-    wins.push(`${topManager.name} leading with ${topManager.feedbackCount} feedback entries`)
+  if (topManager && topManager.feedbackCount > 0) {
+    wins.push(`${topManager.name} leading with ${topManager.feedbackCount} feedback entries this week`)
   }
   
   // Generate action items
-  if (positiveRate < 70) {
+  if (totalCount < lastWeekCount && lastWeekCount > 0) {
+    actions.push(`Feedback decreased from ${lastWeekCount} to ${totalCount} this week`)
+  }
+  
+  if (positiveRate < 70 && totalCount > 0) {
     actions.push(`Address sentiment concerns - only ${positiveRate}% positive feedback`)
   }
   
@@ -834,16 +918,17 @@ const weeklyInsights = computed(() => {
     actions.push(`Follow up on ${negativeItems.length} negative feedback items`)
   }
   
-  // Low-performing managers
-  const lowPerformers = accountManagerStats.value.filter(m => m.feedbackCount < 5)
-  if (lowPerformers.length > 0) {
-    actions.push(`Support ${lowPerformers.length} account managers with low activity`)
+  // Check if no account managers have activity
+  if (accountManagerStats.value.length === 0) {
+    actions.push('No account manager activity detected this week')
   }
   
-  // Fallback content
+  // Fallback content when we have feedback but no specific insights
   if (wins.length === 0) {
-    wins.push('Steady feedback collection maintained')
-    wins.push('Team actively engaging with customers')
+    wins.push(`Collected ${totalCount} feedback items this week`)
+    if (positiveRate >= 50) {
+      wins.push(`${positiveRate}% positive sentiment maintained`)
+    }
   }
   
   if (actions.length === 0) {
