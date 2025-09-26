@@ -56,7 +56,19 @@
         </div>
         
         <!-- Bottom section -->
-        <div class="absolute bottom-0 w-full p-4">
+        <div class="absolute bottom-0 w-full p-4 space-y-3">
+          <!-- Logout button -->
+          <button
+            @click="handleLogout"
+            class="w-full flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-md transition-colors duration-200"
+          >
+            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
+          </button>
+          
+          <!-- Data source info -->
           <div class="bg-gray-100 rounded-lg p-3">
             <p class="text-xs text-gray-600 font-medium">Data Source</p>
             <p class="text-xs text-gray-500">Google Sheets (Live)</p>
@@ -105,4 +117,20 @@ const route = useRoute()
 watch(() => route.path, () => {
   sidebarOpen.value = false
 })
+
+// Logout method
+const handleLogout = async () => {
+  // Clear client-side authentication
+  if (process.client) {
+    localStorage.removeItem('ontop_authenticated')
+    localStorage.removeItem('ontop_auth_timestamp')
+  }
+  
+  // Clear server-side cookie
+  const authCookie = useCookie('ontop_auth')
+  authCookie.value = false
+  
+  // Redirect to login page
+  await navigateTo('/login')
+}
 </script>

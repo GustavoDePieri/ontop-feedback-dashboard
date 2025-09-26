@@ -55,8 +55,8 @@
               class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Managers</option>
-              <option v-for="manager in uniqueAccountManagers" :key="manager" :value="manager">
-                {{ manager }}
+              <option v-for="manager in uniqueAccountManagers" :key="manager.name" :value="manager.name">
+                {{ manager.name }} ({{ manager.count }} feedback{{ manager.count !== 1 ? 's' : '' }})
               </option>
             </select>
           </div>
@@ -346,7 +346,9 @@
                 :class="{
                   'bg-gray-50 text-gray-400': !day.inCurrentMonth,
                   'bg-white text-gray-900 hover:bg-gray-50': day.inCurrentMonth && day.feedbackCount === 0,
-                  'bg-blue-50 text-blue-900 hover:bg-blue-100 cursor-pointer ring-1 ring-blue-200': day.feedbackCount > 0,
+                  'bg-green-50 text-green-900 hover:bg-green-100 cursor-pointer ring-1 ring-green-200': day.feedbackCount > 0 && day.dominantSentiment === 'positive',
+                  'bg-red-50 text-red-900 hover:bg-red-100 cursor-pointer ring-1 ring-red-200': day.feedbackCount > 0 && day.dominantSentiment === 'negative',
+                  'bg-yellow-50 text-yellow-900 hover:bg-yellow-100 cursor-pointer ring-1 ring-yellow-200': day.feedbackCount > 0 && day.dominantSentiment === 'neutral',
                   'bg-blue-600 text-white': day.isSelected,
                   'ring-2 ring-blue-500': day.isToday && !day.isSelected
                 }"
@@ -364,10 +366,18 @@
             </div>
 
             <!-- Calendar Legend -->
-            <div class="mt-4 flex items-center justify-center space-x-6 text-sm text-gray-600">
+            <div class="mt-4 flex items-center justify-center flex-wrap gap-4 text-sm text-gray-600">
               <div class="flex items-center space-x-2">
-                <div class="w-3 h-3 rounded-full bg-blue-600"></div>
-                <span>Days with feedback</span>
+                <div class="w-3 h-3 rounded bg-green-500"></div>
+                <span>Positive feedback</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 rounded bg-yellow-500"></div>
+                <span>Neutral feedback</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 rounded bg-red-500"></div>
+                <span>Negative feedback</span>
               </div>
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 rounded border-2 border-blue-500"></div>
@@ -441,7 +451,16 @@
                       </span>
                     </div>
                   </div>
-                  <div class="ml-4 flex-shrink-0">
+                  <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
+                    <button
+                      @click="copyFeedback(item)"
+                      class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                      title="Copy feedback"
+                    >
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
                     <span 
                       class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                       :class="{
@@ -856,14 +875,25 @@
             }"
           >
             <p class="text-sm text-gray-900">{{ item.feedback }}</p>
-            <p class="text-xs text-gray-500 mt-1">
-              {{ item.accountName }} • {{ formatDate(item.createdDate) }} • 
-              <span :class="{
-                'text-green-600': item.sentiment === 'Positive',
-                'text-yellow-600': item.sentiment === 'Neutral',
-                'text-red-600': item.sentiment === 'Negative'
-              }">{{ item.sentiment }}</span>
-            </p>
+            <div class="flex items-center justify-between mt-1">
+              <p class="text-xs text-gray-500">
+                {{ item.accountName }} • {{ formatDate(item.createdDate) }} • 
+                <span :class="{
+                  'text-green-600': item.sentiment === 'Positive',
+                  'text-yellow-600': item.sentiment === 'Neutral',
+                  'text-red-600': item.sentiment === 'Negative'
+                }">{{ item.sentiment }}</span>
+              </p>
+              <button
+                @click="copyFeedback(item)"
+                class="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                title="Copy feedback"
+              >
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -912,12 +942,15 @@ const selectedDate = ref(null)
 // Computed data
 // Filter helper computed properties
 const uniqueAccountManagers = computed(() => {
-  const managers = new Set()
+  const managerCounts = new Map()
   feedbackData.value.forEach(item => {
     const manager = item.accountOwner || 'Unassigned'
-    managers.add(manager)
+    managerCounts.set(manager, (managerCounts.get(manager) || 0) + 1)
   })
-  return Array.from(managers).sort()
+  
+  return Array.from(managerCounts.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([manager, count]) => ({ name: manager, count }))
 })
 
 const hasActiveFilters = computed(() => {
@@ -1130,9 +1163,23 @@ const feedbackByDate = computed(() => {
     const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
     
     if (!dateMap.has(dateKey)) {
-      dateMap.set(dateKey, [])
+      dateMap.set(dateKey, {
+        feedback: [],
+        sentimentCounts: { positive: 0, neutral: 0, negative: 0 }
+      })
     }
-    dateMap.get(dateKey).push(item)
+    
+    const dayData = dateMap.get(dateKey)
+    dayData.feedback.push(item)
+    
+    // Count sentiments
+    if (item.sentiment === 'Positive') {
+      dayData.sentimentCounts.positive++
+    } else if (item.sentiment === 'Neutral') {
+      dayData.sentimentCounts.neutral++
+    } else if (item.sentiment === 'Negative') {
+      dayData.sentimentCounts.negative++
+    }
   })
   
   return dateMap
@@ -1160,14 +1207,30 @@ const calendarDays = computed(() => {
   
   while (currentDate <= endDate) {
     const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${currentDate.getDate()}`
-    const feedbackForDay = feedbackByDate.value.get(dateKey) || []
+    const dayData = feedbackByDate.value.get(dateKey)
+    const feedbackCount = dayData ? dayData.feedback.length : 0
+    
+    // Determine dominant sentiment for the day
+    let dominantSentiment = 'neutral'
+    if (dayData && feedbackCount > 0) {
+      const { positive, negative, neutral } = dayData.sentimentCounts
+      if (positive > negative && positive > neutral) {
+        dominantSentiment = 'positive'
+      } else if (negative > positive && negative > neutral) {
+        dominantSentiment = 'negative'
+      } else {
+        dominantSentiment = 'neutral'
+      }
+    }
     
     days.push({
       date: new Date(currentDate),
       inCurrentMonth: currentDate.getMonth() === month,
       isToday: currentDate.toDateString() === today.toDateString(),
       isSelected: selectedDate.value && currentDate.toDateString() === selectedDate.value.toDateString(),
-      feedbackCount: feedbackForDay.length
+      feedbackCount,
+      dominantSentiment,
+      sentimentCounts: dayData ? dayData.sentimentCounts : { positive: 0, neutral: 0, negative: 0 }
     })
     
     currentDate.setDate(currentDate.getDate() + 1)
@@ -1180,7 +1243,8 @@ const selectedDateFeedback = computed(() => {
   if (!selectedDate.value) return []
   
   const dateKey = `${selectedDate.value.getFullYear()}-${selectedDate.value.getMonth()}-${selectedDate.value.getDate()}`
-  return feedbackByDate.value.get(dateKey) || []
+  const dayData = feedbackByDate.value.get(dateKey)
+  return dayData ? dayData.feedback : []
 })
 
 // Weekly Analytics
@@ -1624,6 +1688,26 @@ const formatTime = (date) => {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+// Copy feedback method
+const copyFeedback = async (feedback) => {
+  const textToCopy = `Feedback: ${feedback.feedback}\nAccount: ${feedback.accountName}\nManager: ${feedback.accountOwner || 'Unassigned'}\nClient ID: ${feedback.platformClientId}\nDate: ${formatDate(feedback.createdDate)}\nSentiment: ${feedback.sentiment}`
+  
+  try {
+    await navigator.clipboard.writeText(textToCopy)
+    // You could add a toast notification here
+    console.log('Feedback copied to clipboard')
+  } catch (err) {
+    console.error('Failed to copy: ', err)
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea')
+    textArea.value = textToCopy
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textArea)
+  }
 }
 
 // Initialize data on mount
