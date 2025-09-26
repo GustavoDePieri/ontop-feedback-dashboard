@@ -4,7 +4,6 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt'
   ],
-  css: ['~/assets/css/main.css'],
   runtimeConfig: {
     // Server-side environment variables
     googleProjectId: process.env.GOOGLE_PROJECT_ID,
