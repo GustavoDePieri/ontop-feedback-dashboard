@@ -43,6 +43,16 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
               </button>
+              <!-- Download as PDF Button -->
+              <button
+                @click="downloadPDF"
+                class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors duration-200"
+                title="Download as PDF"
+              >
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </button>
               <!-- Download as Text Button -->
               <button
                 @click="downloadReport"
@@ -50,7 +60,7 @@
                 title="Download as text file"
               >
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </button>
               <!-- Close Button -->
@@ -185,6 +195,15 @@
             </p>
             <div class="flex space-x-3">
               <button
+                @click="downloadPDF"
+                class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download PDF
+              </button>
+              <button
                 @click="copyReport"
                 class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center"
               >
@@ -223,6 +242,9 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
+// PDF Generator composable
+const { downloadReportPDF } = usePDFGenerator()
+
 // Reactive data
 const showCopySuccess = ref(false)
 
@@ -256,6 +278,20 @@ const copyReport = async () => {
     setTimeout(() => {
       showCopySuccess.value = false
     }, 3000)
+  }
+}
+
+const downloadPDF = () => {
+  if (!props.reportData) return
+  
+  try {
+    downloadReportPDF(props.reportData)
+    showCopySuccess.value = true
+    setTimeout(() => {
+      showCopySuccess.value = false
+    }, 3000)
+  } catch (error) {
+    console.error('Failed to generate PDF:', error)
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0" :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg transform transition-all duration-300 ease-in-out lg:translate-x-0" :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
       <div class="flex items-center justify-center h-16 px-4 bg-blue-600">
         <h1 class="text-xl font-bold text-white">🎉 Ontop Analytics</h1>
       </div>
@@ -11,7 +11,7 @@
           <NuxtLink
             to="/"
             class="flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200"
-            :class="$route.path === '/' ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'"
+            :class="$route.path === '/' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-r-2 border-blue-700 dark:border-blue-400' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'"
           >
             <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
@@ -23,7 +23,7 @@
           <NuxtLink
             to="/analytics"
             class="flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200"
-            :class="$route.path === '/analytics' ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'"
+            :class="$route.path === '/analytics' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-r-2 border-blue-700 dark:border-blue-400' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'"
           >
             <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -34,7 +34,7 @@
           <NuxtLink
             to="/reports"
             class="flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200"
-            :class="$route.path.startsWith('/reports') ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'"
+            :class="$route.path.startsWith('/reports') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-r-2 border-blue-700 dark:border-blue-400' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'"
           >
             <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -45,7 +45,7 @@
           <NuxtLink
             to="/test"
             class="flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200"
-            :class="$route.path === '/test' ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'"
+            :class="$route.path === '/test' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-r-2 border-blue-700 dark:border-blue-400' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'"
           >
             <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -83,12 +83,12 @@
           </button>
           
           <!-- Data source info -->
-          <div class="bg-gray-100 rounded-lg p-3">
-            <p class="text-xs text-gray-600 font-medium">Data Source</p>
-            <p class="text-xs text-gray-500">Google Sheets (Live)</p>
+          <div class="bg-gray-100 dark:bg-gray-600 rounded-lg p-3">
+            <p class="text-xs text-gray-600 dark:text-gray-300 font-medium">Data Source</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Google Sheets (Live)</p>
             <div class="flex items-center mt-2">
               <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span class="ml-2 text-xs text-gray-500">Connected</span>
+              <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">Connected</span>
             </div>
           </div>
         </div>
@@ -103,19 +103,31 @@
     <!-- Main content -->
     <div class="lg:pl-64">
       <!-- Top bar for mobile -->
-      <div class="lg:hidden bg-white shadow-sm border-b border-gray-200">
+      <div class="lg:hidden bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between px-4 py-3">
-          <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-gray-700">
+          <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <h1 class="text-lg font-semibold text-gray-900">Ontop Analytics</h1>
-          <button @click="handleLogout" class="text-gray-500 hover:text-red-600 p-1">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </button>
+          <h1 class="text-lg font-semibold text-gray-900 dark:text-white">Ontop Analytics</h1>
+          <div class="flex items-center space-x-2">
+            <!-- Mobile Dark Mode Toggle -->
+            <button @click="toggleDarkMode" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 p-1">
+              <svg v-if="!isDarkMode" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+              <svg v-else class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </button>
+            <!-- Mobile Logout Button -->
+            <button @click="handleLogout" class="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 p-1">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -129,6 +141,9 @@
 
 <script setup>
 const sidebarOpen = ref(false)
+
+// Dark mode composable
+const { isDarkMode, toggleDarkMode, initializeDarkMode, watchSystemTheme } = useDarkMode()
 
 // Close sidebar on route change (mobile)
 const route = useRoute()
@@ -151,4 +166,10 @@ const handleLogout = async () => {
   // Redirect to login page
   await navigateTo('/login')
 }
+
+// Initialize dark mode on mount
+onMounted(() => {
+  initializeDarkMode()
+  watchSystemTheme()
+})
 </script>
