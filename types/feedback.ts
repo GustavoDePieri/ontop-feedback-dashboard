@@ -1,12 +1,17 @@
 export interface FeedbackItem {
   id: string
+  accountOwner: string
   platformClientId: string
   accountName: string
+  realMrrLastMonth?: number
+  lastInvoicedTpv?: number
+  csInsightName?: string
   createdDate: Date
-  accountOwner: string
-  feedbackDirectedTo: string
-  recordType: string
+  subcategory?: string
   feedback: string
+  feedbackDirectedTo?: string
+  customerSatisfaction?: string
+  categoryFormulaText?: string
   sentiment?: 'Positive' | 'Neutral' | 'Negative'
   sentimentScore?: number
   topics?: string[]

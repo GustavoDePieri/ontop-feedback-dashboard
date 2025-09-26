@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     // Fetch data from Google Sheets
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: config.googleSheetsId,
-      range: 'Sheet1!A:H', // Adjust range as needed
+      range: 'Sheet1!A:L', // Updated to include all new columns
     })
 
     const rows = response.data.values || []
@@ -40,10 +40,10 @@ export default defineEventHandler(async (event) => {
     console.log('Headers found:', headers)
     
     const feedbackItems: FeedbackItem[] = dataRows.map((row, index) => {
-      // Parse the date (MM/DD/YYYY format)
+      // Parse the date (MM/DD/YYYY format) - now from column G (CS Insight: Created Date)
       let createdDate: Date
       try {
-        const dateStr = row[2] || ''
+        const dateStr = row[6] || '' // Column G
         createdDate = new Date(dateStr)
         if (isNaN(createdDate.getTime())) {
           createdDate = new Date()
@@ -52,15 +52,24 @@ export default defineEventHandler(async (event) => {
         createdDate = new Date()
       }
 
+      // Parse numeric values
+      const realMrrLastMonth = row[3] ? parseFloat(row[3]) : undefined
+      const lastInvoicedTpv = row[4] ? parseFloat(row[4]) : undefined
+
       return {
         id: `feedback-${index}`,
-        platformClientId: row[0] || '',
-        accountName: row[1] || '',
-        createdDate,
-        accountOwner: row[3] || '',
-        feedbackDirectedTo: row[4] || '',
-        recordType: row[5] || '',
-        feedback: row[6] || ''
+        accountOwner: row[0] || '', // Column A
+        platformClientId: row[1] || '', // Column B
+        accountName: row[2] || '', // Column C
+        realMrrLastMonth, // Column D
+        lastInvoicedTpv, // Column E
+        csInsightName: row[5] || '', // Column F
+        createdDate, // Column G
+        subcategory: row[7] || '', // Column H
+        feedback: row[8] || '', // Column I
+        feedbackDirectedTo: row[9] || '', // Column J
+        customerSatisfaction: row[10] || '', // Column K
+        categoryFormulaText: row[11] || '' // Column L
       }
     }).filter(item => item.feedback && item.feedback.length > 5) // Filter out empty feedback
 
