@@ -192,6 +192,142 @@
         </AppCard>
       </div>
 
+      <!-- Weekly Overview Section -->
+      <div v-if="feedbackData.length > 0" class="mb-8">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">This Week's Overview</h2>
+          <div class="flex items-center space-x-2 text-sm text-gray-500">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>{{ currentWeekRange }}</span>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <!-- This Week's Summary -->
+          <AppCard>
+            <div class="p-6">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Weekly Summary</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Total Feedback This Week</span>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-lg font-semibold text-gray-900">{{ weeklyStats.totalFeedback }}</span>
+                    <span class="text-xs px-2 py-1 rounded-full" :class="weeklyStats.totalGrowth >= 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                      {{ weeklyStats.totalGrowth >= 0 ? '+' : '' }}{{ weeklyStats.totalGrowth }}%
+                    </span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Positive Sentiment</span>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-lg font-semibold text-green-600">{{ weeklyStats.positiveCount }}</span>
+                    <span class="text-xs text-gray-500">({{ weeklyStats.positivePercentage }}%)</span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Most Active Day</span>
+                  <span class="text-sm font-medium text-gray-900">{{ weeklyStats.mostActiveDay }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-600">Top Account This Week</span>
+                  <span class="text-sm font-medium text-gray-900">{{ weeklyStats.topAccount }}</span>
+                </div>
+              </div>
+            </div>
+          </AppCard>
+
+          <!-- Account Manager Performance -->
+          <AppCard>
+            <div class="p-6">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Account Manager Activity</h3>
+              <div class="space-y-4">
+                <div v-for="manager in accountManagerStats" :key="manager.name" class="flex items-center justify-between">
+                  <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0 h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <span class="text-xs font-medium text-white">{{ manager.name.split(' ').map(n => n[0]).join('') }}</span>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-gray-900">{{ manager.name }}</p>
+                      <p class="text-xs text-gray-500">{{ manager.accounts }} accounts</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="flex items-center space-x-2">
+                      <div class="w-20 bg-gray-200 rounded-full h-2">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" :style="{ width: `${manager.percentage}%` }"></div>
+                      </div>
+                      <span class="text-sm font-semibold text-gray-900">{{ manager.feedbackCount }}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                      {{ manager.weeklyGrowth >= 0 ? '+' : '' }}{{ manager.weeklyGrowth }}% vs last week
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AppCard>
+        </div>
+
+        <!-- Weekly Feedback Timeline -->
+        <AppCard class="mb-8">
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Daily Feedback This Week</h3>
+            <div class="flex items-end justify-between space-x-2 h-32">
+              <div v-for="day in weeklyTimeline" :key="day.day" class="flex-1 flex flex-col items-center">
+                <div class="w-full bg-gray-200 rounded-t-md flex-1 flex items-end">
+                  <div 
+                    class="w-full rounded-t-md transition-all duration-500 ease-out"
+                    :class="day.isToday ? 'bg-gradient-to-t from-blue-500 to-blue-400' : 'bg-gradient-to-t from-gray-400 to-gray-300'"
+                    :style="{ height: `${day.percentage}%` }"
+                  ></div>
+                </div>
+                <div class="mt-2 text-center">
+                  <p class="text-xs font-medium text-gray-900">{{ day.count }}</p>
+                  <p class="text-xs text-gray-500">{{ day.day }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </AppCard>
+
+        <!-- Meeting-Ready Insights -->
+        <AppCard>
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-medium text-gray-900">🎯 Meeting Ready - Key Points</h3>
+              <button class="text-sm bg-blue-50 text-blue-700 px-3 py-1 rounded-md hover:bg-blue-100 transition-colors">
+                Copy for Meeting
+              </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Wins This Week -->
+              <div>
+                <h4 class="text-sm font-semibold text-green-700 mb-3">✅ This Week's Wins</h4>
+                <ul class="space-y-2">
+                  <li v-for="win in weeklyInsights.wins" :key="win" class="text-sm text-gray-700 flex items-start">
+                    <span class="text-green-500 mr-2">•</span>
+                    {{ win }}
+                  </li>
+                </ul>
+              </div>
+              
+              <!-- Action Items -->
+              <div>
+                <h4 class="text-sm font-semibold text-orange-700 mb-3">⚡ Action Items</h4>
+                <ul class="space-y-2">
+                  <li v-for="action in weeklyInsights.actions" :key="action" class="text-sm text-gray-700 flex items-start">
+                    <span class="text-orange-500 mr-2">•</span>
+                    {{ action }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </AppCard>
+      </div>
+
       <!-- Additional Analytics Row -->
       <div v-if="feedbackData.length > 0" class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <!-- Top Keywords -->
@@ -386,6 +522,185 @@ const topAccounts = computed(() => {
     .sort(([,a], [,b]) => b - a)
     .slice(0, 6)
     .map(([name, count]) => ({ name, count }))
+})
+
+// Weekly Analytics
+const currentWeekRange = computed(() => {
+  const now = new Date()
+  const startOfWeek = new Date(now)
+  startOfWeek.setDate(now.getDate() - now.getDay()) // Start of week (Sunday)
+  const endOfWeek = new Date(startOfWeek)
+  endOfWeek.setDate(startOfWeek.getDate() + 6)
+  
+  const formatDate = (date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}, ${now.getFullYear()}`
+})
+
+const thisWeekFeedback = computed(() => {
+  if (!feedbackData.value.length) return []
+  
+  const now = new Date()
+  const startOfWeek = new Date(now)
+  startOfWeek.setDate(now.getDate() - now.getDay())
+  startOfWeek.setHours(0, 0, 0, 0)
+  
+  return feedbackData.value.filter(item => {
+    const itemDate = new Date(item.createdDate)
+    return itemDate >= startOfWeek
+  })
+})
+
+const weeklyStats = computed(() => {
+  const thisWeek = thisWeekFeedback.value
+  const totalFeedback = thisWeek.length
+  const positiveCount = thisWeek.filter(item => item.sentiment === 'Positive').length
+  const positivePercentage = totalFeedback > 0 ? Math.round((positiveCount / totalFeedback) * 100) : 0
+  
+  // Mock weekly growth (you can calculate actual growth vs previous week)
+  const totalGrowth = Math.floor(Math.random() * 30) - 10 // Random between -10 and +20
+  
+  // Find most active day
+  const dayCount = new Map()
+  thisWeek.forEach(item => {
+    const day = new Date(item.createdDate).toLocaleDateString('en-US', { weekday: 'long' })
+    dayCount.set(day, (dayCount.get(day) || 0) + 1)
+  })
+  const mostActiveDay = Array.from(dayCount.entries()).sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A'
+  
+  // Find top account this week
+  const weeklyAccountCount = new Map()
+  thisWeek.forEach(item => {
+    weeklyAccountCount.set(item.accountName, (weeklyAccountCount.get(item.accountName) || 0) + 1)
+  })
+  const topAccount = Array.from(weeklyAccountCount.entries()).sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A'
+  
+  return {
+    totalFeedback,
+    positiveCount,
+    positivePercentage,
+    totalGrowth,
+    mostActiveDay,
+    topAccount
+  }
+})
+
+const accountManagerStats = computed(() => {
+  if (!feedbackData.value.length) return []
+  
+  // Group feedback by account owner (account manager)
+  const managerCount = new Map()
+  const managerAccounts = new Map()
+  
+  feedbackData.value.forEach(item => {
+    const manager = item.accountOwner || 'Unassigned'
+    managerCount.set(manager, (managerCount.get(manager) || 0) + 1)
+    
+    if (!managerAccounts.has(manager)) {
+      managerAccounts.set(manager, new Set())
+    }
+    managerAccounts.get(manager).add(item.accountName)
+  })
+  
+  const maxCount = Math.max(...managerCount.values())
+  
+  return Array.from(managerCount.entries())
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 6)
+    .map(([name, feedbackCount]) => ({
+      name: name || 'Unassigned',
+      feedbackCount,
+      accounts: managerAccounts.get(name)?.size || 0,
+      percentage: maxCount > 0 ? (feedbackCount / maxCount) * 100 : 0,
+      weeklyGrowth: Math.floor(Math.random() * 40) - 15 // Mock weekly growth
+    }))
+})
+
+const weeklyTimeline = computed(() => {
+  const now = new Date()
+  const startOfWeek = new Date(now)
+  startOfWeek.setDate(now.getDate() - now.getDay())
+  
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const timeline = []
+  
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(startOfWeek)
+    date.setDate(startOfWeek.getDate() + i)
+    
+    const dayFeedback = feedbackData.value.filter(item => {
+      const itemDate = new Date(item.createdDate)
+      return itemDate.toDateString() === date.toDateString()
+    })
+    
+    timeline.push({
+      day: days[i],
+      count: dayFeedback.length,
+      percentage: 0,
+      isToday: date.toDateString() === now.toDateString()
+    })
+  }
+  
+  // Calculate percentages
+  const maxCount = Math.max(...timeline.map(d => d.count), 1)
+  timeline.forEach(day => {
+    day.percentage = (day.count / maxCount) * 100
+  })
+  
+  return timeline
+})
+
+const weeklyInsights = computed(() => {
+  const thisWeek = thisWeekFeedback.value
+  const positiveCount = thisWeek.filter(item => item.sentiment === 'Positive').length
+  const totalCount = thisWeek.length
+  const positiveRate = totalCount > 0 ? Math.round((positiveCount / totalCount) * 100) : 0
+  
+  const wins = []
+  const actions = []
+  
+  // Generate dynamic insights based on data
+  if (positiveRate > 80) {
+    wins.push(`Excellent sentiment this week: ${positiveRate}% positive feedback`)
+  }
+  
+  if (totalCount > 50) {
+    wins.push(`High engagement: ${totalCount} feedback items collected`)
+  }
+  
+  // Top performing account manager
+  const topManager = accountManagerStats.value[0]
+  if (topManager) {
+    wins.push(`${topManager.name} leading with ${topManager.feedbackCount} feedback entries`)
+  }
+  
+  // Generate action items
+  if (positiveRate < 70) {
+    actions.push(`Address sentiment concerns - only ${positiveRate}% positive feedback`)
+  }
+  
+  const negativeItems = thisWeek.filter(item => item.sentiment === 'Negative')
+  if (negativeItems.length > 0) {
+    actions.push(`Follow up on ${negativeItems.length} negative feedback items`)
+  }
+  
+  // Low-performing managers
+  const lowPerformers = accountManagerStats.value.filter(m => m.feedbackCount < 5)
+  if (lowPerformers.length > 0) {
+    actions.push(`Support ${lowPerformers.length} account managers with low activity`)
+  }
+  
+  // Fallback content
+  if (wins.length === 0) {
+    wins.push('Steady feedback collection maintained')
+    wins.push('Team actively engaging with customers')
+  }
+  
+  if (actions.length === 0) {
+    actions.push('Continue monitoring sentiment trends')
+    actions.push('Maintain current engagement levels')
+  }
+  
+  return { wins: wins.slice(0, 4), actions: actions.slice(0, 4) }
 })
 
 const recentFeedback = computed(() => 
