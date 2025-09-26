@@ -1,10 +1,23 @@
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
+
+// Extend jsPDF with autoTable
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: typeof autoTable
+    lastAutoTable: {
+      finalY: number
+    }
+  }
+}
 
 export const usePDFGenerator = () => {
   const generateReportPDF = (reportData: any) => {
     // Create new PDF document
     const doc = new jsPDF()
+    
+    // Manually add autoTable to the doc instance
+    doc.autoTable = autoTable.bind(doc)
     
     // Set font
     doc.setFont('helvetica')
@@ -149,7 +162,7 @@ export const usePDFGenerator = () => {
       ])
       
       // Add table
-      ;(doc as any).autoTable({
+      doc.autoTable({
         head: [['Account Manager', 'Total', 'Positive', 'Neutral', 'Negative', 'Success Rate']],
         body: managerTableData,
         startY: yPosition,
@@ -174,7 +187,7 @@ export const usePDFGenerator = () => {
         margin: { left: 20, right: 20 }
       })
       
-      yPosition = (doc as any).lastAutoTable.finalY + 20
+      yPosition = doc.lastAutoTable.finalY + 20
     }
     
     // Top Accounts Section
@@ -199,7 +212,7 @@ export const usePDFGenerator = () => {
         account.count.toString()
       ])
       
-      ;(doc as any).autoTable({
+      doc.autoTable({
         head: [['Rank', 'Account Name', 'Feedback Count']],
         body: accountTableData,
         startY: yPosition,
@@ -221,7 +234,7 @@ export const usePDFGenerator = () => {
         margin: { left: 20, right: 20 }
       })
       
-      yPosition = (doc as any).lastAutoTable.finalY + 20
+      yPosition = doc.lastAutoTable.finalY + 20
     }
     
     // Key Insights Section
