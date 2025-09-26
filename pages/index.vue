@@ -655,7 +655,57 @@
               <div class="mb-4 p-2 bg-gray-100 dark:bg-slate-800 rounded text-xs">
                 Debug: {{ sentimentSummary }}
               </div>
-              <SimpleDoughnutChart :data="sentimentSummary" />
+              
+              <!-- Ultra Simple Chart -->
+              <div class="space-y-4">
+                <!-- Positive Bar -->
+                <div class="flex items-center">
+                  <div class="w-20 text-sm font-medium text-gray-700 dark:text-slate-300">Positive</div>
+                  <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3">
+                    <div 
+                      class="bg-green-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      :style="{ width: sentimentPercentages.positive + '%' }"
+                    >
+                      <span class="text-white text-xs font-medium">{{ sentimentSummary.positive }}</span>
+                    </div>
+                  </div>
+                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400">{{ sentimentPercentages.positive }}%</div>
+                </div>
+                
+                <!-- Neutral Bar -->
+                <div class="flex items-center">
+                  <div class="w-20 text-sm font-medium text-gray-700 dark:text-slate-300">Neutral</div>
+                  <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3">
+                    <div 
+                      class="bg-yellow-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      :style="{ width: sentimentPercentages.neutral + '%' }"
+                    >
+                      <span class="text-white text-xs font-medium">{{ sentimentSummary.neutral }}</span>
+                    </div>
+                  </div>
+                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400">{{ sentimentPercentages.neutral }}%</div>
+                </div>
+                
+                <!-- Negative Bar -->
+                <div class="flex items-center">
+                  <div class="w-20 text-sm font-medium text-gray-700 dark:text-slate-300">Negative</div>
+                  <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3">
+                    <div 
+                      class="bg-red-500 h-6 rounded-full flex items-center justify-end pr-2"
+                      :style="{ width: Math.max(sentimentPercentages.negative, 5) + '%' }"
+                    >
+                      <span class="text-white text-xs font-medium">{{ sentimentSummary.negative }}</span>
+                    </div>
+                  </div>
+                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400">{{ sentimentPercentages.negative }}%</div>
+                </div>
+                
+                <!-- Total -->
+                <div class="text-center pt-2 border-t border-gray-200 dark:border-slate-600">
+                  <span class="text-lg font-bold text-gray-900 dark:text-slate-100">{{ sentimentSummary.totalItems }}</span>
+                  <span class="text-sm text-gray-500 dark:text-slate-400 ml-1">Total Feedback</span>
+                </div>
+              </div>
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
               <div class="mb-4 p-2 bg-red-100 dark:bg-red-900/20 rounded text-xs">
@@ -685,7 +735,52 @@
               <div class="mb-4 p-2 bg-gray-100 dark:bg-slate-800 rounded text-xs">
                 Debug: {{ feedbackTrendsData.length }} trend points
               </div>
-              <SimpleLineChart :data="feedbackTrendsData" title="30-Day Trends" />
+              
+              <!-- Ultra Simple Trends -->
+              <div class="space-y-4">
+                <!-- Recent Activity Summary -->
+                <div class="grid grid-cols-3 gap-4 text-center">
+                  <div class="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+                    <div class="text-lg font-bold text-green-600 dark:text-green-400">
+                      {{ feedbackTrendsData.reduce((sum, day) => sum + day.positive, 0) }}
+                    </div>
+                    <div class="text-xs text-green-600 dark:text-green-400">Positive</div>
+                  </div>
+                  <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
+                    <div class="text-lg font-bold text-yellow-600 dark:text-yellow-400">
+                      {{ feedbackTrendsData.reduce((sum, day) => sum + day.neutral, 0) }}
+                    </div>
+                    <div class="text-xs text-yellow-600 dark:text-yellow-400">Neutral</div>
+                  </div>
+                  <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+                    <div class="text-lg font-bold text-red-600 dark:text-red-400">
+                      {{ feedbackTrendsData.reduce((sum, day) => sum + day.negative, 0) }}
+                    </div>
+                    <div class="text-xs text-red-600 dark:text-red-400">Negative</div>
+                  </div>
+                </div>
+                
+                <!-- Recent Days -->
+                <div class="text-center">
+                  <div class="text-sm text-gray-600 dark:text-slate-400 mb-2">Last 7 Days Activity</div>
+                  <div class="flex justify-center space-x-1">
+                    <div 
+                      v-for="(day, index) in feedbackTrendsData.slice(-7)" 
+                      :key="index"
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium"
+                      :class="{
+                        'bg-green-500 text-white': day.positive > day.neutral && day.positive > day.negative,
+                        'bg-yellow-500 text-white': day.neutral > day.positive && day.neutral > day.negative,
+                        'bg-red-500 text-white': day.negative > day.positive && day.negative > day.neutral,
+                        'bg-gray-300 dark:bg-slate-600 text-gray-600 dark:text-slate-300': day.positive === 0 && day.neutral === 0 && day.negative === 0
+                      }"
+                      :title="`${new Date(day.date).toLocaleDateString()}: +${day.positive} ~${day.neutral} -${day.negative}`"
+                    >
+                      {{ day.positive + day.neutral + day.negative }}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
               <div class="mb-4 p-2 bg-red-100 dark:bg-red-900/20 rounded text-xs">
@@ -711,11 +806,28 @@
               Feedback Subcategories
             </h3>
             <div v-if="topSubcategories.length > 0">
-              <SimpleBarChart 
-                :data="topSubcategories.slice(0, 8)" 
-                :colors="['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#84CC16', '#F97316']"
-                title="Subcategories"
-              />
+              <!-- Simple List View -->
+              <div class="space-y-2 max-h-64 overflow-y-auto">
+                <div 
+                  v-for="(subcategory, index) in topSubcategories.slice(0, 8)" 
+                  :key="subcategory.name"
+                  class="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 rounded-lg"
+                >
+                  <div class="flex items-center">
+                    <div 
+                      class="w-3 h-3 rounded-full mr-3"
+                      :style="{ backgroundColor: ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#84CC16', '#F97316'][index % 8] }"
+                    ></div>
+                    <span class="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">
+                      {{ subcategory.name || 'Uncategorized' }}
+                    </span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm font-bold text-gray-900 dark:text-slate-100">{{ subcategory.count }}</span>
+                    <span class="text-xs text-gray-500 dark:text-slate-400">({{ subcategory.percentage }}%)</span>
+                  </div>
+                </div>
+              </div>
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -738,11 +850,28 @@
               Category Classifications
             </h3>
             <div v-if="topCategoryFormulas.length > 0">
-              <SimpleBarChart 
-                :data="topCategoryFormulas.slice(0, 6)" 
-                :colors="['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4']"
-                title="Categories"
-              />
+              <!-- Simple List View -->
+              <div class="space-y-2 max-h-64 overflow-y-auto">
+                <div 
+                  v-for="(category, index) in topCategoryFormulas.slice(0, 6)" 
+                  :key="category.name"
+                  class="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 rounded-lg"
+                >
+                  <div class="flex items-center">
+                    <div 
+                      class="w-3 h-3 rounded-full mr-3"
+                      :style="{ backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'][index % 6] }"
+                    ></div>
+                    <span class="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">
+                      {{ category.name || 'Unclassified' }}
+                    </span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm font-bold text-gray-900 dark:text-slate-100">{{ category.count }}</span>
+                    <span class="text-xs text-gray-500 dark:text-slate-400">({{ category.percentage }}%)</span>
+                  </div>
+                </div>
+              </div>
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -765,11 +894,36 @@
               Feedback Directed To
             </h3>
             <div v-if="feedbackDirectedToAnalytics.length > 0">
-              <SimpleBarChart 
-                :data="feedbackDirectedToAnalytics.slice(0, 6)" 
-                :colors="['#6366F1', '#EC4899', '#14B8A6', '#F59E0B', '#EF4444', '#8B5CF6']"
-                title="Feedback Direction"
-              />
+              <!-- Simple List View -->
+              <div class="space-y-2 max-h-64 overflow-y-auto">
+                <div 
+                  v-for="(item, index) in feedbackDirectedToAnalytics.slice(0, 6)" 
+                  :key="item.name"
+                  class="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-800 rounded-lg"
+                >
+                  <div class="flex items-center">
+                    <div 
+                      class="w-3 h-3 rounded-full mr-3"
+                      :style="{ backgroundColor: ['#6366F1', '#EC4899', '#14B8A6', '#F59E0B', '#EF4444', '#8B5CF6'][index % 6] }"
+                    ></div>
+                    <span class="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">
+                      {{ item.name || 'Unspecified' }}
+                    </span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm font-bold text-gray-900 dark:text-slate-100">{{ item.total }}</span>
+                    <span class="text-xs text-gray-500 dark:text-slate-400">({{ item.percentage }}%)</span>
+                    <span class="text-xs px-2 py-1 rounded-full"
+                          :class="{
+                            'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400': item.positiveRate >= 70,
+                            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400': item.positiveRate >= 50 && item.positiveRate < 70,
+                            'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400': item.positiveRate < 50
+                          }">
+                      {{ item.positiveRate }}% +
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
             <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
