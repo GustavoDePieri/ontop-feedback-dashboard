@@ -297,6 +297,169 @@
         </AppCard>
       </div>
 
+      <!-- Interactive Calendar -->
+      <div v-if="feedbackData.length > 0" class="mb-8">
+        <AppCard>
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-lg font-medium text-gray-900">Feedback Calendar</h3>
+              <div class="flex items-center space-x-2">
+                <button 
+                  @click="previousMonth"
+                  class="p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <h4 class="text-lg font-semibold text-gray-900 min-w-[140px] text-center">
+                  {{ currentCalendarMonth }}
+                </h4>
+                <button 
+                  @click="nextMonth"
+                  class="p-2 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="grid grid-cols-7 gap-1">
+              <!-- Day Headers -->
+              <div 
+                v-for="day in dayHeaders" 
+                :key="day"
+                class="p-3 text-center text-sm font-medium text-gray-500 border-b border-gray-200"
+              >
+                {{ day }}
+              </div>
+
+              <!-- Calendar Days -->
+              <div
+                v-for="(day, index) in calendarDays"
+                :key="index"
+                @click="day.date && day.feedbackCount > 0 ? selectCalendarDay(day.date) : null"
+                class="relative p-2 h-16 border border-gray-100 transition-all duration-200"
+                :class="{
+                  'bg-gray-50 text-gray-400': !day.inCurrentMonth,
+                  'bg-white text-gray-900 hover:bg-gray-50': day.inCurrentMonth && day.feedbackCount === 0,
+                  'bg-blue-50 text-blue-900 hover:bg-blue-100 cursor-pointer ring-1 ring-blue-200': day.feedbackCount > 0,
+                  'bg-blue-600 text-white': day.isSelected,
+                  'ring-2 ring-blue-500': day.isToday && !day.isSelected
+                }"
+              >
+                <div v-if="day.date" class="flex flex-col h-full">
+                  <span class="text-sm font-medium">{{ day.date.getDate() }}</span>
+                  <div v-if="day.feedbackCount > 0" class="flex-1 flex items-end justify-center">
+                    <div class="flex items-center space-x-1">
+                      <div class="w-2 h-2 rounded-full bg-current opacity-60"></div>
+                      <span class="text-xs font-medium">{{ day.feedbackCount }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calendar Legend -->
+            <div class="mt-4 flex items-center justify-center space-x-6 text-sm text-gray-600">
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 rounded-full bg-blue-600"></div>
+                <span>Days with feedback</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 rounded border-2 border-blue-500"></div>
+                <span>Today</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 rounded bg-gray-200"></div>
+                <span>No feedback</span>
+              </div>
+            </div>
+          </div>
+        </AppCard>
+      </div>
+
+      <!-- Selected Day Feedback -->
+      <div v-if="selectedDate && selectedDateFeedback.length > 0" class="mb-8" data-selected-day-feedback>
+        <AppCard>
+          <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-medium text-gray-900">
+                Feedback for {{ formatSelectedDate(selectedDate) }}
+                <span class="ml-2 text-sm text-gray-500">({{ selectedDateFeedback.length }} items)</span>
+              </h3>
+              <button 
+                @click="clearSelectedDate"
+                class="text-sm text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md transition-colors"
+              >
+                Clear Selection
+              </button>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="grid gap-4">
+              <div 
+                v-for="item in selectedDateFeedback" 
+                :key="item.id"
+                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                :class="{
+                  'border-green-200 bg-green-50': item.sentiment === 'Positive',
+                  'border-yellow-200 bg-yellow-50': item.sentiment === 'Neutral',
+                  'border-red-200 bg-red-50': item.sentiment === 'Negative'
+                }"
+              >
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <p class="text-sm text-gray-900 leading-relaxed">{{ item.feedback }}</p>
+                    <div class="flex items-center space-x-4 mt-3 text-xs text-gray-600">
+                      <span class="flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h4M9 7h6m-6 4h6m-6 4h6" />
+                        </svg>
+                        {{ item.accountName }}
+                      </span>
+                      <span class="flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        {{ item.accountOwner || 'Unassigned' }}
+                      </span>
+                      <span class="flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ formatTime(item.createdDate) }}
+                      </span>
+                      <span class="flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        {{ item.platformClientId }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="ml-4 flex-shrink-0">
+                    <span 
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      :class="{
+                        'bg-green-100 text-green-800': item.sentiment === 'Positive',
+                        'bg-yellow-100 text-yellow-800': item.sentiment === 'Neutral',
+                        'bg-red-100 text-red-800': item.sentiment === 'Negative'
+                      }"
+                    >
+                      {{ item.sentiment }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </AppCard>
+      </div>
+
       <!-- Charts Grid -->
       <div v-if="feedbackData.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Sentiment Analysis Chart -->
@@ -742,6 +905,10 @@ const filters = reactive({
   platformClientId: ''
 })
 
+// Calendar data
+const calendarDate = ref(new Date())
+const selectedDate = ref(null)
+
 // Computed data
 // Filter helper computed properties
 const uniqueAccountManagers = computed(() => {
@@ -942,6 +1109,78 @@ const topAccounts = computed(() => {
     .sort(([,a], [,b]) => b - a)
     .slice(0, 6)
     .map(([name, count]) => ({ name, count }))
+})
+
+// Calendar computed properties
+const dayHeaders = computed(() => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'])
+
+const currentCalendarMonth = computed(() => {
+  return calendarDate.value.toLocaleDateString('en-US', { 
+    month: 'long', 
+    year: 'numeric' 
+  })
+})
+
+const feedbackByDate = computed(() => {
+  const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  const dateMap = new Map()
+  
+  sourceData.forEach(item => {
+    const date = new Date(item.createdDate)
+    const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+    
+    if (!dateMap.has(dateKey)) {
+      dateMap.set(dateKey, [])
+    }
+    dateMap.get(dateKey).push(item)
+  })
+  
+  return dateMap
+})
+
+const calendarDays = computed(() => {
+  const year = calendarDate.value.getFullYear()
+  const month = calendarDate.value.getMonth()
+  const today = new Date()
+  
+  // First day of the month
+  const firstDay = new Date(year, month, 1)
+  const lastDay = new Date(year, month + 1, 0)
+  
+  // Start from the beginning of the week containing the first day
+  const startDate = new Date(firstDay)
+  startDate.setDate(firstDay.getDate() - firstDay.getDay())
+  
+  // End at the end of the week containing the last day
+  const endDate = new Date(lastDay)
+  endDate.setDate(lastDay.getDate() + (6 - lastDay.getDay()))
+  
+  const days = []
+  const currentDate = new Date(startDate)
+  
+  while (currentDate <= endDate) {
+    const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${currentDate.getDate()}`
+    const feedbackForDay = feedbackByDate.value.get(dateKey) || []
+    
+    days.push({
+      date: new Date(currentDate),
+      inCurrentMonth: currentDate.getMonth() === month,
+      isToday: currentDate.toDateString() === today.toDateString(),
+      isSelected: selectedDate.value && currentDate.toDateString() === selectedDate.value.toDateString(),
+      feedbackCount: feedbackForDay.length
+    })
+    
+    currentDate.setDate(currentDate.getDate() + 1)
+  }
+  
+  return days
+})
+
+const selectedDateFeedback = computed(() => {
+  if (!selectedDate.value) return []
+  
+  const dateKey = `${selectedDate.value.getFullYear()}-${selectedDate.value.getMonth()}-${selectedDate.value.getDate()}`
+  return feedbackByDate.value.get(dateKey) || []
 })
 
 // Weekly Analytics
@@ -1341,6 +1580,50 @@ const getDatePeriodLabel = (period) => {
     'custom': 'Custom Range'
   }
   return labels[period] || period
+}
+
+// Calendar methods
+const previousMonth = () => {
+  const newDate = new Date(calendarDate.value)
+  newDate.setMonth(newDate.getMonth() - 1)
+  calendarDate.value = newDate
+}
+
+const nextMonth = () => {
+  const newDate = new Date(calendarDate.value)
+  newDate.setMonth(newDate.getMonth() + 1)
+  calendarDate.value = newDate
+}
+
+const selectCalendarDay = (date) => {
+  selectedDate.value = new Date(date)
+  // Scroll to selected day feedback section
+  nextTick(() => {
+    const element = document.querySelector('[data-selected-day-feedback]')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  })
+}
+
+const clearSelectedDate = () => {
+  selectedDate.value = null
+}
+
+const formatSelectedDate = (date) => {
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+const formatTime = (date) => {
+  return new Date(date).toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 // Initialize data on mount
