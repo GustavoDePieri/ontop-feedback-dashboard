@@ -498,6 +498,12 @@
                         </svg>
                         {{ item.platformClientId }}
                       </span>
+                      <span v-if="item.feedbackDirectedTo" class="flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Directed to: {{ item.feedbackDirectedTo }}
+                      </span>
                     </div>
                   </div>
                   <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
@@ -626,7 +632,13 @@
       </div>
 
       <!-- Analytics & Categorization -->
-      <div v-if="feedbackData.length > 0" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+      <div v-if="feedbackData.length > 0" class="mb-8">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100">Analytics & Categorization</h2>
+          <p class="text-gray-600 dark:text-slate-300 text-sm mt-1">Detailed breakdown of feedback patterns and assignments</p>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
         <!-- Sentiment Analysis Chart -->
         <AppCard>
           <div class="p-6">
@@ -685,6 +697,43 @@
             </div>
           </div>
         </AppCard>
+
+        <!-- Feedback Directed To -->
+        <AppCard>
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Feedback Directed To</h3>
+            <div class="space-y-3">
+              <div v-for="item in feedbackDirectedToAnalytics.slice(0, 5)" :key="item.name" class="bg-gray-50 dark:bg-slate-800 rounded-lg p-3">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">{{ item.name }}</span>
+                  <span class="text-xs font-medium px-2 py-1 rounded-full"
+                        :class="{
+                          'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400': item.positiveRate >= 70,
+                          'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400': item.positiveRate >= 50 && item.positiveRate < 70,
+                          'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400': item.positiveRate < 50
+                        }">
+                    {{ item.positiveRate }}% Positive
+                  </span>
+                </div>
+                <div class="flex items-center justify-between text-xs text-gray-600 dark:text-slate-400">
+                  <span>{{ item.total }} feedback{{ item.total !== 1 ? 's' : '' }} ({{ item.percentage }}%)</span>
+                  <div class="flex space-x-2">
+                    <span class="text-green-600 dark:text-green-400">+{{ item.positive }}</span>
+                    <span class="text-yellow-600 dark:text-yellow-400">~{{ item.neutral }}</span>
+                    <span class="text-red-600 dark:text-red-400">-{{ item.negative }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-if="feedbackDirectedToAnalytics.length === 0" class="text-center py-8 text-gray-500 dark:text-slate-400">
+                <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 115.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <p class="text-sm">No feedback direction data available</p>
+              </div>
+            </div>
+          </div>
+        </AppCard>
+        </div>
       </div>
 
       <!-- Revenue Impact Analysis -->
@@ -999,6 +1048,12 @@
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         {{ formatDate(item.createdDate) }}
+                      </span>
+                      <span v-if="item.feedbackDirectedTo" class="flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Directed to: {{ item.feedbackDirectedTo }}
                       </span>
                     </div>
                   </div>
@@ -2381,25 +2436,58 @@ const topSubcategories = computed(() => {
     .slice(0, 10)
 })
 
-const topCategoryFormulas = computed(() => {
-  const categoryCount = new Map()
-  const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
-  
-  sourceData.forEach(item => {
-    const category = item.categoryFormulaText || 'Unclassified'
-    categoryCount.set(category, (categoryCount.get(category) || 0) + 1)
-  })
-  
-  const total = sourceData.length || 1
-  return Array.from(categoryCount.entries())
-    .map(([name, count]) => ({
-      name,
-      count,
-      percentage: Math.round((count / total) * 100)
-    }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10)
-})
+    const topCategoryFormulas = computed(() => {
+      const categoryCount = new Map()
+      const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+      
+      sourceData.forEach(item => {
+        const category = item.categoryFormulaText || 'Unclassified'
+        categoryCount.set(category, (categoryCount.get(category) || 0) + 1)
+      })
+      
+      const total = sourceData.length || 1
+      return Array.from(categoryCount.entries())
+        .map(([name, count]) => ({
+          name,
+          count,
+          percentage: Math.round((count / total) * 100)
+        }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10)
+    })
+
+    // Feedback Directed To analytics
+    const feedbackDirectedToAnalytics = computed(() => {
+      const directedToCount = new Map()
+      const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+      
+      sourceData.forEach(item => {
+        const directedTo = item.feedbackDirectedTo || 'Unspecified'
+        if (!directedToCount.has(directedTo)) {
+          directedToCount.set(directedTo, {
+            total: 0,
+            positive: 0,
+            neutral: 0,
+            negative: 0
+          })
+        }
+        const stats = directedToCount.get(directedTo)
+        stats.total++
+        if (item.sentiment === 'Positive') stats.positive++
+        else if (item.sentiment === 'Neutral') stats.neutral++
+        else if (item.sentiment === 'Negative') stats.negative++
+      })
+      
+      const total = sourceData.length || 1
+      return Array.from(directedToCount.entries())
+        .map(([name, stats]) => ({
+          name,
+          ...stats,
+          percentage: Math.round((stats.total / total) * 100),
+          positiveRate: Math.round((stats.positive / (stats.total || 1)) * 100)
+        }))
+        .sort((a, b) => b.total - a.total)
+    })
 
 // Financial analytics computed properties
 const hasFinancialData = computed(() => {
