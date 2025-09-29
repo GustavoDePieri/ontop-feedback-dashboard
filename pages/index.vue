@@ -54,12 +54,6 @@
                 >
                   Test Connection
                 </button>
-                <button 
-                  @click="debugDates"
-                  class="bg-yellow-200 hover:bg-yellow-300 dark:bg-yellow-700 dark:hover:bg-yellow-600 text-gray-900 dark:text-slate-100 font-medium py-2 px-4 rounded-lg transition-all duration-200"
-                >
-                  Debug Dates
-                </button>
           </div>
         </div>
       </div>
@@ -2327,28 +2321,6 @@ const testConnection = async () => {
   }
 }
 
-const debugDates = async () => {
-  try {
-    const result = await $fetch('/api/debug/dates')
-    if (result.success) {
-      console.log('📅 Date Debug Results:', result)
-      
-      const info = [
-        `Server Time: ${result.serverLocalTime}`,
-        `Total Rows: ${result.totalRows}`,
-        `Today's Count: ${result.todayCount}`,
-        `Date Column: ${result.dateColumnHeader}`,
-        `Recent Dates: ${result.recentDates.join(', ')}`
-      ].join('\n')
-      
-      alert(`📅 Date Debug Info:\n\n${info}\n\nCheck console for detailed analysis`)
-    } else {
-      alert('❌ Debug failed')
-    }
-  } catch (err: any) {
-    alert(`❌ Debug failed: ${err.message}`)
-  }
-}
 
 const formatDate = (date: string | Date) => {
   return new Date(date).toLocaleDateString('en-US', {
