@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     googleClientId: process.env.GOOGLE_CLIENT_ID,
     googlePrivateKeyId: process.env.GOOGLE_PRIVATE_KEY_ID,
     googleSheetsId: '1VfTbd2J91PgIj5skhUbqOst1oLgXEuoyLTqxCOPLJ2Q',
+    geminiApiKey: process.env.GEMINI_API_KEY || 'AIzaSyA9nXcrAOd_LvdR4_9cLO-noMfzTXU0snU',
     public: {
       // Client-side environment variables
       appName: 'Ontop Feedback Analytics'

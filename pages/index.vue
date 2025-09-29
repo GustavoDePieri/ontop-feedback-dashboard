@@ -1483,6 +1483,101 @@
           </button>
         </div>
       </div>
+
+      <!-- ==================== AI RECOMMENDATIONS SECTION ==================== -->
+      <div class="mt-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-6 border-2 border-purple-300 dark:border-purple-700">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-slate-100 flex items-center">
+              <div class="p-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg mr-3">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              AI-Powered Recommendations
+            </h3>
+            <p class="text-gray-600 dark:text-slate-300 text-sm mt-1 ml-13">Get intelligent insights and actionable recommendations powered by Google Gemini AI</p>
+          </div>
+        </div>
+
+        <!-- AI Filters -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-white dark:bg-slate-800 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Segment Type</label>
+            <select 
+              v-model="aiSegmentType"
+              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            >
+              <option value="all">All Feedback</option>
+              <option value="year">By Year</option>
+              <option value="sentiment">By Sentiment</option>
+              <option value="category">By Category</option>
+              <option value="account_manager">By Account Manager</option>
+            </select>
+          </div>
+
+          <div v-if="aiSegmentType !== 'all'">
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Segment Value</label>
+            <select 
+              v-model="aiSegmentValue"
+              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            >
+              <option value="">Select...</option>
+              <option v-if="aiSegmentType === 'year'" value="2025">2025</option>
+              <option v-if="aiSegmentType === 'year'" value="2024">2024</option>
+              <option v-if="aiSegmentType === 'sentiment'" value="Positive">Positive</option>
+              <option v-if="aiSegmentType === 'sentiment'" value="Neutral">Neutral</option>
+              <option v-if="aiSegmentType === 'sentiment'" value="Negative">Negative</option>
+              <option v-if="aiSegmentType === 'category'" v-for="cat in topCategoryFormulas.slice(0, 10)" :key="cat.name" :value="cat.name">
+                {{ cat.name }} ({{ cat.count }})
+              </option>
+              <option v-if="aiSegmentType === 'account_manager'" v-for="mgr in uniqueAccountManagers.slice(0, 20)" :key="mgr.name" :value="mgr.name">
+                {{ mgr.name }} ({{ mgr.count }})
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Focus Area (Optional)</label>
+            <input 
+              v-model="aiFocusArea"
+              type="text"
+              placeholder="e.g., Product bugs, Support quality..."
+              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            />
+          </div>
+
+          <div class="flex items-end">
+            <button
+              @click="generateAIRecommendations"
+              :disabled="aiLoading || !canGenerateAI"
+              class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              <svg v-if="!aiLoading" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+              {{ aiLoading ? 'Analyzing...' : 'Generate AI Insights' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Selected Data Info -->
+        <div v-if="aiSegmentType !== 'all' && aiSegmentValue" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-300">
+          <strong>{{ getAISegmentedData().length }}</strong> feedback items will be analyzed 
+          ({{ aiSegmentType }}: {{ aiSegmentValue }})
+        </div>
+
+        <!-- AI Recommendations Panel -->
+        <AIRecommendationsPanel
+          v-if="aiRecommendations || aiLoading || aiError"
+          :loading="aiLoading"
+          :error="aiError"
+          :recommendations="aiRecommendations"
+          :metadata="aiMetadata"
+          @close="clearAIRecommendations"
+        />
+      </div>
     </main>
   </div>
 </template>
@@ -1529,6 +1624,20 @@ const filters = reactive({
 // Calendar data
 const calendarDate = ref(new Date())
 const selectedDate = ref(null)
+
+// AI Recommendations
+const { 
+  loading: aiLoading, 
+  error: aiError, 
+  recommendations: aiRecommendations, 
+  metadata: aiMetadata,
+  generateRecommendations,
+  clearRecommendations: clearAIRecommendations
+} = useAIRecommendations()
+
+const aiSegmentType = ref('all')
+const aiSegmentValue = ref('')
+const aiFocusArea = ref('')
 
 // Computed data
 // Filter helper computed properties
@@ -2810,6 +2919,58 @@ const getDominantSentiment = (sentiments) => {
   if (positive >= neutral && positive >= negative) return 'Positive'
   if (negative >= neutral) return 'Negative'
   return 'Neutral'
+}
+
+// AI Recommendations Methods
+const canGenerateAI = computed(() => {
+  if (aiSegmentType.value === 'all') return true
+  return aiSegmentType.value && aiSegmentValue.value
+})
+
+const getAISegmentedData = () => {
+  let data = feedbackData.value
+
+  if (aiSegmentType.value === 'all') {
+    return data
+  }
+
+  switch (aiSegmentType.value) {
+    case 'year':
+      return data.filter(item => {
+        const year = new Date(item.createdDate).getFullYear().toString()
+        return year === aiSegmentValue.value
+      })
+    
+    case 'sentiment':
+      return data.filter(item => item.sentiment === aiSegmentValue.value)
+    
+    case 'category':
+      return data.filter(item => item.categoryFormulaText === aiSegmentValue.value)
+    
+    case 'account_manager':
+      return data.filter(item => item.accountOwner === aiSegmentValue.value)
+    
+    default:
+      return data
+  }
+}
+
+const generateAIRecommendations = async () => {
+  const segmentedData = getAISegmentedData()
+  
+  if (segmentedData.length === 0) {
+    alert('No feedback items found for the selected segment')
+    return
+  }
+
+  // Limit to 500 items for performance
+  const dataToAnalyze = segmentedData.slice(0, 500)
+  
+  await generateRecommendations(dataToAnalyze, {
+    segmentType: aiSegmentType.value,
+    segmentValue: aiSegmentValue.value,
+    focusArea: aiFocusArea.value || undefined
+  })
 }
 
 // Enterprise analytics computed properties
