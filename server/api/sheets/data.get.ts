@@ -85,12 +85,6 @@ export default defineEventHandler(async (event) => {
           }
         }
         
-        // Log for debugging (only for recent dates)
-        const today = new Date()
-        const isRecent = Math.abs(createdDate.getTime() - today.getTime()) < 7 * 24 * 60 * 60 * 1000 // Within 7 days
-        if (isRecent) {
-          console.log(`📅 Recent: "${dateStr}" -> ${createdDate.toISOString().split('T')[0]} (${createdDate.toLocaleDateString()})`)
-        }
       } catch (error) {
         console.error(`❌ Date parsing error for "${row[6]}":`, error)
         const now = new Date()

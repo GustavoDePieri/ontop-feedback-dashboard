@@ -48,14 +48,10 @@ export default defineEventHandler(async (event) => {
     // Create the prompt
     const prompt = createPrompt(feedbackSummary, segmentType, segmentValue, focusArea)
 
-    console.log(`🤖 Generating AI recommendations for ${feedbackItems.length} feedback items (${segmentType}: ${segmentValue || 'all'})`)
-
     // Generate recommendations
     const result = await model.generateContent(prompt)
     const response = result.response
     const text = response.text()
-
-    console.log(`✅ AI recommendations generated successfully`)
 
     // Parse the AI response
     const recommendations = parseAIResponse(text, feedbackItems)
@@ -283,9 +279,6 @@ function parseAIResponse(text: string, feedbackItems: FeedbackItem[]): AIRecomme
       opportunities: Array.isArray(parsed.opportunities) ? parsed.opportunities : []
     }
   } catch (error) {
-    console.error('Failed to parse AI response:', error)
-    console.error('Raw response:', text)
-    
     // Return a fallback structure
     return {
       summary: 'AI analysis completed but response parsing failed. Please try again.',

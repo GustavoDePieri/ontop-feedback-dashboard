@@ -1690,7 +1690,6 @@ const filteredFeedbackData = computed(() => {
         // Create dates in local timezone for better comparison
         startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
         endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
-        console.log(`🔍 Today filter - Start: ${startDate.toISOString()}, End: ${endDate.toISOString()}`)
         break
       case 'yesterday':
         startDate = new Date(now)
@@ -1750,28 +1749,18 @@ const filteredFeedbackData = computed(() => {
     }
 
     if (startDate || endDate) {
-      console.log(`🔍 Filtering ${filtered.length} items by date range`)
-      filtered = filtered.filter((item, index) => {
+      filtered = filtered.filter((item) => {
         const itemDate = new Date(item.createdDate)
-        const isInRange = (() => {
-          if (startDate && endDate) {
-            return itemDate >= startDate && itemDate <= endDate
-          } else if (startDate) {
-            return itemDate >= startDate
-          } else if (endDate) {
-            return itemDate <= endDate
-          }
-          return true
-        })()
         
-        // Debug first few items when filtering for today
-        if (filters.datePeriod === 'today' && index < 5) {
-          console.log(`🔍 Item ${index}: ${itemDate.toISOString()} (${itemDate.toLocaleDateString()}) - In range: ${isInRange}`)
+        if (startDate && endDate) {
+          return itemDate >= startDate && itemDate <= endDate
+        } else if (startDate) {
+          return itemDate >= startDate
+        } else if (endDate) {
+          return itemDate <= endDate
         }
-        
-        return isInRange
+        return true
       })
-      console.log(`🔍 After date filtering: ${filtered.length} items`)
     }
   }
 
@@ -1889,19 +1878,9 @@ const feedbackByDate = computed(() => {
   const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
   const dateMap = new Map()
   
-  const today = new Date()
-  const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`
-  
-  console.log(`🗓️ Processing ${sourceData.length} items for calendar. Today key: ${todayKey}`)
-  
-  sourceData.forEach((item, index) => {
+  sourceData.forEach((item) => {
     const date = new Date(item.createdDate)
     const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
-    
-    // Debug today's entries
-    if (dateKey === todayKey) {
-      console.log(`✅ FOUND TODAY ITEM #${index}: Account="${item.accountName}", Date="${date.toLocaleDateString()}", Key="${dateKey}"`)
-    }
     
     if (!dateMap.has(dateKey)) {
       dateMap.set(dateKey, {
@@ -1922,14 +1901,6 @@ const feedbackByDate = computed(() => {
       dayData.sentimentCounts.negative++
     }
   })
-  
-  const todayData = dateMap.get(todayKey)
-  if (todayData) {
-    console.log(`✅ Today's calendar data (${todayKey}): ${todayData.feedback.length} items`)
-  } else {
-    console.log(`❌ No data found for today (${todayKey})`)
-    console.log(`📋 Available date keys:`, Array.from(dateMap.keys()).slice(0, 10))
-  }
   
   return dateMap
 })
@@ -2263,33 +2234,15 @@ const todaysFeedback = computed(() => {
   const todayMonth = today.getMonth()
   const todayDay = today.getDate()
   
-  console.log(`📅 Looking for today: ${todayYear}-${todayMonth + 1}-${todayDay} (${today.toLocaleDateString()})`)
-  
-  const todaysItems = feedbackData.value.filter((item, index) => {
+  const todaysItems = feedbackData.value.filter((item) => {
     const itemDate = new Date(item.createdDate)
     const itemYear = itemDate.getFullYear()
     const itemMonth = itemDate.getMonth()
     const itemDay = itemDate.getDate()
     
     // Simple date comparison: same year, month, and day
-    const isToday = (itemYear === todayYear && itemMonth === todayMonth && itemDay === todayDay)
-    
-    // Debug ALL items that match today or are close
-    const daysDiff = Math.abs(itemDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    if (daysDiff < 2 || index < 3) {
-      console.log(`🔍 Item ${index}: Date="${itemDate.toLocaleDateString()}" (Y:${itemYear} M:${itemMonth} D:${itemDay}) IsToday=${isToday}`)
-    }
-    
-    return isToday
+    return (itemYear === todayYear && itemMonth === todayMonth && itemDay === todayDay)
   })
-  
-  console.log(`✅ Today's feedback: ${todaysItems.length} items found`)
-  if (todaysItems.length > 0) {
-    console.log(`📋 Today's items:`, todaysItems.map(i => ({ 
-      account: i.accountName, 
-      date: new Date(i.createdDate).toLocaleString() 
-    })))
-  }
   
   return todaysItems.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
 })
