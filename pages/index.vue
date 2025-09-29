@@ -1780,9 +1780,18 @@ const feedbackByDate = computed(() => {
   const sourceData = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
   const dateMap = new Map()
   
-  sourceData.forEach(item => {
+  console.log(`🗓️ Processing ${sourceData.length} items for calendar`)
+  
+  sourceData.forEach((item, index) => {
     const date = new Date(item.createdDate)
     const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+    
+    // Debug today's entries
+    const today = new Date()
+    const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`
+    if (dateKey === todayKey) {
+      console.log(`🗓️ TODAY ITEM: Raw="${item.createdDate}", Parsed="${date.toISOString()}", Key="${dateKey}"`)
+    }
     
     if (!dateMap.has(dateKey)) {
       dateMap.set(dateKey, {
@@ -1803,6 +1812,11 @@ const feedbackByDate = computed(() => {
       dayData.sentimentCounts.negative++
     }
   })
+  
+  const today = new Date()
+  const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`
+  const todayData = dateMap.get(todayKey)
+  console.log(`🗓️ Today's calendar data (${todayKey}):`, todayData ? `${todayData.feedback.length} items` : 'No data')
   
   return dateMap
 })
@@ -2135,16 +2149,25 @@ const todaysFeedback = computed(() => {
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)
   const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999)
   
-  const todaysItems = feedbackData.value.filter(item => {
+  console.log(`🔍 Today range: ${todayStart.toISOString()} to ${todayEnd.toISOString()}`)
+  console.log(`🔍 Today local: ${todayStart.toLocaleDateString()} to ${todayEnd.toLocaleDateString()}`)
+  
+  const todaysItems = feedbackData.value.filter((item, index) => {
     const itemDate = new Date(item.createdDate)
-    const isToday = itemDate >= todayStart && itemDate <= todayEnd
+    const itemDateOnly = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate())
+    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    
+    const isToday = itemDateOnly.getTime() === todayOnly.getTime()
+    
+    // Debug first few items
+    if (index < 5) {
+      console.log(`🔍 Item ${index}: Raw="${item.createdDate}", Parsed="${itemDate.toISOString()}", Local="${itemDate.toLocaleDateString()}", IsToday=${isToday}`)
+    }
+    
     return isToday
   })
   
-  console.log(`📅 Today's feedback: ${todaysItems.length} items found (Server showed 6)`)
-  todaysItems.forEach((item, i) => {
-    if (i < 3) console.log(`📅 Today item ${i}: ${new Date(item.createdDate).toLocaleString()}`)
-  })
+  console.log(`📅 Today's feedback: ${todaysItems.length} items found (Server showed 1)`)
   
   return todaysItems.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
 })
