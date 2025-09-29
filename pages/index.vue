@@ -1,23 +1,38 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-300">
-    <!-- Header -->
-    <header class="bg-white dark:bg-slate-800 shadow-sm dark:shadow-slate-900/10 transition-colors duration-300">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-6">
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100 transition-colors duration-200">
-              Dashboard Overview
-            </h1>
-            <p class="mt-2 text-gray-600 dark:text-slate-300 transition-colors duration-200">
-              Real-time insights from Salesforce feedback data
-            </p>
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 transition-all duration-500">
+    <!-- Header with Gradient -->
+    <header class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl relative overflow-hidden">
+      <!-- Animated Background Pattern -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-white rounded-full mix-blend-overlay filter blur-xl animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-overlay filter blur-xl animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-overlay filter blur-xl animate-blob animation-delay-4000"></div>
+      </div>
+      
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="flex justify-between items-center py-8">
+          <div class="flex items-center space-x-4">
+            <!-- Logo/Icon -->
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-3 shadow-lg">
+              <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold text-white drop-shadow-lg">
+                Ontop Analytics Hub
+              </h1>
+              <p class="mt-1 text-blue-100 font-medium drop-shadow">
+                🚀 Real-time Customer Intelligence Dashboard
+              </p>
+            </div>
           </div>
           
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-2">
             <!-- Dark Mode Toggle -->
             <button
               @click="toggleDarkMode"
-              class="p-2 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700/50 rounded-lg transition-all duration-200"
+              class="p-3 text-white/80 hover:text-white hover:bg-white/20 backdrop-blur-sm rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               title="Toggle dark mode"
             >
               <svg v-if="!isDarkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -31,7 +46,7 @@
             <!-- Logout Button -->
             <button
               @click="handleLogout"
-              class="p-2 text-gray-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all duration-200"
+              class="p-3 text-white/80 hover:text-white hover:bg-red-500/30 backdrop-blur-sm rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               title="Logout"
             >
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -39,37 +54,47 @@
               </svg>
             </button>
             
-            <div class="border-l border-gray-300 dark:border-slate-600 h-6"></div>
+            <div class="border-l border-white/30 h-8 mx-2"></div>
             
             <button 
               @click="refreshData" 
               :disabled="loading"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+              class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-2xl transform hover:scale-105 flex items-center space-x-2"
             >
-              {{ loading ? 'Loading...' : 'Refresh Data' }}
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>{{ loading ? 'Loading...' : 'Refresh Data' }}</span>
             </button>
-                <button 
-                  @click="testConnection"
-                  class="bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-900 dark:text-slate-100 font-medium py-2 px-4 rounded-lg transition-all duration-200"
-                >
-                  Test Connection
-                </button>
+            <button 
+              @click="testConnection"
+              class="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white/90 hover:text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              Test Connection
+            </button>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Advanced Filters -->
-    <div class="bg-white dark:bg-slate-800/50 shadow-sm border-b border-gray-200 dark:border-slate-700/50 transition-colors duration-300">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-medium text-gray-900 dark:text-slate-100 transition-colors duration-200">Filters</h2>
+    <!-- Advanced Filters with Glass Morphism -->
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-xl border-b-4 border-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg shadow-lg">
+              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+            </div>
+            <h2 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Smart Filters</h2>
+          </div>
           <button 
             @click="clearAllFilters"
             v-if="hasActiveFilters"
-            class="text-sm text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-md transition-colors"
+            class="text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
-            Clear All Filters
+            ✕ Clear All Filters
           </button>
         </div>
         
@@ -3107,5 +3132,48 @@ onMounted(() => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Animated blob effect */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Custom gradient animations */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 15s ease infinite;
 }
 </style>
