@@ -2845,9 +2845,9 @@ const generateAIReport = async () => {
         })
         console.log('✅ Step 3: AI recommendations received:', aiRecommendations.value ? 'Yes' : 'No')
         
-        // Generate report data
+        // Generate report data (skip week filtering since we already applied custom filters)
         console.log('📊 Step 4: Generating report structure...')
-        const reportData = generateWeeklyReport(filteredData, 0)
+        const reportData = generateWeeklyReport(filteredData, 0, true)
         console.log('✅ Step 5: Report data generated:', reportData ? 'Yes' : 'No')
     
     // Build filter description
@@ -2861,6 +2861,13 @@ const generateAIReport = async () => {
     reportData.title = filterDesc.length > 0 
       ? `AI Intelligence Report - ${filterDesc.join(' | ')}`
       : 'AI Intelligence Report - All Feedback'
+    
+    // Update period to reflect actual data range when using custom filters
+    if (filteredData.length > 0) {
+      const dates = filteredData.map(item => new Date(item.createdDate)).sort((a, b) => a.getTime() - b.getTime())
+      reportData.period.start = dates[0]
+      reportData.period.end = dates[dates.length - 1]
+    }
     
     // Generate HTML with AI insights embedded
     console.log('🎨 Step 6: Generating HTML report...')

@@ -56,7 +56,7 @@ export interface WeeklyReportData {
 }
 
 export const useReportGenerator = () => {
-  const generateWeeklyReport = (feedbackItems: FeedbackItem[], weekOffset: number = 0): WeeklyReportData => {
+  const generateWeeklyReport = (feedbackItems: FeedbackItem[], weekOffset: number = 0, skipWeekFiltering: boolean = false): WeeklyReportData => {
     const now = new Date()
     const currentDay = now.getDay()
     
@@ -69,19 +69,19 @@ export const useReportGenerator = () => {
     endDate.setDate(startDate.getDate() + 6)
     endDate.setHours(23, 59, 59, 999)
     
-    // Filter feedback for this week
-    const weekFeedback = feedbackItems.filter(item => {
+    // Filter feedback for this week (or use all items if skipWeekFiltering is true)
+    const weekFeedback = skipWeekFiltering ? feedbackItems : feedbackItems.filter(item => {
       const itemDate = new Date(item.createdDate)
       return itemDate >= startDate && itemDate <= endDate
     })
     
-    // Filter previous week for comparison
+    // Filter previous week for comparison (empty if skipWeekFiltering)
     const prevWeekStart = new Date(startDate)
     prevWeekStart.setDate(startDate.getDate() - 7)
     const prevWeekEnd = new Date(endDate)
     prevWeekEnd.setDate(endDate.getDate() - 7)
     
-    const prevWeekFeedback = feedbackItems.filter(item => {
+    const prevWeekFeedback = skipWeekFiltering ? [] : feedbackItems.filter(item => {
       const itemDate = new Date(item.createdDate)
       return itemDate >= prevWeekStart && itemDate <= prevWeekEnd
     })
