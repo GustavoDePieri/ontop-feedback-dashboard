@@ -8,7 +8,7 @@
             <h1 class="text-2xl md:text-3xl font-bold text-gradient-primary">
               Ontop Analytics Hub
             </h1>
-            <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-secondary-200">
+            <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-gray-300">
               Real-time Customer Intelligence Dashboard
             </p>
           </div>
@@ -78,7 +78,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Account Manager Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Manager</label>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Account Manager</label>
             <select 
               v-model="filters.accountManager"
               class="select"
@@ -92,7 +92,7 @@
 
           <!-- Date Period Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Period</label>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Date Period</label>
             <select 
               v-model="filters.datePeriod"
               class="select"
@@ -112,7 +112,7 @@
 
           <!-- Custom Date Range (shown when custom is selected) -->
           <div v-if="filters.datePeriod === 'custom'" class="md:col-span-2 lg:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Custom Date Range</label>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Custom Date Range</label>
             <div class="grid grid-cols-2 gap-2">
               <input
                 v-model="filters.startDate"
@@ -131,7 +131,7 @@
 
           <!-- Feedback Directed To Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Feedback Directed To</label>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Feedback Directed To</label>
             <select 
               v-model="filters.feedbackDirectedTo"
               class="select"
@@ -145,7 +145,7 @@
 
           <!-- Platform Client ID Search -->
           <div :class="filters.datePeriod === 'custom' ? '' : 'md:col-span-2'">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Platform Client ID</label>
+            <label class="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Platform Client ID</label>
             <div class="relative">
               <input
                 v-model="filters.platformClientId"
@@ -164,7 +164,7 @@
 
         <!-- Active Filters Display -->
         <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap gap-2">
-          <span class="text-sm text-gray-500 dark:text-gray-400">Active filters:</span>
+          <span class="text-sm font-semibold text-gray-500 dark:text-gray-200">Active filters:</span>
           <span 
             v-if="filters.accountManager"
             class="badge badge-primary"
@@ -196,7 +196,7 @@
         </div>
 
         <!-- Results Count -->
-        <div v-if="hasActiveFilters" class="mt-3 text-sm text-gray-600 dark:text-gray-300">
+        <div v-if="hasActiveFilters" class="mt-3 text-sm font-semibold text-gray-600 dark:text-gray-200">
           Showing {{ filteredFeedbackData.length }} of {{ feedbackData.length }} feedback items
         </div>
       </div>
@@ -274,7 +274,7 @@
       <div v-if="feedbackData.length > 0" class="mb-8 animate-slide-up">
         <div class="mb-6">
           <h2 class="text-2xl md:text-3xl font-bold text-gradient-primary">Executive Summary</h2>
-          <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-secondary-200">Key performance indicators and business metrics</p>
+          <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-gray-300">Key performance indicators and business metrics</p>
         </div>
 
         <!-- Primary KPI Cards -->
