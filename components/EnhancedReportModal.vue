@@ -44,7 +44,25 @@
 
         <!-- Action Bar -->
         <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-          <div class="flex flex-wrap items-center gap-3">
+          <div class="flex flex-wrap items-center gap-3 justify-between">
+            <!-- Week Selector -->
+            <div class="flex items-center gap-3">
+              <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Select Week:</label>
+              <select 
+                v-model="selectedWeekOffset"
+                @change="generateReport"
+                class="px-4 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg text-gray-700 dark:text-gray-200 font-medium focus:ring-2 focus:ring-purple-500 transition-all"
+              >
+                <option :value="0">Current Week ({{ getWeekLabel(0) }})</option>
+                <option :value="-1">Last Week ({{ getWeekLabel(-1) }})</option>
+                <option :value="-2">2 Weeks Ago ({{ getWeekLabel(-2) }})</option>
+                <option :value="-3">3 Weeks Ago ({{ getWeekLabel(-3) }})</option>
+                <option :value="-4">4 Weeks Ago ({{ getWeekLabel(-4) }})</option>
+                <option :value="-8">8 Weeks Ago ({{ getWeekLabel(-8) }})</option>
+                <option :value="-12">12 Weeks Ago ({{ getWeekLabel(-12) }})</option>
+              </select>
+            </div>
+            
             <!-- Export Buttons -->
             <div class="flex items-center gap-2 flex-wrap">
               <button
@@ -68,11 +86,27 @@
               </button>
             </div>
             
+            
+            <div class="border-l border-gray-300 dark:border-gray-600 h-8"></div>
+            
+            <!-- AI Generate Button -->
+            <button
+              @click="generateWithAI"
+              :disabled="isGeneratingAI"
+              class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              <svg v-if="!isGeneratingAI" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
+              <div v-else class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+              {{ isGeneratingAI ? 'Generating with AI...' : 'Enhance with AI' }}
+            </button>
+            
             <div class="border-l border-gray-300 dark:border-gray-600 h-8"></div>
             
             <!-- Department-Specific Reports -->
             <div class="flex items-center gap-2">
-              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Department Reports:</span>
+              <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Dept Reports:</span>
               <button
                 @click="downloadHTML('product')"
                 class="px-3 py-1.5 bg-white dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-md border border-gray-300 dark:border-gray-500 transition-colors"
@@ -143,28 +177,106 @@ const emit = defineEmits<{
 
 const { generateWeeklyReport } = useReportGenerator()
 const { generateExecutiveHTML, generateDepartmentHTML } = useReportTemplates()
+const { generateRecommendations } = useAIRecommendations()
 
 const reportHTML = ref<string>('')
 const reportData = ref<any>(null)
 const showSuccess = ref(false)
 const successMessage = ref('')
+const selectedWeekOffset = ref(0)
+const isGeneratingAI = ref(false)
 
 // Generate report when modal opens
 watch(() => props.isOpen, (isOpen) => {
   if (isOpen && props.feedbackData) {
+    selectedWeekOffset.value = 0
     generateReport()
   }
 })
 
 const generateReport = () => {
   try {
-    // Generate report data
-    reportData.value = generateWeeklyReport(props.feedbackData)
+    // Generate report data with week offset
+    reportData.value = generateWeeklyReport(props.feedbackData, selectedWeekOffset.value)
     
     // Generate HTML
     reportHTML.value = generateExecutiveHTML(reportData.value)
   } catch (error) {
     console.error('Failed to generate report:', error)
+  }
+}
+
+const getWeekLabel = (offset: number): string => {
+  const now = new Date()
+  const currentDay = now.getDay()
+  const startDate = new Date(now)
+  startDate.setDate(now.getDate() - currentDay + (offset * 7))
+  
+  const endDate = new Date(startDate)
+  endDate.setDate(startDate.getDate() + 6)
+  
+  return `${formatShortDate(startDate)} - ${formatShortDate(endDate)}`
+}
+
+const formatShortDate = (date: Date): string => {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date)
+}
+
+const generateWithAI = async () => {
+  if (!reportData.value || isGeneratingAI.value) return
+  
+  isGeneratingAI.value = true
+  
+  try {
+    // Get the feedback for the selected week
+    const now = new Date()
+    const currentDay = now.getDay()
+    const startDate = new Date(now)
+    startDate.setDate(now.getDate() - currentDay + (selectedWeekOffset.value * 7))
+    startDate.setHours(0, 0, 0, 0)
+    
+    const endDate = new Date(startDate)
+    endDate.setDate(startDate.getDate() + 6)
+    endDate.setHours(23, 59, 59, 999)
+    
+    const weekFeedback = props.feedbackData.filter((item: any) => {
+      const itemDate = new Date(item.createdDate)
+      return itemDate >= startDate && itemDate <= endDate
+    })
+    
+    if (weekFeedback.length === 0) {
+      showSuccessMessage('No feedback found for this week')
+      return
+    }
+    
+    // Generate AI recommendations
+    const aiResult: any = await generateRecommendations(weekFeedback, {
+      segmentType: 'all',
+      focusArea: 'Weekly report action items'
+    })
+    
+    // Replace action items with AI-generated recommendations
+    if (aiResult && reportData.value) {
+      const aiActionItems = (aiResult.topRecurringRequests || []).map((req: any, index: number) => ({
+        priority: index < 2 ? 'immediate' : index < 5 ? 'this-week' : 'next-week',
+        action: req.recommendedAction || req.request,
+        owner: req.crossFunctionalOwner || req.department || 'General',
+        impact: req.revenueImpact || req.evidence || 'See details'
+      }))
+      
+      // Merge AI recommendations with existing action items
+      reportData.value.actionItems = [...aiActionItems, ...reportData.value.actionItems].slice(0, 10)
+      
+      // Regenerate HTML with AI-enhanced data
+      reportHTML.value = generateExecutiveHTML(reportData.value)
+      
+      showSuccessMessage('✨ Report enhanced with AI recommendations!')
+    }
+  } catch (error) {
+    console.error('Failed to generate AI recommendations:', error)
+    showSuccessMessage('Failed to enhance with AI. Try again.')
+  } finally {
+    isGeneratingAI.value = false
   }
 }
 

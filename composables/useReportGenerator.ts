@@ -25,13 +25,7 @@ export interface WeeklyReportData {
     status: 'critical' | 'high' | 'medium' | 'low'
     department: string
   }[]
-  departmentBreakdown: {
-    product: number
-    support: number
-    operations: number
-    sales: number
-    other: number
-  }
+  departmentBreakdown: Record<string, number>
   topAccounts: {
     name: string
     count: number
@@ -62,13 +56,13 @@ export interface WeeklyReportData {
 }
 
 export const useReportGenerator = () => {
-  const generateWeeklyReport = (feedbackItems: FeedbackItem[]): WeeklyReportData => {
+  const generateWeeklyReport = (feedbackItems: FeedbackItem[], weekOffset: number = 0): WeeklyReportData => {
     const now = new Date()
     const currentDay = now.getDay()
     
     // Calculate week range (Sunday to Saturday)
     const startDate = new Date(now)
-    startDate.setDate(now.getDate() - currentDay)
+    startDate.setDate(now.getDate() - currentDay + (weekOffset * 7))
     startDate.setHours(0, 0, 0, 0)
     
     const endDate = new Date(startDate)
@@ -214,25 +208,18 @@ export const useReportGenerator = () => {
   }
   
   const calculateDepartmentBreakdown = (feedback: FeedbackItem[]) => {
-    const breakdown = {
-      product: 0,
-      support: 0,
-      operations: 0,
-      sales: 0,
-      other: 0
-    }
+    const breakdown = new Map<string, number>()
     
     feedback.forEach(item => {
-      const direction = (item.feedbackDirectedTo || '').toLowerCase()
-      
-      if (direction.includes('product')) breakdown.product++
-      else if (direction.includes('support') || direction.includes('customer success')) breakdown.support++
-      else if (direction.includes('operations') || direction.includes('ops')) breakdown.operations++
-      else if (direction.includes('sales') || direction.includes('commercial')) breakdown.sales++
-      else breakdown.other++
+      const direction = item.feedbackDirectedTo || 'General'
+      breakdown.set(direction, (breakdown.get(direction) || 0) + 1)
     })
     
-    return breakdown
+    // Convert to object and sort by count
+    return Object.fromEntries(
+      Array.from(breakdown.entries())
+        .sort(([, a], [, b]) => b - a)
+    )
   }
   
   const getTopAccounts = (feedback: FeedbackItem[]) => {

@@ -144,28 +144,14 @@ export const useReportTemplates = () => {
             
             <!-- Department Breakdown -->
             <div class="section">
-                <h2 class="section-title">🏢 Feedback by Department</h2>
+                <h2 class="section-title">🏢 Feedback by Category</h2>
                 <div class="dept-breakdown">
-                    <div class="dept-card">
-                        <div class="dept-name">Product</div>
-                        <div class="dept-value">${report.departmentBreakdown.product}</div>
-                    </div>
-                    <div class="dept-card">
-                        <div class="dept-name">Support</div>
-                        <div class="dept-value">${report.departmentBreakdown.support}</div>
-                    </div>
-                    <div class="dept-card">
-                        <div class="dept-name">Operations</div>
-                        <div class="dept-value">${report.departmentBreakdown.operations}</div>
-                    </div>
-                    <div class="dept-card">
-                        <div class="dept-name">Sales</div>
-                        <div class="dept-value">${report.departmentBreakdown.sales}</div>
-                    </div>
-                    <div class="dept-card">
-                        <div class="dept-name">Other</div>
-                        <div class="dept-value">${report.departmentBreakdown.other}</div>
-                    </div>
+                    ${Object.entries(report.departmentBreakdown).map(([category, count]) => `
+                        <div class="dept-card">
+                            <div class="dept-name">${category}</div>
+                            <div class="dept-value">${count}</div>
+                        </div>
+                    `).join('')}
                 </div>
             </div>
             
