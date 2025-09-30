@@ -166,6 +166,20 @@
             </select>
           </div>
 
+          <!-- Category Filter -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Category</label>
+            <select 
+              v-model="filters.category"
+              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Categories</option>
+              <option v-for="cat in uniqueCategories" :key="cat.name" :value="cat.name">
+                {{ cat.name }} ({{ cat.count }} feedback{{ cat.count !== 1 ? 's' : '' }})
+              </option>
+            </select>
+          </div>
+
           <!-- Platform Client ID Search -->
           <div :class="filters.datePeriod === 'custom' ? '' : 'md:col-span-2'">
             <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Platform Client ID</label>
@@ -208,6 +222,13 @@
           >
             Directed To: {{ filters.feedbackDirectedTo }}
             <button @click="filters.feedbackDirectedTo = ''" class="ml-1 text-indigo-600 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-indigo-100">×</button>
+          </span>
+          <span 
+            v-if="filters.category"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200"
+          >
+            Category: {{ filters.category }}
+            <button @click="filters.category = ''" class="ml-1 text-orange-600 dark:text-orange-300 hover:text-orange-800 dark:hover:text-orange-100">×</button>
           </span>
           <span 
             v-if="filters.platformClientId"
@@ -1612,6 +1633,7 @@
           :error="aiError"
           :recommendations="aiRecommendations"
           :metadata="aiMetadata"
+          :allFeedbackItems="feedbackData"
           @close="clearAIRecommendations"
         />
       </div>
@@ -1656,6 +1678,7 @@ const filters = reactive({
   startDate: '',
   endDate: '',
   feedbackDirectedTo: '',
+  category: '',
   platformClientId: ''
 })
 
@@ -1703,8 +1726,20 @@ const uniqueFeedbackDirections = computed(() => {
     .map(([direction, count]) => ({ name: direction, count }))
 })
 
+const uniqueCategories = computed(() => {
+  const categoryCounts = new Map()
+  feedbackData.value.forEach(item => {
+    const category = item.categoryFormulaText || item.subcategory || 'Uncategorized'
+    categoryCounts.set(category, (categoryCounts.get(category) || 0) + 1)
+  })
+  
+  return Array.from(categoryCounts.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([category, count]) => ({ name: category, count }))
+})
+
 const hasActiveFilters = computed(() => {
-  return filters.accountManager || filters.datePeriod || filters.feedbackDirectedTo || filters.platformClientId
+  return filters.accountManager || filters.datePeriod || filters.feedbackDirectedTo || filters.category || filters.platformClientId
 })
 
 const filteredFeedbackData = computed(() => {
@@ -1807,6 +1842,14 @@ const filteredFeedbackData = computed(() => {
     filtered = filtered.filter(item => {
       const direction = item.feedbackDirectedTo || 'Unspecified'
       return direction === filters.feedbackDirectedTo
+    })
+  }
+
+  // Filter by category
+  if (filters.category) {
+    filtered = filtered.filter(item => {
+      const category = item.categoryFormulaText || item.subcategory || 'Uncategorized'
+      return category === filters.category
     })
   }
 
@@ -2401,6 +2444,7 @@ const clearAllFilters = () => {
   filters.startDate = ''
   filters.endDate = ''
   filters.feedbackDirectedTo = ''
+  filters.category = ''
   filters.platformClientId = ''
   selectedSentiment.value = null
   currentPage.value = 1

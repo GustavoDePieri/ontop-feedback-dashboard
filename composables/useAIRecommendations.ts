@@ -10,6 +10,13 @@ export interface RecurringRequest {
   recommendedAction: string
   quickWinPotential: string
   crossFunctionalOwner: string
+  feedbackIds?: string[]
+  relatedFeedback?: Array<{
+    id: string
+    accountName: string
+    feedback: string
+    sentiment: string
+  }>
 }
 
 export interface AIRecommendation {

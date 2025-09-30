@@ -18,6 +18,13 @@ interface RecurringRequest {
   recommendedAction: string
   quickWinPotential: string
   crossFunctionalOwner: string
+  feedbackIds?: string[]
+  relatedFeedback?: Array<{
+    id: string
+    accountName: string
+    feedback: string
+    sentiment: string
+  }>
 }
 
 interface AIRecommendation {
@@ -227,7 +234,8 @@ Please provide a FREQUENCY-DRIVEN ANALYSIS in the following JSON format:
       "sentiment": "Overall sentiment about this issue (Positive/Negative/Mixed)",
       "recommendedAction": "Specific action to address this recurring request",
       "quickWinPotential": "Can this be solved quickly? (Yes/No + why)",
-      "crossFunctionalOwner": "Who should own this (Product/Support/Operations/Sales/etc.)"
+      "crossFunctionalOwner": "Who should own this (Product/Support/Operations/Sales/etc.)",
+      "keywords": ["array", "of", "key", "terms", "that", "appear", "in", "related", "feedback"]
     }
   ],
   "emergingPatterns": [
@@ -272,17 +280,29 @@ function parseAIResponse(text: string, feedbackItems: FeedbackItem[]): AIRecomme
     return {
       summary: parsed.summary || 'No summary provided',
       topRecurringRequests: Array.isArray(parsed.topRecurringRequests) 
-        ? parsed.topRecurringRequests.map((item: any) => ({
-            request: item.request || '',
-            frequency: item.frequency || 0,
-            priority: item.priority || 'medium',
-            evidence: item.evidence || '',
-            revenueImpact: item.revenueImpact || 'Unknown',
-            sentiment: item.sentiment || 'Mixed',
-            recommendedAction: item.recommendedAction || '',
-            quickWinPotential: item.quickWinPotential || 'Unknown',
-            crossFunctionalOwner: item.crossFunctionalOwner || 'TBD'
-          }))
+        ? parsed.topRecurringRequests.map((item: any) => {
+            const keywords = item.keywords || []
+            const relatedFeedback = matchFeedbackByKeywords(feedbackItems, keywords, item.request)
+            
+            return {
+              request: item.request || '',
+              frequency: item.frequency || 0,
+              priority: item.priority || 'medium',
+              evidence: item.evidence || '',
+              revenueImpact: item.revenueImpact || 'Unknown',
+              sentiment: item.sentiment || 'Mixed',
+              recommendedAction: item.recommendedAction || '',
+              quickWinPotential: item.quickWinPotential || 'Unknown',
+              crossFunctionalOwner: item.crossFunctionalOwner || 'TBD',
+              feedbackIds: relatedFeedback.map(f => f.id),
+              relatedFeedback: relatedFeedback.map(f => ({
+                id: f.id,
+                accountName: f.accountName,
+                feedback: f.feedback,
+                sentiment: f.sentiment || 'Neutral'
+              }))
+            }
+          })
         : [],
       emergingPatterns: Array.isArray(parsed.emergingPatterns) ? parsed.emergingPatterns : [],
       criticalRisks: Array.isArray(parsed.criticalRisks) ? parsed.criticalRisks : [],
@@ -298,4 +318,42 @@ function parseAIResponse(text: string, feedbackItems: FeedbackItem[]): AIRecomme
       quickWins: []
     }
   }
+}
+
+function matchFeedbackByKeywords(
+  feedbackItems: FeedbackItem[], 
+  keywords: string[], 
+  requestDescription: string
+): FeedbackItem[] {
+  if (!keywords || keywords.length === 0) {
+    // Fallback: extract keywords from the request description
+    keywords = requestDescription
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(word => word.length > 3 && !['with', 'have', 'this', 'that', 'from', 'need', 'want'].includes(word))
+      .slice(0, 5)
+  }
+
+  const normalizedKeywords = keywords.map(k => k.toLowerCase())
+  
+  const scoredFeedback = feedbackItems.map(item => {
+    const feedbackText = `${item.feedback} ${item.categoryFormulaText || ''} ${item.subcategory || ''}`.toLowerCase()
+    
+    // Calculate relevance score based on keyword matches
+    let score = 0
+    normalizedKeywords.forEach(keyword => {
+      if (feedbackText.includes(keyword)) {
+        score += 1
+      }
+    })
+    
+    return { item, score }
+  })
+  
+  // Return feedback items that match at least 1 keyword, sorted by score
+  return scoredFeedback
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 20) // Limit to top 20 most relevant items
+    .map(({ item }) => item)
 }

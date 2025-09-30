@@ -89,11 +89,13 @@
             <div 
               v-for="(request, index) in recommendations.topRecurringRequests" 
               :key="index"
+              @click="request.relatedFeedback && request.relatedFeedback.length > 0 ? openDetailModal(request) : null"
               class="border-l-4 rounded-lg p-5 hover:shadow-lg transition-all duration-200 relative overflow-hidden"
               :class="{
                 'border-red-500 bg-red-50 dark:bg-red-900/20': request.priority === 'high',
                 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20': request.priority === 'medium',
-                'border-blue-500 bg-blue-50 dark:bg-blue-900/20': request.priority === 'low'
+                'border-blue-500 bg-blue-50 dark:bg-blue-900/20': request.priority === 'low',
+                'cursor-pointer': request.relatedFeedback && request.relatedFeedback.length > 0
               }"
             >
               <!-- Priority Rank Badge -->
@@ -170,9 +172,21 @@
                   </span>
                   <span class="text-xs text-gray-500 dark:text-slate-400">{{ request.quickWinPotential }}</span>
                 </div>
-                <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs font-medium rounded-full">
-                  👤 {{ request.crossFunctionalOwner }}
-                </span>
+                <div class="flex items-center space-x-2">
+                  <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs font-medium rounded-full">
+                    👤 {{ request.crossFunctionalOwner }}
+                  </span>
+                  <span 
+                    v-if="request.relatedFeedback && request.relatedFeedback.length > 0"
+                    class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium rounded-full flex items-center"
+                  >
+                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    View {{ request.relatedFeedback.length }} Details
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -241,21 +255,70 @@
         <p class="text-gray-600 dark:text-slate-400 text-sm">Click "Generate AI Analysis" to discover what clients are asking for most</p>
       </div>
     </div>
+
+    <!-- Feedback Detail Modal -->
+    <FeedbackDetailModal
+      :show="showDetailModal"
+      :title="selectedRequest ? selectedRequest.request : ''"
+      :feedbackItems="detailModalFeedback"
+      @close="closeDetailModal"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { AIRecommendation, AIRecommendationMetadata } from '~/composables/useAIRecommendations'
+import type { AIRecommendation, AIRecommendationMetadata, RecurringRequest } from '~/composables/useAIRecommendations'
+import type { FeedbackItem } from '~/types/feedback'
 
 interface Props {
   loading: boolean
   error: string | null
   recommendations: AIRecommendation | null
   metadata: AIRecommendationMetadata | null
+  allFeedbackItems?: FeedbackItem[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 defineEmits<{
   close: []
 }>()
+
+// Modal state
+const showDetailModal = ref(false)
+const selectedRequest = ref<RecurringRequest | null>(null)
+const detailModalFeedback = ref<FeedbackItem[]>([])
+
+const openDetailModal = (request: RecurringRequest) => {
+  selectedRequest.value = request
+  
+  // If we have related feedback in the request, use it
+  if (request.relatedFeedback && request.relatedFeedback.length > 0) {
+    // Convert the simplified feedback back to full FeedbackItem format if we have allFeedbackItems
+    if (props.allFeedbackItems) {
+      const feedbackIds = new Set(request.feedbackIds || [])
+      detailModalFeedback.value = props.allFeedbackItems.filter(item => feedbackIds.has(item.id))
+    } else {
+      // Fallback: create minimal FeedbackItem objects from relatedFeedback
+      detailModalFeedback.value = request.relatedFeedback.map(rf => ({
+        id: rf.id,
+        accountName: rf.accountName,
+        feedback: rf.feedback,
+        sentiment: rf.sentiment as 'Positive' | 'Neutral' | 'Negative',
+        accountOwner: '',
+        platformClientId: '',
+        createdDate: new Date()
+      })) as FeedbackItem[]
+    }
+  } else {
+    detailModalFeedback.value = []
+  }
+  
+  showDetailModal.value = true
+}
+
+const closeDetailModal = () => {
+  showDetailModal.value = false
+  selectedRequest.value = null
+  detailModalFeedback.value = []
+}
 </script>
