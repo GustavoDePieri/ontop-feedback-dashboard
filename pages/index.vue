@@ -1,14 +1,14 @@
 <template>
-  <div class="min-h-screen bg-secondary-50 dark:bg-secondary-900">
+  <div class="min-h-screen bg-gray-50 dark:bg-dark">
     <!-- Header -->
-    <header class="page-header">
+    <header class="bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-primary-900/30 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center py-6 space-y-4 md:space-y-0">
           <div>
-            <h1 class="page-title">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
               Ontop Analytics Hub
             </h1>
-            <p class="page-subtitle">
+            <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-gray-400">
               Real-time Customer Intelligence Dashboard
             </p>
           </div>
@@ -51,16 +51,16 @@
     </header>
 
     <!-- Filters Section -->
-    <div class="bg-white dark:bg-secondary-800 border-b border-secondary-200 dark:border-secondary-700 shadow-sm">
+    <div class="bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-primary-900/30 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center space-x-3">
-            <div class="p-2 gradient-primary rounded-lg shadow-sm">
+            <div class="p-2 gradient-primary rounded-lg shadow-md">
               <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
             </div>
-            <h2 class="text-xl font-bold text-secondary-900 dark:text-white">Smart Filters</h2>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Smart Filters</h2>
           </div>
           <AppButton 
             v-if="hasActiveFilters"
@@ -78,7 +78,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Account Manager Filter -->
           <div>
-            <label class="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">Account Manager</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Account Manager</label>
             <select 
               v-model="filters.accountManager"
               class="select"
@@ -92,7 +92,7 @@
 
           <!-- Date Period Filter -->
           <div>
-            <label class="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">Date Period</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date Period</label>
             <select 
               v-model="filters.datePeriod"
               class="select"
@@ -112,7 +112,7 @@
 
           <!-- Custom Date Range (shown when custom is selected) -->
           <div v-if="filters.datePeriod === 'custom'" class="md:col-span-2 lg:col-span-2">
-            <label class="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">Custom Date Range</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Custom Date Range</label>
             <div class="grid grid-cols-2 gap-2">
               <input
                 v-model="filters.startDate"
@@ -131,7 +131,7 @@
 
           <!-- Feedback Directed To Filter -->
           <div>
-            <label class="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">Feedback Directed To</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Feedback Directed To</label>
             <select 
               v-model="filters.feedbackDirectedTo"
               class="select"
@@ -145,7 +145,7 @@
 
           <!-- Platform Client ID Search -->
           <div :class="filters.datePeriod === 'custom' ? '' : 'md:col-span-2'">
-            <label class="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2">Platform Client ID</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Platform Client ID</label>
             <div class="relative">
               <input
                 v-model="filters.platformClientId"
@@ -154,7 +154,7 @@
                 class="input pr-10"
               />
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-secondary-400 dark:text-secondary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -164,7 +164,7 @@
 
         <!-- Active Filters Display -->
         <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap gap-2">
-          <span class="text-sm text-secondary-500 dark:text-secondary-400">Active filters:</span>
+          <span class="text-sm text-gray-500 dark:text-gray-400">Active filters:</span>
           <span 
             v-if="filters.accountManager"
             class="badge badge-primary"
@@ -196,7 +196,7 @@
         </div>
 
         <!-- Results Count -->
-        <div v-if="hasActiveFilters" class="mt-3 text-sm text-secondary-600 dark:text-secondary-300">
+        <div v-if="hasActiveFilters" class="mt-3 text-sm text-gray-600 dark:text-gray-300">
           Showing {{ filteredFeedbackData.length }} of {{ feedbackData.length }} feedback items
         </div>
       </div>
@@ -273,8 +273,8 @@
       <!-- Executive Summary Dashboard -->
       <div v-if="feedbackData.length > 0" class="mb-8 animate-slide-up">
         <div class="mb-6">
-          <h2 class="text-2xl font-bold text-secondary-900 dark:text-white">Executive Summary</h2>
-          <p class="page-subtitle">Key performance indicators and business metrics</p>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Executive Summary</h2>
+          <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-gray-400">Key performance indicators and business metrics</p>
         </div>
 
         <!-- Primary KPI Cards -->
@@ -290,9 +290,9 @@
               </div>
               <div class="ml-5 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400 truncate">Total Feedback</dt>
+                  <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Feedback</dt>
                   <dd class="flex items-baseline mt-1">
-                    <div class="text-2xl font-bold text-secondary-900 dark:text-white">{{ feedbackData.length }}</div>
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ feedbackData.length }}</div>
                     <div class="ml-2 flex items-baseline text-sm font-semibold text-success-600 dark:text-success-400">
                       <svg class="self-center flex-shrink-0 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
@@ -314,15 +314,14 @@
               <div class="metric-card-icon bg-gradient-to-br from-success-500 to-success-600">
                 <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"></path>
-                  </svg>
-                </div>
+                </svg>
               </div>
-              <div class="ml-5 w-0 flex-1">
+              <div class="ml-5 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Positive Sentiment</dt>
-                  <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.positive }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
+                  <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Positive Sentiment</dt>
+                  <dd class="flex items-baseline mt-1">
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ sentimentSummary.positive }}</div>
+                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-gray-400">
                       ({{ sentimentPercentages.positive }}%)
                     </div>
                   </dd>

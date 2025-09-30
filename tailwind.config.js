@@ -15,32 +15,38 @@ export default {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
       colors: {
-        // Professional color palette
+        // Sophisticated purple/pink gradient palette
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          950: '#082f49',
+          50: '#fdf4ff',
+          100: '#fae8ff',
+          200: '#f5d0fe',
+          300: '#f0abfc',
+          400: '#e879f9',
+          500: '#E96BA0',  // Pink/magenta (lighter shade)
+          600: '#c026d3',
+          700: '#a21caf',
+          800: '#9B6B9E',  // Muted purple (darker shade)
+          900: '#701a75',
+          950: '#4a044e',
         },
         secondary: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#a855f7',
+          600: '#9333ea',
+          700: '#7e22ce',
+          800: '#6b21a8',
+          900: '#581c87',
+          950: '#3b0764',
+        },
+        // Dark theme backgrounds
+        dark: {
+          DEFAULT: '#1A1625',  // Very dark purple/black (main background)
+          surface: '#2A1F4B',  // Deep purple (elevated surfaces)
+          elevated: '#3d2e5f', // Slightly lighter for cards/modals
         },
         success: {
           50: '#f0fdf4',

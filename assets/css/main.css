@@ -12,7 +12,12 @@
   }
   
   body {
-    @apply text-secondary-700 dark:text-secondary-200;
+    @apply text-gray-700 dark:text-white;
+  }
+  
+  /* Dark theme by default */
+  .dark body {
+    @apply bg-dark text-white;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -155,18 +160,23 @@
     @apply bg-white/80 dark:bg-secondary-800/80 backdrop-blur-lg;
   }
   
-  /* Gradient backgrounds */
+  /* Gradient backgrounds - Purple to Pink */
   .gradient-primary {
-    @apply bg-gradient-to-r from-primary-600 to-primary-700;
+    @apply bg-gradient-to-r from-primary-800 to-primary-500;
   }
   
   .gradient-secondary {
-    @apply bg-gradient-to-r from-secondary-700 to-secondary-800;
+    @apply bg-gradient-to-r from-secondary-800 to-secondary-600;
   }
   
-  /* Text gradients */
+  /* Text gradients - Purple to Pink */
   .text-gradient-primary {
-    @apply bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary-800 to-primary-500 bg-clip-text text-transparent;
+  }
+  
+  /* Dark theme gradient background */
+  .gradient-dark-bg {
+    @apply bg-gradient-to-b from-dark-surface to-dark;
   }
   
   /* Scrollbar styling */
