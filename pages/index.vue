@@ -18,13 +18,13 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
-            <div>
+          <div>
               <h1 class="text-3xl font-bold text-white drop-shadow-lg">
                 Ontop Analytics Hub
-              </h1>
+            </h1>
               <p class="mt-1 text-blue-100 font-medium drop-shadow">
                 🚀 Real-time Customer Intelligence Dashboard
-              </p>
+            </p>
             </div>
           </div>
           
@@ -250,6 +250,13 @@
         </div>
       </div>
 
+      <!-- Enhanced Executive Report Modal -->
+      <EnhancedReportModal
+        :is-open="showEnhancedReport"
+        :feedback-data="feedbackData"
+        @close="showEnhancedReport = false"
+      />
+
       <!-- Report Selection Modal -->
       <ReportModal 
         :is-open="showReportModal" 
@@ -283,8 +290,8 @@
                   <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
                   </svg>
-                </div>
-              </div>
+        </div>
+        </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Total Feedback</dt>
@@ -296,7 +303,7 @@
                       </svg>
                       <span class="sr-only">Increased by</span>
                       {{ weeklyGrowth }}%
-                    </div>
+        </div>
                   </dd>
                 </dl>
               </div>
@@ -1491,15 +1498,26 @@
             </h3>
             <p class="text-gray-600 dark:text-slate-300 text-sm mt-1 ml-13 transition-colors duration-200">Generate comprehensive analytics reports perfect for presentations and meetings</p>
           </div>
-          <button
-            @click="showReportModal = true"
-            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
-          >
-            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Create Report
-          </button>
+          <div class="flex gap-3">
+            <button
+              @click="showEnhancedReport = true"
+              class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
+              Weekly Executive Report
+            </button>
+            <button
+              @click="showReportModal = true"
+              class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Basic Report
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1623,6 +1641,7 @@ const { isDarkMode, toggleDarkMode, initializeDarkMode, watchSystemTheme } = use
 const generatingReport = ref(false)
 const showReportModal = ref(false)
 const showReportDisplay = ref(false)
+const showEnhancedReport = ref(false)
 const currentReportData = ref(null)
 
 // Filtering and pagination
