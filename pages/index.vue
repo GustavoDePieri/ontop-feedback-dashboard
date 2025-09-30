@@ -1,87 +1,110 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-dark">
-    <!-- Header -->
-    <header class="bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-primary-900/30 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center py-6 space-y-4 md:space-y-0">
+  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 transition-all duration-500">
+    <!-- Header with Gradient -->
+    <header class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl relative overflow-hidden">
+      <!-- Animated Background Pattern -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-white rounded-full mix-blend-overlay filter blur-xl animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-overlay filter blur-xl animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-overlay filter blur-xl animate-blob animation-delay-4000"></div>
+      </div>
+      
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="flex justify-between items-center py-8">
+          <div class="flex items-center space-x-4">
+            <!-- Logo/Icon -->
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-3 shadow-lg">
+              <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
           <div>
-            <h1 class="text-2xl md:text-3xl font-bold text-gradient-primary">
-              Ontop Analytics Hub
+              <h1 class="text-3xl font-bold text-white drop-shadow-lg">
+                Ontop Analytics Hub
             </h1>
-            <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-gray-300">
-              Real-time Customer Intelligence Dashboard
+              <p class="mt-1 text-blue-100 font-medium drop-shadow">
+                🚀 Real-time Customer Intelligence Dashboard
             </p>
+            </div>
           </div>
           
-          <div class="flex flex-wrap gap-3">
-            <AppButton 
-              variant="secondary"
-              size="md"
+          <div class="flex items-center space-x-2">
+            <!-- Dark Mode Toggle -->
+            <button
               @click="toggleDarkMode"
+              class="p-3 text-white/80 hover:text-white hover:bg-white/20 backdrop-blur-sm rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               title="Toggle dark mode"
             >
-              <svg v-if="!isDarkMode" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-if="!isDarkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
-              <svg v-else class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-else class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
-            </AppButton>
+            </button>
             
-            <AppButton 
-              variant="primary"
-              :loading="loading"
-              @click="refreshData"
+            <!-- Logout Button -->
+            <button
+              @click="handleLogout"
+              class="p-3 text-white/80 hover:text-white hover:bg-red-500/30 backdrop-blur-sm rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              title="Logout"
             >
-              <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+            
+            <div class="border-l border-white/30 h-8 mx-2"></div>
+            
+            <button 
+              @click="refreshData" 
+              :disabled="loading"
+              class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-2xl transform hover:scale-105 flex items-center space-x-2"
+            >
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              Refresh Data
-            </AppButton>
-            
-            <AppButton 
-              variant="secondary"
+              <span>{{ loading ? 'Loading...' : 'Refresh Data' }}</span>
+            </button>
+            <button 
               @click="testConnection"
+              class="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white/90 hover:text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               Test Connection
-            </AppButton>
+            </button>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Filters Section -->
-    <div class="bg-white dark:bg-dark-surface border-b border-gray-200 dark:border-primary-900/30 shadow-sm">
+    <!-- Advanced Filters with Glass Morphism -->
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-xl border-b-4 border-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center space-x-3">
-            <div class="p-3 gradient-primary rounded-xl shadow-md">
+            <div class="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg shadow-lg">
               <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
             </div>
-            <h2 class="text-xl font-bold text-gradient-primary">Smart Filters</h2>
+            <h2 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Smart Filters</h2>
           </div>
-          <AppButton 
-            v-if="hasActiveFilters"
-            variant="danger"
-            size="sm"
+          <button 
             @click="clearAllFilters"
+            v-if="hasActiveFilters"
+            class="text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
-            <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Clear Filters
-          </AppButton>
+            ✕ Clear All Filters
+          </button>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Account Manager Filter -->
           <div>
-            <label class="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Account Manager</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Account Manager</label>
             <select 
               v-model="filters.accountManager"
-              class="select"
+              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Managers</option>
               <option v-for="manager in uniqueAccountManagers" :key="manager.name" :value="manager.name">
@@ -92,10 +115,10 @@
 
           <!-- Date Period Filter -->
           <div>
-            <label class="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Date Period</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Date Period</label>
             <select 
               v-model="filters.datePeriod"
-              class="select"
+              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Time</option>
               <option value="today">Today</option>
@@ -112,18 +135,18 @@
 
           <!-- Custom Date Range (shown when custom is selected) -->
           <div v-if="filters.datePeriod === 'custom'" class="md:col-span-2 lg:col-span-2">
-            <label class="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Custom Date Range</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Custom Date Range</label>
             <div class="grid grid-cols-2 gap-2">
               <input
                 v-model="filters.startDate"
                 type="date"
-                class="input"
+                class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Start Date"
               />
               <input
                 v-model="filters.endDate"
                 type="date"
-                class="input"
+                class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="End Date"
               />
             </div>
@@ -131,10 +154,10 @@
 
           <!-- Feedback Directed To Filter -->
           <div>
-            <label class="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Feedback Directed To</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Feedback Directed To</label>
             <select 
               v-model="filters.feedbackDirectedTo"
-              class="select"
+              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Teams</option>
               <option v-for="team in uniqueFeedbackDirections" :key="team.name" :value="team.name">
@@ -145,16 +168,16 @@
 
           <!-- Platform Client ID Search -->
           <div :class="filters.datePeriod === 'custom' ? '' : 'md:col-span-2'">
-            <label class="block text-sm font-semibold text-gray-700 dark:text-white mb-2">Platform Client ID</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Platform Client ID</label>
             <div class="relative">
               <input
                 v-model="filters.platformClientId"
                 type="text"
                 placeholder="Search by Platform Client ID..."
-                class="input pr-10"
+                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="h-4 w-4 text-gray-400 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -164,87 +187,66 @@
 
         <!-- Active Filters Display -->
         <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap gap-2">
-          <span class="text-sm font-semibold text-gray-500 dark:text-gray-200">Active filters:</span>
+          <span class="text-sm text-gray-500 dark:text-slate-400">Active filters:</span>
           <span 
             v-if="filters.accountManager"
-            class="badge badge-primary"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
           >
             Manager: {{ filters.accountManager }}
-            <button @click="filters.accountManager = ''" class="ml-1 hover:text-primary-800 dark:hover:text-primary-100">×</button>
+            <button @click="filters.accountManager = ''" class="ml-1 text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100">×</button>
           </span>
           <span 
             v-if="filters.datePeriod"
-            class="badge badge-success"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
           >
             Period: {{ getDatePeriodLabel(filters.datePeriod) }}
-            <button @click="clearDateFilter" class="ml-1 hover:text-success-800 dark:hover:text-success-100">×</button>
+            <button @click="clearDateFilter" class="ml-1 text-green-600 dark:text-green-300 hover:text-green-800 dark:hover:text-green-100">×</button>
           </span>
           <span 
             v-if="filters.feedbackDirectedTo"
-            class="badge badge-secondary"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200"
           >
             Directed To: {{ filters.feedbackDirectedTo }}
-            <button @click="filters.feedbackDirectedTo = ''" class="ml-1 hover:text-secondary-800 dark:hover:text-secondary-100">×</button>
+            <button @click="filters.feedbackDirectedTo = ''" class="ml-1 text-indigo-600 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-indigo-100">×</button>
           </span>
           <span 
             v-if="filters.platformClientId"
-            class="badge badge-primary"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200"
           >
             Client ID: {{ filters.platformClientId }}
-            <button @click="filters.platformClientId = ''" class="ml-1 hover:text-primary-800 dark:hover:text-primary-100">×</button>
+            <button @click="filters.platformClientId = ''" class="ml-1 text-purple-600 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-100">×</button>
           </span>
         </div>
 
         <!-- Results Count -->
-        <div v-if="hasActiveFilters" class="mt-3 text-sm font-semibold text-gray-600 dark:text-gray-200">
+        <div v-if="hasActiveFilters" class="mt-3 text-sm text-gray-600 dark:text-slate-300">
           Showing {{ filteredFeedbackData.length }} of {{ feedbackData.length }} feedback items
         </div>
       </div>
     </div>
 
-    <main class="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 transition-colors duration-300">
       <!-- Status Message -->
-      <div class="mb-6 p-4 rounded-lg" :class="{
-        'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800': loading,
-        'bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800': error,
-        'bg-success-50 dark:bg-success-900/20 border border-success-200 dark:border-success-800': !loading && !error && feedbackData.length > 0,
-        'bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800': !loading && !error && feedbackData.length === 0
+      <div class="mb-6 p-4 rounded-lg transition-colors duration-200" :class="{
+        'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800': loading,
+        'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800': error,
+        'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800': !loading && !error && feedbackData.length > 0,
+        'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800': !loading && !error && feedbackData.length === 0
       }">
-        <div v-if="loading" class="flex items-center text-primary-800 dark:text-primary-200">
-          <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Loading feedback data...
+        <div v-if="loading" class="text-blue-800 dark:text-blue-200">
+          🔄 Loading feedback data...
         </div>
-        <div v-else-if="error" class="flex items-start text-danger-800 dark:text-danger-200">
-          <svg class="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
-          <div>
-            <strong>Error:</strong> {{ error }}
-          </div>
+        <div v-else-if="error" class="text-red-800 dark:text-red-200">
+          ❌ Error: {{ error }}
         </div>
-        <div v-else-if="feedbackData.length > 0" class="text-success-800 dark:text-success-200">
-          <div class="flex items-start">
-            <svg class="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-            </svg>
-            <div>
-              Successfully loaded <strong>{{ feedbackData.length }}</strong> feedback items
-              <span v-if="hasActiveFilters" class="block text-sm mt-1">
-                <strong>{{ filteredFeedbackData.length }}</strong> items match current filters
-              </span>
-            </div>
-          </div>
+        <div v-else-if="feedbackData.length > 0" class="text-green-800 dark:text-green-200">
+          ✅ Successfully loaded {{ feedbackData.length }} feedback items
+          <span v-if="hasActiveFilters" class="block text-sm mt-1">
+            📊 {{ filteredFeedbackData.length }} items match current filters
+          </span>
         </div>
-        <div v-else class="flex items-start text-warning-800 dark:text-warning-200">
-          <svg class="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-          </svg>
-          <div>
-            No feedback data found. Click "Test Connection" to check your Google Sheets connection.
-          </div>
+        <div v-else class="text-yellow-800 dark:text-yellow-200">
+          ⚠️ No feedback data found. Click "Test Connection" to check your Google Sheets connection.
         </div>
       </div>
 
@@ -271,35 +273,37 @@
       />
 
       <!-- Executive Summary Dashboard -->
-      <div v-if="feedbackData.length > 0" class="mb-8 animate-slide-up">
+      <div v-if="feedbackData.length > 0" class="mb-8">
         <div class="mb-6">
-          <h2 class="text-2xl md:text-3xl font-bold text-gradient-primary">Executive Summary</h2>
-          <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-gray-300">Key performance indicators and business metrics</p>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100">Executive Summary</h2>
+          <p class="text-gray-600 dark:text-slate-300 text-sm mt-1">Key performance indicators and business metrics</p>
         </div>
 
         <!-- Primary KPI Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <!-- Total Feedback -->
         <AppCard>
-          <div class="metric-card">
+          <div class="p-6">
             <div class="flex items-center">
-              <div class="metric-card-icon bg-gradient-to-br from-primary-800 to-primary-500 shadow-lg">
-                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <div class="ml-5 flex-1">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
+                  </svg>
+        </div>
+        </div>
+              <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-600 dark:text-secondary-700 truncate">Total Feedback</dt>
-                  <dd class="flex items-baseline mt-1">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-secondary-900">{{ feedbackData.length }}</div>
-                    <div class="ml-2 flex items-baseline text-sm font-semibold text-success-600 dark:text-success-400">
-                      <svg class="self-center flex-shrink-0 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Total Feedback</dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ feedbackData.length }}</div>
+                    <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600 dark:text-green-400">
+                      <svg class="self-center flex-shrink-0 h-3 w-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                       </svg>
                       <span class="sr-only">Increased by</span>
                       {{ weeklyGrowth }}%
-                    </div>
+        </div>
                   </dd>
                 </dl>
               </div>
@@ -308,20 +312,22 @@
         </AppCard>
 
         <!-- Positive Sentiment -->
-        <AppCard :hover="true" :clickable="true" @click="showFeedbackBySentiment('Positive')">
-          <div class="metric-card">
+        <AppCard :hover="true" class="cursor-pointer transition-transform hover:scale-105" @click="showFeedbackBySentiment('Positive')">
+          <div class="p-6">
             <div class="flex items-center">
-              <div class="metric-card-icon bg-gradient-to-br from-success-500 to-success-600 shadow-lg">
-                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"></path>
-                </svg>
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
               </div>
-              <div class="ml-5 flex-1">
+              <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-600 dark:text-secondary-700 truncate">Positive Sentiment</dt>
-                  <dd class="flex items-baseline mt-1">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-secondary-900">{{ sentimentSummary.positive }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-secondary-600">
+                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Positive Sentiment</dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.positive }}</div>
+                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
                       ({{ sentimentPercentages.positive }}%)
                     </div>
                   </dd>
@@ -335,52 +341,60 @@
         </AppCard>
 
         <!-- Neutral Sentiment -->
-        <AppCard :hover="true" :clickable="true" @click="showFeedbackBySentiment('Neutral')">
-          <div class="metric-card">
+        <AppCard :hover="true" class="cursor-pointer transition-transform hover:scale-105" @click="showFeedbackBySentiment('Neutral')">
+          <div class="p-6">
             <div class="flex items-center">
-              <div class="metric-card-icon bg-gradient-to-br from-warning-500 to-warning-600 shadow-lg">
-                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
-                </svg>
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-5 5a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
               </div>
-              <div class="ml-5 flex-1">
+              <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-600 dark:text-secondary-700 truncate">Neutral Sentiment</dt>
-                  <dd class="flex items-baseline mt-1">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-secondary-900">{{ sentimentSummary.neutral }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-secondary-600">
+                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Neutral Sentiment</dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.neutral }}</div>
+                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
                       ({{ sentimentPercentages.neutral }}%)
                     </div>
                   </dd>
                 </dl>
               </div>
             </div>
-            <div class="mt-3 text-xs text-warning-600 dark:text-warning-700 font-medium">Click to view all neutral feedback</div>
+            <div class="mt-2">
+              <p class="text-xs text-yellow-600 font-medium">Click to view all neutral feedback</p>
+            </div>
           </div>
         </AppCard>
 
         <!-- Negative Sentiment -->
-        <AppCard :hover="true" :clickable="true" @click="showFeedbackBySentiment('Negative')">
-          <div class="metric-card">
+        <AppCard :hover="true" class="cursor-pointer transition-transform hover:scale-105" @click="showFeedbackBySentiment('Negative')">
+          <div class="p-6">
             <div class="flex items-center">
-              <div class="metric-card-icon bg-gradient-to-br from-danger-500 to-danger-600 shadow-lg">
-                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100 2 1 1 0 000-2zm7 1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"></path>
-                </svg>
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-7.536 5.879a1 1 0 001.415 1.414 3 3 0 004.242 0 1 1 0 001.415-1.414 5 5 0 00-7.072 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
               </div>
-              <div class="ml-5 flex-1">
+              <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-600 dark:text-secondary-700 truncate">Negative Sentiment</dt>
-                  <dd class="flex items-baseline mt-1">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-secondary-900">{{ sentimentSummary.negative }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-secondary-600">
+                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Negative Sentiment</dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.negative }}</div>
+                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
                       ({{ sentimentPercentages.negative }}%)
                     </div>
                   </dd>
                 </dl>
               </div>
             </div>
-            <div class="mt-3 text-xs text-danger-600 dark:text-danger-700 font-medium">Click to view all negative feedback</div>
+            <div class="mt-2">
+              <p class="text-xs text-red-600 font-medium">Click to view all negative feedback</p>
+            </div>
           </div>
         </AppCard>
       </div>

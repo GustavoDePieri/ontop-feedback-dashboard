@@ -1,54 +1,53 @@
 <template>
-  <div class="min-h-screen bg-secondary-50 dark:bg-secondary-900">
+  <div class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <header class="page-header">
+    <header class="bg-white shadow">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center py-6 space-y-4 md:space-y-0">
+        <div class="flex justify-between items-center py-6">
           <div>
-            <h1 class="page-title">
+            <h1 class="text-3xl font-bold text-gray-900">
               Advanced Analytics
             </h1>
-            <p class="page-subtitle">
+            <p class="mt-2 text-gray-600">
               Deep insights and trend analysis
             </p>
           </div>
           
-          <div class="flex flex-col sm:flex-row gap-3">
-            <select class="select">
+          <div class="flex space-x-3">
+            <select class="border border-gray-300 rounded-md px-3 py-2 text-sm">
               <option>Last 30 days</option>
               <option>Last 90 days</option>
               <option>Last 6 months</option>
               <option>Last year</option>
             </select>
-            <AppButton variant="primary">
-              <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
               Export Report
-            </AppButton>
+            </button>
           </div>
         </div>
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <!-- Advanced Metrics Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-slide-up">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Average Sentiment Score -->
         <AppCard>
-          <div class="metric-card">
+          <div class="p-6">
             <div class="flex items-center">
-              <div class="metric-card-icon bg-gradient-to-br from-purple-500 to-purple-600">
-                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+                </div>
               </div>
-              <div class="ml-5 flex-1">
+              <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400 truncate">Avg Sentiment Score</dt>
-                  <dd class="flex items-baseline mt-1">
-                    <div class="text-2xl font-bold text-secondary-900 dark:text-white">7.2</div>
-                    <div class="ml-2 text-sm font-medium text-success-600 dark:text-success-400">/10</div>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Avg Sentiment Score</dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900">7.2</div>
+                    <div class="ml-2 text-sm font-medium text-green-600">/10</div>
                   </dd>
                 </dl>
               </div>
