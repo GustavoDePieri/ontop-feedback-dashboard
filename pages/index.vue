@@ -1729,11 +1729,110 @@
     </main>
 
     <!-- AI Report Display Modal -->
-    <ReportDisplayModal
+    <div
       v-if="showAIReportDisplay"
-      :reportHTML="currentAIReportHTML"
-      @close="showAIReportDisplay = false"
-    />
+      class="fixed inset-0 z-50 overflow-y-auto"
+      @click="showAIReportDisplay = false"
+    >
+      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+        <!-- Modal panel -->
+        <div
+          class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-7xl sm:w-full max-h-[95vh] flex flex-col"
+          @click.stop
+        >
+          <!-- Modal Header -->
+          <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                  <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-white">AI Intelligence Report</h3>
+                  <p class="text-purple-100 text-sm">Generated with AI-powered insights</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <!-- Download HTML Button -->
+                <button
+                  @click="downloadAIReport"
+                  class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors duration-200"
+                  title="Download report as HTML"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </button>
+                <!-- Copy HTML Button -->
+                <button
+                  @click="copyAIReportHTML"
+                  class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors duration-200"
+                  title="Copy HTML to clipboard"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
+                <!-- Close Button -->
+                <button
+                  @click="showAIReportDisplay = false"
+                  class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors duration-200"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Report Content -->
+          <div class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+            <div v-html="currentAIReportHTML" class="report-content"></div>
+          </div>
+
+          <!-- Footer -->
+          <div class="bg-gray-50 dark:bg-gray-700 px-6 py-3 border-t border-gray-200 dark:border-gray-600">
+            <div class="flex items-center justify-between">
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                Generated on {{ new Date().toLocaleString() }}
+              </p>
+              <div class="flex space-x-3">
+                <button
+                  @click="downloadAIReport"
+                  class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Download HTML
+                </button>
+                <button
+                  @click="copyAIReportHTML"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy HTML
+                </button>
+                <button
+                  @click="showAIReportDisplay = false"
+                  class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -2580,6 +2679,36 @@ const clearAIFilters = () => {
   aiFilters.feedbackDirectedTo = ''
   aiFilters.category = ''
   aiFilters.platformClientId = ''
+}
+
+const downloadAIReport = () => {
+  const blob = new Blob([currentAIReportHTML.value], { type: 'text/html' })
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  const timestamp = new Date().toISOString().split('T')[0]
+  link.download = `AI-Intelligence-Report-${timestamp}.html`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(url)
+}
+
+const copyAIReportHTML = async () => {
+  try {
+    await navigator.clipboard.writeText(currentAIReportHTML.value)
+    alert('Report HTML copied to clipboard!')
+  } catch (err) {
+    console.error('Failed to copy HTML:', err)
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea')
+    textArea.value = currentAIReportHTML.value
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textArea)
+    alert('Report HTML copied to clipboard!')
+  }
 }
 
 const getAIFilteredData = () => {
