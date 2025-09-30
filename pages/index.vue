@@ -1542,102 +1542,192 @@
         </div>
       </div>
 
-      <!-- ==================== AI RECOMMENDATIONS SECTION ==================== -->
+      <!-- ==================== AI INTELLIGENCE REPORT SECTION ==================== -->
       <div class="mt-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-6 border-2 border-purple-300 dark:border-purple-700">
         <div class="flex items-center justify-between mb-6">
           <div>
             <h3 class="text-xl font-bold text-gray-900 dark:text-slate-100 flex items-center">
               <div class="p-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg mr-3">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              AI-Powered Recommendations
+              AI Intelligence Report Generator
             </h3>
-            <p class="text-gray-600 dark:text-slate-300 text-sm mt-1 ml-13">Get intelligent insights and actionable recommendations powered by Google Gemini AI</p>
+            <p class="text-gray-600 dark:text-slate-300 text-sm mt-1 ml-13">Generate comprehensive reports with AI-powered insights</p>
           </div>
         </div>
 
-        <!-- AI Filters -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-white dark:bg-slate-800 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Segment Type</label>
-            <select 
-              v-model="aiSegmentType"
-              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+        <!-- Smart Filters for AI Report -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-4 border border-purple-200 dark:border-purple-700 mb-6">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="text-sm font-bold text-gray-900 dark:text-slate-100">Smart Filters</h4>
+            <button 
+              v-if="hasAIFilters"
+              @click="clearAIFilters"
+              class="text-xs font-semibold text-white bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 px-3 py-1 rounded-lg transition-all duration-200 shadow hover:shadow-lg"
             >
-              <option value="all">All Feedback</option>
-              <option value="year">By Year</option>
-              <option value="sentiment">By Sentiment</option>
-              <option value="category">By Category</option>
-              <option value="account_manager">By Account Manager</option>
-            </select>
-          </div>
-
-          <div v-if="aiSegmentType !== 'all'">
-            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Segment Value</label>
-            <select 
-              v-model="aiSegmentValue"
-              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-            >
-              <option value="">Select...</option>
-              <option v-if="aiSegmentType === 'year'" value="2025">2025</option>
-              <option v-if="aiSegmentType === 'year'" value="2024">2024</option>
-              <option v-if="aiSegmentType === 'sentiment'" value="Positive">Positive</option>
-              <option v-if="aiSegmentType === 'sentiment'" value="Neutral">Neutral</option>
-              <option v-if="aiSegmentType === 'sentiment'" value="Negative">Negative</option>
-              <option v-if="aiSegmentType === 'category'" v-for="cat in topCategoryFormulas.slice(0, 10)" :key="cat.name" :value="cat.name">
-                {{ cat.name }} ({{ cat.count }})
-              </option>
-              <option v-if="aiSegmentType === 'account_manager'" v-for="mgr in uniqueAccountManagers.slice(0, 20)" :key="mgr.name" :value="mgr.name">
-                {{ mgr.name }} ({{ mgr.count }})
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Focus Area (Optional)</label>
-            <input 
-              v-model="aiFocusArea"
-              type="text"
-              placeholder="e.g., Product bugs, Support quality..."
-              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-            />
-          </div>
-
-          <div class="flex items-end">
-            <button
-              @click="generateAIRecommendations"
-              :disabled="aiLoading || !canGenerateAI"
-              class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              <svg v-if="!aiLoading" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-              {{ aiLoading ? 'Analyzing...' : 'Generate AI Insights' }}
+              ✕ Clear Filters
             </button>
           </div>
-        </div>
 
-        <!-- Selected Data Info -->
-        <div v-if="aiSegmentType !== 'all' && aiSegmentValue" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-300">
-          <strong>{{ getAISegmentedData().length }}</strong> feedback items will be analyzed 
-          ({{ aiSegmentType }}: {{ aiSegmentValue }})
-        </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Account Manager Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Account Manager</label>
+              <select 
+                v-model="aiFilters.accountManager"
+                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              >
+                <option value="">All Managers</option>
+                <option v-for="manager in uniqueAccountManagers" :key="manager.name" :value="manager.name">
+                  {{ manager.name }} ({{ manager.count }})
+                </option>
+              </select>
+            </div>
 
-        <!-- AI Recommendations Panel -->
-        <AIRecommendationsPanel
-          v-if="aiRecommendations || aiLoading || aiError"
-          :loading="aiLoading"
-          :error="aiError"
-          :recommendations="aiRecommendations"
-          :metadata="aiMetadata"
-          :allFeedbackItems="feedbackData"
-          @close="clearAIRecommendations"
-        />
+            <!-- Date Period Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Date Period</label>
+              <select 
+                v-model="aiFilters.datePeriod"
+                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              >
+                <option value="">All Time</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="this-week">This Week</option>
+                <option value="last-week">Last Week</option>
+                <option value="this-month">This Month</option>
+                <option value="last-month">Last Month</option>
+                <option value="last-30-days">Last 30 Days</option>
+                <option value="last-90-days">Last 90 Days</option>
+              </select>
+            </div>
+
+            <!-- Feedback Directed To Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Feedback Directed To</label>
+              <select 
+                v-model="aiFilters.feedbackDirectedTo"
+                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              >
+                <option value="">All Teams</option>
+                <option v-for="team in uniqueFeedbackDirections" :key="team.name" :value="team.name">
+                  {{ team.name }} ({{ team.count }})
+                </option>
+              </select>
+            </div>
+
+            <!-- Category Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Category</label>
+              <select 
+                v-model="aiFilters.category"
+                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              >
+                <option value="">All Categories</option>
+                <option v-for="cat in uniqueCategories" :key="cat.name" :value="cat.name">
+                  {{ cat.name }} ({{ cat.count }})
+                </option>
+              </select>
+            </div>
+
+            <!-- Platform Client ID Search -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Platform Client ID</label>
+              <div class="relative">
+                <input
+                  v-model="aiFilters.platformClientId"
+                  type="text"
+                  placeholder="Search by Platform Client ID..."
+                  class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                />
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg class="h-4 w-4 text-gray-400 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Generate Button -->
+            <div class="md:col-span-2 flex items-end">
+              <button
+                @click="generateAIReport"
+                :disabled="generatingAIReport || getAIFilteredData().length === 0"
+                class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                <svg v-if="!generatingAIReport" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <div v-else class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                {{ generatingAIReport ? 'Generating Report...' : 'Generate AI Report' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Filters Display -->
+          <div v-if="hasAIFilters" class="mt-4 flex flex-wrap gap-2">
+            <span class="text-sm text-gray-500 dark:text-slate-400">Active filters:</span>
+            <span 
+              v-if="aiFilters.accountManager"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
+            >
+              Manager: {{ aiFilters.accountManager }}
+              <button @click="aiFilters.accountManager = ''" class="ml-1 text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100">×</button>
+            </span>
+            <span 
+              v-if="aiFilters.datePeriod"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200"
+            >
+              Period: {{ getDatePeriodLabel(aiFilters.datePeriod) }}
+              <button @click="aiFilters.datePeriod = ''" class="ml-1 text-green-600 dark:text-green-300 hover:text-green-800 dark:hover:text-green-100">×</button>
+            </span>
+            <span 
+              v-if="aiFilters.feedbackDirectedTo"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200"
+            >
+              Directed To: {{ aiFilters.feedbackDirectedTo }}
+              <button @click="aiFilters.feedbackDirectedTo = ''" class="ml-1 text-indigo-600 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-indigo-100">×</button>
+            </span>
+            <span 
+              v-if="aiFilters.category"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200"
+            >
+              Category: {{ aiFilters.category }}
+              <button @click="aiFilters.category = ''" class="ml-1 text-orange-600 dark:text-orange-300 hover:text-orange-800 dark:hover:text-orange-100">×</button>
+            </span>
+            <span 
+              v-if="aiFilters.platformClientId"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200"
+            >
+              Client ID: {{ aiFilters.platformClientId }}
+              <button @click="aiFilters.platformClientId = ''" class="ml-1 text-purple-600 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-100">×</button>
+            </span>
+          </div>
+
+          <!-- Filtered Data Info -->
+          <div v-if="getAIFilteredData().length > 0" class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm">
+            <div class="flex items-center">
+              <svg class="w-4 h-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="text-blue-800 dark:text-blue-300">
+                <strong>{{ getAIFilteredData().length }}</strong> feedback items will be analyzed with AI
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
+
+    <!-- AI Report Display Modal -->
+    <ReportDisplayModal
+      v-if="showAIReportDisplay"
+      :reportHTML="currentAIReportHTML"
+      @close="showAIReportDisplay = false"
+    />
   </div>
 </template>
 
@@ -1699,6 +1789,23 @@ const {
 const aiSegmentType = ref('all')
 const aiSegmentValue = ref('')
 const aiFocusArea = ref('')
+
+// AI Report Generation with Smart Filters
+const generatingAIReport = ref(false)
+const showAIReportDisplay = ref(false)
+const currentAIReportHTML = ref('')
+
+const aiFilters = reactive({
+  accountManager: '',
+  datePeriod: '',
+  feedbackDirectedTo: '',
+  category: '',
+  platformClientId: ''
+})
+
+const hasAIFilters = computed(() => {
+  return aiFilters.accountManager || aiFilters.datePeriod || aiFilters.feedbackDirectedTo || aiFilters.category || aiFilters.platformClientId
+})
 
 // Computed data
 // Filter helper computed properties
@@ -2454,6 +2561,241 @@ const clearDateFilter = () => {
   filters.datePeriod = ''
   filters.startDate = ''
   filters.endDate = ''
+}
+
+// AI Filter methods
+const clearAIFilters = () => {
+  aiFilters.accountManager = ''
+  aiFilters.datePeriod = ''
+  aiFilters.feedbackDirectedTo = ''
+  aiFilters.category = ''
+  aiFilters.platformClientId = ''
+}
+
+const getAIFilteredData = () => {
+  let filtered = feedbackData.value
+
+  // Filter by account manager
+  if (aiFilters.accountManager) {
+    filtered = filtered.filter(item => {
+      const manager = item.accountOwner || 'Unassigned'
+      return manager === aiFilters.accountManager
+    })
+  }
+
+  // Filter by date period
+  if (aiFilters.datePeriod) {
+    const now = new Date()
+    let startDate, endDate
+
+    switch (aiFilters.datePeriod) {
+      case 'today':
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999)
+        break
+      case 'yesterday':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - 1)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setDate(now.getDate() - 1)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'this-week':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - now.getDay())
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'last-week':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - now.getDay() - 7)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setDate(now.getDate() - now.getDay() - 1)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'this-month':
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+        break
+      case 'last-month':
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        endDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999)
+        break
+      case 'last-30-days':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - 30)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'last-90-days':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - 90)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
+    }
+
+    if (startDate || endDate) {
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.createdDate)
+        
+        if (startDate && endDate) {
+          return itemDate >= startDate && itemDate <= endDate
+        } else if (startDate) {
+          return itemDate >= startDate
+        } else if (endDate) {
+          return itemDate <= endDate
+        }
+        return true
+      })
+    }
+  }
+
+  // Filter by feedback directed to
+  if (aiFilters.feedbackDirectedTo) {
+    filtered = filtered.filter(item => {
+      const direction = item.feedbackDirectedTo || 'Unspecified'
+      return direction === aiFilters.feedbackDirectedTo
+    })
+  }
+
+  // Filter by category
+  if (aiFilters.category) {
+    filtered = filtered.filter(item => {
+      const category = item.categoryFormulaText || item.subcategory || 'Uncategorized'
+      return category === aiFilters.category
+    })
+  }
+
+  // Filter by Platform Client ID
+  if (aiFilters.platformClientId) {
+    const searchTerm = aiFilters.platformClientId.toLowerCase()
+    filtered = filtered.filter(item => {
+      return item.platformClientId.toLowerCase().includes(searchTerm)
+    })
+  }
+
+  return filtered
+}
+
+const generateAIReport = async () => {
+  generatingAIReport.value = true
+  
+  try {
+    // Get filtered data
+    const filteredData = getAIFilteredData()
+    
+    if (filteredData.length === 0) {
+      alert('No feedback found with the selected filters')
+      generatingAIReport.value = false
+      return
+    }
+    
+    // Generate AI insights
+    await generateRecommendations(filteredData, {
+      segmentType: 'all',
+      focusArea: 'recurring patterns and actionable insights for leadership'
+    })
+    
+    // Import report generation composables
+    const { generateWeeklyReport } = useReportGenerator()
+    const { generateExecutiveHTML } = useReportTemplates()
+    
+    // Generate report data
+    const reportData = generateWeeklyReport(filteredData, 0)
+    
+    // Build filter description
+    let filterDesc = []
+    if (aiFilters.accountManager) filterDesc.push(`Manager: ${aiFilters.accountManager}`)
+    if (aiFilters.datePeriod) filterDesc.push(`Period: ${getDatePeriodLabel(aiFilters.datePeriod)}`)
+    if (aiFilters.feedbackDirectedTo) filterDesc.push(`Team: ${aiFilters.feedbackDirectedTo}`)
+    if (aiFilters.category) filterDesc.push(`Category: ${aiFilters.category}`)
+    if (aiFilters.platformClientId) filterDesc.push(`Client: ${aiFilters.platformClientId}`)
+    
+    reportData.title = filterDesc.length > 0 
+      ? `AI Intelligence Report - ${filterDesc.join(' | ')}`
+      : 'AI Intelligence Report - All Feedback'
+    
+    // Generate HTML with AI insights embedded
+    let html = generateExecutiveHTML(reportData)
+    
+    // Add AI insights section if available
+    if (aiRecommendations.value) {
+      const aiSection = `
+        <div class="section">
+          <h2 class="section-title">🤖 AI-Powered Insights</h2>
+          <p style="color: #64748b; margin-bottom: 20px; font-size: 14px;">
+            AI-analyzed recurring patterns and recommendations based on ${filteredData.length} feedback items
+          </p>
+          
+          ${aiRecommendations.value.topRecurringRequests.slice(0, 5).map((request, index) => `
+            <div class="priority-issue ${request.priority}">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                <div>
+                  <span style="font-size: 18px; font-weight: 700; color: #1f2937; margin-right: 10px;">#${index + 1}</span>
+                  <span class="priority-badge ${request.priority}">${request.priority}</span>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 24px; font-weight: 800; color: #667eea;">${request.frequency}</div>
+                  <div style="font-size: 11px; color: #6b7280;">mentions</div>
+                </div>
+              </div>
+              <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">${request.request}</div>
+              <div style="font-size: 13px; color: #4b5563; margin-bottom: 8px;"><strong>Evidence:</strong> ${request.evidence}</div>
+              <div style="font-size: 13px; color: #4b5563; margin-bottom: 8px;"><strong>Recommended Action:</strong> ${request.recommendedAction}</div>
+              <div style="display: flex; gap: 15px; font-size: 12px; color: #6b7280; margin-top: 8px;">
+                <span><strong>Revenue Impact:</strong> ${request.revenueImpact}</span>
+                <span><strong>Owner:</strong> ${request.crossFunctionalOwner}</span>
+                <span><strong>Quick Win:</strong> ${request.quickWinPotential}</span>
+              </div>
+            </div>
+          `).join('')}
+          
+          ${aiRecommendations.value.emergingPatterns.length > 0 ? `
+            <div style="margin-top: 20px;">
+              <h3 style="font-size: 16px; font-weight: 700; color: #2d3748; margin-bottom: 12px;">📈 Emerging Patterns</h3>
+              ${aiRecommendations.value.emergingPatterns.map(pattern => `
+                <div style="background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px; margin-bottom: 8px; border-radius: 6px;">
+                  <p style="color: #065f46; font-size: 13px; margin: 0;">${pattern}</p>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+          
+          ${aiRecommendations.value.criticalRisks.length > 0 ? `
+            <div style="margin-top: 20px;">
+              <h3 style="font-size: 16px; font-weight: 700; color: #2d3748; margin-bottom: 12px;">⚠️ Critical Risks</h3>
+              ${aiRecommendations.value.criticalRisks.map(risk => `
+                <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px; margin-bottom: 8px; border-radius: 6px;">
+                  <p style="color: #991b1b; font-size: 13px; margin: 0;">${risk}</p>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `
+      
+      // Insert AI section after the Key Insights section
+      html = html.replace('<!-- Priority Issues -->', aiSection + '\n            <!-- Priority Issues -->')
+    }
+    
+    currentAIReportHTML.value = html
+    showAIReportDisplay.value = true
+    
+    // Show success message
+    alert('AI Intelligence Report generated successfully!')
+    
+  } catch (error) {
+    console.error('Error generating AI report:', error)
+    alert('Failed to generate AI report. Please try again.')
+  } finally {
+    generatingAIReport.value = false
+  }
 }
 
 const getDatePeriodLabel = (period) => {
