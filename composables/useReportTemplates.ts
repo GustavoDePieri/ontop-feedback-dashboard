@@ -103,6 +103,8 @@ export const useReportTemplates = () => {
                 `).join('')}
             </div>
             
+            <!-- AI Insights Placeholder -->
+            
             <!-- Priority Issues -->
             <div class="section">
                 <h2 class="section-title">🎯 Top Priority Issues</h2>

@@ -2706,16 +2706,20 @@ const generateAIReport = async () => {
       return
     }
     
-        console.log(`Generating AI report for ${filteredData.length} feedback items...`)
+        console.log(`🔄 Step 1: Generating AI report for ${filteredData.length} feedback items...`)
         
         // Generate AI insights
+        console.log('🤖 Step 2: Calling AI recommendations API...')
         await generateRecommendations(filteredData, {
           segmentType: 'all',
           focusArea: 'recurring patterns and actionable insights for leadership'
         })
+        console.log('✅ Step 3: AI recommendations received:', aiRecommendations.value ? 'Yes' : 'No')
         
         // Generate report data
+        console.log('📊 Step 4: Generating report structure...')
         const reportData = generateWeeklyReport(filteredData, 0)
+        console.log('✅ Step 5: Report data generated:', reportData ? 'Yes' : 'No')
     
     // Build filter description
     let filterDesc = []
@@ -2730,10 +2734,14 @@ const generateAIReport = async () => {
       : 'AI Intelligence Report - All Feedback'
     
     // Generate HTML with AI insights embedded
+    console.log('🎨 Step 6: Generating HTML report...')
     let html = generateExecutiveHTML(reportData)
+    console.log('✅ Step 7: HTML generated, length:', html.length)
     
     // Add AI insights section if available
+    console.log('🔍 Step 8: Checking AI insights...')
     if (aiRecommendations.value) {
+      console.log('✅ Step 9: AI insights found, adding to report...')
       const aiSection = `
         <div class="section">
           <h2 class="section-title">🤖 AI-Powered Insights</h2>
@@ -2789,16 +2797,22 @@ const generateAIReport = async () => {
       `
       
       // Insert AI section after the Key Insights section
-      html = html.replace('<!-- Priority Issues -->', aiSection + '\n            <!-- Priority Issues -->')
+      html = html.replace('<!-- AI Insights Placeholder -->', aiSection)
+      console.log('✅ Step 10: AI section inserted into HTML')
+    } else {
+      console.log('⚠️ Step 9: No AI insights available, skipping AI section')
     }
     
+    console.log('📝 Step 11: Setting report HTML (length:', html.length, ')')
     currentAIReportHTML.value = html
     
     // Wait a moment for Vue to process, then show modal
+    console.log('⏳ Step 12: Waiting for Vue to process...')
     await nextTick()
+    console.log('🎉 Step 13: Opening modal...')
     showAIReportDisplay.value = true
     
-    console.log('✅ Report generated successfully! Opening modal...')
+    console.log('✅ Report generation complete! Modal should be visible now.')
     
   } catch (error) {
     console.error('❌ Error generating AI report:', error)
