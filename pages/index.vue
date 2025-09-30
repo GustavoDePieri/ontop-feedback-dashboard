@@ -1792,6 +1792,10 @@ const {
   clearRecommendations: clearAIRecommendations
 } = useAIRecommendations()
 
+// Report Generation Composables
+const { generateWeeklyReport } = useReportGenerator()
+const { generateExecutiveHTML } = useReportTemplates()
+
 const aiSegmentType = ref('all')
 const aiSegmentValue = ref('')
 const aiFocusArea = ref('')
@@ -2702,20 +2706,16 @@ const generateAIReport = async () => {
       return
     }
     
-    console.log(`Generating AI report for ${filteredData.length} feedback items...`)
-    
-    // Generate AI insights
-    await generateRecommendations(filteredData, {
-      segmentType: 'all',
-      focusArea: 'recurring patterns and actionable insights for leadership'
-    })
-    
-    // Import report generation composables
-    const { generateWeeklyReport } = useReportGenerator()
-    const { generateExecutiveHTML } = useReportTemplates()
-    
-    // Generate report data
-    const reportData = generateWeeklyReport(filteredData, 0)
+        console.log(`Generating AI report for ${filteredData.length} feedback items...`)
+        
+        // Generate AI insights
+        await generateRecommendations(filteredData, {
+          segmentType: 'all',
+          focusArea: 'recurring patterns and actionable insights for leadership'
+        })
+        
+        // Generate report data
+        const reportData = generateWeeklyReport(filteredData, 0)
     
     // Build filter description
     let filterDesc = []
@@ -2793,14 +2793,16 @@ const generateAIReport = async () => {
     }
     
     currentAIReportHTML.value = html
+    
+    // Wait a moment for Vue to process, then show modal
+    await nextTick()
     showAIReportDisplay.value = true
     
-    // Show success message
-    alert('AI Intelligence Report generated successfully!')
+    console.log('✅ Report generated successfully! Opening modal...')
     
   } catch (error) {
-    console.error('Error generating AI report:', error)
-    alert('Failed to generate AI report. Please try again.')
+    console.error('❌ Error generating AI report:', error)
+    alert(`Failed to generate AI report: ${error.message || 'Unknown error'}. Please try again.`)
   } finally {
     generatingAIReport.value = false
   }
