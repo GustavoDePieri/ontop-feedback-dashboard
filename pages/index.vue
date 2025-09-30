@@ -271,21 +271,6 @@
         </div>
       </div>
 
-      <!-- Enhanced Executive Report Modal -->
-      <EnhancedReportModal
-        :is-open="showEnhancedReport"
-        :feedback-data="feedbackData"
-        @close="showEnhancedReport = false"
-      />
-
-      <!-- Report Selection Modal -->
-      <ReportModal 
-        :is-open="showReportModal" 
-        :feedback-data="feedbackData"
-        @close="showReportModal = false"
-        @show-report="handleShowReport"
-      />
-
       <!-- Report Display Modal -->
       <ReportDisplayModal
         :is-open="showReportDisplay"
@@ -1505,43 +1490,6 @@
         Last updated: {{ formatDate(lastUpdated) }}
       </div>
 
-      <!-- Report Generation -->
-      <div v-if="!loading && !error && feedbackData.length > 0" class="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-700 border border-blue-200 dark:border-slate-600 rounded-xl p-6 shadow-sm transition-colors duration-300">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h3 class="text-gray-900 dark:text-slate-100 font-bold text-lg flex items-center transition-colors duration-200">
-              <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              Professional Reports
-            </h3>
-            <p class="text-gray-600 dark:text-slate-300 text-sm mt-1 ml-13 transition-colors duration-200">Generate comprehensive analytics reports perfect for presentations and meetings</p>
-          </div>
-          <div class="flex gap-3">
-            <button
-              @click="showEnhancedReport = true"
-              class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
-            >
-              <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-              Weekly Executive Report
-            </button>
-            <button
-              @click="showReportModal = true"
-              class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center"
-            >
-              <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Basic Report
-            </button>
-          </div>
-        </div>
-      </div>
-
       <!-- ==================== AI INTELLIGENCE REPORT SECTION ==================== -->
       <div class="mt-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-6 border-2 border-purple-300 dark:border-purple-700">
         <div class="flex items-center justify-between mb-6">
@@ -1856,9 +1804,7 @@ const { isDarkMode, toggleDarkMode, initializeDarkMode, watchSystemTheme } = use
 
 // Report generation
 const generatingReport = ref(false)
-const showReportModal = ref(false)
 const showReportDisplay = ref(false)
-const showEnhancedReport = ref(false)
 const currentReportData = ref(null)
 
 // Filtering and pagination
@@ -3273,143 +3219,6 @@ const downloadReport = (content, filename) => {
 // Format date for filename
 const formatDateForFilename = (date) => {
   return date.toISOString().split('T')[0]
-}
-
-// Handle showing report in popup modal
-const handleShowReport = async (type) => {
-  try {
-    // Generate structured report data for the popup
-    const reportData = generateStructuredReportData(type)
-    currentReportData.value = reportData
-    showReportDisplay.value = true
-  } catch (error) {
-    console.error('Failed to generate report:', error)
-    error.value = `Failed to generate ${type} report. Please try again.`
-  }
-}
-
-// Generate structured report data for popup display
-const generateStructuredReportData = (type) => {
-  // Determine date range based on report type
-  const now = new Date()
-  let startDate, endDate, reportTitle
-  
-  if (type === 'weekly') {
-    // Get current week (Sunday to Saturday)
-    const currentDay = now.getDay()
-    startDate = new Date(now)
-    startDate.setDate(now.getDate() - currentDay)
-    startDate.setHours(0, 0, 0, 0)
-    
-    endDate = new Date(startDate)
-    endDate.setDate(startDate.getDate() + 6)
-    endDate.setHours(23, 59, 59, 999)
-    
-    reportTitle = `Weekly Feedback Report - Week of ${formatDate(startDate)}`
-  } else if (type === 'monthly') {
-    // Get current month
-    startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
-    
-    reportTitle = `Monthly Feedback Report - ${startDate.toLocaleString('default', { month: 'long', year: 'numeric' })}`
-  }
-  
-  // Filter data for the report period
-  const reportData = feedbackData.value.filter(item => {
-    const itemDate = new Date(item.createdDate)
-    return itemDate >= startDate && itemDate <= endDate
-  })
-  
-  const totalFeedback = reportData.length
-  const sentimentCounts = {
-    positive: reportData.filter(item => item.sentiment === 'Positive').length,
-    neutral: reportData.filter(item => item.sentiment === 'Neutral').length,
-    negative: reportData.filter(item => item.sentiment === 'Negative').length
-  }
-  
-  // Account manager stats
-  const managerStats = {}
-  reportData.forEach(item => {
-    const manager = item.accountOwner || 'Unassigned'
-    if (!managerStats[manager]) {
-      managerStats[manager] = { total: 0, positive: 0, neutral: 0, negative: 0 }
-    }
-    managerStats[manager].total++
-    managerStats[manager][item.sentiment.toLowerCase()]++
-  })
-  
-  const managers = Object.entries(managerStats)
-    .sort(([,a], [,b]) => b.total - a.total)
-    .map(([name, stats]) => ({
-      name,
-      total: stats.total,
-      positive: stats.positive,
-      neutral: stats.neutral,
-      negative: stats.negative,
-      positiveRate: stats.total > 0 ? Math.round((stats.positive / stats.total) * 100) : 0
-    }))
-  
-  // Top accounts by feedback volume
-  const accountStats = {}
-  reportData.forEach(item => {
-    const account = item.accountName || 'Unknown'
-    accountStats[account] = (accountStats[account] || 0) + 1
-  })
-  const topAccounts = Object.entries(accountStats)
-    .sort(([,a], [,b]) => b - a)
-    .slice(0, 10)
-    .map(([name, count]) => ({ name, count }))
-  
-  // Generate insights
-  const insights = []
-  if (totalFeedback === 0) {
-    insights.push('No feedback collected during this period')
-    insights.push('Consider reaching out to clients for feedback')
-    insights.push('Review feedback collection processes')
-  } else {
-    const positiveRate = Math.round((sentimentCounts.positive / totalFeedback) * 100)
-    const negativeRate = Math.round((sentimentCounts.negative / totalFeedback) * 100)
-    
-    if (positiveRate >= 70) {
-      insights.push(`Excellent customer satisfaction with ${positiveRate}% positive feedback`)
-      insights.push('Continue current service quality standards')
-    } else if (positiveRate >= 50) {
-      insights.push(`Moderate customer satisfaction at ${positiveRate}% positive feedback`)
-      insights.push('Opportunity for improvement in service quality')
-    } else {
-      insights.push(`Low customer satisfaction at ${positiveRate}% positive feedback`)
-      insights.push('Immediate action required to address service issues')
-    }
-    
-    if (negativeRate > 20) {
-      insights.push(`High negative feedback rate (${negativeRate}%) requires immediate attention`)
-      insights.push('Review negative feedback details and implement corrective actions')
-    }
-    
-    // Manager-specific insights
-    const topManager = managers[0]
-    if (topManager) {
-      insights.push(`${topManager.name} leads in feedback collection with ${topManager.total} responses`)
-    }
-  }
-  
-  return {
-    type,
-    title: reportTitle,
-    dateRange: `${formatDate(startDate)} - ${formatDate(endDate)}`,
-    summary: {
-      total: totalFeedback,
-      positive: sentimentCounts.positive,
-      neutral: sentimentCounts.neutral,
-      negative: sentimentCounts.negative,
-      positivePercent: totalFeedback > 0 ? Math.round((sentimentCounts.positive / totalFeedback) * 100) : 0,
-      neutralPercent: totalFeedback > 0 ? Math.round((sentimentCounts.neutral / totalFeedback) * 100) : 0,
-      negativePercent: totalFeedback > 0 ? Math.round((sentimentCounts.negative / totalFeedback) * 100) : 0
-    },
-    managers,
-    topAccounts,
-    insights
-  }
 }
 
 // Logout method
