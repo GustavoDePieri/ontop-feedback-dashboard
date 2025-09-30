@@ -1,52 +1,54 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-secondary-50 dark:bg-secondary-900">
     <!-- Header -->
-    <header class="bg-white shadow">
+    <header class="page-header">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-6">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center py-6 space-y-4 md:space-y-0">
           <div>
-            <h1 class="text-3xl font-bold text-gray-900">
+            <h1 class="page-title">
               Reports & Insights
             </h1>
-            <p class="mt-2 text-gray-600">
+            <p class="page-subtitle">
               Weekly and monthly reports with actionable insights
             </p>
           </div>
           
-          <div class="flex space-x-3">
-            <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+          <div class="flex flex-col sm:flex-row gap-3">
+            <AppButton variant="success">
+              <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
               Generate Report
-            </button>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+            </AppButton>
+            <AppButton variant="primary">
+              <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
               Schedule Report
-            </button>
+            </AppButton>
           </div>
         </div>
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <main class="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
       <!-- Report Types -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up">
         <!-- Weekly Report -->
-        <AppCard :hover="true" class="cursor-pointer" @click="generateWeeklyReport">
-          <div class="p-6">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
+        <AppCard :hover="true" :clickable="true" @click="generateWeeklyReport">
+          <div class="card-body">
+            <div class="flex items-center mb-4">
+              <div class="metric-card-icon bg-gradient-to-br from-primary-500 to-primary-600">
+                <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
               </div>
               <div class="ml-4">
-                <h3 class="text-lg font-medium text-gray-900">Weekly Report</h3>
-                <p class="text-sm text-gray-500">Last 7 days analysis</p>
+                <h3 class="text-lg font-semibold text-secondary-900 dark:text-white">Weekly Report</h3>
+                <p class="text-sm text-secondary-500 dark:text-secondary-400">Last 7 days analysis</p>
               </div>
             </div>
-            <div class="mt-4">
-              <p class="text-sm text-gray-600">Comprehensive weekly insights including sentiment trends, top accounts, and key metrics.</p>
-            </div>
+            <p class="text-sm text-secondary-600 dark:text-secondary-300">Comprehensive weekly insights including sentiment trends, top accounts, and key metrics.</p>
           </div>
         </AppCard>
 
@@ -97,46 +99,46 @@
 
       <!-- Recent Reports -->
       <AppCard class="mb-8">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-medium text-gray-900">Recent Reports</h3>
+        <div class="card-header">
+          <h3 class="text-lg font-semibold text-secondary-900 dark:text-white">Recent Reports</h3>
         </div>
-        <div class="p-6">
-          <div class="space-y-4">
-            <div v-for="report in recentReports" :key="report.id" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+        <div class="card-body">
+          <div class="space-y-3">
+            <div v-for="report in recentReports" :key="report.id" class="flex items-center justify-between p-4 bg-secondary-50 dark:bg-secondary-700/30 rounded-lg hover:bg-secondary-100 dark:hover:bg-secondary-700/50 transition-colors">
               <div class="flex items-center space-x-4">
                 <div class="flex-shrink-0">
-                  <div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="{
-                    'bg-blue-100': report.type === 'weekly',
-                    'bg-purple-100': report.type === 'monthly',
-                    'bg-green-100': report.type === 'custom'
+                  <div class="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm" :class="{
+                    'bg-primary-100 dark:bg-primary-900/30': report.type === 'weekly',
+                    'bg-purple-100 dark:bg-purple-900/30': report.type === 'monthly',
+                    'bg-success-100 dark:bg-success-900/30': report.type === 'custom'
                   }">
                     <svg class="w-5 h-5" :class="{
-                      'text-blue-600': report.type === 'weekly',
-                      'text-purple-600': report.type === 'monthly',
-                      'text-green-600': report.type === 'custom'
+                      'text-primary-600 dark:text-primary-400': report.type === 'weekly',
+                      'text-purple-600 dark:text-purple-400': report.type === 'monthly',
+                      'text-success-600 dark:text-success-400': report.type === 'custom'
                     }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
                 </div>
                 <div>
-                  <h4 class="text-sm font-medium text-gray-900">{{ report.title }}</h4>
-                  <p class="text-sm text-gray-500">{{ report.description }}</p>
-                  <p class="text-xs text-gray-400 mt-1">Generated {{ formatDate(report.createdAt) }}</p>
+                  <h4 class="text-sm font-medium text-secondary-900 dark:text-white">{{ report.title }}</h4>
+                  <p class="text-sm text-secondary-500 dark:text-secondary-400">{{ report.description }}</p>
+                  <p class="text-xs text-secondary-400 dark:text-secondary-500 mt-1">Generated {{ formatDate(report.createdAt) }}</p>
                 </div>
               </div>
               <div class="flex items-center space-x-3">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="{
-                  'bg-green-100 text-green-800': report.status === 'completed',
-                  'bg-yellow-100 text-yellow-800': report.status === 'processing',
-                  'bg-red-100 text-red-800': report.status === 'failed'
+                <span class="badge" :class="{
+                  'badge-success': report.status === 'completed',
+                  'badge-warning': report.status === 'processing',
+                  'badge-danger': report.status === 'failed'
                 }">
                   {{ report.status }}
                 </span>
-                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                <button class="text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium">
                   Download
                 </button>
-                <button class="text-gray-400 hover:text-gray-600">
+                <button class="text-secondary-400 hover:text-secondary-600 dark:text-secondary-500 dark:hover:text-secondary-300">
                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                   </svg>
@@ -320,3 +322,4 @@ const formatDate = (date: Date) => {
   })
 }
 </script>
+
