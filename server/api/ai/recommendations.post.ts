@@ -8,23 +8,24 @@ interface RecommendationRequest {
   focusArea?: string
 }
 
-interface ActionItem {
+interface RecurringRequest {
+  request: string
+  frequency: number
   priority: 'high' | 'medium' | 'low'
-  area: string
-  action: string
-  rationale: string
-  impact: string
-  timeline: string
-  affectedAccounts?: string[]
+  evidence: string
+  revenueImpact: string
+  sentiment: string
+  recommendedAction: string
+  quickWinPotential: string
+  crossFunctionalOwner: string
 }
 
 interface AIRecommendation {
   summary: string
-  keyInsights: string[]
-  actionItems: ActionItem[]
-  trends: string[]
-  risks: string[]
-  opportunities: string[]
+  topRecurringRequests: RecurringRequest[]
+  emergingPatterns: string[]
+  criticalRisks: string[]
+  quickWins: string[]
 }
 
 export default defineEventHandler(async (event) => {
@@ -195,54 +196,62 @@ function createPrompt(
     ? `\n\nPay special attention to: ${focusArea}`
     : ''
 
-  return `You are an expert customer success analyst for Ontop, a financial services platform. Analyze the following customer feedback data and provide strategic, actionable recommendations.
+  return `You are a strategic analyst for Ontop leadership. Your goal is to identify the MOST RECURRING client requests and prioritize them by evidence and frequency - NOT by department or subcategory.
+
+CRITICAL CONTEXT:
+This dashboard is for LEADERSHIP VISIBILITY. We need to see what clients are asking for most consistently, so we can tackle the biggest problems first and work our way down. This is about crossing items off a priority list backed by data, not creating scattered feedback reports.
 
 FEEDBACK DATA (${segmentDescription}):
 ${feedbackSummary}
 ${focusAreaText}
 
-Please provide a comprehensive analysis in the following JSON format:
+ANALYSIS INSTRUCTIONS:
+1. **IGNORE department silos** - Look at ALL feedback holistically
+2. **GROUP by what clients actually want** - Not by internal categories
+3. **COUNT frequency** - How many times do we hear similar requests?
+4. **RANK by evidence** - Most mentioned = highest priority
+5. **IDENTIFY patterns** - What are the recurring themes week after week?
+6. **CONNECT revenue impact** - Which issues affect high-value clients (MRR/TPV)?
+
+Please provide a FREQUENCY-DRIVEN ANALYSIS in the following JSON format:
 
 {
-  "summary": "A concise 2-3 sentence executive summary of the overall feedback landscape",
-  "keyInsights": [
-    "3-5 most important insights discovered from the data",
-    "Include patterns, trends, and notable observations"
-  ],
-  "actionItems": [
+  "summary": "A 2-3 sentence executive summary highlighting the TOP 3 most recurring client requests and their combined impact on the business",
+  "topRecurringRequests": [
     {
-      "priority": "high|medium|low",
-      "area": "The department or area this action targets (e.g., Product, Support, Operations, Sales)",
-      "action": "Clear, specific action to take",
-      "rationale": "Why this action is important based on the data",
-      "impact": "Expected positive outcome",
-      "timeline": "Suggested timeframe (e.g., Immediate, Within 1 week, Within 30 days)",
-      "affectedAccounts": ["Optional: list of specific accounts if relevant"]
+      "request": "Clear description of what clients are asking for (e.g., 'Faster payment processing', 'Better reporting tools', 'Multi-currency support')",
+      "frequency": "number of feedback items mentioning this (as a number)",
+      "priority": "high|medium|low (based on frequency + revenue impact)",
+      "evidence": "Specific data points showing this pattern (e.g., '15 mentions across 10 accounts, including 3 high-MRR clients')",
+      "revenueImpact": "How much MRR/TPV is affected by this issue",
+      "sentiment": "Overall sentiment about this issue (Positive/Negative/Mixed)",
+      "recommendedAction": "Specific action to address this recurring request",
+      "quickWinPotential": "Can this be solved quickly? (Yes/No + why)",
+      "crossFunctionalOwner": "Who should own this (Product/Support/Operations/Sales/etc.)"
     }
   ],
-  "trends": [
-    "3-5 emerging trends or patterns in the feedback",
-    "Both positive trends to amplify and negative trends to address"
+  "emergingPatterns": [
+    "Patterns that are starting to appear but haven't reached critical mass yet",
+    "Early warning signs that could become major issues if ignored"
   ],
-  "risks": [
-    "2-4 potential risks or issues that need immediate attention",
-    "Include customer churn risks or escalation concerns"
+  "criticalRisks": [
+    "Issues with strong evidence of potential churn or escalation",
+    "Problems affecting multiple high-value clients"
   ],
-  "opportunities": [
-    "3-5 opportunities for improvement or growth",
-    "Include upsell opportunities, feature requests, or process improvements"
+  "quickWins": [
+    "Low-hanging fruit that appears frequently and can be solved fast",
+    "Small changes with disproportionate positive impact"
   ]
 }
 
-IMPORTANT GUIDELINES:
-- Be specific and actionable - avoid generic advice
-- Prioritize based on impact and urgency
-- Reference specific data points when possible
-- Consider both quick wins and long-term improvements
-- Think about resource allocation and feasibility
-- For high-priority items, be especially clear about why they matter
-- If you see patterns affecting high-value accounts (high MRR/TPV), flag those
-- Consider the feedback direction (who it's directed to) when making recommendations
+MANDATORY RULES:
+- Sort topRecurringRequests by FREQUENCY FIRST, then by revenue impact
+- Only include requests mentioned in at least 3+ feedback items
+- Be SPECIFIC about numbers - how many times, how much revenue, how many clients
+- Focus on ACTIONABLE insights, not descriptive observations
+- If there's insufficient evidence (< 3 mentions), don't include it
+- Think like a CEO: What matters most? What should we fix first?
+- Avoid generic advice - every recommendation must be tied to specific data
 
 Return ONLY the JSON object, no additional text.`
 }
@@ -262,31 +271,31 @@ function parseAIResponse(text: string, feedbackItems: FeedbackItem[]): AIRecomme
     // Validate and structure the response
     return {
       summary: parsed.summary || 'No summary provided',
-      keyInsights: Array.isArray(parsed.keyInsights) ? parsed.keyInsights : [],
-      actionItems: Array.isArray(parsed.actionItems) 
-        ? parsed.actionItems.map((item: any) => ({
+      topRecurringRequests: Array.isArray(parsed.topRecurringRequests) 
+        ? parsed.topRecurringRequests.map((item: any) => ({
+            request: item.request || '',
+            frequency: item.frequency || 0,
             priority: item.priority || 'medium',
-            area: item.area || 'General',
-            action: item.action || '',
-            rationale: item.rationale || '',
-            impact: item.impact || '',
-            timeline: item.timeline || 'TBD',
-            affectedAccounts: item.affectedAccounts || []
+            evidence: item.evidence || '',
+            revenueImpact: item.revenueImpact || 'Unknown',
+            sentiment: item.sentiment || 'Mixed',
+            recommendedAction: item.recommendedAction || '',
+            quickWinPotential: item.quickWinPotential || 'Unknown',
+            crossFunctionalOwner: item.crossFunctionalOwner || 'TBD'
           }))
         : [],
-      trends: Array.isArray(parsed.trends) ? parsed.trends : [],
-      risks: Array.isArray(parsed.risks) ? parsed.risks : [],
-      opportunities: Array.isArray(parsed.opportunities) ? parsed.opportunities : []
+      emergingPatterns: Array.isArray(parsed.emergingPatterns) ? parsed.emergingPatterns : [],
+      criticalRisks: Array.isArray(parsed.criticalRisks) ? parsed.criticalRisks : [],
+      quickWins: Array.isArray(parsed.quickWins) ? parsed.quickWins : []
     }
   } catch (error) {
     // Return a fallback structure
     return {
       summary: 'AI analysis completed but response parsing failed. Please try again.',
-      keyInsights: ['Unable to parse AI response'],
-      actionItems: [],
-      trends: [],
-      risks: [],
-      opportunities: []
+      topRecurringRequests: [],
+      emergingPatterns: ['Unable to parse AI response'],
+      criticalRisks: [],
+      quickWins: []
     }
   }
 }

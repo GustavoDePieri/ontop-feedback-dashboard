@@ -1,5 +1,26 @@
 import type { FeedbackItem } from '~/types/feedback'
 
+export interface RecurringRequest {
+  request: string
+  frequency: number
+  priority: 'high' | 'medium' | 'low'
+  evidence: string
+  revenueImpact: string
+  sentiment: string
+  recommendedAction: string
+  quickWinPotential: string
+  crossFunctionalOwner: string
+}
+
+export interface AIRecommendation {
+  summary: string
+  topRecurringRequests: RecurringRequest[]
+  emergingPatterns: string[]
+  criticalRisks: string[]
+  quickWins: string[]
+}
+
+// Legacy interface for backwards compatibility
 export interface ActionItem {
   priority: 'high' | 'medium' | 'low'
   area: string
@@ -8,15 +29,6 @@ export interface ActionItem {
   impact: string
   timeline: string
   affectedAccounts?: string[]
-}
-
-export interface AIRecommendation {
-  summary: string
-  keyInsights: string[]
-  actionItems: ActionItem[]
-  trends: string[]
-  risks: string[]
-  opportunities: string[]
 }
 
 export interface AIRecommendationMetadata {

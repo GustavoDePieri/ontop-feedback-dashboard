@@ -1,17 +1,17 @@
 <template>
   <div class="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-slate-700">
     <!-- Header -->
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-3">
-          <div class="p-2 bg-purple-600 rounded-lg">
+          <div class="p-2 bg-indigo-600 rounded-lg">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
           </div>
           <div>
-            <h3 class="text-lg font-bold text-gray-900 dark:text-slate-100">🤖 AI-Powered Recommendations</h3>
-            <p class="text-sm text-gray-600 dark:text-slate-400">Intelligent insights powered by Google Gemini</p>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-slate-100">📊 Priority Stack: What Clients Want Most</h3>
+            <p class="text-sm text-gray-600 dark:text-slate-400">Evidence-based ranking powered by AI</p>
           </div>
         </div>
         <button 
@@ -31,10 +31,10 @@
       <!-- Loading State -->
       <div v-if="loading" class="flex flex-col items-center justify-center py-12">
         <div class="relative">
-          <div class="w-16 h-16 border-4 border-purple-200 dark:border-purple-800 rounded-full"></div>
-          <div class="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+          <div class="w-16 h-16 border-4 border-indigo-200 dark:border-indigo-800 rounded-full"></div>
+          <div class="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
         </div>
-        <p class="mt-4 text-gray-600 dark:text-slate-400 font-medium">Analyzing feedback with AI...</p>
+        <p class="mt-4 text-gray-600 dark:text-slate-400 font-medium">Analyzing recurring patterns...</p>
         <p class="text-sm text-gray-500 dark:text-slate-500 mt-1">This may take 10-20 seconds</p>
       </div>
 
@@ -45,7 +45,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div>
-            <h4 class="text-red-800 dark:text-red-300 font-semibold">Error Generating Recommendations</h4>
+            <h4 class="text-red-800 dark:text-red-300 font-semibold">Error Generating Analysis</h4>
             <p class="text-red-700 dark:text-red-400 text-sm mt-1">{{ error }}</p>
           </div>
         </div>
@@ -63,141 +63,167 @@
         </div>
 
         <!-- Executive Summary -->
-        <div class="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/10 dark:to-blue-900/10 border border-purple-200 dark:border-purple-800 rounded-lg p-5">
-          <h4 class="text-lg font-bold text-purple-900 dark:text-purple-300 mb-2 flex items-center">
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 border-l-4 border-indigo-600 rounded-lg p-5">
+          <h4 class="text-lg font-bold text-indigo-900 dark:text-indigo-300 mb-2 flex items-center">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Executive Summary
+            Leadership Summary
           </h4>
-          <p class="text-gray-700 dark:text-slate-300 leading-relaxed">{{ recommendations.summary }}</p>
+          <p class="text-gray-700 dark:text-slate-300 leading-relaxed text-base">{{ recommendations.summary }}</p>
         </div>
 
-        <!-- Action Items -->
+        <!-- Top Recurring Requests (Priority Stack) -->
         <div>
-          <h4 class="text-lg font-bold text-gray-900 dark:text-slate-100 mb-3 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-            Recommended Actions ({{ recommendations.actionItems.length }})
-          </h4>
-          <div class="space-y-3">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="text-xl font-bold text-gray-900 dark:text-slate-100 flex items-center">
+              <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Priority Stack: Most Requested Features
+            </h4>
+            <span class="text-sm text-gray-500 dark:text-slate-400">Sorted by frequency + revenue impact</span>
+          </div>
+          
+          <div class="space-y-4">
             <div 
-              v-for="(item, index) in recommendations.actionItems" 
+              v-for="(request, index) in recommendations.topRecurringRequests" 
               :key="index"
-              class="border rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
+              class="border-l-4 rounded-lg p-5 hover:shadow-lg transition-all duration-200 relative overflow-hidden"
               :class="{
-                'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/10': item.priority === 'high',
-                'border-yellow-300 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-900/10': item.priority === 'medium',
-                'border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-900/20': item.priority === 'low'
+                'border-red-500 bg-red-50 dark:bg-red-900/20': request.priority === 'high',
+                'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20': request.priority === 'medium',
+                'border-blue-500 bg-blue-50 dark:bg-blue-900/20': request.priority === 'low'
               }"
             >
-              <div class="flex items-start justify-between mb-2">
-                <div class="flex items-center space-x-2">
+              <!-- Priority Rank Badge -->
+              <div class="absolute top-3 right-3 flex items-center space-x-2">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600">
+                  #{{ index + 1 }}
+                </span>
+                <span 
+                  class="px-3 py-1 rounded-full text-xs font-bold uppercase"
+                  :class="{
+                    'bg-red-600 text-white': request.priority === 'high',
+                    'bg-yellow-600 text-white': request.priority === 'medium',
+                    'bg-blue-600 text-white': request.priority === 'low'
+                  }"
+                >
+                  {{ request.priority }}
+                </span>
+              </div>
+
+              <!-- Request Title -->
+              <h5 class="text-lg font-bold text-gray-900 dark:text-slate-100 mb-3 pr-24">
+                {{ request.request }}
+              </h5>
+
+              <!-- Key Metrics Row -->
+              <div class="flex items-center space-x-4 mb-3 text-sm">
+                <div class="flex items-center space-x-1">
+                  <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                  </svg>
+                  <span class="font-bold text-indigo-900 dark:text-indigo-300">{{ request.frequency }} mentions</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="font-semibold text-green-900 dark:text-green-300">{{ request.revenueImpact }}</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                  <svg class="w-4 h-4" :class="{
+                    'text-red-600': request.sentiment === 'Negative',
+                    'text-yellow-600': request.sentiment === 'Mixed',
+                    'text-green-600': request.sentiment === 'Positive'
+                  }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="text-gray-700 dark:text-slate-300">{{ request.sentiment }}</span>
+                </div>
+              </div>
+
+              <!-- Evidence -->
+              <div class="bg-white dark:bg-slate-800/50 rounded-lg p-3 mb-3">
+                <p class="text-sm text-gray-600 dark:text-slate-400 mb-1 font-semibold">📊 Evidence:</p>
+                <p class="text-sm text-gray-700 dark:text-slate-300">{{ request.evidence }}</p>
+              </div>
+
+              <!-- Recommended Action -->
+              <div class="bg-white dark:bg-slate-800/50 rounded-lg p-3 mb-3">
+                <p class="text-sm text-gray-600 dark:text-slate-400 mb-1 font-semibold">✅ Recommended Action:</p>
+                <p class="text-sm text-gray-900 dark:text-slate-100 font-medium">{{ request.recommendedAction }}</p>
+              </div>
+
+              <!-- Bottom Row: Quick Win + Owner -->
+              <div class="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-slate-700">
+                <div class="flex items-center space-x-3">
                   <span 
-                    class="px-2 py-1 rounded-full text-xs font-bold uppercase"
+                    class="px-3 py-1 rounded-full text-xs font-semibold"
                     :class="{
-                      'bg-red-600 text-white': item.priority === 'high',
-                      'bg-yellow-600 text-white': item.priority === 'medium',
-                      'bg-gray-600 text-white': item.priority === 'low'
+                      'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300': request.quickWinPotential.toLowerCase().includes('yes'),
+                      'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300': !request.quickWinPotential.toLowerCase().includes('yes')
                     }"
                   >
-                    {{ item.priority }}
+                    {{ request.quickWinPotential.toLowerCase().includes('yes') ? '⚡ Quick Win' : '🔧 Complex' }}
                   </span>
-                  <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium rounded-full">
-                    {{ item.area }}
-                  </span>
+                  <span class="text-xs text-gray-500 dark:text-slate-400">{{ request.quickWinPotential }}</span>
                 </div>
-                <span class="text-xs text-gray-500 dark:text-slate-400">{{ item.timeline }}</span>
-              </div>
-              <h5 class="font-semibold text-gray-900 dark:text-slate-100 mb-2">{{ item.action }}</h5>
-              <p class="text-sm text-gray-700 dark:text-slate-300 mb-2"><strong>Why:</strong> {{ item.rationale }}</p>
-              <p class="text-sm text-gray-700 dark:text-slate-300"><strong>Impact:</strong> {{ item.impact }}</p>
-              <div v-if="item.affectedAccounts && item.affectedAccounts.length > 0" class="mt-2 flex items-center flex-wrap gap-1">
-                <span class="text-xs text-gray-600 dark:text-slate-400">Affected:</span>
-                <span 
-                  v-for="account in item.affectedAccounts.slice(0, 3)" 
-                  :key="account"
-                  class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs rounded"
-                >
-                  {{ account }}
-                </span>
-                <span v-if="item.affectedAccounts.length > 3" class="text-xs text-gray-500 dark:text-slate-400">
-                  +{{ item.affectedAccounts.length - 3 }} more
+                <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs font-medium rounded-full">
+                  👤 {{ request.crossFunctionalOwner }}
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Key Insights -->
-        <div v-if="recommendations.keyInsights.length > 0">
-          <h4 class="text-lg font-bold text-gray-900 dark:text-slate-100 mb-3 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            Key Insights
-          </h4>
-          <ul class="space-y-2">
-            <li 
-              v-for="(insight, index) in recommendations.keyInsights" 
-              :key="index"
-              class="flex items-start space-x-2 p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-lg"
-            >
-              <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <!-- Secondary Insights Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+          <!-- Quick Wins -->
+          <div v-if="recommendations.quickWins.length > 0" class="bg-green-50 dark:bg-green-900/10 border-l-4 border-green-500 rounded-lg p-4">
+            <h5 class="font-bold text-green-900 dark:text-green-300 mb-3 flex items-center text-sm">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              <span class="text-gray-700 dark:text-slate-300 text-sm">{{ insight }}</span>
-            </li>
-          </ul>
-        </div>
+              ⚡ Quick Wins
+            </h5>
+            <ul class="space-y-2 text-sm text-gray-700 dark:text-slate-300">
+              <li v-for="(win, index) in recommendations.quickWins" :key="index" class="flex items-start">
+                <span class="mr-2 text-green-600 font-bold">•</span>
+                <span>{{ win }}</span>
+              </li>
+            </ul>
+          </div>
 
-        <!-- Trends, Risks, Opportunities Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Trends -->
-          <div v-if="recommendations.trends.length > 0" class="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded-lg p-4">
-            <h5 class="font-semibold text-green-900 dark:text-green-300 mb-2 flex items-center">
+          <!-- Emerging Patterns -->
+          <div v-if="recommendations.emergingPatterns.length > 0" class="bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 rounded-lg p-4">
+            <h5 class="font-bold text-blue-900 dark:text-blue-300 mb-3 flex items-center text-sm">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
-              Trends
+              📈 Emerging Patterns
             </h5>
-            <ul class="space-y-1 text-sm text-gray-700 dark:text-slate-300">
-              <li v-for="(trend, index) in recommendations.trends" :key="index" class="flex items-start">
-                <span class="mr-1">•</span>
-                <span>{{ trend }}</span>
+            <ul class="space-y-2 text-sm text-gray-700 dark:text-slate-300">
+              <li v-for="(pattern, index) in recommendations.emergingPatterns" :key="index" class="flex items-start">
+                <span class="mr-2 text-blue-600 font-bold">•</span>
+                <span>{{ pattern }}</span>
               </li>
             </ul>
           </div>
 
-          <!-- Risks -->
-          <div v-if="recommendations.risks.length > 0" class="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg p-4">
-            <h5 class="font-semibold text-red-900 dark:text-red-300 mb-2 flex items-center">
+          <!-- Critical Risks -->
+          <div v-if="recommendations.criticalRisks.length > 0" class="bg-red-50 dark:bg-red-900/10 border-l-4 border-red-500 rounded-lg p-4">
+            <h5 class="font-bold text-red-900 dark:text-red-300 mb-3 flex items-center text-sm">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
-              Risks
+              ⚠️ Critical Risks
             </h5>
-            <ul class="space-y-1 text-sm text-gray-700 dark:text-slate-300">
-              <li v-for="(risk, index) in recommendations.risks" :key="index" class="flex items-start">
-                <span class="mr-1">•</span>
+            <ul class="space-y-2 text-sm text-gray-700 dark:text-slate-300">
+              <li v-for="(risk, index) in recommendations.criticalRisks" :key="index" class="flex items-start">
+                <span class="mr-2 text-red-600 font-bold">•</span>
                 <span>{{ risk }}</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Opportunities -->
-          <div v-if="recommendations.opportunities.length > 0" class="bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
-            <h5 class="font-semibold text-purple-900 dark:text-purple-300 mb-2 flex items-center">
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-              Opportunities
-            </h5>
-            <ul class="space-y-1 text-sm text-gray-700 dark:text-slate-300">
-              <li v-for="(opportunity, index) in recommendations.opportunities" :key="index" class="flex items-start">
-                <span class="mr-1">•</span>
-                <span>{{ opportunity }}</span>
               </li>
             </ul>
           </div>
@@ -206,13 +232,13 @@
 
       <!-- Empty State (no recommendations yet) -->
       <div v-else class="text-center py-12">
-        <div class="w-20 h-20 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-10 h-10 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        <div class="w-20 h-20 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
         </div>
-        <h4 class="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-2">Ready to analyze your feedback</h4>
-        <p class="text-gray-600 dark:text-slate-400 text-sm">Configure your filters and click "Generate AI Recommendations" to get started</p>
+        <h4 class="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-2">Ready to analyze recurring requests</h4>
+        <p class="text-gray-600 dark:text-slate-400 text-sm">Click "Generate AI Analysis" to discover what clients are asking for most</p>
       </div>
     </div>
   </div>
