@@ -5,10 +5,10 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center py-6 space-y-4 md:space-y-0">
           <div>
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 class="text-2xl md:text-3xl font-bold text-gradient-primary">
               Ontop Analytics Hub
             </h1>
-            <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-gray-400">
+            <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-secondary-200">
               Real-time Customer Intelligence Dashboard
             </p>
           </div>
@@ -55,12 +55,12 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center space-x-3">
-            <div class="p-2 gradient-primary rounded-lg shadow-md">
+            <div class="p-3 gradient-primary rounded-xl shadow-md">
               <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
             </div>
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Smart Filters</h2>
+            <h2 class="text-xl font-bold text-gradient-primary">Smart Filters</h2>
           </div>
           <AppButton 
             v-if="hasActiveFilters"
@@ -273,8 +273,8 @@
       <!-- Executive Summary Dashboard -->
       <div v-if="feedbackData.length > 0" class="mb-8 animate-slide-up">
         <div class="mb-6">
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Executive Summary</h2>
-          <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-gray-400">Key performance indicators and business metrics</p>
+          <h2 class="text-2xl md:text-3xl font-bold text-gradient-primary">Executive Summary</h2>
+          <p class="mt-1 text-sm md:text-base text-gray-600 dark:text-secondary-200">Key performance indicators and business metrics</p>
         </div>
 
         <!-- Primary KPI Cards -->
@@ -283,16 +283,16 @@
         <AppCard>
           <div class="metric-card">
             <div class="flex items-center">
-              <div class="metric-card-icon bg-gradient-to-br from-primary-500 to-primary-600">
+              <div class="metric-card-icon bg-gradient-to-br from-primary-800 to-primary-500 shadow-lg">
                 <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
                 </svg>
               </div>
               <div class="ml-5 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Feedback</dt>
+                  <dt class="text-sm font-medium text-gray-600 dark:text-secondary-700 truncate">Total Feedback</dt>
                   <dd class="flex items-baseline mt-1">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ feedbackData.length }}</div>
+                    <div class="text-2xl font-bold text-gray-900 dark:text-secondary-900">{{ feedbackData.length }}</div>
                     <div class="ml-2 flex items-baseline text-sm font-semibold text-success-600 dark:text-success-400">
                       <svg class="self-center flex-shrink-0 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
@@ -311,17 +311,17 @@
         <AppCard :hover="true" :clickable="true" @click="showFeedbackBySentiment('Positive')">
           <div class="metric-card">
             <div class="flex items-center">
-              <div class="metric-card-icon bg-gradient-to-br from-success-500 to-success-600">
+              <div class="metric-card-icon bg-gradient-to-br from-success-500 to-success-600 shadow-lg">
                 <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"></path>
                 </svg>
               </div>
               <div class="ml-5 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Positive Sentiment</dt>
+                  <dt class="text-sm font-medium text-gray-600 dark:text-secondary-700 truncate">Positive Sentiment</dt>
                   <dd class="flex items-baseline mt-1">
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ sentimentSummary.positive }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <div class="text-2xl font-bold text-gray-900 dark:text-secondary-900">{{ sentimentSummary.positive }}</div>
+                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-secondary-600">
                       ({{ sentimentPercentages.positive }}%)
                     </div>
                   </dd>
@@ -335,60 +335,52 @@
         </AppCard>
 
         <!-- Neutral Sentiment -->
-        <AppCard :hover="true" class="cursor-pointer transition-transform hover:scale-105" @click="showFeedbackBySentiment('Neutral')">
-          <div class="p-6">
+        <AppCard :hover="true" :clickable="true" @click="showFeedbackBySentiment('Neutral')">
+          <div class="metric-card">
             <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-5 5a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
-                  </svg>
-                </div>
+              <div class="metric-card-icon bg-gradient-to-br from-warning-500 to-warning-600 shadow-lg">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path>
+                </svg>
               </div>
-              <div class="ml-5 w-0 flex-1">
+              <div class="ml-5 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Neutral Sentiment</dt>
-                  <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.neutral }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
+                  <dt class="text-sm font-medium text-gray-600 dark:text-secondary-700 truncate">Neutral Sentiment</dt>
+                  <dd class="flex items-baseline mt-1">
+                    <div class="text-2xl font-bold text-gray-900 dark:text-secondary-900">{{ sentimentSummary.neutral }}</div>
+                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-secondary-600">
                       ({{ sentimentPercentages.neutral }}%)
                     </div>
                   </dd>
                 </dl>
               </div>
             </div>
-            <div class="mt-2">
-              <p class="text-xs text-yellow-600 font-medium">Click to view all neutral feedback</p>
-            </div>
+            <div class="mt-3 text-xs text-warning-600 dark:text-warning-700 font-medium">Click to view all neutral feedback</div>
           </div>
         </AppCard>
 
         <!-- Negative Sentiment -->
-        <AppCard :hover="true" class="cursor-pointer transition-transform hover:scale-105" @click="showFeedbackBySentiment('Negative')">
-          <div class="p-6">
+        <AppCard :hover="true" :clickable="true" @click="showFeedbackBySentiment('Negative')">
+          <div class="metric-card">
             <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
-                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-7.536 5.879a1 1 0 001.415 1.414 3 3 0 004.242 0 1 1 0 001.415-1.414 5 5 0 00-7.072 0z" clip-rule="evenodd"></path>
-                  </svg>
-                </div>
+              <div class="metric-card-icon bg-gradient-to-br from-danger-500 to-danger-600 shadow-lg">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100 2 1 1 0 000-2zm7 1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd"></path>
+                </svg>
               </div>
-              <div class="ml-5 w-0 flex-1">
+              <div class="ml-5 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Negative Sentiment</dt>
-                  <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.negative }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
+                  <dt class="text-sm font-medium text-gray-600 dark:text-secondary-700 truncate">Negative Sentiment</dt>
+                  <dd class="flex items-baseline mt-1">
+                    <div class="text-2xl font-bold text-gray-900 dark:text-secondary-900">{{ sentimentSummary.negative }}</div>
+                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-secondary-600">
                       ({{ sentimentPercentages.negative }}%)
                     </div>
                   </dd>
                 </dl>
               </div>
             </div>
-            <div class="mt-2">
-              <p class="text-xs text-red-600 font-medium">Click to view all negative feedback</p>
-            </div>
+            <div class="mt-3 text-xs text-danger-600 dark:text-danger-700 font-medium">Click to view all negative feedback</div>
           </div>
         </AppCard>
       </div>
