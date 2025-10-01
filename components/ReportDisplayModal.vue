@@ -241,9 +241,10 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Footer -->
-        <div class="bg-white/5 px-4 py-3">
+      <!-- Footer -->
+      <div class="flex-shrink-0 bg-white/5 px-4 py-3 border-t border-white/10">
           <div class="flex items-center justify-between">
             <p class="text-sm text-white">
               Generated on {{ new Date().toLocaleString() }}
@@ -276,14 +277,14 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Success Toast -->
-        <div v-if="showCopySuccess" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-60 flex items-center">
-          <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          Report copied to clipboard!
-        </div>
+      <!-- Success Toast -->
+      <div v-if="showCopySuccess" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-[60] flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        Report copied to clipboard!
       </div>
     </div>
   </transition>
