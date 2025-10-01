@@ -7,18 +7,18 @@
   >
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <!-- Background overlay -->
-      <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+      <div class="fixed inset-0 bg-black/75 transition-opacity" aria-hidden="true"></div>
 
       <!-- Modal panel -->
       <div
-        class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-7xl sm:w-full max-h-[95vh] flex flex-col"
+        class="inline-block align-bottom bg-ontop-navy-dark rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-7xl sm:w-full max-h-[95vh] flex flex-col border border-white/10"
         @click.stop
       >
         <!-- Modal Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
+        <div class="bg-gradient-ontop-hero px-6 py-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+              <div class="w-10 h-10 bg-gradient-cta rounded-lg flex items-center justify-center mr-3">
                 <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -27,7 +27,7 @@
                 <h3 class="text-xl font-bold text-white">
                   {{ reportData.title }}
                 </h3>
-                <p class="text-blue-100 text-sm">
+                <p class="text-white/70 text-sm">
                   {{ reportData.dateRange }}
                 </p>
               </div>
@@ -36,7 +36,7 @@
               <!-- Copy Report Button -->
               <button
                 @click="copyReport"
-                class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors duration-200"
+                class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
                 title="Copy report to clipboard"
               >
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -46,7 +46,7 @@
               <!-- Download as PDF Button -->
               <button
                 @click="downloadPDF"
-                class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors duration-200"
+                class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
                 title="Download as PDF"
               >
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,7 +56,7 @@
               <!-- Download as Text Button -->
               <button
                 @click="downloadReport"
-                class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors duration-200"
+                class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
                 title="Download as text file"
               >
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -66,7 +66,7 @@
               <!-- Close Button -->
               <button
                 @click="closeModal"
-                class="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors duration-200"
+                class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
               >
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -77,7 +77,7 @@
         </div>
 
         <!-- Report Content -->
-        <div class="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-800">
+        <div class="flex-1 overflow-y-auto p-4 bg-ontop-navy-light/30">
           <!-- Executive Summary -->
           <div class="mb-4">
             <div class="flex items-center mb-2">
@@ -134,7 +134,7 @@
                 <div class="grid grid-cols-4 gap-1 text-xs">
                   <div class="bg-white dark:bg-gray-600 rounded p-1 text-center">
                     <div class="font-bold text-gray-900 dark:text-white">{{ manager.total }}</div>
-                    <div class="text-gray-600 dark:text-gray-300 text-xs">Total</div>
+                    <div class="text-white text-xs">Total</div>
                   </div>
                   <div class="bg-green-50 dark:bg-green-900/20 rounded p-1 text-center">
                     <div class="font-bold text-green-600 dark:text-green-400">{{ manager.positive }}</div>
@@ -202,7 +202,7 @@
         <!-- Footer -->
         <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3">
           <div class="flex items-center justify-between">
-            <p class="text-sm text-gray-600 dark:text-gray-300">
+            <p class="text-sm text-white">
               Generated on {{ new Date().toLocaleString() }}
             </p>
             <div class="flex space-x-3">
