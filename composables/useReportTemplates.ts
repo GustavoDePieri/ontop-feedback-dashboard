@@ -1,5 +1,23 @@
 import type { WeeklyReportData } from './useReportGenerator'
 
+/**
+ * ⚠️ IMPORTANT: This file generates the HTML/CSS for ALL AI reports!
+ * 
+ * This template is used by:
+ * - AI reports on the main dashboard (pages/index.vue)
+ * - Reports page (pages/reports.vue)
+ * - Downloaded HTML reports
+ * 
+ * When you edit styles here, you're changing the actual HTML/CSS that gets
+ * rendered inside the report modals using v-html.
+ * 
+ * The dark theme styles below MUST match the dashboard's Ontop brand colors:
+ * - Background: Dark navy gradient (#0f0819, #1a0d2e, #2a1b3d)
+ * - Accents: Purple (#8b5cf6), Pink (#ec4899), Coral (#f43f5e)
+ * - Text: White with varying opacity for hierarchy
+ * - Effects: Glassmorphism with backdrop-filter blur
+ */
+
 export const useReportTemplates = () => {
   
   const generateExecutiveHTML = (report: WeeklyReportData): string => {

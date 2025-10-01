@@ -1,4 +1,17 @@
 <template>
+  <!--
+    ⚠️ NOTE: This component is ONLY used for the Reports page (/reports)
+    
+    This modal displays structured report data, NOT AI report HTML.
+    
+    If you need to style the AI-generated reports (the ones with full HTML/CSS),
+    edit these files instead:
+    - composables/useReportTemplates.ts (main HTML template & styles)
+    - pages/index.vue (lines ~2846-2898 for AI insights section)
+    
+    The AI report on pages/index.vue uses v-html to render HTML from
+    useReportTemplates.ts, so changes to THIS component won't affect it.
+  -->
   <!-- Slide-in Panel -->
   <transition
     enter-active-class="transition-all duration-300 ease-out"

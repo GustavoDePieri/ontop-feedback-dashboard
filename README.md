@@ -37,6 +37,29 @@ A modern, AI-powered feedback analytics dashboard that connects to Google Sheets
 - ✅ **Responsive Design** - Works on desktop, tablet, and mobile
 - ✅ **Authentication** - Password-protected access
 
+### ⚠️ IMPORTANT: Report Styling Architecture
+
+> **📖 See [REPORT_STYLING_GUIDE.md](./REPORT_STYLING_GUIDE.md) for complete documentation!**
+
+**Quick Reference - When styling AI reports, you MUST edit these files:**
+
+1. **`composables/useReportTemplates.ts`** ⭐ **PRIMARY FILE**
+   - Contains the CSS styles and HTML structure for ALL reports
+   - Used by BOTH the Reports page and the AI reports on the main dashboard
+   - Any style changes here affect the downloadable HTML reports
+
+2. **`pages/index.vue`** (lines ~2847-2900) - AI insights section only
+   - Contains inline styles for the AI-powered insights section that gets injected
+   - These styles are added dynamically to the report HTML
+   - Must match the dark theme defined in `useReportTemplates.ts`
+
+**❌ DO NOT edit `components/ReportDisplayModal.vue` for AI report styling!**
+- This component is ONLY used for the Reports page side panel UI
+- It displays structured data, NOT the AI report HTML
+- The AI report on `pages/index.vue` uses `v-html` to render HTML from `useReportTemplates.ts`
+
+**See the styling guide for detailed explanations, examples, and troubleshooting!**
+
 ### Tech Stack
 
 | Technology | Purpose |

@@ -1698,20 +1698,19 @@
     <!-- AI Report Display Modal -->
     <div
       v-if="showAIReportDisplay"
-      class="fixed inset-0 z-50 overflow-y-auto"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4"
       @click="showAIReportDisplay = false"
     >
-      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <!-- Background overlay -->
-        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+      <!-- Background overlay with blur -->
+      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
 
-        <!-- Modal panel -->
-        <div
-          class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-7xl sm:w-full max-h-[95vh] flex flex-col"
-          @click.stop
-        >
-          <!-- Modal Header -->
-          <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4">
+      <!-- Modal panel - centered and properly sized -->
+      <div
+        class="relative bg-ontop-navy-dark rounded-2xl shadow-glow border border-white/10 w-full max-w-6xl max-h-[90vh] flex flex-col transform transition-all"
+        @click.stop
+      >
+        <!-- Modal Header -->
+        <div class="bg-gradient-ontop-hero px-6 py-4 flex-shrink-0">
             <div class="flex items-center justify-between">
               <div class="flex items-center">
                 <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
@@ -1759,20 +1758,20 @@
           </div>
 
           <!-- Report Content -->
-          <div class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
+          <div class="flex-1 overflow-y-auto bg-gradient-dark">
             <div v-html="currentAIReportHTML" class="report-content"></div>
           </div>
 
           <!-- Footer -->
-          <div class="bg-gray-50 dark:bg-gray-700 px-6 py-3 border-t border-gray-200 dark:border-gray-600">
+          <div class="bg-white/5 px-6 py-4 border-t border-white/10 flex-shrink-0">
             <div class="flex items-center justify-between">
-              <p class="text-sm text-white dark:text-gray-300">
+              <p class="text-sm text-white/70">
                 Generated on {{ new Date().toLocaleString() }}
               </p>
               <div class="flex space-x-3">
                 <button
                   @click="downloadAIReport"
-                  class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center"
+                  class="bg-gradient-cta hover:bg-gradient-cta-hover text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center shadow-lg hover:shadow-xl"
                 >
                   <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1781,7 +1780,7 @@
                 </button>
                 <button
                   @click="copyAIReportHTML"
-                  class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center"
+                  class="bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center border border-white/20"
                 >
                   <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -1790,7 +1789,7 @@
                 </button>
                 <button
                   @click="showAIReportDisplay = false"
-                  class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                  class="bg-white/5 hover:bg-white/10 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 border border-white/10"
                 >
                   Close
                 </button>
@@ -2843,6 +2842,10 @@ const generateAIReport = async () => {
     console.log('🔍 Step 8: Checking AI insights...')
     if (aiRecommendations.value) {
       console.log('✅ Step 9: AI insights found, adding to report...')
+      
+      // ⚠️ IMPORTANT: This HTML gets injected into the report template from useReportTemplates.ts
+      // The styles here MUST match the dark theme defined in useReportTemplates.ts
+      // If you change styles here, make sure they're consistent with the main template!
       const aiSection = `
         <div class="section">
           <h2 class="section-title">🤖 AI-Powered Insights</h2>
