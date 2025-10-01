@@ -77,7 +77,7 @@
             </div>
           </div>
         </div>
-
+      
       <!-- Panel Content - Scrollable -->
       <div class="flex-1 overflow-y-auto p-6 bg-gradient-dark">
         <!-- Executive Summary -->
@@ -277,7 +277,6 @@
             </div>
           </div>
         </div>
-      </div>
 
       <!-- Success Toast -->
       <div v-if="showCopySuccess" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-[60] flex items-center">
