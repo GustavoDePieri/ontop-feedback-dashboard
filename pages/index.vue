@@ -1322,60 +1322,74 @@
             </div>
             
             <!-- Pagination -->
-            <div v-if="filteredFeedback.length > itemsPerPage" class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-6">
+            <div v-if="filteredFeedback.length > itemsPerPage" class="flex items-center justify-between border-t border-white/10 bg-white/5 backdrop-blur-sm rounded-b-lg px-4 py-4 sm:px-6 mt-6">
+              <!-- Mobile Pagination -->
               <div class="flex flex-1 justify-between sm:hidden">
                 <button 
                   @click="currentPage--" 
                   :disabled="currentPage === 1"
-                  class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="relative inline-flex items-center rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
                 >
+                  <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
                   Previous
                 </button>
                 <button 
                   @click="currentPage++" 
                   :disabled="currentPage >= totalPages"
-                  class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="relative ml-3 inline-flex items-center rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   Next
+                  <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
                 </button>
               </div>
+              
+              <!-- Desktop Pagination -->
               <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <div>
                   <p class="text-sm text-white">
                     Showing
-                    <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+                    <span class="font-semibold text-ontop-coral-400">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
                     to
-                    <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredFeedback.length) }}</span>
+                    <span class="font-semibold text-ontop-coral-400">{{ Math.min(currentPage * itemsPerPage, filteredFeedback.length) }}</span>
                     of
-                    <span class="font-medium">{{ filteredFeedback.length }}</span>
+                    <span class="font-semibold text-ontop-coral-400">{{ filteredFeedback.length }}</span>
                     results
                   </p>
                 </div>
                 <div>
-                  <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                  <nav class="isolate inline-flex -space-x-px rounded-lg shadow-lg" aria-label="Pagination">
+                    <!-- Previous Button -->
                     <button 
                       @click="currentPage--" 
                       :disabled="currentPage === 1"
-                      class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                      class="relative inline-flex items-center rounded-l-lg px-3 py-2 text-white bg-white/10 border border-white/20 hover:bg-white/20 focus:z-20 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
                     >
                       <span class="sr-only">Previous</span>
                       <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
                       </svg>
                     </button>
+                    
+                    <!-- Page Numbers -->
                     <button 
                       v-for="page in visiblePages" 
                       :key="page"
                       @click="currentPage = page"
-                      :class="page === currentPage ? 'bg-blue-600 text-white' : 'text-white hover:bg-gray-50'"
-                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0"
+                      :class="page === currentPage ? 'bg-gradient-cta text-white shadow-lg' : 'text-white bg-white/10 hover:bg-white/20'"
+                      class="relative inline-flex items-center px-4 py-2 text-sm font-semibold border border-white/20 focus:z-20 transition-all duration-200"
                     >
                       {{ page }}
                     </button>
+                    
+                    <!-- Next Button -->
                     <button 
                       @click="currentPage++" 
                       :disabled="currentPage >= totalPages"
-                      class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                      class="relative inline-flex items-center rounded-r-lg px-3 py-2 text-white bg-white/10 border border-white/20 hover:bg-white/20 focus:z-20 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200"
                     >
                       <span class="sr-only">Next</span>
                       <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
