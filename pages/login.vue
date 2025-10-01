@@ -25,7 +25,7 @@
               name="password"
               type="password"
               required
-              class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-white/10 bg-white/5 placeholder-white/40 text-white focus:outline-none focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 focus:z-10 sm:text-sm"
+              class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-white/10 bg-white/5 placeholder-white text-white focus:outline-none focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 focus:z-10 sm:text-sm"
               placeholder="Enter password"
               :disabled="loading"
             />
@@ -67,7 +67,7 @@
         </div>
 
         <div class="text-center">
-          <p class="text-xs text-white/60">
+          <p class="text-xs text-white">
             Secure access to Ontop's feedback analytics dashboard
           </p>
         </div>

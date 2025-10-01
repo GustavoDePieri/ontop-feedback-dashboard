@@ -42,7 +42,7 @@
               <h3 class="text-lg font-bold text-white mb-2">
                 🎯 New Unified Report System
               </h3>
-              <p class="text-white/90 text-sm leading-relaxed">
+              <p class="text-white text-sm leading-relaxed">
                 All report types have been merged into <strong>one comprehensive report</strong> that includes:
                 <span class="block mt-2 space-y-1">
                   • <strong>AI-Powered Insights</strong> - Recurring patterns and recommendations<br>
@@ -61,7 +61,7 @@
         <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-bold text-white">📁 Recent Reports</h3>
-            <span class="text-sm text-white/60">
+            <span class="text-sm text-white">
               {{ recentReports.length }} report{{ recentReports.length !== 1 ? 's' : '' }} generated
             </span>
           </div>
@@ -72,7 +72,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <h3 class="mt-2 text-sm font-medium text-white">No reports yet</h3>
-            <p class="mt-1 text-sm text-white/60">Get started by generating your first unified report.</p>
+            <p class="mt-1 text-sm text-white">Get started by generating your first unified report.</p>
             <div class="mt-6">
               <button 
                 @click="showReportModal = true"
@@ -105,10 +105,10 @@
                   <h4 class="text-base font-bold text-white group-hover:text-blue-400 transition-colors">
                     {{ report.title }}
                   </h4>
-                  <p class="text-sm text-white/80 mt-1">
+                  <p class="text-sm text-white mt-1">
                     {{ report.dateRange }} • {{ report.feedbackCount }} feedback items
                   </p>
-                  <p class="text-xs text-white/60 mt-1">
+                  <p class="text-xs text-white mt-1">
                     Generated {{ formatDate(report.generatedAt) }}
                   </p>
                 </div>
@@ -119,11 +119,11 @@
                 <div class="hidden sm:flex items-center space-x-4 mr-4">
                   <div class="text-center">
                     <div class="text-sm font-bold text-green-600 dark:text-green-400">{{ report.stats.positive }}%</div>
-                    <div class="text-xs text-white/60">Positive</div>
+                    <div class="text-xs text-white">Positive</div>
                   </div>
                   <div class="text-center">
                     <div class="text-sm font-bold text-red-600 dark:text-red-400">{{ report.stats.negative }}%</div>
-                    <div class="text-xs text-white/60">Negative</div>
+                    <div class="text-xs text-white">Negative</div>
                   </div>
                   <div v-if="report.hasAIInsights" class="text-center">
                     <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
@@ -170,7 +170,7 @@
       <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         <!-- Background overlay -->
         <div 
-          class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75"
+          class="fixed inset-0 transition-opacity bg-black/75"
           @click="showReportModal = false"
         ></div>
 
@@ -178,15 +178,15 @@
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
 
         <div 
-          class="inline-block align-bottom bg-white dark:bg-slate-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
+          class="inline-block align-bottom bg-ontop-navy-dark rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-white/10"
           @click.stop
         >
           <!-- Header -->
-          <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+          <div class="bg-gradient-ontop-hero px-6 py-4">
               <div class="flex items-center justify-between">
                 <div>
                 <h3 class="text-xl font-bold text-white">Generate Unified Report</h3>
-                <p class="text-sm text-blue-100 mt-1">Select time period and options</p>
+                <p class="text-sm text-white mt-1">Select time period and options</p>
               </div>
               <button 
                 @click="showReportModal = false"
@@ -210,7 +210,7 @@
                 v-model="reportConfig.title"
                 type="text"
                 placeholder="e.g., Weekly Executive Report"
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full border border-white/20 bg-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 placeholder-white/50"
               />
                 </div>
 
@@ -222,7 +222,7 @@
               <select 
                 v-model="reportConfig.period"
                 @change="updateDateRange"
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full border border-white/20 bg-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500"
               >
                 <option value="today">Today</option>
                 <option value="yesterday">Yesterday</option>
@@ -245,7 +245,7 @@
                 <input
                   v-model="reportConfig.startDate"
                   type="date"
-                  class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full border border-white/20 bg-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500"
                 />
               </div>
                 <div>
@@ -255,7 +255,7 @@
                 <input
                   v-model="reportConfig.endDate"
                   type="date"
-                  class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  class="w-full border border-white/20 bg-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500"
                 />
               </div>
             </div>
@@ -270,7 +270,7 @@
                 <input
                   v-model="reportConfig.includeAI"
                   type="checkbox"
-                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  class="w-4 h-4 text-ontop-coral-500 border-white/20 bg-white/10 rounded focus:ring-ontop-coral-500"
                 />
                 <div class="flex-1">
                   <span class="text-sm font-medium text-white">
@@ -286,7 +286,7 @@
                 <input
                   v-model="reportConfig.includeManager"
                   type="checkbox"
-                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  class="w-4 h-4 text-ontop-coral-500 border-white/20 bg-white/10 rounded focus:ring-ontop-coral-500"
                 />
                 <div class="flex-1">
                   <span class="text-sm font-medium text-white">
@@ -302,7 +302,7 @@
                 <input
                   v-model="reportConfig.includeAccounts"
                   type="checkbox"
-                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  class="w-4 h-4 text-ontop-coral-500 border-white/20 bg-white/10 rounded focus:ring-ontop-coral-500"
                 />
                 <div class="flex-1">
                   <span class="text-sm font-medium text-white">
@@ -316,16 +316,16 @@
             </div>
 
             <!-- Preview Info -->
-            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div class="bg-white/5 border border-white/10 rounded-lg p-4">
               <div class="flex items-start">
-                <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-white mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div class="flex-1">
-                  <p class="text-sm text-blue-800 dark:text-blue-300 font-medium">
+                  <p class="text-sm text-white font-medium">
                     Report will analyze feedback from {{ getDateRangePreview() }}
                   </p>
-                  <p v-if="reportConfig.includeAI" class="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                  <p v-if="reportConfig.includeAI" class="text-xs text-white mt-1">
                     AI analysis may take 10-20 seconds
                   </p>
                 </div>
@@ -334,17 +334,17 @@
           </div>
 
           <!-- Footer -->
-          <div class="bg-gray-50 dark:bg-slate-900/50 px-6 py-4 flex justify-end space-x-3">
+          <div class="bg-white/5 px-6 py-4 flex justify-end space-x-3">
             <button
               @click="showReportModal = false"
-              class="px-4 py-2 border border-white/10 rounded-md text-sm font-medium text-white/70 hover:bg-white/5 transition-colors"
+              class="px-4 py-2 border border-white/10 rounded-md text-sm font-medium text-white hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>
             <button
               @click="generateReport"
               :disabled="generating"
-              class="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-md transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              class="px-6 py-2 bg-gradient-cta hover:bg-gradient-cta-hover text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <svg v-if="!generating" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />

@@ -13,7 +13,7 @@
     </div>
     
     <div v-if="$slots.footer" class="px-6 py-4 border-t border-white/10 bg-white/5">
-      <div class="text-white/80">
+      <div class="text-white">
         <slot name="footer" />
       </div>
     </div>

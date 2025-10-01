@@ -42,7 +42,7 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-white/70 truncate">Avg Sentiment Score</dt>
+                  <dt class="text-sm font-medium text-white truncate">Avg Sentiment Score</dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-white">7.2</div>
                     <div class="ml-2 text-sm font-medium text-green-400">/10</div>
@@ -66,7 +66,7 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-white/70 truncate">Response Rate</dt>
+                  <dt class="text-sm font-medium text-white truncate">Response Rate</dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-white">84%</div>
                     <div class="ml-2 text-sm font-medium text-green-400">+2.1%</div>
@@ -90,7 +90,7 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-white/70 truncate">Account Satisfaction</dt>
+                  <dt class="text-sm font-medium text-white truncate">Account Satisfaction</dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-white">92%</div>
                     <div class="ml-2 text-sm font-medium text-green-400">+5.2%</div>
@@ -114,7 +114,7 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-white/70 truncate">At-Risk Accounts</dt>
+                  <dt class="text-sm font-medium text-white truncate">At-Risk Accounts</dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-white">3</div>
                     <div class="ml-2 text-sm font-medium text-red-400">+1</div>
@@ -176,12 +176,12 @@
                   </div>
                   <div>
                     <p class="text-sm font-medium text-white">{{ account.name }}</p>
-                    <p class="text-xs text-white/60">{{ account.feedback_count }} feedback</p>
+                    <p class="text-xs text-white">{{ account.feedback_count }} feedback</p>
                   </div>
                 </div>
                 <div class="text-right">
                   <p class="text-sm font-medium text-green-400">{{ account.satisfaction }}%</p>
-                  <p class="text-xs text-white/60">satisfaction</p>
+                  <p class="text-xs text-white">satisfaction</p>
                 </div>
               </div>
             </div>
@@ -205,7 +205,7 @@
                 </div>
                 <div class="text-right">
                   <p class="text-sm font-medium text-red-600">{{ account.risk_score }}%</p>
-                  <p class="text-xs text-white/60">risk</p>
+                  <p class="text-xs text-white">risk</p>
                 </div>
               </div>
             </div>
@@ -220,7 +220,7 @@
               <div v-for="topic in trendingTopics" :key="topic.name" class="flex items-center justify-between">
                 <div>
                   <p class="text-sm font-medium text-white">{{ topic.name }}</p>
-                  <p class="text-xs text-white/60">{{ topic.mentions }} mentions</p>
+                  <p class="text-xs text-white">{{ topic.mentions }} mentions</p>
                 </div>
                 <div class="flex items-center space-x-2">
                   <div class="flex items-center">
