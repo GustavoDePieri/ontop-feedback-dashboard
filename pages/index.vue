@@ -206,7 +206,7 @@
 
         <!-- Active Filters Display -->
         <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap gap-2">
-          <span class="text-sm text-gray-500 dark:text-slate-400">Active filters:</span>
+          <span class="text-sm text-white/70">Active filters:</span>
           <span 
             v-if="filters.accountManager"
             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"

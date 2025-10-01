@@ -8,7 +8,7 @@
             <h1 class="text-3xl font-bold text-white">
               Advanced Analytics
             </h1>
-            <p class="mt-2 text-gray-300">
+            <p class="mt-2 text-white/80">
               Deep insights and trend analysis
             </p>
           </div>
@@ -42,7 +42,7 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-300 truncate">Avg Sentiment Score</dt>
+                  <dt class="text-sm font-medium text-white/70 truncate">Avg Sentiment Score</dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-white">7.2</div>
                     <div class="ml-2 text-sm font-medium text-green-400">/10</div>
@@ -66,7 +66,7 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-300 truncate">Response Rate</dt>
+                  <dt class="text-sm font-medium text-white/70 truncate">Response Rate</dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-white">84%</div>
                     <div class="ml-2 text-sm font-medium text-green-400">+2.1%</div>
@@ -90,7 +90,7 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-300 truncate">Account Satisfaction</dt>
+                  <dt class="text-sm font-medium text-white/70 truncate">Account Satisfaction</dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-white">92%</div>
                     <div class="ml-2 text-sm font-medium text-green-400">+5.2%</div>
@@ -114,7 +114,7 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-300 truncate">At-Risk Accounts</dt>
+                  <dt class="text-sm font-medium text-white/70 truncate">At-Risk Accounts</dt>
                   <dd class="flex items-baseline">
                     <div class="text-2xl font-semibold text-white">3</div>
                     <div class="ml-2 text-sm font-medium text-red-400">+1</div>
@@ -132,13 +132,13 @@
         <AppCard>
           <div class="p-6">
             <h3 class="text-lg font-medium text-white mb-4">Sentiment Trends</h3>
-            <div class="h-64 flex items-center justify-center text-gray-400">
+            <div class="h-64 flex items-center justify-center text-white/50">
               <div class="text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="mx-auto h-12 w-12 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                 </svg>
                 <h3 class="mt-2 text-sm font-medium text-white">Time Series Analysis</h3>
-                <p class="mt-1 text-sm text-gray-300">Sentiment evolution over time</p>
+                <p class="mt-1 text-sm text-white/70">Sentiment evolution over time</p>
               </div>
             </div>
           </div>
@@ -148,14 +148,14 @@
         <AppCard>
           <div class="p-6">
             <h3 class="text-lg font-medium text-white mb-4">Topic Distribution</h3>
-            <div class="h-64 flex items-center justify-center text-gray-400">
+            <div class="h-64 flex items-center justify-center text-white/50">
               <div class="text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="mx-auto h-12 w-12 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                 </svg>
                 <h3 class="mt-2 text-sm font-medium text-white">Topic Modeling</h3>
-                <p class="mt-1 text-sm text-gray-300">Key themes and categories</p>
+                <p class="mt-1 text-sm text-white/70">Key themes and categories</p>
               </div>
             </div>
           </div>
@@ -176,12 +176,12 @@
                   </div>
                   <div>
                     <p class="text-sm font-medium text-white">{{ account.name }}</p>
-                    <p class="text-xs text-gray-300">{{ account.feedback_count }} feedback</p>
+                    <p class="text-xs text-white/60">{{ account.feedback_count }} feedback</p>
                   </div>
                 </div>
                 <div class="text-right">
                   <p class="text-sm font-medium text-green-400">{{ account.satisfaction }}%</p>
-                  <p class="text-xs text-gray-300">satisfaction</p>
+                  <p class="text-xs text-white/60">satisfaction</p>
                 </div>
               </div>
             </div>
@@ -191,7 +191,7 @@
         <!-- At-Risk Accounts -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">At-Risk Accounts</h3>
+            <h3 class="text-lg font-medium text-white mb-4">At-Risk Accounts</h3>
             <div class="space-y-4">
               <div v-for="account in riskAccounts" :key="account.name" class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
@@ -199,13 +199,13 @@
                     <span class="text-xs font-medium text-red-800">{{ account.name.charAt(0) }}</span>
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-gray-900">{{ account.name }}</p>
-                    <p class="text-xs text-gray-500">{{ account.risk_reason }}</p>
+                    <p class="text-sm font-medium text-white">{{ account.name }}</p>
+                    <p class="text-xs text-white/60">{{ account.risk_reason }}</p>
                   </div>
                 </div>
                 <div class="text-right">
                   <p class="text-sm font-medium text-red-600">{{ account.risk_score }}%</p>
-                  <p class="text-xs text-gray-500">risk</p>
+                  <p class="text-xs text-white/60">risk</p>
                 </div>
               </div>
             </div>
@@ -215,12 +215,12 @@
         <!-- Trending Topics -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Trending Topics</h3>
+            <h3 class="text-lg font-medium text-white mb-4">Trending Topics</h3>
             <div class="space-y-4">
               <div v-for="topic in trendingTopics" :key="topic.name" class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm font-medium text-gray-900">{{ topic.name }}</p>
-                  <p class="text-xs text-gray-500">{{ topic.mentions }} mentions</p>
+                  <p class="text-sm font-medium text-white">{{ topic.name }}</p>
+                  <p class="text-xs text-white/60">{{ topic.mentions }} mentions</p>
                 </div>
                 <div class="flex items-center space-x-2">
                   <div class="flex items-center">
@@ -246,16 +246,16 @@
         <!-- AI Insights -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">AI-Powered Insights</h3>
+            <h3 class="text-lg font-medium text-white mb-4">AI-Powered Insights</h3>
             <div class="space-y-4">
               <div v-for="insight in aiInsights" :key="insight.id" class="border-l-4 pl-4 py-2" :class="{
                 'border-green-400': insight.type === 'positive',
                 'border-yellow-400': insight.type === 'warning',
                 'border-red-400': insight.type === 'alert'
               }">
-                <p class="text-sm font-medium text-gray-900">{{ insight.title }}</p>
-                <p class="text-xs text-gray-600 mt-1">{{ insight.description }}</p>
-                <p class="text-xs text-gray-500 mt-2">Confidence: {{ insight.confidence }}%</p>
+                <p class="text-sm font-medium text-white">{{ insight.title }}</p>
+                <p class="text-xs text-white/80 mt-1">{{ insight.description }}</p>
+                <p class="text-xs text-white/60 mt-2">Confidence: {{ insight.confidence }}%</p>
               </div>
             </div>
           </div>
@@ -264,7 +264,7 @@
         <!-- Recommendations -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Recommended Actions</h3>
+            <h3 class="text-lg font-medium text-white mb-4">Recommended Actions</h3>
             <div class="space-y-4">
               <div v-for="recommendation in recommendations" :key="recommendation.id" class="flex items-start space-x-3">
                 <div class="flex-shrink-0">
@@ -281,9 +281,9 @@
                   </div>
                 </div>
                 <div class="flex-1">
-                  <p class="text-sm font-medium text-gray-900">{{ recommendation.title }}</p>
-                  <p class="text-xs text-gray-600 mt-1">{{ recommendation.description }}</p>
-                  <p class="text-xs text-gray-500 mt-2">Expected impact: {{ recommendation.impact }}</p>
+                  <p class="text-sm font-medium text-white">{{ recommendation.title }}</p>
+                  <p class="text-xs text-white/80 mt-1">{{ recommendation.description }}</p>
+                  <p class="text-xs text-white/60 mt-2">Expected impact: {{ recommendation.impact }}</p>
                 </div>
               </div>
             </div>
