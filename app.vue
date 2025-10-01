@@ -5,6 +5,13 @@
   </div>
 </template>
 
+<script setup>
+// Force dark mode on mount
+onMounted(() => {
+  document.documentElement.classList.add('dark')
+})
+</script>
+
 <style>
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';

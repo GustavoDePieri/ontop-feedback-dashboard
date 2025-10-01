@@ -245,7 +245,7 @@
         </div>
 
         <!-- Results Count -->
-        <div v-if="hasActiveFilters" class="mt-3 text-sm text-gray-600 dark:text-slate-300">
+        <div v-if="hasActiveFilters" class="mt-3 text-sm text-white">
           Showing {{ filteredFeedbackData.length }} of {{ feedbackData.length }} feedback items
         </div>
       </div>
@@ -286,8 +286,8 @@
       <!-- Executive Summary Dashboard -->
       <div v-if="feedbackData.length > 0" class="mb-8">
         <div class="mb-6">
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100">Executive Summary</h2>
-          <p class="text-gray-600 dark:text-slate-300 text-sm mt-1">Key performance indicators and business metrics</p>
+          <h2 class="text-2xl font-bold text-white">Executive Summary</h2>
+          <p class="text-white text-sm mt-1">Key performance indicators and business metrics</p>
         </div>
 
         <!-- Primary KPI Cards -->
@@ -305,9 +305,9 @@
         </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Total Feedback</dt>
+                  <dt class="text-sm font-medium text-white truncate">Total Feedback</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ feedbackData.length }}</div>
+                    <div class="text-2xl font-semibold text-white">{{ feedbackData.length }}</div>
                     <div class="ml-2 flex items-baseline text-sm font-semibold text-green-600 dark:text-green-400">
                       <svg class="self-center flex-shrink-0 h-3 w-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
@@ -335,10 +335,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Positive Sentiment</dt>
+                  <dt class="text-sm font-medium text-white truncate">Positive Sentiment</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.positive }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
+                    <div class="text-2xl font-semibold text-white">{{ sentimentSummary.positive }}</div>
+                    <div class="ml-2 text-sm font-medium text-white">
                       ({{ sentimentPercentages.positive }}%)
                     </div>
                   </dd>
@@ -364,10 +364,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Neutral Sentiment</dt>
+                  <dt class="text-sm font-medium text-white truncate">Neutral Sentiment</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.neutral }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
+                    <div class="text-2xl font-semibold text-white">{{ sentimentSummary.neutral }}</div>
+                    <div class="ml-2 text-sm font-medium text-white">
                       ({{ sentimentPercentages.neutral }}%)
                     </div>
                   </dd>
@@ -393,10 +393,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Negative Sentiment</dt>
+                  <dt class="text-sm font-medium text-white truncate">Negative Sentiment</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ sentimentSummary.negative }}</div>
-                    <div class="ml-2 text-sm font-medium text-gray-500 dark:text-slate-400">
+                    <div class="text-2xl font-semibold text-white">{{ sentimentSummary.negative }}</div>
+                    <div class="ml-2 text-sm font-medium text-white">
                       ({{ sentimentPercentages.negative }}%)
                     </div>
                   </dd>
@@ -415,7 +415,7 @@
         <AppCard>
           <div class="p-6">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100">Feedback Calendar</h3>
+              <h3 class="text-lg font-medium text-white">Feedback Calendar</h3>
               <div class="flex items-center space-x-2">
                 <button 
                   @click="previousMonth"
@@ -425,7 +425,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
-                <h4 class="text-lg font-semibold text-gray-900 dark:text-slate-100 min-w-[140px] text-center">
+                <h4 class="text-lg font-semibold text-white min-w-[140px] text-center">
                   {{ currentCalendarMonth }}
                 </h4>
                 <button 
@@ -445,7 +445,7 @@
               <div 
                 v-for="day in dayHeaders" 
                 :key="day"
-                class="p-3 text-center text-sm font-medium text-gray-500 dark:text-slate-400 border-b border-gray-200 dark:border-slate-700"
+                class="p-3 text-center text-sm font-medium text-white border-b border-gray-200 dark:border-slate-700"
               >
                 {{ day }}
               </div>
@@ -458,7 +458,7 @@
                 class="relative p-2 h-16 border border-gray-100 dark:border-slate-700 transition-all duration-200"
                 :class="{
                   'bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-slate-600': !day.inCurrentMonth,
-                  'bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 hover:bg-gray-50 dark:hover:bg-slate-700': day.inCurrentMonth && day.feedbackCount === 0,
+                  'bg-white dark:bg-slate-800 text-white hover:bg-gray-50 dark:hover:bg-slate-700': day.inCurrentMonth && day.feedbackCount === 0,
                   'bg-green-50 text-green-900 hover:bg-green-100 cursor-pointer ring-1 ring-green-200': day.feedbackCount > 0 && day.dominantSentiment === 'positive',
                   'bg-red-50 text-red-900 hover:bg-red-100 cursor-pointer ring-1 ring-red-200': day.feedbackCount > 0 && day.dominantSentiment === 'negative',
                   'bg-yellow-50 text-yellow-900 hover:bg-yellow-100 cursor-pointer ring-1 ring-yellow-200': day.feedbackCount > 0 && day.dominantSentiment === 'neutral',
@@ -467,7 +467,7 @@
                 }"
               >
                 <div v-if="day.date" class="flex flex-col h-full">
-                  <span class="text-sm font-medium text-gray-900 dark:text-slate-100">{{ day.date.getDate() }}</span>
+                  <span class="text-sm font-medium text-white">{{ day.date.getDate() }}</span>
                   <div v-if="day.feedbackCount > 0" class="flex-1 flex items-end justify-center">
                     <div class="flex items-center space-x-1">
                       <div class="w-2 h-2 rounded-full bg-current opacity-60"></div>
@@ -479,7 +479,7 @@
             </div>
 
             <!-- Calendar Legend -->
-            <div class="mt-4 flex items-center justify-center flex-wrap gap-4 text-sm text-gray-600 dark:text-slate-300">
+            <div class="mt-4 flex items-center justify-center flex-wrap gap-4 text-sm text-white">
               <div class="flex items-center space-x-2">
                 <div class="w-3 h-3 rounded bg-green-500"></div>
                 <span>Positive feedback</span>
@@ -510,13 +510,13 @@
         <AppCard>
           <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
             <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100">
+              <h3 class="text-lg font-medium text-white">
                 Feedback for {{ formatSelectedDate(selectedDate) }}
-                <span class="ml-2 text-sm text-gray-500 dark:text-slate-400">({{ selectedDateFeedback.length }} items)</span>
+                <span class="ml-2 text-sm text-white">({{ selectedDateFeedback.length }} items)</span>
               </h3>
               <button 
                 @click="clearSelectedDate"
-                class="text-sm text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 px-3 py-1 rounded-md transition-colors"
+                class="text-sm text-white hover:text-gray-700 dark:hover:text-slate-200 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 px-3 py-1 rounded-md transition-colors"
               >
                 Clear Selection
               </button>
@@ -613,9 +613,9 @@
                 </div>
                 <div class="ml-5 w-0 flex-1">
                   <dl>
-                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Total MRR</dt>
+                    <dt class="text-sm font-medium text-white truncate">Total MRR</dt>
                     <dd class="flex items-baseline">
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">${{ totalMrr.toLocaleString() }}</div>
+                      <div class="text-2xl font-semibold text-white">${{ totalMrr.toLocaleString() }}</div>
                     </dd>
                   </dl>
                 </div>
@@ -636,9 +636,9 @@
                 </div>
                 <div class="ml-5 w-0 flex-1">
                   <dl>
-                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Total TPV</dt>
+                    <dt class="text-sm font-medium text-white truncate">Total TPV</dt>
                     <dd class="flex items-baseline">
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">${{ totalTpv.toLocaleString() }}</div>
+                      <div class="text-2xl font-semibold text-white">${{ totalTpv.toLocaleString() }}</div>
                     </dd>
                   </dl>
                 </div>
@@ -659,9 +659,9 @@
                 </div>
                 <div class="ml-5 w-0 flex-1">
                   <dl>
-                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">Avg MRR/Account</dt>
+                    <dt class="text-sm font-medium text-white truncate">Avg MRR/Account</dt>
                     <dd class="flex items-baseline">
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">${{ avgMrrPerAccount.toLocaleString() }}</div>
+                      <div class="text-2xl font-semibold text-white">${{ avgMrrPerAccount.toLocaleString() }}</div>
                     </dd>
                   </dl>
                 </div>
@@ -682,10 +682,10 @@
                 </div>
                 <div class="ml-5 w-0 flex-1">
                   <dl>
-                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400 truncate">High-Value Accounts</dt>
+                    <dt class="text-sm font-medium text-white truncate">High-Value Accounts</dt>
                     <dd class="flex items-baseline">
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-slate-100">{{ highValueAccounts }}</div>
-                      <div class="ml-2 text-sm text-gray-500 dark:text-slate-400">accounts</div>
+                      <div class="text-2xl font-semibold text-white">{{ highValueAccounts }}</div>
+                      <div class="ml-2 text-sm text-white">accounts</div>
                     </dd>
                   </dl>
                 </div>
@@ -698,15 +698,15 @@
       <!-- Analytics & Categorization -->
       <div v-if="feedbackData.length > 0" class="mb-8">
         <div class="mb-6">
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100">Analytics & Categorization</h2>
-          <p class="text-gray-600 dark:text-slate-300 text-sm mt-1">Detailed breakdown of feedback patterns and assignments</p>
+          <h2 class="text-2xl font-bold text-white">Analytics & Categorization</h2>
+          <p class="text-white text-sm mt-1">Detailed breakdown of feedback patterns and assignments</p>
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6 mb-8">
         <!-- Sentiment Analysis Chart -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4 flex items-center">
+            <h3 class="text-lg font-medium text-white mb-4 flex items-center">
               <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
                 <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -761,12 +761,12 @@
                 
                 <!-- Total -->
                 <div class="text-center pt-2 border-t border-gray-200 dark:border-slate-600">
-                  <span class="text-lg font-bold text-gray-900 dark:text-slate-100">{{ sentimentSummary.totalItems }}</span>
-                  <span class="text-sm text-gray-500 dark:text-slate-400 ml-1">Total Feedback</span>
+                  <span class="text-lg font-bold text-white">{{ sentimentSummary.totalItems }}</span>
+                  <span class="text-sm text-white ml-1">Total Feedback</span>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
+            <div v-else class="text-center py-8 text-white">
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
@@ -778,7 +778,7 @@
         <!-- Feedback Trends Chart -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4 flex items-center">
+            <h3 class="text-lg font-medium text-white mb-4 flex items-center">
               <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
                 <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -823,7 +823,7 @@
                         'bg-green-500 text-white hover:bg-green-600': day.positive > day.neutral && day.positive > day.negative,
                         'bg-yellow-500 text-white hover:bg-yellow-600': day.neutral > day.positive && day.neutral > day.negative,
                         'bg-red-500 text-white hover:bg-red-600': day.negative > day.positive && day.negative > day.neutral,
-                        'bg-gray-300 dark:bg-slate-600 text-gray-600 dark:text-slate-300 hover:bg-gray-400 dark:hover:bg-slate-500': day.positive === 0 && day.neutral === 0 && day.negative === 0
+                        'bg-gray-300 dark:bg-slate-600 text-white hover:bg-gray-400 dark:hover:bg-slate-500': day.positive === 0 && day.neutral === 0 && day.negative === 0
                       }"
                       :title="`${new Date(day.date).toLocaleDateString()}: +${day.positive} ~${day.neutral} -${day.negative}`"
                     >
@@ -833,7 +833,7 @@
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
+            <div v-else class="text-center py-8 text-white">
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
@@ -845,7 +845,7 @@
         <!-- Subcategory Distribution -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4 flex items-center">
+            <h3 class="text-lg font-medium text-white mb-4 flex items-center">
               <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
                 <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -866,18 +866,18 @@
                       class="w-3 h-3 rounded-full mr-3"
                       :style="{ backgroundColor: ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#84CC16', '#F97316'][index % 8] }"
                     ></div>
-                    <span class="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">
+                    <span class="text-sm font-medium text-white truncate">
                       {{ subcategory.name || 'Uncategorized' }}
                     </span>
                   </div>
                   <div class="flex items-center space-x-2">
-                    <span class="text-sm font-bold text-gray-900 dark:text-slate-100">{{ subcategory.count }}</span>
-                    <span class="text-xs text-gray-500 dark:text-slate-400">({{ subcategory.percentage }}%)</span>
+                    <span class="text-sm font-bold text-white">{{ subcategory.count }}</span>
+                    <span class="text-xs text-white">({{ subcategory.percentage }}%)</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
+            <div v-else class="text-center py-8 text-white">
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
@@ -889,7 +889,7 @@
         <!-- Category Formula Distribution -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4 flex items-center">
+            <h3 class="text-lg font-medium text-white mb-4 flex items-center">
               <div class="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center mr-3">
                 <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 00-2 2v2a2 2 0 002 2m0 0h14m-14 0a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 01-2 2" />
@@ -910,18 +910,18 @@
                       class="w-3 h-3 rounded-full mr-3"
                       :style="{ backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'][index % 6] }"
                     ></div>
-                    <span class="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">
+                    <span class="text-sm font-medium text-white truncate">
                       {{ category.name || 'Unclassified' }}
                     </span>
                   </div>
                   <div class="flex items-center space-x-2">
-                    <span class="text-sm font-bold text-gray-900 dark:text-slate-100">{{ category.count }}</span>
-                    <span class="text-xs text-gray-500 dark:text-slate-400">({{ category.percentage }}%)</span>
+                    <span class="text-sm font-bold text-white">{{ category.count }}</span>
+                    <span class="text-xs text-white">({{ category.percentage }}%)</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
+            <div v-else class="text-center py-8 text-white">
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 00-2 2v2a2 2 0 002 2m0 0h14m-14 0a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v2a2 2 0 01-2 2" />
               </svg>
@@ -933,7 +933,7 @@
         <!-- Feedback Directed To -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4 flex items-center">
+            <h3 class="text-lg font-medium text-white mb-4 flex items-center">
               <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center mr-3">
                 <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 115.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -954,13 +954,13 @@
                       class="w-3 h-3 rounded-full mr-3"
                       :style="{ backgroundColor: ['#6366F1', '#EC4899', '#14B8A6', '#F59E0B', '#EF4444', '#8B5CF6'][index % 6] }"
                     ></div>
-                    <span class="text-sm font-medium text-gray-900 dark:text-slate-100 truncate">
+                    <span class="text-sm font-medium text-white truncate">
                       {{ item.name || 'Unspecified' }}
                     </span>
                   </div>
                   <div class="flex items-center space-x-2">
-                    <span class="text-sm font-bold text-gray-900 dark:text-slate-100">{{ item.total }}</span>
-                    <span class="text-xs text-gray-500 dark:text-slate-400">({{ item.percentage }}%)</span>
+                    <span class="text-sm font-bold text-white">{{ item.total }}</span>
+                    <span class="text-xs text-white">({{ item.percentage }}%)</span>
                     <span class="text-xs px-2 py-1 rounded-full"
                           :class="{
                             'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400': item.positiveRate >= 70,
@@ -973,7 +973,7 @@
                 </div>
               </div>
             </div>
-            <div v-else class="text-center py-8 text-gray-500 dark:text-slate-400">
+            <div v-else class="text-center py-8 text-white">
               <svg class="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 115.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
@@ -988,33 +988,33 @@
       <div v-if="hasFinancialData" class="mb-8">
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100 mb-4">Top Accounts by Revenue Impact</h3>
+            <h3 class="text-lg font-medium text-white mb-4">Top Accounts by Revenue Impact</h3>
             <div class="overflow-x-auto">
               <table class="min-w-full">
                 <thead>
                   <tr class="border-b border-gray-200 dark:border-slate-700">
-                    <th class="text-left py-3 px-4 font-medium text-gray-900 dark:text-slate-100">Account</th>
-                    <th class="text-left py-3 px-4 font-medium text-gray-900 dark:text-slate-100">Account Owner</th>
-                    <th class="text-right py-3 px-4 font-medium text-gray-900 dark:text-slate-100">MRR</th>
-                    <th class="text-right py-3 px-4 font-medium text-gray-900 dark:text-slate-100">TPV</th>
-                    <th class="text-center py-3 px-4 font-medium text-gray-900 dark:text-slate-100">Feedback Count</th>
-                    <th class="text-center py-3 px-4 font-medium text-gray-900 dark:text-slate-100">Sentiment</th>
+                    <th class="text-left py-3 px-4 font-medium text-white">Account</th>
+                    <th class="text-left py-3 px-4 font-medium text-white">Account Owner</th>
+                    <th class="text-right py-3 px-4 font-medium text-white">MRR</th>
+                    <th class="text-right py-3 px-4 font-medium text-white">TPV</th>
+                    <th class="text-center py-3 px-4 font-medium text-white">Feedback Count</th>
+                    <th class="text-center py-3 px-4 font-medium text-white">Sentiment</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-slate-700">
                   <tr v-for="account in topRevenueAccounts" :key="account.name" :class="{ 'bg-yellow-50 dark:bg-yellow-900/10': account.name === 'Gerardo Consulting CCL' }">
                     <td class="py-3 px-4">
                       <div class="flex items-center">
-                        <span class="text-sm font-medium text-gray-900 dark:text-slate-100">{{ account.name }}</span>
+                        <span class="text-sm font-medium text-white">{{ account.name }}</span>
                         <span v-if="account.name === 'Gerardo Consulting CCL'" class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
                           Testing Account
                         </span>
                       </div>
                     </td>
-                    <td class="py-3 px-4 text-sm text-gray-600 dark:text-slate-300">{{ account.owner }}</td>
+                    <td class="py-3 px-4 text-sm text-white">{{ account.owner }}</td>
                     <td class="py-3 px-4 text-right text-sm font-medium text-green-600 dark:text-green-400">${{ account.mrr.toLocaleString() }}</td>
                     <td class="py-3 px-4 text-right text-sm font-medium text-blue-600 dark:text-blue-400">${{ account.tpv.toLocaleString() }}</td>
-                    <td class="py-3 px-4 text-center text-sm text-gray-900 dark:text-slate-100">{{ account.feedbackCount }}</td>
+                    <td class="py-3 px-4 text-center text-sm text-white">{{ account.feedbackCount }}</td>
                     <td class="py-3 px-4 text-center">
                       <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="{
                         'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200': account.dominantSentiment === 'Positive',
@@ -1035,8 +1035,8 @@
       <!-- Weekly Overview Section -->
       <div v-if="feedbackData.length > 0" class="mb-8">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100">This Week's Overview</h2>
-          <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-slate-400">
+          <h2 class="text-2xl font-bold text-white">This Week's Overview</h2>
+          <div class="flex items-center space-x-2 text-sm text-white">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
@@ -1048,15 +1048,15 @@
           <!-- This Week's Summary -->
           <AppCard>
             <div class="p-6">
-              <h3 class="text-lg font-medium text-gray-900 mb-4">Weekly Summary</h3>
+              <h3 class="text-lg font-medium text-white mb-4">Weekly Summary</h3>
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <div>
-                    <span class="text-sm text-gray-600">Total Feedback This Week</span>
-                    <p class="text-xs text-gray-400">vs. last week ({{ weeklyStats.lastWeekTotal }})</p>
+                    <span class="text-sm text-white">Total Feedback This Week</span>
+                    <p class="text-xs text-white">vs. last week ({{ weeklyStats.lastWeekTotal }})</p>
                   </div>
                   <div class="flex items-center space-x-2">
-                    <span class="text-lg font-semibold text-gray-900">{{ weeklyStats.totalFeedback }}</span>
+                    <span class="text-lg font-semibold text-white">{{ weeklyStats.totalFeedback }}</span>
                     <span 
                       v-if="weeklyStats.totalGrowth !== 0" 
                       class="text-xs px-2 py-1 rounded-full" 
@@ -1073,19 +1073,19 @@
                   </div>
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm text-gray-600">Positive Sentiment</span>
+                  <span class="text-sm text-white">Positive Sentiment</span>
                   <div class="flex items-center space-x-2">
                     <span class="text-lg font-semibold text-green-600">{{ weeklyStats.positiveCount }}</span>
-                    <span class="text-xs text-gray-500">({{ weeklyStats.positivePercentage }}%)</span>
+                    <span class="text-xs text-white">({{ weeklyStats.positivePercentage }}%)</span>
                   </div>
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm text-gray-600">Most Active Day</span>
-                  <span class="text-sm font-medium text-gray-900">{{ weeklyStats.mostActiveDay }}</span>
+                  <span class="text-sm text-white">Most Active Day</span>
+                  <span class="text-sm font-medium text-white">{{ weeklyStats.mostActiveDay }}</span>
                 </div>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm text-gray-600">Top Account This Week</span>
-                  <span class="text-sm font-medium text-gray-900">{{ weeklyStats.topAccount }}</span>
+                  <span class="text-sm text-white">Top Account This Week</span>
+                  <span class="text-sm font-medium text-white">{{ weeklyStats.topAccount }}</span>
                 </div>
               </div>
             </div>
@@ -1126,7 +1126,7 @@
         <!-- Weekly Feedback Timeline -->
         <AppCard class="mb-8">
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Daily Feedback This Week</h3>
+            <h3 class="text-lg font-medium text-white mb-4">Daily Feedback This Week</h3>
             <div class="flex items-end justify-between space-x-2 h-32">
               <div v-for="day in weeklyTimeline" :key="day.day" class="flex-1 flex flex-col items-center">
                 <div class="w-full bg-gray-200 rounded-t-md flex-1 flex items-end">
@@ -1137,8 +1137,8 @@
                   ></div>
                 </div>
                 <div class="mt-2 text-center">
-                  <p class="text-xs font-medium text-gray-900">{{ day.count }}</p>
-                  <p class="text-xs text-gray-500">{{ day.day }}</p>
+                  <p class="text-xs font-medium text-white">{{ day.count }}</p>
+                  <p class="text-xs text-white">{{ day.day }}</p>
                 </div>
               </div>
             </div>
@@ -1149,7 +1149,7 @@
         <AppCard>
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-medium text-gray-900">🎯 Meeting Ready - Key Points</h3>
+              <h3 class="text-lg font-medium text-white">🎯 Meeting Ready - Key Points</h3>
               <button class="text-sm bg-blue-50 text-blue-700 px-3 py-1 rounded-md hover:bg-blue-100 transition-colors">
                 Copy for Meeting
               </button>
@@ -1159,7 +1159,7 @@
               <div>
                 <h4 class="text-sm font-semibold text-green-700 mb-3">✅ This Week's Wins</h4>
                 <ul class="space-y-2">
-                  <li v-for="win in weeklyInsights.wins" :key="win" class="text-sm text-gray-700 flex items-start">
+                  <li v-for="win in weeklyInsights.wins" :key="win" class="text-sm text-white flex items-start">
                     <span class="text-green-500 mr-2">•</span>
                     {{ win }}
                   </li>
@@ -1170,7 +1170,7 @@
               <div>
                 <h4 class="text-sm font-semibold text-orange-700 mb-3">⚡ Action Items</h4>
                 <ul class="space-y-2">
-                  <li v-for="action in weeklyInsights.actions" :key="action" class="text-sm text-gray-700 flex items-start">
+                  <li v-for="action in weeklyInsights.actions" :key="action" class="text-sm text-white flex items-start">
                     <span class="text-orange-500 mr-2">•</span>
                     {{ action }}
                   </li>
@@ -1186,15 +1186,15 @@
         <!-- Top Keywords -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Top Keywords</h3>
+            <h3 class="text-lg font-medium text-white mb-4">Top Keywords</h3>
             <div class="space-y-3">
               <div v-for="keyword in topKeywords" :key="keyword.word" class="flex items-center justify-between">
-                <span class="text-sm font-medium text-gray-900">{{ keyword.word }}</span>
+                <span class="text-sm font-medium text-white">{{ keyword.word }}</span>
                 <div class="flex items-center space-x-2">
                   <div class="w-16 bg-gray-200 rounded-full h-2">
                     <div class="bg-blue-600 h-2 rounded-full" :style="{ width: `${keyword.percentage}%` }"></div>
                   </div>
-                  <span class="text-xs text-gray-500">{{ keyword.count }}</span>
+                  <span class="text-xs text-white">{{ keyword.count }}</span>
                 </div>
               </div>
             </div>
@@ -1394,8 +1394,8 @@
       <div v-if="todaysFeedback.length > 0 && !selectedSentiment && !hasActiveFilters" class="bg-white dark:bg-slate-800 rounded-lg shadow mb-8">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-600">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-slate-100">📅 Today's Feedback</h3>
-            <span class="text-sm text-gray-500 dark:text-slate-400">
+            <h3 class="text-lg font-medium text-white">📅 Today's Feedback</h3>
+            <span class="text-sm text-white">
               {{ todaysFeedback.length }} item{{ todaysFeedback.length !== 1 ? 's' : '' }} today
             </span>
           </div>
@@ -1408,7 +1408,7 @@
           >
             <div class="flex items-start justify-between mb-2">
               <div class="flex items-center space-x-2">
-                <span class="text-sm font-medium text-gray-900 dark:text-slate-100">{{ item.accountName || 'Unknown Account' }}</span>
+                <span class="text-sm font-medium text-white">{{ item.accountName || 'Unknown Account' }}</span>
                 <span 
                   class="px-2 py-1 rounded-full text-xs font-medium"
                   :class="{
@@ -1421,7 +1421,7 @@
                 </span>
               </div>
               <div class="flex items-center space-x-2">
-                <span class="text-xs text-gray-500 dark:text-slate-400">{{ formatTime(item.createdDate) }}</span>
+                <span class="text-xs text-white">{{ formatTime(item.createdDate) }}</span>
                 <button 
                   @click="copyFeedback(item.feedback)"
                   class="text-gray-400 hover:text-blue-600 dark:text-slate-500 dark:hover:text-blue-400 transition-colors duration-200"
@@ -1434,7 +1434,7 @@
               </div>
             </div>
             <p class="text-gray-700 dark:text-slate-300 text-sm">{{ item.feedback }}</p>
-            <div class="mt-2 flex items-center space-x-4 text-xs text-gray-500 dark:text-slate-400">
+            <div class="mt-2 flex items-center space-x-4 text-xs text-white">
               <span>Account Manager: {{ item.accountOwner || 'Unassigned' }}</span>
               <span v-if="item.feedbackDirectedTo">Directed to: {{ item.feedbackDirectedTo }}</span>
             </div>
@@ -1499,7 +1499,7 @@
       <div class="mt-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-6 border-2 border-purple-300 dark:border-purple-700">
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-slate-100 flex items-center">
+            <h3 class="text-xl font-bold text-white flex items-center">
               <div class="p-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg mr-3">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1507,14 +1507,14 @@
               </div>
               AI Intelligence Report Generator
             </h3>
-            <p class="text-gray-600 dark:text-slate-300 text-sm mt-1 ml-13">Generate comprehensive reports with AI-powered insights</p>
+            <p class="text-white text-sm mt-1 ml-13">Generate comprehensive reports with AI-powered insights</p>
           </div>
         </div>
 
         <!-- Smart Filters for AI Report -->
         <div class="bg-white dark:bg-slate-800 rounded-lg p-4 border border-purple-200 dark:border-purple-700 mb-6">
           <div class="flex items-center justify-between mb-4">
-            <h4 class="text-sm font-bold text-gray-900 dark:text-slate-100">Smart Filters</h4>
+            <h4 class="text-sm font-bold text-white">Smart Filters</h4>
             <button 
               v-if="hasAIFilters"
               @click="clearAIFilters"
@@ -1530,7 +1530,7 @@
               <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Account Manager</label>
               <select 
                 v-model="aiFilters.accountManager"
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
                 <option value="">All Managers</option>
                 <option v-for="manager in uniqueAccountManagers" :key="manager.name" :value="manager.name">
@@ -1544,7 +1544,7 @@
               <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Date Period</label>
               <select 
                 v-model="aiFilters.datePeriod"
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
                 <option value="">All Time</option>
                 <option value="today">Today</option>
@@ -1563,7 +1563,7 @@
               <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Feedback Directed To</label>
               <select 
                 v-model="aiFilters.feedbackDirectedTo"
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
                 <option value="">All Teams</option>
                 <option v-for="team in uniqueFeedbackDirections" :key="team.name" :value="team.name">
@@ -1577,7 +1577,7 @@
               <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Category</label>
               <select 
                 v-model="aiFilters.category"
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
                 <option value="">All Categories</option>
                 <option v-for="cat in uniqueCategories" :key="cat.name" :value="cat.name">
@@ -1594,7 +1594,7 @@
                   v-model="aiFilters.platformClientId"
                   type="text"
                   placeholder="Search by Platform Client ID..."
-                  class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 />
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                   <svg class="h-4 w-4 text-gray-400 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1623,7 +1623,7 @@
 
           <!-- Active Filters Display -->
           <div v-if="hasAIFilters" class="mt-4 flex flex-wrap gap-2">
-            <span class="text-sm text-gray-500 dark:text-slate-400">Active filters:</span>
+            <span class="text-sm text-white">Active filters:</span>
             <span 
               v-if="aiFilters.accountManager"
               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
