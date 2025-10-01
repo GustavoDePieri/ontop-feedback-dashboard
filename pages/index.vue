@@ -82,26 +82,49 @@
       </div>
     </header>
 
-    <!-- Advanced Filters Section -->
+    <!-- Advanced Filters Section - Collapsible -->
     <div class="bg-ontop-navy-light/50 backdrop-blur-xl border-b border-white/5">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center space-x-3">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <button 
+            @click="showFilters = !showFilters"
+            class="flex items-center space-x-3 hover:bg-white/5 rounded-lg px-3 py-2 transition-all duration-200"
+          >
             <div class="p-2 bg-gradient-ontop-hero rounded-lg shadow-lg">
               <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
             </div>
-            <h2 class="text-lg font-bold text-white">Filters</h2>
-          </div>
+            <div class="flex items-center space-x-2">
+              <h2 class="text-lg font-bold text-white">Advanced Filters</h2>
+              <span v-if="activeFilterCount > 0" class="bg-gradient-cta text-white text-xs font-bold px-2 py-1 rounded-full">
+                {{ activeFilterCount }}
+              </span>
+              <svg class="w-5 h-5 text-white transition-transform duration-200" :class="{ 'rotate-180': showFilters }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </button>
           <button 
             @click="clearAllFilters"
             v-if="hasActiveFilters"
             class="text-sm font-semibold text-white bg-gradient-cta hover:bg-gradient-cta-hover px-4 py-2 rounded-lg transition-all duration-200"
           >
-            ✕ Clear Filters
+            ✕ Clear All
           </button>
         </div>
+        
+        <!-- Collapsible Filter Content -->
+        <transition
+          enter-active-class="transition-all duration-300 ease-out"
+          enter-from-class="max-h-0 opacity-0"
+          enter-to-class="max-h-96 opacity-100"
+          leave-active-class="transition-all duration-300 ease-in"
+          leave-from-class="max-h-96 opacity-100"
+          leave-to-class="max-h-0 opacity-0"
+        >
+          <div v-show="showFilters" class="overflow-hidden">
+            <div class="pt-6 pb-2">
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Account Manager Filter -->
@@ -244,10 +267,13 @@
           </span>
         </div>
 
-        <!-- Results Count -->
-        <div v-if="hasActiveFilters" class="mt-3 text-sm text-white">
-          Showing {{ filteredFeedbackData.length }} of {{ feedbackData.length }} feedback items
-        </div>
+              <!-- Results Count -->
+              <div v-if="hasActiveFilters" class="mt-3 text-sm text-white">
+                Showing {{ filteredFeedbackData.length }} of {{ feedbackData.length }} feedback items
+              </div>
+            </div>
+          </div>
+        </transition>
       </div>
     </div>
 
@@ -283,7 +309,159 @@
         @close="showReportDisplay = false"
       />
 
-      <!-- Executive Summary Dashboard -->
+      <!-- Quick Actions Card -->
+      <div v-if="feedbackData.length > 0" class="mb-6">
+        <AppCard>
+          <div class="p-6">
+            <h3 class="text-lg font-bold text-white mb-4">⚡ Quick Actions</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <button 
+                @click="generateQuickAIReport"
+                :disabled="generatingAIReport"
+                class="flex flex-col items-center justify-center p-4 bg-gradient-ontop-hero hover:shadow-glow rounded-xl transition-all duration-200 group"
+              >
+                <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <span class="text-sm font-semibold text-white">{{ generatingAIReport ? 'Generating...' : 'AI Report' }}</span>
+              </button>
+              
+              <button 
+                @click="navigateTo('/reports')"
+                class="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl transition-all duration-200 group"
+              >
+                <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <span class="text-sm font-semibold text-white">Create Report</span>
+              </button>
+              
+              <button 
+                @click="exportData"
+                class="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl transition-all duration-200 group"
+              >
+                <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <span class="text-sm font-semibold text-white">Export Data</span>
+              </button>
+              
+              <button 
+                @click="navigateTo('/analytics')"
+                class="flex flex-col items-center justify-center p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl transition-all duration-200 group"
+              >
+                <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <svg class="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <span class="text-sm font-semibold text-white">Analytics</span>
+              </button>
+            </div>
+          </div>
+        </AppCard>
+      </div>
+
+      <!-- AI Insights Hero Card -->
+      <div v-if="feedbackData.length > 0 && aiRecommendations" class="mb-6">
+        <AppCard>
+          <div class="bg-gradient-ontop-hero p-6 rounded-xl">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                  <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-2xl font-bold text-white">🤖 AI-Powered Intelligence</h3>
+                  <p class="text-white/80 text-sm">Real-time insights from {{ filteredFeedbackData.length }} feedback items</p>
+                </div>
+              </div>
+              <button 
+                @click="generateQuickAIReport"
+                class="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-200"
+              >
+                Full Report →
+              </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Top Priority -->
+              <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div class="text-white/70 text-sm font-medium mb-2">🎯 Top Priority</div>
+                <div class="text-white text-lg font-bold mb-1">
+                  {{ aiRecommendations?.topRecurringRequests?.[0]?.request || 'No data' }}
+                </div>
+                <div class="text-white/80 text-xs">
+                  {{ aiRecommendations?.topRecurringRequests?.[0]?.frequency || 0 }} mentions
+                </div>
+              </div>
+              
+              <!-- Sentiment Trend -->
+              <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div class="text-white/70 text-sm font-medium mb-2">📈 Sentiment Trend</div>
+                <div class="flex items-center space-x-2">
+                  <div class="text-white text-3xl font-bold">
+                    {{ positivePercentage.toFixed(0) }}%
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-green-300 text-sm font-semibold">Positive</span>
+                    <span class="text-white/60 text-xs">{{ weeklyGrowth > 0 ? '↑' : '↓' }} {{ Math.abs(weeklyGrowth) }}% WoW</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Action Items -->
+              <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div class="text-white/70 text-sm font-medium mb-2">✅ Action Items</div>
+                <div class="text-white text-3xl font-bold mb-1">
+                  {{ aiRecommendations?.topRecurringRequests?.length || 0 }}
+                </div>
+                <div class="text-white/80 text-xs">
+                  {{ aiRecommendations?.criticalRisks?.length || 0 }} critical issues
+                </div>
+              </div>
+            </div>
+          </div>
+        </AppCard>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div v-if="feedbackData.length > 0" class="mb-6">
+        <div class="border-b border-white/10">
+          <nav class="flex space-x-1" aria-label="Tabs">
+            <button
+              v-for="tab in tabs"
+              :key="tab.id"
+              @click="activeTab = tab.id"
+              :class="[
+                'px-6 py-3 text-sm font-semibold rounded-t-lg transition-all duration-200',
+                activeTab === tab.id
+                  ? 'bg-gradient-ontop-hero text-white shadow-lg'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
+              ]"
+            >
+              <span class="flex items-center space-x-2">
+                <span>{{ tab.icon }}</span>
+                <span>{{ tab.label }}</span>
+              </span>
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div v-if="feedbackData.length > 0">
+        <!-- Overview Tab -->
+        <div v-show="activeTab === 'overview'">
+          <!-- Executive Summary Dashboard -->
       <div v-if="feedbackData.length > 0" class="mb-8">
         <div class="mb-6">
           <h2 class="text-2xl font-bold text-white">Executive Summary</h2>
@@ -1032,8 +1210,13 @@
         </AppCard>
       </div>
 
+        </div>
+        <!-- End Overview Tab -->
+
+        <!-- Trends Tab -->
+        <div v-show="activeTab === 'trends'">
       <!-- Weekly Overview Section -->
-      <div v-if="feedbackData.length > 0" class="mb-8">
+      <div class="mb-8">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-2xl font-bold text-white">This Week's Overview</h2>
           <div class="flex items-center space-x-2 text-sm text-white">
@@ -1247,6 +1430,11 @@
         </AppCard>
       </div>
 
+        </div>
+        <!-- End Trends Tab -->
+
+        <!-- Feedback Tab -->
+        <div v-show="activeTab === 'feedback'">
       <!-- Filtered Feedback Section -->
       <div v-if="selectedSentiment && filteredFeedback.length > 0" class="mb-8" data-sentiment-filter>
         <AppCard>
@@ -1693,6 +1881,10 @@
           </div>
         </div>
       </div>
+        </div>
+        <!-- End Feedback Tab -->
+      </div>
+      <!-- End Tab Content -->
     </main>
 
     <!-- AI Report Display Modal -->
@@ -1829,6 +2021,17 @@ const selectedSentiment = ref(null)
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
 
+// Tab navigation
+const activeTab = ref('overview')
+const tabs = [
+  { id: 'overview', label: 'Overview', icon: '📊' },
+  { id: 'trends', label: 'Trends & Analytics', icon: '📈' },
+  { id: 'feedback', label: 'Feedback List', icon: '📝' }
+]
+
+// Filters panel
+const showFilters = ref(false)
+
 // Advanced filters
 const filters = reactive({
   accountManager: '',
@@ -1919,6 +2122,16 @@ const uniqueCategories = computed(() => {
 
 const hasActiveFilters = computed(() => {
   return filters.accountManager || filters.datePeriod || filters.feedbackDirectedTo || filters.category || filters.platformClientId
+})
+
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (filters.accountManager) count++
+  if (filters.datePeriod) count++
+  if (filters.feedbackDirectedTo) count++
+  if (filters.category) count++
+  if (filters.platformClientId) count++
+  return count
 })
 
 const filteredFeedbackData = computed(() => {
@@ -2633,6 +2846,47 @@ const clearDateFilter = () => {
   filters.datePeriod = ''
   filters.startDate = ''
   filters.endDate = ''
+}
+
+// Quick Actions helper methods
+const generateQuickAIReport = async () => {
+  // Use existing generateAIReportWithSmartFilters function
+  await generateAIReportWithSmartFilters()
+}
+
+const exportData = () => {
+  // Export current filtered data as CSV
+  const csvContent = convertToCSV(filteredFeedbackData.value)
+  downloadFile(csvContent, 'feedback-export.csv', 'text/csv')
+}
+
+const convertToCSV = (data) => {
+  if (!data || data.length === 0) return ''
+  
+  const headers = ['Date', 'Account', 'Manager', 'Category', 'Sentiment', 'Feedback', 'Directed To']
+  const rows = data.map(item => [
+    item.createdDate || '',
+    item.platformClientId || '',
+    item.accountManager || '',
+    item.category || '',
+    item.sentiment || '',
+    `"${(item.feedback || '').replace(/"/g, '""')}"`,
+    item.feedbackDirectedTo || ''
+  ])
+  
+  return [headers, ...rows].map(row => row.join(',')).join('\n')
+}
+
+const downloadFile = (content, filename, mimeType) => {
+  const blob = new Blob([content], { type: mimeType })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
 }
 
 // AI Filter methods
