@@ -2818,10 +2818,10 @@ const clearDateFilter = () => {
   filters.endDate = ''
 }
 
-// Quick AI Report helper
+// Quick AI Report helper - calls the main AI report generation
 const generateQuickAIReport = async () => {
-  // Use existing generateAIReportWithSmartFilters function
-  await generateAIReportWithSmartFilters()
+  // Call the main AI report generation function
+  await generateAIReport()
 }
 
 // AI Filter methods
