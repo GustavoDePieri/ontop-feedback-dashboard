@@ -459,9 +459,9 @@
                 :class="{
                   'bg-white/5 text-white/30': !day.inCurrentMonth,
                   'bg-white dark:bg-slate-800 text-white hover:bg-gray-50 dark:hover:bg-slate-700': day.inCurrentMonth && day.feedbackCount === 0,
-                  'bg-green-50 text-green-900 hover:bg-green-100 cursor-pointer ring-1 ring-green-200': day.feedbackCount > 0 && day.dominantSentiment === 'positive',
-                  'bg-red-50 text-red-900 hover:bg-red-100 cursor-pointer ring-1 ring-red-200': day.feedbackCount > 0 && day.dominantSentiment === 'negative',
-                  'bg-yellow-50 text-yellow-900 hover:bg-yellow-100 cursor-pointer ring-1 ring-yellow-200': day.feedbackCount > 0 && day.dominantSentiment === 'neutral',
+                  'bg-green-500/20 text-green-300 hover:bg-green-500/30 cursor-pointer ring-1 ring-green-500': day.feedbackCount > 0 && day.dominantSentiment === 'positive',
+                  'bg-red-500/20 text-red-300 hover:bg-red-500/30 cursor-pointer ring-1 ring-red-500': day.feedbackCount > 0 && day.dominantSentiment === 'negative',
+                  'bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 cursor-pointer ring-1 ring-yellow-500': day.feedbackCount > 0 && day.dominantSentiment === 'neutral',
                   'bg-blue-600 text-white': day.isSelected,
                   'ring-2 ring-blue-500': day.isToday && !day.isSelected
                 }"
@@ -525,13 +525,13 @@
           <div class="p-6">
             <div class="grid gap-4">
               <div 
-                v-for="item in selectedDateFeedback" 
+                v-for="item in selectedDateFeedback"
                 :key="item.id"
-                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                class="border rounded-lg p-4 hover:shadow-xl transition-shadow bg-white/5 backdrop-blur-sm"
                 :class="{
-                  'border-green-200 bg-green-50': item.sentiment === 'Positive',
-                  'border-yellow-200 bg-yellow-50': item.sentiment === 'Neutral',
-                  'border-red-200 bg-red-50': item.sentiment === 'Negative'
+                  'border-green-500/50': item.sentiment === 'Positive',
+                  'border-yellow-500/50': item.sentiment === 'Neutral',
+                  'border-red-500/50': item.sentiment === 'Negative'
                 }"
               >
                 <div class="flex items-start justify-between">
@@ -791,19 +791,19 @@
               <div class="space-y-4">
                 <!-- Recent Activity Summary -->
                 <div class="grid grid-cols-3 gap-4 text-center">
-                  <div class="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200 cursor-pointer">
+                  <div class="bg-green-500/10 p-3 rounded-lg hover:bg-green-500/20 transition-colors duration-200 cursor-pointer">
                     <div class="text-lg font-bold text-green-600 dark:text-green-400">
                       {{ feedbackTrendsData.reduce((sum, day) => sum + day.positive, 0) }}
                     </div>
                     <div class="text-xs text-green-600 dark:text-green-400">Positive</div>
                   </div>
-                  <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors duration-200 cursor-pointer">
+                  <div class="bg-yellow-500/10 p-3 rounded-lg hover:bg-yellow-500/20 transition-colors duration-200 cursor-pointer">
                     <div class="text-lg font-bold text-yellow-600 dark:text-yellow-400">
                       {{ feedbackTrendsData.reduce((sum, day) => sum + day.neutral, 0) }}
                     </div>
                     <div class="text-xs text-yellow-600 dark:text-yellow-400">Neutral</div>
                   </div>
-                  <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200 cursor-pointer">
+                  <div class="bg-red-500/10 p-3 rounded-lg hover:bg-red-500/20 transition-colors duration-200 cursor-pointer">
                     <div class="text-lg font-bold text-red-600 dark:text-red-400">
                       {{ feedbackTrendsData.reduce((sum, day) => sum + day.negative, 0) }}
                     </div>
@@ -1268,11 +1268,11 @@
               <div 
                 v-for="item in paginatedFeedback" 
                 :key="item.id"
-                class="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                class="border rounded-lg p-4 hover:shadow-xl transition-shadow bg-white/5 backdrop-blur-sm"
                 :class="{
-                  'border-green-200 bg-green-50': item.sentiment === 'Positive',
-                  'border-yellow-200 bg-yellow-50': item.sentiment === 'Neutral',
-                  'border-red-200 bg-red-50': item.sentiment === 'Negative'
+                  'border-green-500/50': item.sentiment === 'Positive',
+                  'border-yellow-500/50': item.sentiment === 'Neutral',
+                  'border-red-500/50': item.sentiment === 'Negative'
                 }"
               >
                 <div class="flex items-start justify-between">

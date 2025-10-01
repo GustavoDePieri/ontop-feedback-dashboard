@@ -86,24 +86,24 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <h4 class="text-sm font-bold text-gray-900 dark:text-white">Executive Summary</h4>
+              <h4 class="text-sm font-bold text-white">Executive Summary</h4>
             </div>
             <div class="grid grid-cols-4 gap-3 mb-4">
-              <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-center border border-blue-200 dark:border-blue-800">
-                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ reportData.summary.total }}</div>
-                <div class="text-xs font-medium text-blue-700 dark:text-blue-300">Total Feedback</div>
+              <div class="bg-blue-500/10 rounded-lg p-3 text-center border border-blue-500/30">
+                <div class="text-2xl font-bold text-blue-400">{{ reportData.summary.total }}</div>
+                <div class="text-xs font-medium text-white">Total Feedback</div>
               </div>
-              <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 text-center border border-green-200 dark:border-green-800">
-                <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ reportData.summary.positive }}</div>
-                <div class="text-xs font-medium text-green-700 dark:text-green-300">Positive ({{ reportData.summary.positivePercent }}%)</div>
+              <div class="bg-green-500/10 rounded-lg p-3 text-center border border-green-500/30">
+                <div class="text-2xl font-bold text-green-400">{{ reportData.summary.positive }}</div>
+                <div class="text-xs font-medium text-white">Positive ({{ reportData.summary.positivePercent }}%)</div>
               </div>
-              <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-3 text-center border border-yellow-200 dark:border-yellow-800">
-                <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ reportData.summary.neutral }}</div>
-                <div class="text-xs font-medium text-yellow-700 dark:text-yellow-300">Neutral ({{ reportData.summary.neutralPercent }}%)</div>
+              <div class="bg-yellow-500/10 rounded-lg p-3 text-center border border-yellow-500/30">
+                <div class="text-2xl font-bold text-yellow-400">{{ reportData.summary.neutral }}</div>
+                <div class="text-xs font-medium text-white">Neutral ({{ reportData.summary.neutralPercent }}%)</div>
               </div>
-              <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 text-center border border-red-200 dark:border-red-800">
-                <div class="text-2xl font-bold text-red-600 dark:text-red-400">{{ reportData.summary.negative }}</div>
-                <div class="text-xs font-medium text-red-700 dark:text-red-300">Negative ({{ reportData.summary.negativePercent }}%)</div>
+              <div class="bg-red-500/10 rounded-lg p-3 text-center border border-red-500/30">
+                <div class="text-2xl font-bold text-red-400">{{ reportData.summary.negative }}</div>
+                <div class="text-xs font-medium text-white">Negative ({{ reportData.summary.negativePercent }}%)</div>
               </div>
             </div>
           </div>
@@ -116,37 +116,37 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
-              <h4 class="text-sm font-bold text-gray-900 dark:text-white">Account Manager Performance</h4>
+              <h4 class="text-sm font-bold text-white">Account Manager Performance</h4>
             </div>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
-              <div v-for="manager in reportData.managers" :key="manager.name" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+              <div v-for="manager in reportData.managers" :key="manager.name" class="bg-white/5 rounded-lg p-3 border border-white/10">
                 <div class="flex items-center justify-between mb-2">
-                  <h5 class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ manager.name }}</h5>
+                  <h5 class="text-sm font-semibold text-white truncate">{{ manager.name }}</h5>
                   <span class="text-xs font-medium px-2 py-1 rounded-full"
                         :class="{
-                          'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400': manager.positiveRate >= 70,
-                          'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400': manager.positiveRate >= 50 && manager.positiveRate < 70,
-                          'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400': manager.positiveRate < 50
+                          'bg-green-500/20 text-green-300': manager.positiveRate >= 70,
+                          'bg-yellow-500/20 text-yellow-300': manager.positiveRate >= 50 && manager.positiveRate < 70,
+                          'bg-red-500/20 text-red-300': manager.positiveRate < 50
                         }">
                     {{ manager.positiveRate }}%
                   </span>
                 </div>
                 <div class="grid grid-cols-4 gap-1 text-xs">
-                  <div class="bg-white dark:bg-gray-600 rounded p-1 text-center">
-                    <div class="font-bold text-gray-900 dark:text-white">{{ manager.total }}</div>
-                    <div class="text-white text-xs">Total</div>
+                  <div class="bg-white/10 rounded p-1 text-center">
+                    <div class="font-bold text-white">{{ manager.total }}</div>
+                    <div class="text-white/70 text-xs">Total</div>
                   </div>
-                  <div class="bg-green-50 dark:bg-green-900/20 rounded p-1 text-center">
-                    <div class="font-bold text-green-600 dark:text-green-400">{{ manager.positive }}</div>
-                    <div class="text-green-700 dark:text-green-300 text-xs">+</div>
+                  <div class="bg-green-500/20 rounded p-1 text-center">
+                    <div class="font-bold text-green-400">{{ manager.positive }}</div>
+                    <div class="text-green-300 text-xs">+</div>
                   </div>
-                  <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded p-1 text-center">
-                    <div class="font-bold text-yellow-600 dark:text-yellow-400">{{ manager.neutral }}</div>
-                    <div class="text-yellow-700 dark:text-yellow-300 text-xs">~</div>
+                  <div class="bg-yellow-500/20 rounded p-1 text-center">
+                    <div class="font-bold text-yellow-400">{{ manager.neutral }}</div>
+                    <div class="text-yellow-300 text-xs">~</div>
                   </div>
-                  <div class="bg-red-50 dark:bg-red-900/20 rounded p-1 text-center">
-                    <div class="font-bold text-red-600 dark:text-red-400">{{ manager.negative }}</div>
-                    <div class="text-red-700 dark:text-red-300 text-xs">-</div>
+                  <div class="bg-red-500/20 rounded p-1 text-center">
+                    <div class="font-bold text-red-400">{{ manager.negative }}</div>
+                    <div class="text-red-300 text-xs">-</div>
                   </div>
                 </div>
               </div>
@@ -161,16 +161,16 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h4 class="text-sm font-bold text-gray-900 dark:text-white">Top Accounts by Feedback Volume</h4>
+              <h4 class="text-sm font-bold text-white">Top Accounts by Feedback Volume</h4>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
               <div v-for="(account, index) in reportData.topAccounts.slice(0, 12)" :key="account.name" 
-                   class="flex items-center bg-gray-50 dark:bg-gray-700 rounded-lg p-2 border border-gray-200 dark:border-gray-600">
+                   class="flex items-center bg-white/5 rounded-lg p-2 border border-white/10">
                 <span class="w-6 h-6 bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center text-xs font-bold mr-2 flex-shrink-0">
                   {{ index + 1 }}
                 </span>
                 <div class="min-w-0 flex-1">
-                  <div class="font-medium text-gray-900 dark:text-white text-xs truncate">{{ account.name }}</div>
+                  <div class="font-medium text-white text-xs truncate">{{ account.name }}</div>
                   <div class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">{{ account.count }}</div>
                 </div>
               </div>
@@ -185,7 +185,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <h4 class="text-sm font-bold text-gray-900 dark:text-white">Key Insights & Recommendations</h4>
+              <h4 class="text-sm font-bold text-white">Key Insights & Recommendations</h4>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
               <div v-for="insight in reportData.insights" :key="insight" 
@@ -200,7 +200,7 @@
         </div>
 
         <!-- Footer -->
-        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3">
+        <div class="bg-white/5 px-4 py-3">
           <div class="flex items-center justify-between">
             <p class="text-sm text-white">
               Generated on {{ new Date().toLocaleString() }}
