@@ -2814,18 +2814,25 @@ const clearDateFilter = () => {
   filters.endDate = ''
 }
 
-// Quick AI Report helper - scrolls to the AI report generator section
+// Quick AI Report helper - switches to feedback tab and scrolls to the AI report generator section
 const generateQuickAIReport = () => {
-  // Scroll to the AI report generator section
-  const element = document.getElementById('ai-report-generator')
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    // Add a subtle highlight effect
-    element.classList.add('ring-4', 'ring-purple-500', 'ring-opacity-50')
+  // First, switch to the feedback tab
+  activeTab.value = 'feedback'
+  
+  // Wait for the tab to render, then scroll
+  nextTick(() => {
     setTimeout(() => {
-      element.classList.remove('ring-4', 'ring-purple-500', 'ring-opacity-50')
-    }, 2000)
-  }
+      const element = document.getElementById('ai-report-generator')
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        // Add a subtle highlight effect
+        element.classList.add('ring-4', 'ring-purple-500', 'ring-opacity-50')
+        setTimeout(() => {
+          element.classList.remove('ring-4', 'ring-purple-500', 'ring-opacity-50')
+        }, 2000)
+      }
+    }, 100)
+  })
 }
 
 // AI Filter methods
