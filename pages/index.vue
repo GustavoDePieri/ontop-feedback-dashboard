@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 transition-all duration-500">
-    <!-- Header with Gradient -->
-    <header class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl relative overflow-hidden">
+  <div class="min-h-screen bg-gradient-dark transition-all duration-500">
+    <!-- Header with Ontop Brand Gradient -->
+    <header class="bg-ontop-navy-dark relative overflow-hidden border-b border-white/5">
       <!-- Animated Background Pattern -->
       <div class="absolute inset-0 opacity-10">
         <div class="absolute top-0 -left-4 w-72 h-72 bg-white rounded-full mix-blend-overlay filter blur-xl animate-blob"></div>
@@ -10,101 +10,106 @@
       </div>
       
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="flex justify-between items-center py-8">
+        <div class="flex justify-between items-center py-6">
           <div class="flex items-center space-x-4">
-            <!-- Logo/Icon -->
-            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-3 shadow-lg">
-              <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Logo with Ontop gradient -->
+            <div class="bg-gradient-ontop-hero rounded-xl p-3 shadow-xl">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
           <div>
-              <h1 class="text-3xl font-bold text-white drop-shadow-lg">
-                Ontop Analytics Hub
+              <h1 class="text-2xl font-bold text-white">
+                Feedback Analytics
             </h1>
-              <p class="mt-1 text-blue-100 font-medium drop-shadow">
-                🚀 Real-time Customer Intelligence Dashboard
+              <p class="mt-0.5 text-white/70 text-sm">
+                Real-time Customer Intelligence
             </p>
             </div>
           </div>
           
-          <div class="flex items-center space-x-2">
-            <!-- Dark Mode Toggle -->
+          <div class="flex items-center space-x-3">
+            <!-- Refresh Data Button - Ontop CTA Style -->
+            <button 
+              @click="refreshData" 
+              :disabled="loading"
+              class="bg-gradient-cta hover:bg-gradient-cta-hover text-white font-semibold py-2.5 px-5 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>{{ loading ? 'Loading...' : 'Refresh' }}</span>
+            </button>
+            
+            <div class="border-l border-white/10 h-8"></div>
+            
+            <!-- Utility Buttons -->
             <button
               @click="toggleDarkMode"
-              class="p-3 text-white/80 hover:text-white hover:bg-white/20 backdrop-blur-sm rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              class="p-2.5 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
               title="Toggle dark mode"
             >
-              <svg v-if="!isDarkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-if="!isDarkMode" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
-              <svg v-else class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-else class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
             </button>
             
-            <!-- Logout Button -->
+            <button
+              @click="testConnection"
+              class="p-2.5 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+              title="Test connection"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+            
             <button
               @click="handleLogout"
-              class="p-3 text-white/80 hover:text-white hover:bg-red-500/30 backdrop-blur-sm rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              class="p-2.5 text-white/60 hover:text-ontop-coral-500 hover:bg-white/10 rounded-lg transition-all duration-200"
               title="Logout"
             >
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-            </button>
-            
-            <div class="border-l border-white/30 h-8 mx-2"></div>
-            
-            <button 
-              @click="refreshData" 
-              :disabled="loading"
-              class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-2xl transform hover:scale-105 flex items-center space-x-2"
-            >
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              <span>{{ loading ? 'Loading...' : 'Refresh Data' }}</span>
-            </button>
-            <button 
-              @click="testConnection"
-              class="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white/90 hover:text-white font-medium py-3 px-5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              Test Connection
             </button>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Advanced Filters with Glass Morphism -->
-    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-xl border-b-4 border-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300">
+    <!-- Advanced Filters Section -->
+    <div class="bg-ontop-navy-light/50 backdrop-blur-xl border-b border-white/5">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center space-x-3">
-            <div class="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg shadow-lg">
+            <div class="p-2 bg-gradient-ontop-hero rounded-lg shadow-lg">
               <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
             </div>
-            <h2 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Smart Filters</h2>
+            <h2 class="text-lg font-bold text-white">Filters</h2>
           </div>
           <button 
             @click="clearAllFilters"
             v-if="hasActiveFilters"
-            class="text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+            class="text-sm font-semibold text-white bg-gradient-cta hover:bg-gradient-cta-hover px-4 py-2 rounded-lg transition-all duration-200"
           >
-            ✕ Clear All Filters
+            ✕ Clear Filters
           </button>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Account Manager Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Account Manager</label>
+            <label class="block text-sm font-medium text-white/80 mb-2">Account Manager</label>
             <select 
               v-model="filters.accountManager"
-              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full border border-white/10 bg-white/5 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
             >
               <option value="">All Managers</option>
               <option v-for="manager in uniqueAccountManagers" :key="manager.name" :value="manager.name">
@@ -115,10 +120,10 @@
 
           <!-- Date Period Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Date Period</label>
+            <label class="block text-sm font-medium text-white/80 mb-2">Date Period</label>
             <select 
               v-model="filters.datePeriod"
-              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full border border-white/10 bg-white/5 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
             >
               <option value="">All Time</option>
               <option value="today">Today</option>
@@ -135,18 +140,18 @@
 
           <!-- Custom Date Range (shown when custom is selected) -->
           <div v-if="filters.datePeriod === 'custom'" class="md:col-span-2 lg:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Custom Date Range</label>
+            <label class="block text-sm font-medium text-white/80 mb-2">Custom Date Range</label>
             <div class="grid grid-cols-2 gap-2">
               <input
                 v-model="filters.startDate"
                 type="date"
-                class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="border border-white/10 bg-white/5 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
                 placeholder="Start Date"
               />
               <input
                 v-model="filters.endDate"
                 type="date"
-                class="border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="border border-white/10 bg-white/5 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
                 placeholder="End Date"
               />
             </div>
@@ -154,10 +159,10 @@
 
           <!-- Feedback Directed To Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Feedback Directed To</label>
+            <label class="block text-sm font-medium text-white/80 mb-2">Feedback Directed To</label>
             <select 
               v-model="filters.feedbackDirectedTo"
-              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full border border-white/10 bg-white/5 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
             >
               <option value="">All Teams</option>
               <option v-for="team in uniqueFeedbackDirections" :key="team.name" :value="team.name">
@@ -168,10 +173,10 @@
 
           <!-- Category Filter -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Category</label>
+            <label class="block text-sm font-medium text-white/80 mb-2">Category</label>
             <select 
               v-model="filters.category"
-              class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full border border-white/10 bg-white/5 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
             >
               <option value="">All Categories</option>
               <option v-for="cat in uniqueCategories" :key="cat.name" :value="cat.name">
@@ -182,16 +187,16 @@
 
           <!-- Platform Client ID Search -->
           <div :class="filters.datePeriod === 'custom' ? '' : 'md:col-span-2'">
-            <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Platform Client ID</label>
+            <label class="block text-sm font-medium text-white/80 mb-2">Platform Client ID</label>
             <div class="relative">
               <input
                 v-model="filters.platformClientId"
                 type="text"
                 placeholder="Search by Platform Client ID..."
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-slate-100 rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full border border-white/10 bg-white/5 text-white placeholder-white/40 rounded-lg px-3 py-2.5 pr-10 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
               />
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-gray-400 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>

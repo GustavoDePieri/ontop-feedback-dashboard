@@ -15,24 +15,30 @@ export default {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
       colors: {
-        // Ontop Brand Colors
+        // Ontop Brand Colors (Updated to match website)
         ontop: {
-          navy: '#2D1B69',
-          'navy-dark': '#1a0f3d',
+          // Dark backgrounds - very dark purple/navy
+          navy: '#1a0d2e',
+          'navy-dark': '#0f0819',
+          'navy-light': '#2a1b3d',
+          
+          // Purple scale
           purple: {
-            50: '#faf5ff',
-            100: '#f3e8ff',
-            200: '#e9d5ff',
-            300: '#d8b4fe',
-            400: '#c084fc',
-            500: '#a855f7',
-            600: '#9333ea',
-            700: '#7e22ce',
-            800: '#6b21a8',
-            900: '#581c87',
+            50: '#f5f3ff',
+            100: '#ede9fe',
+            200: '#ddd6fe',
+            300: '#c4b5fd',
+            400: '#a78bfa',
+            500: '#8b5cf6',
+            600: '#7c3aed',
+            700: '#6d28d9',
+            800: '#5b21b6',
+            900: '#4c1d95',
           },
+          
+          // Pink to Coral gradient (for CTAs and highlights)
           pink: {
-            50: '#fdf2f8',
+            50: '#fdf4f8',
             100: '#fce7f3',
             200: '#fbcfe8',
             300: '#f9a8d4',
@@ -43,12 +49,34 @@ export default {
             800: '#9d174d',
             900: '#831843',
           },
+          
+          // Coral/Salmon accent (from the website CTA buttons)
+          coral: {
+            50: '#fff1f2',
+            100: '#ffe4e6',
+            200: '#fecdd3',
+            300: '#fda4af',
+            400: '#fb7185',
+            500: '#f43f5e',
+            600: '#e11d48',
+            700: '#be123c',
+            800: '#9f1239',
+            900: '#881337',
+          },
         }
       },
       backgroundImage: {
-        'gradient-ontop': 'linear-gradient(135deg, #2D1B69 0%, #6b21a8 50%, #9d174d 100%)',
-        'gradient-purple-pink': 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)',
-        'gradient-dark': 'linear-gradient(135deg, #1a0f3d 0%, #2D1B69 100%)',
+        // Main Ontop gradient (purple to pink/coral) - matches website hero
+        'gradient-ontop': 'linear-gradient(135deg, #7c3aed 0%, #ec4899 50%, #f43f5e 100%)',
+        'gradient-ontop-hero': 'linear-gradient(120deg, #8b5cf6 0%, #ec4899 50%, #fb7185 100%)',
+        
+        // Dark background gradient
+        'gradient-dark': 'linear-gradient(135deg, #0f0819 0%, #1a0d2e 50%, #2a1b3d 100%)',
+        'gradient-navy': 'linear-gradient(180deg, #1a0d2e 0%, #0f0819 100%)',
+        
+        // CTA button gradient (coral/pink)
+        'gradient-cta': 'linear-gradient(90deg, #f43f5e 0%, #ec4899 100%)',
+        'gradient-cta-hover': 'linear-gradient(90deg, #e11d48 0%, #db2777 100%)',
       },
       boxShadow: {
         'glow': '0 0 20px rgba(168, 85, 247, 0.3)',

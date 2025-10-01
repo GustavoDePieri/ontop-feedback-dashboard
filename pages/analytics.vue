@@ -1,28 +1,26 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-transparent">
     <!-- Header -->
-    <header class="bg-white shadow">
+    <header class="bg-white/5 backdrop-blur-xl border-b border-white/10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center py-6">
           <div>
-            <h1 class="text-3xl font-bold text-gray-900">
+            <h1 class="text-3xl font-bold text-white">
               Advanced Analytics
             </h1>
-            <p class="mt-2 text-gray-600">
+            <p class="mt-2 text-gray-300">
               Deep insights and trend analysis
             </p>
           </div>
           
           <div class="flex space-x-3">
-            <select class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+            <select class="bg-white/10 text-white placeholder-gray-300 border border-white/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ontop-pink-400">
               <option>Last 30 days</option>
               <option>Last 90 days</option>
               <option>Last 6 months</option>
               <option>Last year</option>
             </select>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-              Export Report
-            </button>
+            <AppButton variant="primary" size="md">Export Report</AppButton>
           </div>
         </div>
       </div>
@@ -36,7 +34,7 @@
           <div class="p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                <div class="w-8 h-8 bg-ontop-purple-600 rounded-md flex items-center justify-center">
                   <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                   </svg>
@@ -44,10 +42,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Avg Sentiment Score</dt>
+                  <dt class="text-sm font-medium text-gray-300 truncate">Avg Sentiment Score</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900">7.2</div>
-                    <div class="ml-2 text-sm font-medium text-green-600">/10</div>
+                    <div class="text-2xl font-semibold text-white">7.2</div>
+                    <div class="ml-2 text-sm font-medium text-green-400">/10</div>
                   </dd>
                 </dl>
               </div>
@@ -60,7 +58,7 @@
           <div class="p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-indigo-500 rounded-md flex items-center justify-center">
+                <div class="w-8 h-8 bg-ontop-purple-700 rounded-md flex items-center justify-center">
                   <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                   </svg>
@@ -68,10 +66,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Response Rate</dt>
+                  <dt class="text-sm font-medium text-gray-300 truncate">Response Rate</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900">84%</div>
-                    <div class="ml-2 text-sm font-medium text-green-600">+2.1%</div>
+                    <div class="text-2xl font-semibold text-white">84%</div>
+                    <div class="ml-2 text-sm font-medium text-green-400">+2.1%</div>
                   </dd>
                 </dl>
               </div>
@@ -84,7 +82,7 @@
           <div class="p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
-                <div class="w-8 h-8 bg-pink-500 rounded-md flex items-center justify-center">
+                <div class="w-8 h-8 bg-ontop-pink-500 rounded-md flex items-center justify-center">
                   <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
                   </svg>
@@ -92,10 +90,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Account Satisfaction</dt>
+                  <dt class="text-sm font-medium text-gray-300 truncate">Account Satisfaction</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900">92%</div>
-                    <div class="ml-2 text-sm font-medium text-green-600">+5.2%</div>
+                    <div class="text-2xl font-semibold text-white">92%</div>
+                    <div class="ml-2 text-sm font-medium text-green-400">+5.2%</div>
                   </dd>
                 </dl>
               </div>
@@ -116,10 +114,10 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">At-Risk Accounts</dt>
+                  <dt class="text-sm font-medium text-gray-300 truncate">At-Risk Accounts</dt>
                   <dd class="flex items-baseline">
-                    <div class="text-2xl font-semibold text-gray-900">3</div>
-                    <div class="ml-2 text-sm font-medium text-red-600">+1</div>
+                    <div class="text-2xl font-semibold text-white">3</div>
+                    <div class="ml-2 text-sm font-medium text-red-400">+1</div>
                   </dd>
                 </dl>
               </div>
@@ -133,14 +131,14 @@
         <!-- Sentiment Trends Over Time -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Sentiment Trends</h3>
-            <div class="h-64 flex items-center justify-center text-gray-500">
+            <h3 class="text-lg font-medium text-white mb-4">Sentiment Trends</h3>
+            <div class="h-64 flex items-center justify-center text-gray-400">
               <div class="text-center">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">Time Series Analysis</h3>
-                <p class="mt-1 text-sm text-gray-500">Sentiment evolution over time</p>
+                <h3 class="mt-2 text-sm font-medium text-white">Time Series Analysis</h3>
+                <p class="mt-1 text-sm text-gray-300">Sentiment evolution over time</p>
               </div>
             </div>
           </div>
@@ -149,15 +147,15 @@
         <!-- Topic Distribution -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Topic Distribution</h3>
-            <div class="h-64 flex items-center justify-center text-gray-500">
+            <h3 class="text-lg font-medium text-white mb-4">Topic Distribution</h3>
+            <div class="h-64 flex items-center justify-center text-gray-400">
               <div class="text-center">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">Topic Modeling</h3>
-                <p class="mt-1 text-sm text-gray-500">Key themes and categories</p>
+                <h3 class="mt-2 text-sm font-medium text-white">Topic Modeling</h3>
+                <p class="mt-1 text-sm text-gray-300">Key themes and categories</p>
               </div>
             </div>
           </div>
@@ -169,21 +167,21 @@
         <!-- Top Performing Accounts -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Top Performing Accounts</h3>
+            <h3 class="text-lg font-medium text-white mb-4">Top Performing Accounts</h3>
             <div class="space-y-4">
               <div v-for="account in topPerformingAccounts" :key="account.name" class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                  <div class="flex-shrink-0 h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <span class="text-xs font-medium text-green-800">{{ account.name.charAt(0) }}</span>
+                  <div class="flex-shrink-0 h-8 w-8 bg-white/10 rounded-full flex items-center justify-center">
+                    <span class="text-xs font-medium text-white">{{ account.name.charAt(0) }}</span>
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-gray-900">{{ account.name }}</p>
-                    <p class="text-xs text-gray-500">{{ account.feedback_count }} feedback</p>
+                    <p class="text-sm font-medium text-white">{{ account.name }}</p>
+                    <p class="text-xs text-gray-300">{{ account.feedback_count }} feedback</p>
                   </div>
                 </div>
                 <div class="text-right">
-                  <p class="text-sm font-medium text-green-600">{{ account.satisfaction }}%</p>
-                  <p class="text-xs text-gray-500">satisfaction</p>
+                  <p class="text-sm font-medium text-green-400">{{ account.satisfaction }}%</p>
+                  <p class="text-xs text-gray-300">satisfaction</p>
                 </div>
               </div>
             </div>
