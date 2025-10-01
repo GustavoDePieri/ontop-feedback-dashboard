@@ -1,38 +1,40 @@
 <template>
-  <!-- Modal Backdrop -->
-  <div
-    v-if="isOpen"
-    class="fixed inset-0 z-50 overflow-y-auto"
-    @click="closeModal"
+  <!-- Slide-in Panel -->
+  <transition
+    enter-active-class="transition-all duration-300 ease-out"
+    enter-from-class="translate-x-full"
+    enter-to-class="translate-x-0"
+    leave-active-class="transition-all duration-300 ease-in"
+    leave-from-class="translate-x-0"
+    leave-to-class="translate-x-full"
   >
-    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-      <!-- Background overlay -->
-      <div class="fixed inset-0 bg-black/75 transition-opacity" aria-hidden="true"></div>
-
-      <!-- Modal panel -->
-      <div
-        class="inline-block align-bottom bg-ontop-navy-dark rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-7xl sm:w-full max-h-[95vh] flex flex-col border border-white/10"
-        @click.stop
-      >
-        <!-- Modal Header -->
-        <div class="bg-gradient-ontop-hero px-6 py-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center">
-              <div class="w-10 h-10 bg-gradient-cta rounded-lg flex items-center justify-center mr-3">
-                <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-white">
-                  {{ reportData.title }}
-                </h3>
-                <p class="text-white/70 text-sm">
-                  {{ reportData.dateRange }}
-                </p>
-              </div>
+    <div
+      v-if="isOpen"
+      class="fixed inset-y-0 right-0 z-50 w-full sm:w-[600px] lg:w-[800px] flex flex-col bg-ontop-navy-dark shadow-2xl border-l border-white/10"
+      @click.stop
+    >
+      <!-- Panel Header -->
+      <div class="flex-shrink-0 bg-gradient-ontop-hero px-6 py-4 border-b border-white/10">
+        <div class="flex items-center justify-between">
+          <!-- Title Section -->
+          <div class="flex items-center flex-1 min-w-0">
+            <div class="w-10 h-10 bg-gradient-cta rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="min-w-0 flex-1">
+              <h3 class="text-xl font-bold text-white truncate">
+                {{ reportData.title }}
+              </h3>
+              <p class="text-white/70 text-sm truncate">
+                {{ reportData.dateRange }}
+              </p>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="flex items-center space-x-1 ml-4 flex-shrink-0">
               <!-- Copy Report Button -->
               <button
                 @click="copyReport"
@@ -76,37 +78,78 @@
           </div>
         </div>
 
-        <!-- Report Content -->
-        <div class="flex-1 overflow-y-auto p-4 bg-ontop-navy-light/30">
-          <!-- Executive Summary -->
-          <div class="mb-4">
-            <div class="flex items-center mb-2">
-              <div class="w-6 h-6 bg-blue-500 rounded flex items-center justify-center mr-2">
-                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h4 class="text-sm font-bold text-white">Executive Summary</h4>
+      <!-- Panel Content - Scrollable -->
+      <div class="flex-1 overflow-y-auto p-6 bg-gradient-dark">
+        <!-- Executive Summary -->
+        <div class="mb-6">
+          <div class="flex items-center mb-4">
+            <div class="w-8 h-8 bg-gradient-cta rounded-lg flex items-center justify-center mr-3">
+              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
             </div>
-            <div class="grid grid-cols-4 gap-3 mb-4">
-              <div class="bg-blue-500/10 rounded-lg p-3 text-center border border-blue-500/30">
-                <div class="text-2xl font-bold text-blue-400">{{ reportData.summary.total }}</div>
-                <div class="text-xs font-medium text-white">Total Feedback</div>
+            <h4 class="text-lg font-bold text-white">Executive Summary</h4>
+          </div>
+          
+          <!-- Summary Grid -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-blue-500/30 hover:border-blue-500/50 transition-all">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-3xl font-bold text-blue-400">{{ reportData.summary.total }}</div>
+                  <div class="text-sm font-medium text-white/70 mt-1">Total Feedback</div>
+                </div>
+                <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                  </svg>
+                </div>
               </div>
-              <div class="bg-green-500/10 rounded-lg p-3 text-center border border-green-500/30">
-                <div class="text-2xl font-bold text-green-400">{{ reportData.summary.positive }}</div>
-                <div class="text-xs font-medium text-white">Positive ({{ reportData.summary.positivePercent }}%)</div>
+            </div>
+            
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-green-500/30 hover:border-green-500/50 transition-all">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-3xl font-bold text-green-400">{{ reportData.summary.positive }}</div>
+                  <div class="text-sm font-medium text-white/70 mt-1">Positive ({{ reportData.summary.positivePercent }}%)</div>
+                </div>
+                <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                  </svg>
+                </div>
               </div>
-              <div class="bg-yellow-500/10 rounded-lg p-3 text-center border border-yellow-500/30">
-                <div class="text-2xl font-bold text-yellow-400">{{ reportData.summary.neutral }}</div>
-                <div class="text-xs font-medium text-white">Neutral ({{ reportData.summary.neutralPercent }}%)</div>
+            </div>
+            
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-yellow-500/30 hover:border-yellow-500/50 transition-all">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-3xl font-bold text-yellow-400">{{ reportData.summary.neutral }}</div>
+                  <div class="text-sm font-medium text-white/70 mt-1">Neutral ({{ reportData.summary.neutralPercent }}%)</div>
+                </div>
+                <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
               </div>
-              <div class="bg-red-500/10 rounded-lg p-3 text-center border border-red-500/30">
-                <div class="text-2xl font-bold text-red-400">{{ reportData.summary.negative }}</div>
-                <div class="text-xs font-medium text-white">Negative ({{ reportData.summary.negativePercent }}%)</div>
+            </div>
+            
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-red-500/30 hover:border-red-500/50 transition-all">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-3xl font-bold text-red-400">{{ reportData.summary.negative }}</div>
+                  <div class="text-sm font-medium text-white/70 mt-1">Negative ({{ reportData.summary.negativePercent }}%)</div>
+                </div>
+                <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
           <!-- Account Manager Performance -->
           <div class="mb-4" v-if="reportData.managers && reportData.managers.length > 0">
@@ -243,7 +286,23 @@
         </div>
       </div>
     </div>
-  </div>
+  </transition>
+  
+  <!-- Backdrop Overlay -->
+  <transition
+    enter-active-class="transition-opacity duration-300"
+    enter-from-class="opacity-0"
+    enter-to-class="opacity-100"
+    leave-active-class="transition-opacity duration-300"
+    leave-from-class="opacity-100"
+    leave-to-class="opacity-0"
+  >
+    <div
+      v-if="isOpen"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+      @click="closeModal"
+    ></div>
+  </transition>
 </template>
 
 <script setup>
