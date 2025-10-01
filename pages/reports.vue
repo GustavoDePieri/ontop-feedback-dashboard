@@ -39,10 +39,10 @@
                   </svg>
             </div>
             <div class="ml-4 flex-1">
-              <h3 class="text-lg font-bold text-gray-900 dark:text-slate-100 mb-2">
+              <h3 class="text-lg font-bold text-white mb-2">
                 🎯 New Unified Report System
               </h3>
-              <p class="text-gray-700 dark:text-slate-300 text-sm leading-relaxed">
+              <p class="text-white/90 text-sm leading-relaxed">
                 All report types have been merged into <strong>one comprehensive report</strong> that includes:
                 <span class="block mt-2 space-y-1">
                   • <strong>AI-Powered Insights</strong> - Recurring patterns and recommendations<br>
@@ -60,19 +60,19 @@
       <AppCard class="mb-8">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-slate-100">📁 Recent Reports</h3>
-            <span class="text-sm text-gray-500 dark:text-slate-400">
+            <h3 class="text-lg font-bold text-white">📁 Recent Reports</h3>
+            <span class="text-sm text-white/60">
               {{ recentReports.length }} report{{ recentReports.length !== 1 ? 's' : '' }} generated
             </span>
           </div>
         </div>
         <div class="p-6">
           <div v-if="recentReports.length === 0" class="text-center py-12">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="mx-auto h-12 w-12 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-slate-100">No reports yet</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Get started by generating your first unified report.</p>
+            <h3 class="mt-2 text-sm font-medium text-white">No reports yet</h3>
+            <p class="mt-1 text-sm text-white/60">Get started by generating your first unified report.</p>
             <div class="mt-6">
               <button 
                 @click="showReportModal = true"
@@ -102,13 +102,13 @@
                   </div>
                 </div>
                 <div class="flex-1">
-                  <h4 class="text-base font-bold text-gray-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <h4 class="text-base font-bold text-white group-hover:text-blue-400 transition-colors">
                     {{ report.title }}
                   </h4>
-                  <p class="text-sm text-gray-600 dark:text-slate-400 mt-1">
+                  <p class="text-sm text-white/80 mt-1">
                     {{ report.dateRange }} • {{ report.feedbackCount }} feedback items
                   </p>
-                  <p class="text-xs text-gray-500 dark:text-slate-500 mt-1">
+                  <p class="text-xs text-white/60 mt-1">
                     Generated {{ formatDate(report.generatedAt) }}
                   </p>
                 </div>
@@ -119,11 +119,11 @@
                 <div class="hidden sm:flex items-center space-x-4 mr-4">
                   <div class="text-center">
                     <div class="text-sm font-bold text-green-600 dark:text-green-400">{{ report.stats.positive }}%</div>
-                    <div class="text-xs text-gray-500 dark:text-slate-400">Positive</div>
+                    <div class="text-xs text-white/60">Positive</div>
                   </div>
                   <div class="text-center">
                     <div class="text-sm font-bold text-red-600 dark:text-red-400">{{ report.stats.negative }}%</div>
-                    <div class="text-xs text-gray-500 dark:text-slate-400">Negative</div>
+                    <div class="text-xs text-white/60">Negative</div>
                   </div>
                   <div v-if="report.hasAIInsights" class="text-center">
                     <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
@@ -203,7 +203,7 @@
           <div class="px-6 py-6 space-y-6">
             <!-- Report Title -->
                 <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+              <label class="block text-sm font-medium text-white/80 mb-2">
                 Report Title
               </label>
               <input
@@ -216,7 +216,7 @@
 
             <!-- Time Period -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+              <label class="block text-sm font-medium text-white/80 mb-2">
                 Time Period
               </label>
               <select 
@@ -239,7 +239,7 @@
             <!-- Custom Date Range -->
             <div v-if="reportConfig.period === 'custom'" class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                <label class="block text-sm font-medium text-white/80 mb-2">
                   Start Date
                 </label>
                 <input
@@ -249,7 +249,7 @@
                 />
               </div>
                 <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                <label class="block text-sm font-medium text-white/80 mb-2">
                   End Date
                 </label>
                 <input
@@ -262,7 +262,7 @@
 
             <!-- Options -->
             <div class="space-y-3">
-              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+              <label class="block text-sm font-medium text-white/80 mb-2">
                 Report Options
               </label>
               
@@ -273,10 +273,10 @@
                   class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <div class="flex-1">
-                  <span class="text-sm font-medium text-gray-900 dark:text-slate-100">
+                  <span class="text-sm font-medium text-white">
                     Include AI-Powered Insights
                   </span>
-                  <p class="text-xs text-gray-500 dark:text-slate-400">
+                  <p class="text-xs text-white/60">
                     Recurring patterns, recommendations, and trends
                   </p>
             </div>
@@ -289,10 +289,10 @@
                   class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <div class="flex-1">
-                  <span class="text-sm font-medium text-gray-900 dark:text-slate-100">
+                  <span class="text-sm font-medium text-white">
                     Include Manager Performance
                   </span>
-                  <p class="text-xs text-gray-500 dark:text-slate-400">
+                  <p class="text-xs text-white/60">
                     Breakdown by account manager
                   </p>
                   </div>
@@ -305,10 +305,10 @@
                   class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <div class="flex-1">
-                  <span class="text-sm font-medium text-gray-900 dark:text-slate-100">
+                  <span class="text-sm font-medium text-white">
                     Include Top Accounts Analysis
                   </span>
-                  <p class="text-xs text-gray-500 dark:text-slate-400">
+                  <p class="text-xs text-white/60">
                     Most active accounts and their sentiment
                   </p>
                 </div>
@@ -337,7 +337,7 @@
           <div class="bg-gray-50 dark:bg-slate-900/50 px-6 py-4 flex justify-end space-x-3">
             <button
               @click="showReportModal = false"
-              class="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+              class="px-4 py-2 border border-white/10 rounded-md text-sm font-medium text-white/70 hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>

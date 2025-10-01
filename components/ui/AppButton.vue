@@ -49,13 +49,13 @@ defineEmits<{
 }>()
 
 const buttonClasses = computed(() => {
-  const baseClasses = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ontop-coral-500'
+  const baseClasses = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ontop-coral-500 text-white'
   
   const variantClasses = {
-    primary: 'bg-gradient-cta hover:bg-gradient-cta-hover text-white shadow-lg hover:shadow-xl',
-    secondary: 'bg-white/5 hover:bg-white/10 text-white border border-white/10',
-    danger: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg',
-    success: 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg'
+    primary: 'bg-gradient-cta hover:bg-gradient-cta-hover shadow-lg hover:shadow-xl',
+    secondary: 'bg-white/5 hover:bg-white/10 border border-white/10',
+    danger: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg',
+    success: 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg'
   }
   
   const sizeClasses = {
