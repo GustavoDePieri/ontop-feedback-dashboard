@@ -10,8 +10,8 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-xl font-bold text-gray-900 dark:text-slate-100">📊 Priority Stack: What Clients Want Most</h3>
-            <p class="text-sm text-gray-600 dark:text-slate-400">Evidence-based ranking powered by AI</p>
+            <h3 class="text-xl font-bold text-white">📊 Priority Stack: What Clients Want Most</h3>
+            <p class="text-sm text-white">Evidence-based ranking powered by AI</p>
           </div>
         </div>
         <button 
@@ -34,7 +34,7 @@
           <div class="w-16 h-16 border-4 border-indigo-200 dark:border-indigo-800 rounded-full"></div>
           <div class="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
         </div>
-        <p class="mt-4 text-gray-600 dark:text-slate-400 font-medium">Analyzing recurring patterns...</p>
+        <p class="mt-4 text-white font-medium">Analyzing recurring patterns...</p>
         <p class="text-sm text-gray-500 dark:text-slate-500 mt-1">This may take 10-20 seconds</p>
       </div>
 
@@ -70,13 +70,13 @@
             </svg>
             Leadership Summary
           </h4>
-          <p class="text-gray-700 dark:text-slate-300 leading-relaxed text-base">{{ recommendations.summary }}</p>
+          <p class="text-white leading-relaxed text-base">{{ recommendations.summary }}</p>
         </div>
 
         <!-- Top Recurring Requests (Priority Stack) -->
         <div>
           <div class="flex items-center justify-between mb-4">
-            <h4 class="text-xl font-bold text-gray-900 dark:text-slate-100 flex items-center">
+            <h4 class="text-xl font-bold text-white flex items-center">
               <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
@@ -100,7 +100,7 @@
             >
               <!-- Priority Rank Badge -->
               <div class="absolute top-3 right-3 flex items-center space-x-2">
-                <span class="px-3 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-white border border-gray-300 dark:border-slate-600">
                   #{{ index + 1 }}
                 </span>
                 <span 
@@ -116,7 +116,7 @@
               </div>
 
               <!-- Request Title -->
-              <h5 class="text-lg font-bold text-gray-900 dark:text-slate-100 mb-3 pr-24">
+              <h5 class="text-lg font-bold text-white mb-3 pr-24">
                 {{ request.request }}
               </h5>
 
@@ -142,20 +142,20 @@
                   }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span class="text-gray-700 dark:text-slate-300">{{ request.sentiment }}</span>
+                  <span class="text-white">{{ request.sentiment }}</span>
                 </div>
               </div>
 
               <!-- Evidence -->
               <div class="bg-white dark:bg-slate-800/50 rounded-lg p-3 mb-3">
-                <p class="text-sm text-gray-600 dark:text-slate-400 mb-1 font-semibold">📊 Evidence:</p>
-                <p class="text-sm text-gray-700 dark:text-slate-300">{{ request.evidence }}</p>
+                <p class="text-sm text-white mb-1 font-semibold">📊 Evidence:</p>
+                <p class="text-sm text-white">{{ request.evidence }}</p>
               </div>
 
               <!-- Recommended Action -->
               <div class="bg-white dark:bg-slate-800/50 rounded-lg p-3 mb-3">
-                <p class="text-sm text-gray-600 dark:text-slate-400 mb-1 font-semibold">✅ Recommended Action:</p>
-                <p class="text-sm text-gray-900 dark:text-slate-100 font-medium">{{ request.recommendedAction }}</p>
+                <p class="text-sm text-white mb-1 font-semibold">✅ Recommended Action:</p>
+                <p class="text-sm text-white font-medium">{{ request.recommendedAction }}</p>
               </div>
 
               <!-- Bottom Row: Quick Win + Owner -->
@@ -202,7 +202,7 @@
               </svg>
               ⚡ Quick Wins
             </h5>
-            <ul class="space-y-2 text-sm text-gray-700 dark:text-slate-300">
+            <ul class="space-y-2 text-sm text-white">
               <li v-for="(win, index) in recommendations.quickWins" :key="index" class="flex items-start">
                 <span class="mr-2 text-green-600 font-bold">•</span>
                 <span>{{ win }}</span>
@@ -218,7 +218,7 @@
               </svg>
               📈 Emerging Patterns
             </h5>
-            <ul class="space-y-2 text-sm text-gray-700 dark:text-slate-300">
+            <ul class="space-y-2 text-sm text-white">
               <li v-for="(pattern, index) in recommendations.emergingPatterns" :key="index" class="flex items-start">
                 <span class="mr-2 text-blue-600 font-bold">•</span>
                 <span>{{ pattern }}</span>
@@ -234,7 +234,7 @@
               </svg>
               ⚠️ Critical Risks
             </h5>
-            <ul class="space-y-2 text-sm text-gray-700 dark:text-slate-300">
+            <ul class="space-y-2 text-sm text-white">
               <li v-for="(risk, index) in recommendations.criticalRisks" :key="index" class="flex items-start">
                 <span class="mr-2 text-red-600 font-bold">•</span>
                 <span>{{ risk }}</span>
@@ -251,8 +251,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
         </div>
-        <h4 class="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-2">Ready to analyze recurring requests</h4>
-        <p class="text-gray-600 dark:text-slate-400 text-sm">Click "Generate AI Analysis" to discover what clients are asking for most</p>
+        <h4 class="text-lg font-semibold text-white mb-2">Ready to analyze recurring requests</h4>
+        <p class="text-white text-sm">Click "Generate AI Analysis" to discover what clients are asking for most</p>
       </div>
     </div>
 

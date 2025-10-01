@@ -52,10 +52,10 @@
               <!-- Feedback Header -->
               <div class="flex items-start justify-between mb-3">
                 <div class="flex-1">
-                  <h4 class="text-lg font-semibold text-gray-900 dark:text-slate-100">
+                  <h4 class="text-lg font-semibold text-white">
                     {{ item.accountName }}
                   </h4>
-                  <div class="flex flex-wrap items-center gap-2 mt-2 text-sm text-gray-600 dark:text-slate-400">
+                  <div class="flex flex-wrap items-center gap-2 mt-2 text-sm text-white">
                     <span class="flex items-center">
                       <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -91,7 +91,7 @@
 
               <!-- Feedback Content -->
               <div class="bg-gray-50 dark:bg-slate-900/50 rounded-lg p-4 mb-3">
-                <p class="text-sm text-gray-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                <p class="text-sm text-white leading-relaxed whitespace-pre-wrap">
                   {{ item.feedback }}
                 </p>
               </div>
@@ -141,7 +141,7 @@
 
         <!-- Footer -->
         <div class="bg-gray-50 dark:bg-slate-900/50 px-6 py-4 flex justify-between items-center">
-          <div class="text-sm text-gray-600 dark:text-slate-400">
+          <div class="text-sm text-white">
             <span class="font-semibold">{{ feedbackItems.length }}</span> feedback item{{ feedbackItems.length !== 1 ? 's' : '' }} shown
           </div>
           <button

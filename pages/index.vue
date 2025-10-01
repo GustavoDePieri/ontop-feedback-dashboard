@@ -419,7 +419,7 @@
               <div class="flex items-center space-x-2">
                 <button 
                   @click="previousMonth"
-                  class="p-2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                  class="p-2 text-white/70 hover:text-white rounded-md hover:bg-white/10 transition-colors"
                 >
                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -430,7 +430,7 @@
                 </h4>
                 <button 
                   @click="nextMonth"
-                  class="p-2 text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                  class="p-2 text-white/70 hover:text-white rounded-md hover:bg-white/10 transition-colors"
                 >
                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -457,7 +457,7 @@
                 @click="day.date && day.feedbackCount > 0 ? selectCalendarDay(day.date) : null"
                 class="relative p-2 h-16 border border-gray-100 dark:border-slate-700 transition-all duration-200"
                 :class="{
-                  'bg-gray-50 dark:bg-slate-800 text-gray-400 dark:text-slate-600': !day.inCurrentMonth,
+                  'bg-white/5 text-white/30': !day.inCurrentMonth,
                   'bg-white dark:bg-slate-800 text-white hover:bg-gray-50 dark:hover:bg-slate-700': day.inCurrentMonth && day.feedbackCount === 0,
                   'bg-green-50 text-green-900 hover:bg-green-100 cursor-pointer ring-1 ring-green-200': day.feedbackCount > 0 && day.dominantSentiment === 'positive',
                   'bg-red-50 text-red-900 hover:bg-red-100 cursor-pointer ring-1 ring-red-200': day.feedbackCount > 0 && day.dominantSentiment === 'negative',
@@ -516,7 +516,7 @@
               </h3>
               <button 
                 @click="clearSelectedDate"
-                class="text-sm text-white hover:text-gray-700 dark:hover:text-slate-200 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 px-3 py-1 rounded-md transition-colors"
+                class="text-sm text-white hover:text-white dark:hover:text-slate-200 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 px-3 py-1 rounded-md transition-colors"
               >
                 Clear Selection
               </button>
@@ -536,8 +536,8 @@
               >
                 <div class="flex items-start justify-between">
                   <div class="flex-1">
-                    <p class="text-sm text-gray-900 leading-relaxed">{{ item.feedback }}</p>
-                    <div class="flex items-center space-x-4 mt-3 text-xs text-gray-600">
+                    <p class="text-sm text-white leading-relaxed">{{ item.feedback }}</p>
+                    <div class="flex items-center space-x-4 mt-3 text-xs text-white">
                       <span class="flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h4M9 7h6m-6 4h6m-6 4h6" />
@@ -573,7 +573,7 @@
                   <div class="ml-4 flex-shrink-0 flex items-center space-x-2">
                     <button
                       @click="copyFeedback(item)"
-                      class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                      class="p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors"
                       title="Copy feedback"
                     >
                       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -719,7 +719,7 @@
               <div class="space-y-4">
                 <!-- Positive Bar -->
                   <div class="flex items-center group">
-                  <div class="w-20 text-sm font-medium text-gray-700 dark:text-slate-300">Positive</div>
+                  <div class="w-20 text-sm font-medium text-white dark:text-slate-300">Positive</div>
                   <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3 overflow-hidden">
                     <div 
                       class="bg-green-500 h-6 rounded-full flex items-center justify-end pr-2 transition-all duration-1000 ease-out hover:bg-green-600"
@@ -728,12 +728,12 @@
                       <span class="text-white text-xs font-medium">{{ sentimentSummary.positive }}</span>
                     </div>
                   </div>
-                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400 group-hover:text-green-600 transition-colors">{{ sentimentPercentages.positive }}%</div>
+                  <div class="w-12 text-sm text-white dark:text-slate-400 group-hover:text-green-600 transition-colors">{{ sentimentPercentages.positive }}%</div>
                 </div>
                 
                 <!-- Neutral Bar -->
                 <div class="flex items-center group">
-                  <div class="w-20 text-sm font-medium text-gray-700 dark:text-slate-300">Neutral</div>
+                  <div class="w-20 text-sm font-medium text-white dark:text-slate-300">Neutral</div>
                   <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3 overflow-hidden">
                     <div 
                       class="bg-yellow-500 h-6 rounded-full flex items-center justify-end pr-2 transition-all duration-1000 ease-out hover:bg-yellow-600"
@@ -742,12 +742,12 @@
                       <span class="text-white text-xs font-medium">{{ sentimentSummary.neutral }}</span>
                     </div>
                   </div>
-                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400 group-hover:text-yellow-600 transition-colors">{{ sentimentPercentages.neutral }}%</div>
+                  <div class="w-12 text-sm text-white dark:text-slate-400 group-hover:text-yellow-600 transition-colors">{{ sentimentPercentages.neutral }}%</div>
                 </div>
                 
                 <!-- Negative Bar -->
                 <div class="flex items-center group">
-                  <div class="w-20 text-sm font-medium text-gray-700 dark:text-slate-300">Negative</div>
+                  <div class="w-20 text-sm font-medium text-white dark:text-slate-300">Negative</div>
                   <div class="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-6 mx-3 overflow-hidden">
                     <div 
                       class="bg-red-500 h-6 rounded-full flex items-center justify-end pr-2 transition-all duration-1000 ease-out hover:bg-red-600"
@@ -756,7 +756,7 @@
                       <span class="text-white text-xs font-medium">{{ sentimentSummary.negative }}</span>
                     </div>
                   </div>
-                  <div class="w-12 text-sm text-gray-600 dark:text-slate-400 group-hover:text-red-600 transition-colors">{{ sentimentPercentages.negative }}%</div>
+                  <div class="w-12 text-sm text-white dark:text-slate-400 group-hover:text-red-600 transition-colors">{{ sentimentPercentages.negative }}%</div>
                 </div>
                 
                 <!-- Total -->
@@ -813,7 +813,7 @@
                 
                 <!-- Recent Days -->
                 <div class="text-center">
-                  <div class="text-sm text-gray-600 dark:text-slate-400 mb-2">Last 7 Days Activity</div>
+                  <div class="text-sm text-white dark:text-slate-400 mb-2">Last 7 Days Activity</div>
                   <div class="flex justify-center space-x-1">
                     <div 
                       v-for="(day, index) in feedbackTrendsData.slice(-7)" 
@@ -1066,7 +1066,7 @@
                     </span>
                     <span 
                       v-else 
-                      class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600"
+                      class="text-xs px-2 py-1 rounded-full bg-gray-100 text-white"
                     >
                       No change
                     </span>
@@ -1113,7 +1113,7 @@
                       </div>
                       <span class="text-sm font-semibold text-white">{{ manager.feedbackCount }}</span>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">
+                    <p class="text-xs text-white mt-1">
                       <span class="text-white">{{ manager.weeklyGrowth >= 0 ? '+' : '' }}{{ manager.weeklyGrowth }}% vs last week</span>
                     </p>
                   </div>
@@ -1204,16 +1204,16 @@
         <!-- Account Activity -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Most Active Accounts</h3>
+            <h3 class="text-lg font-medium text-white mb-4">Most Active Accounts</h3>
             <div class="space-y-3">
               <div v-for="account in topAccounts" :key="account.name" class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                   <div class="flex-shrink-0 h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
-                    <span class="text-xs font-medium text-gray-600">{{ account.name.charAt(0) }}</span>
+                    <span class="text-xs font-medium text-white">{{ account.name.charAt(0) }}</span>
                   </div>
-                  <span class="text-sm font-medium text-gray-900">{{ account.name }}</span>
+                  <span class="text-sm font-medium text-white">{{ account.name }}</span>
                 </div>
-                <span class="text-sm text-gray-500">{{ account.count }} feedback</span>
+                <span class="text-sm text-white">{{ account.count }} feedback</span>
               </div>
             </div>
           </div>
@@ -1222,25 +1222,25 @@
         <!-- Recent Insights -->
         <AppCard>
           <div class="p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Key Insights</h3>
+            <h3 class="text-lg font-medium text-white mb-4">Key Insights</h3>
             <div class="space-y-3">
               <div class="flex items-start space-x-3">
                 <div class="flex-shrink-0">
                   <div class="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
                 </div>
-                <p class="text-sm text-gray-600">Positive sentiment increased by {{ weeklyGrowth }}% this week</p>
+                <p class="text-sm text-white">Positive sentiment increased by {{ weeklyGrowth }}% this week</p>
               </div>
               <div class="flex items-start space-x-3">
                 <div class="flex-shrink-0">
                   <div class="w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
                 </div>
-                <p class="text-sm text-gray-600">Most discussed topic: {{ topKeywords[0]?.word || 'Platform usability' }}</p>
+                <p class="text-sm text-white">Most discussed topic: {{ topKeywords[0]?.word || 'Platform usability' }}</p>
               </div>
               <div class="flex items-start space-x-3">
                 <div class="flex-shrink-0">
                   <div class="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
                 </div>
-                <p class="text-sm text-gray-600">{{ topAccounts[0]?.name || 'Top account' }} is most active this period</p>
+                <p class="text-sm text-white">{{ topAccounts[0]?.name || 'Top account' }} is most active this period</p>
               </div>
             </div>
           </div>
@@ -1252,12 +1252,12 @@
         <AppCard>
           <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium text-gray-900">
+              <h3 class="text-lg font-medium text-white">
                 {{ selectedSentiment }} Feedback ({{ filteredFeedback.length }} items)
               </h3>
               <button 
                 @click="clearFilter"
-                class="text-sm text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md transition-colors"
+                class="text-sm text-white hover:text-white bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-md transition-colors"
               >
                 Clear Filter
               </button>
@@ -1277,8 +1277,8 @@
               >
                 <div class="flex items-start justify-between">
                   <div class="flex-1">
-                    <p class="text-sm text-gray-900 leading-relaxed">{{ item.feedback }}</p>
-                    <div class="flex items-center space-x-4 mt-3 text-xs text-gray-600">
+                    <p class="text-sm text-white leading-relaxed">{{ item.feedback }}</p>
+                    <div class="flex items-center space-x-4 mt-3 text-xs text-white">
                       <span class="flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h4M9 7h6m-6 4h6m-6 4h6" />
@@ -1327,21 +1327,21 @@
                 <button 
                   @click="currentPage--" 
                   :disabled="currentPage === 1"
-                  class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
                 <button 
                   @click="currentPage++" 
                   :disabled="currentPage >= totalPages"
-                  class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>
               </div>
               <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <div>
-                  <p class="text-sm text-gray-700">
+                  <p class="text-sm text-white">
                     Showing
                     <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
                     to
@@ -1367,7 +1367,7 @@
                       v-for="page in visiblePages" 
                       :key="page"
                       @click="currentPage = page"
-                      :class="page === currentPage ? 'bg-blue-600 text-white' : 'text-gray-900 hover:bg-gray-50'"
+                      :class="page === currentPage ? 'bg-blue-600 text-white' : 'text-white hover:bg-gray-50'"
                       class="relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0"
                     >
                       {{ page }}
@@ -1424,7 +1424,7 @@
                 <span class="text-xs text-white">{{ formatTime(item.createdDate) }}</span>
                 <button 
                   @click="copyFeedback(item.feedback)"
-                  class="text-gray-400 hover:text-blue-600 dark:text-slate-500 dark:hover:text-blue-400 transition-colors duration-200"
+                  class="text-white/70 hover:text-ontop-coral-400 transition-colors duration-200"
                   title="Copy feedback"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1433,7 +1433,7 @@
                 </button>
               </div>
             </div>
-            <p class="text-gray-700 dark:text-slate-300 text-sm">{{ item.feedback }}</p>
+            <p class="text-white dark:text-slate-300 text-sm">{{ item.feedback }}</p>
             <div class="mt-2 flex items-center space-x-4 text-xs text-white">
               <span>Account Manager: {{ item.accountOwner || 'Unassigned' }}</span>
               <span v-if="item.feedbackDirectedTo">Directed to: {{ item.feedbackDirectedTo }}</span>
@@ -1453,7 +1453,7 @@
       <!-- Recent Feedback -->
       <div v-if="feedbackData.length > 0 && !selectedSentiment" class="bg-white dark:bg-slate-800 rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-medium text-gray-900">Recent Feedback</h3>
+          <h3 class="text-lg font-medium text-white">Recent Feedback</h3>
         </div>
         <div class="p-6 space-y-4">
           <div 
@@ -1466,9 +1466,9 @@
               'border-red-400': item.sentiment === 'Negative'
             }"
           >
-            <p class="text-sm text-gray-900">{{ item.feedback }}</p>
+            <p class="text-sm text-white">{{ item.feedback }}</p>
             <div class="flex items-center justify-between mt-1">
-              <p class="text-xs text-gray-500">
+              <p class="text-xs text-white">
               {{ item.accountName }} • {{ formatDate(item.createdDate) }} • 
               <span :class="{
                 'text-green-600': item.sentiment === 'Positive',
@@ -1478,7 +1478,7 @@
             </p>
               <button
                 @click="copyFeedback(item)"
-                class="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                class="p-1 text-white/70 hover:text-white hover:bg-white/10 rounded transition-colors"
                 title="Copy feedback"
               >
                 <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1491,7 +1491,7 @@
       </div>
 
       <!-- Data Freshness -->
-      <div v-if="lastUpdated" class="text-center text-sm text-gray-500 mt-6">
+      <div v-if="lastUpdated" class="text-center text-sm text-white mt-6">
         Last updated: {{ formatDate(lastUpdated) }}
       </div>
 
@@ -1527,7 +1527,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Account Manager Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Account Manager</label>
+              <label class="block text-sm font-medium text-white dark:text-slate-300 mb-2">Account Manager</label>
               <select 
                 v-model="aiFilters.accountManager"
                 class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
@@ -1541,7 +1541,7 @@
 
             <!-- Date Period Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Date Period</label>
+              <label class="block text-sm font-medium text-white dark:text-slate-300 mb-2">Date Period</label>
               <select 
                 v-model="aiFilters.datePeriod"
                 class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
@@ -1560,7 +1560,7 @@
 
             <!-- Feedback Directed To Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Feedback Directed To</label>
+              <label class="block text-sm font-medium text-white dark:text-slate-300 mb-2">Feedback Directed To</label>
               <select 
                 v-model="aiFilters.feedbackDirectedTo"
                 class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
@@ -1574,7 +1574,7 @@
 
             <!-- Category Filter -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Category</label>
+              <label class="block text-sm font-medium text-white dark:text-slate-300 mb-2">Category</label>
               <select 
                 v-model="aiFilters.category"
                 class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
@@ -1588,7 +1588,7 @@
 
             <!-- Platform Client ID Search -->
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Platform Client ID</label>
+              <label class="block text-sm font-medium text-white dark:text-slate-300 mb-2">Platform Client ID</label>
               <div class="relative">
                 <input
                   v-model="aiFilters.platformClientId"
@@ -1597,7 +1597,7 @@
                   class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 pr-10 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 />
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <svg class="h-4 w-4 text-gray-400 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg class="h-4 w-4 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
@@ -1752,7 +1752,7 @@
           <!-- Footer -->
           <div class="bg-gray-50 dark:bg-gray-700 px-6 py-3 border-t border-gray-200 dark:border-gray-600">
             <div class="flex items-center justify-between">
-              <p class="text-sm text-gray-600 dark:text-gray-300">
+              <p class="text-sm text-white dark:text-gray-300">
                 Generated on {{ new Date().toLocaleString() }}
               </p>
               <div class="flex space-x-3">
