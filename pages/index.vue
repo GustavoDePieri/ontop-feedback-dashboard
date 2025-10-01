@@ -2846,7 +2846,7 @@ const generateAIReport = async () => {
       const aiSection = `
         <div class="section">
           <h2 class="section-title">🤖 AI-Powered Insights</h2>
-          <p style="color: #64748b; margin-bottom: 20px; font-size: 14px;">
+          <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 20px; font-size: 14px;">
             AI-analyzed recurring patterns and recommendations based on ${filteredData.length} feedback items
           </p>
           
@@ -2854,18 +2854,18 @@ const generateAIReport = async () => {
             <div class="priority-issue ${request.priority}">
               <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
                 <div>
-                  <span style="font-size: 18px; font-weight: 700; color: #1f2937; margin-right: 10px;">#${index + 1}</span>
+                  <span style="font-size: 18px; font-weight: 700; color: #ffffff; margin-right: 10px;">#${index + 1}</span>
                   <span class="priority-badge ${request.priority}">${request.priority}</span>
                 </div>
                 <div style="text-align: right;">
-                  <div style="font-size: 24px; font-weight: 800; color: #667eea;">${request.frequency}</div>
-                  <div style="font-size: 11px; color: #6b7280;">mentions</div>
+                  <div style="font-size: 24px; font-weight: 800; color: #8b5cf6;">${request.frequency}</div>
+                  <div style="font-size: 11px; color: rgba(255, 255, 255, 0.7);">mentions</div>
                 </div>
               </div>
-              <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 8px;">${request.request}</div>
-              <div style="font-size: 13px; color: #4b5563; margin-bottom: 8px;"><strong>Evidence:</strong> ${request.evidence}</div>
-              <div style="font-size: 13px; color: #4b5563; margin-bottom: 8px;"><strong>Recommended Action:</strong> ${request.recommendedAction}</div>
-              <div style="display: flex; gap: 15px; font-size: 12px; color: #6b7280; margin-top: 8px;">
+              <div style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">${request.request}</div>
+              <div style="font-size: 13px; color: rgba(255, 255, 255, 0.8); margin-bottom: 8px;"><strong>Evidence:</strong> ${request.evidence}</div>
+              <div style="font-size: 13px; color: rgba(255, 255, 255, 0.8); margin-bottom: 8px;"><strong>Recommended Action:</strong> ${request.recommendedAction}</div>
+              <div style="display: flex; gap: 15px; font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 8px;">
                 <span><strong>Revenue Impact:</strong> ${request.revenueImpact}</span>
                 <span><strong>Owner:</strong> ${request.crossFunctionalOwner}</span>
                 <span><strong>Quick Win:</strong> ${request.quickWinPotential}</span>
@@ -2875,10 +2875,10 @@ const generateAIReport = async () => {
           
           ${aiRecommendations.value.emergingPatterns.length > 0 ? `
             <div style="margin-top: 20px;">
-              <h3 style="font-size: 16px; font-weight: 700; color: #2d3748; margin-bottom: 12px;">📈 Emerging Patterns</h3>
+              <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 12px;">📈 Emerging Patterns</h3>
               ${aiRecommendations.value.emergingPatterns.map(pattern => `
-                <div style="background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px; margin-bottom: 8px; border-radius: 6px;">
-                  <p style="color: #065f46; font-size: 13px; margin: 0;">${pattern}</p>
+                <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 12px; margin-bottom: 8px; border-radius: 6px; backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.2);">
+                  <p style="color: #86efac; font-size: 13px; margin: 0;">${pattern}</p>
                 </div>
               `).join('')}
             </div>
@@ -2886,10 +2886,10 @@ const generateAIReport = async () => {
           
           ${aiRecommendations.value.criticalRisks.length > 0 ? `
             <div style="margin-top: 20px;">
-              <h3 style="font-size: 16px; font-weight: 700; color: #2d3748; margin-bottom: 12px;">⚠️ Critical Risks</h3>
+              <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 12px;">⚠️ Critical Risks</h3>
               ${aiRecommendations.value.criticalRisks.map(risk => `
-                <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px; margin-bottom: 8px; border-radius: 6px;">
-                  <p style="color: #991b1b; font-size: 13px; margin: 0;">${risk}</p>
+                <div style="background: rgba(220, 38, 38, 0.1); border-left: 4px solid #dc2626; padding: 12px; margin-bottom: 8px; border-radius: 6px; backdrop-filter: blur(10px); border: 1px solid rgba(220, 38, 38, 0.2);">
+                  <p style="color: #fca5a5; font-size: 13px; margin: 0;">${risk}</p>
                 </div>
               `).join('')}
             </div>

@@ -11,48 +11,48 @@ export const useReportTemplates = () => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${report.title}</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }
-        .container { background-color: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #e5e7eb; max-width: 800px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #0f0819 0%, #1a0d2e 50%, #2a1b3d 100%); }
+        .container { background: linear-gradient(135deg, #1a0d2e 0%, #0f0819 100%); border-radius: 12px; overflow: hidden; box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .header { background: linear-gradient(120deg, #8b5cf6 0%, #ec4899 50%, #fb7185 100%); color: white; padding: 30px; text-align: center; }
         .header h1 { margin: 0; font-size: 28px; font-weight: 700; }
         .header p { margin: 10px 0 0; opacity: 0.9; font-size: 14px; }
         .content { padding: 30px; }
         .section { margin-bottom: 30px; }
-        .section-title { font-size: 20px; font-weight: 700; color: #2d3748; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 3px solid #667eea; }
+        .section-title { font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 3px solid #8b5cf6; }
         .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .metric-card { background: linear-gradient(135deg, #f6f9fc 0%, #eef2f7 100%); border-radius: 10px; padding: 20px; text-align: center; border-left: 4px solid #667eea; }
-        .metric-card.positive { border-left-color: #10b981; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
-        .metric-card.negative { border-left-color: #ef4444; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); }
-        .metric-card.neutral { border-left-color: #f59e0b; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); }
-        .metric-value { font-size: 36px; font-weight: 800; color: #1a202c; line-height: 1; }
-        .metric-label { font-size: 12px; color: #718096; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-        .priority-issue { background: white; border-left: 4px solid #667eea; padding: 15px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .priority-issue.critical { border-left-color: #dc2626; background: linear-gradient(to right, #fef2f2, white); }
-        .priority-issue.high { border-left-color: #ea580c; background: linear-gradient(to right, #fff7ed, white); }
-        .priority-issue.medium { border-left-color: #f59e0b; }
+        .metric-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius: 10px; padding: 20px; text-align: center; border: 1px solid rgba(139, 92, 246, 0.3); }
+        .metric-card.positive { border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1); }
+        .metric-card.negative { border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1); }
+        .metric-card.neutral { border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.1); }
+        .metric-value { font-size: 36px; font-weight: 800; color: #ffffff; line-height: 1; }
+        .metric-label { font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .priority-issue { background: rgba(255, 255, 255, 0.05); border-left: 4px solid #8b5cf6; padding: 15px; margin-bottom: 12px; border-radius: 8px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .priority-issue.critical { border-left-color: #dc2626; background: rgba(220, 38, 38, 0.1); }
+        .priority-issue.high { border-left-color: #ea580c; background: rgba(234, 88, 12, 0.1); }
+        .priority-issue.medium { border-left-color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
         .priority-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .priority-badge.critical { background: #dc2626; color: white; }
         .priority-badge.high { background: #ea580c; color: white; }
         .priority-badge.medium { background: #f59e0b; color: white; }
         .priority-badge.low { background: #6b7280; color: white; }
-        .action-item { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 10px; border-radius: 6px; }
-        .action-item.immediate { border-left-color: #dc2626; background: #fef2f2; }
-        .action-priority { font-weight: 700; color: #1e40af; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .insight { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-left: 4px solid #10b981; padding: 15px; margin-bottom: 10px; border-radius: 6px; }
-        .insight-text { color: #065f46; font-size: 14px; line-height: 1.6; }
-        .footer { background: #f8fafc; padding: 20px 30px; text-align: center; color: #64748b; font-size: 12px; border-top: 1px solid #e2e8f0; }
+        .action-item { background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 10px; border-radius: 6px; backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.2); }
+        .action-item.immediate { border-left-color: #dc2626; background: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.2); }
+        .action-priority { font-weight: 700; color: #93c5fd; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .insight { background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 15px; margin-bottom: 10px; border-radius: 6px; backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .insight-text { color: #86efac; font-size: 14px; line-height: 1.6; }
+        .footer { background: rgba(255, 255, 255, 0.05); padding: 20px 30px; text-align: center; color: rgba(255, 255, 255, 0.7); font-size: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
         .dept-breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 15px; }
-        .dept-card { background: white; border: 2px solid #e5e7eb; border-radius: 8px; padding: 15px; text-align: center; }
-        .dept-name { font-size: 12px; color: #6b7280; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
-        .dept-value { font-size: 28px; font-weight: 800; color: #667eea; }
-        .account-list { background: #fafafa; border-radius: 8px; padding: 15px; }
-        .account-item { padding: 10px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .dept-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 15px; text-align: center; backdrop-filter: blur(10px); }
+        .dept-name { font-size: 12px; color: rgba(255, 255, 255, 0.7); font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
+        .dept-value { font-size: 28px; font-weight: 800; color: #ec4899; }
+        .account-list { background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 15px; backdrop-filter: blur(10px); }
+        .account-item { padding: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; }
         .account-item:last-child { border-bottom: none; }
-        .account-name { font-weight: 600; color: #1f2937; }
+        .account-name { font-weight: 600; color: #ffffff; }
         .account-badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-        .account-badge.positive { background: #d1fae5; color: #065f46; }
-        .account-badge.negative { background: #fee2e2; color: #991b1b; }
-        .account-badge.mixed { background: #fef3c7; color: #92400e; }
+        .account-badge.positive { background: rgba(16, 185, 129, 0.2); color: #86efac; }
+        .account-badge.negative { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .account-badge.mixed { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
         @media (max-width: 600px) {
             .metrics { grid-template-columns: 1fr; }
             .dept-breakdown { grid-template-columns: 1fr; }
@@ -108,21 +108,21 @@ export const useReportTemplates = () => {
             <!-- Priority Issues -->
             <div class="section">
                 <h2 class="section-title">🎯 Top Priority Issues</h2>
-                <p style="color: #64748b; margin-bottom: 15px; font-size: 14px;">Issues mentioned multiple times this week, ranked by frequency and impact</p>
+                <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 15px; font-size: 14px;">Issues mentioned multiple times this week, ranked by frequency and impact</p>
                 ${report.priorityIssues.slice(0, 5).map((issue, index) => `
                     <div class="priority-issue ${issue.status}">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
                             <div>
-                                <span style="font-size: 18px; font-weight: 700; color: #1f2937; margin-right: 10px;">#${index + 1}</span>
+                                <span style="font-size: 18px; font-weight: 700; color: #ffffff; margin-right: 10px;">#${index + 1}</span>
                                 <span class="priority-badge ${issue.status}">${issue.status}</span>
                             </div>
                             <div style="text-align: right;">
-                                <div style="font-size: 24px; font-weight: 800; color: #667eea;">${issue.frequency}</div>
-                                <div style="font-size: 11px; color: #6b7280;">mentions</div>
+                                <div style="font-size: 24px; font-weight: 800; color: #8b5cf6;">${issue.frequency}</div>
+                                <div style="font-size: 11px; color: rgba(255, 255, 255, 0.7);">mentions</div>
                             </div>
                         </div>
-                        <div style="font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 6px;">${issue.request}</div>
-                        <div style="display: flex; gap: 15px; font-size: 12px; color: #6b7280;">
+                        <div style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 6px;">${issue.request}</div>
+                        <div style="display: flex; gap: 15px; font-size: 12px; color: rgba(255, 255, 255, 0.7);">
                             <span><strong>Impact:</strong> ${issue.impact}</span>
                             <span><strong>Owner:</strong> ${issue.department}</span>
                         </div>
@@ -136,8 +136,8 @@ export const useReportTemplates = () => {
                 ${report.actionItems.slice(0, 5).map(action => `
                     <div class="action-item ${action.priority}">
                         <div class="action-priority">${action.priority === 'immediate' ? '🚨 IMMEDIATE' : action.priority === 'this-week' ? '⏱️ THIS WEEK' : '📅 NEXT WEEK'}</div>
-                        <div style="font-weight: 600; color: #1f2937; margin: 6px 0;">${action.action}</div>
-                        <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">
+                        <div style="font-weight: 600; color: #ffffff; margin: 6px 0;">${action.action}</div>
+                        <div style="font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 4px;">
                             <strong>Owner:</strong> ${action.owner} • <strong>Impact:</strong> ${action.impact}
                         </div>
                     </div>
@@ -164,15 +164,15 @@ export const useReportTemplates = () => {
                     ${report.topAccounts.slice(0, 8).map((account, index) => `
                         <div class="account-item">
                             <div style="display: flex; align-items: center; gap: 12px;">
-                                <span style="font-size: 16px; font-weight: 700; color: #667eea; min-width: 30px;">#${index + 1}</span>
+                                <span style="font-size: 16px; font-weight: 700; color: #8b5cf6; min-width: 30px;">#${index + 1}</span>
                                 <div>
                                     <div class="account-name">${account.name}</div>
-                                    ${account.mrr ? `<div style="font-size: 11px; color: #6b7280;">MRR: $${account.mrr.toLocaleString()}</div>` : ''}
+                                    ${account.mrr ? `<div style="font-size: 11px; color: rgba(255, 255, 255, 0.7);">MRR: $${account.mrr.toLocaleString()}</div>` : ''}
                                 </div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span class="account-badge ${account.sentiment.toLowerCase()}">${account.sentiment}</span>
-                                <span style="font-weight: 700; color: #1f2937;">${account.count}</span>
+                                <span style="font-weight: 700; color: #ffffff;">${account.count}</span>
                             </div>
                         </div>
                     `).join('')}
