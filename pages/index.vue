@@ -375,11 +375,11 @@
                 <div class="text-white/70 text-sm font-medium mb-2">📈 Sentiment Trend</div>
                 <div class="flex items-center space-x-2">
                   <div class="text-white text-3xl font-bold">
-                    {{ positivePercentage.toFixed(0) }}%
+                    {{ positivePercentage || 0 }}%
                   </div>
                   <div class="flex flex-col">
                     <span class="text-green-300 text-sm font-semibold">Positive</span>
-                    <span class="text-white/60 text-xs">{{ weeklyGrowth > 0 ? '↑' : '↓' }} {{ Math.abs(weeklyGrowth) }}% WoW</span>
+                    <span class="text-white/60 text-xs">{{ (weeklyGrowth || 0) > 0 ? '↑' : '↓' }} {{ Math.abs(weeklyGrowth || 0) }}% WoW</span>
                   </div>
                 </div>
               </div>
@@ -2252,9 +2252,25 @@ const sentimentPercentages = computed(() => {
   }
 })
 
+const positivePercentage = computed(() => {
+  const total = filteredFeedbackData.value.length
+  if (total === 0) return 0
+  const positive = filteredFeedbackData.value.filter(item => item.sentiment === 'Positive').length
+  return Math.round((positive / total) * 100)
+})
+
 const weeklyGrowth = computed(() => {
-  // Mock weekly growth calculation
-  return Math.floor(Math.random() * 15) + 5
+  const thisWeek = thisWeekFeedback.value
+  const lastWeek = lastWeekFeedback.value
+  
+  const positiveThisWeek = thisWeek.filter(item => item.sentiment === 'Positive').length
+  const positiveLastWeek = lastWeek.filter(item => item.sentiment === 'Positive').length
+  
+  if (positiveLastWeek === 0) {
+    return positiveThisWeek > 0 ? 100 : 0
+  }
+  
+  return Math.round(((positiveThisWeek - positiveLastWeek) / positiveLastWeek) * 100)
 })
 
 const topKeywords = computed(() => {
