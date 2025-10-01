@@ -1094,7 +1094,7 @@
           <!-- Account Manager Performance -->
           <AppCard>
             <div class="p-6">
-              <h3 class="text-lg font-medium text-gray-900 mb-4">Account Manager Activity</h3>
+              <h3 class="text-lg font-medium text-white mb-4">Account Manager Activity</h3>
               <div class="space-y-4">
                 <div v-for="manager in accountManagerStats" :key="manager.name" class="flex items-center justify-between">
                   <div class="flex items-center space-x-3">
@@ -1102,8 +1102,8 @@
                       <span class="text-xs font-medium text-white">{{ manager.name.split(' ').map(n => n[0]).join('') }}</span>
                     </div>
                     <div>
-                      <p class="text-sm font-medium text-gray-900">{{ manager.name }}</p>
-                      <p class="text-xs text-gray-500">{{ manager.accounts }} accounts</p>
+                      <p class="text-sm font-medium text-white">{{ manager.name }}</p>
+                      <p class="text-xs text-white">{{ manager.accounts }} accounts</p>
                     </div>
                   </div>
                   <div class="text-right">
@@ -1111,10 +1111,10 @@
                       <div class="w-20 bg-gray-200 rounded-full h-2">
                         <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" :style="{ width: `${manager.percentage}%` }"></div>
                       </div>
-                      <span class="text-sm font-semibold text-gray-900">{{ manager.feedbackCount }}</span>
+                      <span class="text-sm font-semibold text-white">{{ manager.feedbackCount }}</span>
                     </div>
                     <p class="text-xs text-gray-500 mt-1">
-                      {{ manager.weeklyGrowth >= 0 ? '+' : '' }}{{ manager.weeklyGrowth }}% vs last week
+                      <span class="text-white">{{ manager.weeklyGrowth >= 0 ? '+' : '' }}{{ manager.weeklyGrowth }}% vs last week</span>
                     </p>
                   </div>
                 </div>
