@@ -313,8 +313,7 @@
       <div v-if="feedbackData.length > 0" class="mb-6">
         <button 
           @click="generateQuickAIReport"
-          :disabled="generatingAIReport"
-          class="w-full flex items-center justify-center p-6 bg-gradient-ontop-hero hover:shadow-glow rounded-xl transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed"
+          class="w-full flex items-center justify-center p-6 bg-gradient-ontop-hero hover:shadow-glow rounded-xl transition-all duration-200 group"
         >
           <div class="w-14 h-14 bg-white/20 rounded-lg flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
             <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -323,18 +322,15 @@
           </div>
           <div class="text-left">
             <div class="text-2xl font-bold text-white mb-1">
-              {{ generatingAIReport ? '🤖 Generating AI Report...' : '🤖 Generate AI Report' }}
+              🤖 Generate AI Report
             </div>
             <div class="text-white/80 text-sm">
-              {{ generatingAIReport ? 'Analyzing feedback with AI...' : 'Get instant AI-powered insights and recommendations' }}
+              Configure filters and get AI-powered insights
             </div>
           </div>
-          <svg v-if="!generatingAIReport" class="w-6 h-6 text-white ml-auto opacity-60 group-hover:opacity-100 group-hover:translate-x-2 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          <svg class="w-6 h-6 text-white ml-auto opacity-60 group-hover:opacity-100 group-hover:translate-x-2 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
-          <div v-else class="ml-auto">
-            <div class="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
-          </div>
         </button>
       </div>
 
@@ -1668,7 +1664,7 @@
       </div>
 
       <!-- ==================== AI INTELLIGENCE REPORT SECTION ==================== -->
-      <div class="mt-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-6 border-2 border-purple-300 dark:border-purple-700">
+      <div id="ai-report-generator" class="mt-8 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-6 border-2 border-purple-300 dark:border-purple-700 scroll-mt-24">
         <div class="flex items-center justify-between mb-6">
           <div>
             <h3 class="text-xl font-bold text-white flex items-center">
@@ -2818,10 +2814,18 @@ const clearDateFilter = () => {
   filters.endDate = ''
 }
 
-// Quick AI Report helper - calls the main AI report generation
-const generateQuickAIReport = async () => {
-  // Call the main AI report generation function
-  await generateAIReport()
+// Quick AI Report helper - scrolls to the AI report generator section
+const generateQuickAIReport = () => {
+  // Scroll to the AI report generator section
+  const element = document.getElementById('ai-report-generator')
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // Add a subtle highlight effect
+    element.classList.add('ring-4', 'ring-purple-500', 'ring-opacity-50')
+    setTimeout(() => {
+      element.classList.remove('ring-4', 'ring-purple-500', 'ring-opacity-50')
+    }, 2000)
+  }
 }
 
 // AI Filter methods
