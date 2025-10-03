@@ -132,7 +132,7 @@
             <label class="block text-sm font-medium text-white/80 mb-2">Account Manager</label>
             <select 
               v-model="filters.accountManager"
-              class="w-full border border-white/10 bg-white/5 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
+              class="w-full border border-white/10 bg-ontop-navy-dark text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
             >
               <option value="">All Managers</option>
               <option v-for="manager in uniqueAccountManagers" :key="manager.name" :value="manager.name">
@@ -146,7 +146,7 @@
             <label class="block text-sm font-medium text-white/80 mb-2">Date Period</label>
             <select 
               v-model="filters.datePeriod"
-              class="w-full border border-white/10 bg-white/5 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
+              class="w-full border border-white/10 bg-ontop-navy-dark text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
             >
               <option value="">All Time</option>
               <option value="today">Today</option>
@@ -187,7 +187,7 @@
             <label class="block text-sm font-medium text-white/80 mb-2">Feedback Directed To</label>
             <select 
               v-model="filters.feedbackDirectedTo"
-              class="w-full border border-white/10 bg-white/5 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
+              class="w-full border border-white/10 bg-ontop-navy-dark text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
             >
               <option value="">All Teams</option>
               <option v-for="team in uniqueFeedbackDirections" :key="team.name" :value="team.name">
@@ -201,7 +201,7 @@
             <label class="block text-sm font-medium text-white/80 mb-2">Category</label>
             <select 
               v-model="filters.category"
-              class="w-full border border-white/10 bg-white/5 text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
+              class="w-full border border-white/10 bg-ontop-navy-dark text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
             >
               <option value="">All Categories</option>
               <option v-for="cat in uniqueCategories" :key="cat.name" :value="cat.name">
@@ -1507,7 +1507,7 @@
         </div>
         <div class="p-6 space-y-4">
           <div 
-            v-for="item in todaysFeedback.slice(0, 5)" 
+            v-for="item in todaysFeedback" 
             :key="item.id"
             class="p-4 border border-blue-200 dark:border-blue-600 rounded-lg bg-blue-50 dark:bg-blue-900/10"
           >
@@ -1543,14 +1543,6 @@
               <span>Account Manager: {{ item.accountOwner || 'Unassigned' }}</span>
               <span v-if="item.feedbackDirectedTo">Directed to: {{ item.feedbackDirectedTo }}</span>
             </div>
-          </div>
-          <div v-if="todaysFeedback.length > 5" class="text-center">
-            <button 
-              @click="showTodaysFilter" 
-              class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
-            >
-              View all {{ todaysFeedback.length }} items from today →
-            </button>
           </div>
         </div>
       </div>
@@ -1635,7 +1627,7 @@
               <label class="block text-sm font-medium text-white dark:text-slate-300 mb-2">Account Manager</label>
               <select 
                 v-model="aiFilters.accountManager"
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                class="w-full border border-white/10 bg-ontop-navy-dark text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
               >
                 <option value="">All Managers</option>
                 <option v-for="manager in uniqueAccountManagers" :key="manager.name" :value="manager.name">
@@ -1649,7 +1641,7 @@
               <label class="block text-sm font-medium text-white dark:text-slate-300 mb-2">Date Period</label>
               <select 
                 v-model="aiFilters.datePeriod"
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                class="w-full border border-white/10 bg-ontop-navy-dark text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
               >
                 <option value="">All Time</option>
                 <option value="today">Today</option>
@@ -1670,7 +1662,7 @@
               <label class="block text-sm font-medium text-white dark:text-slate-300 mb-2">Feedback Directed To</label>
               <select 
                 v-model="aiFilters.feedbackDirectedTo"
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                class="w-full border border-white/10 bg-ontop-navy-dark text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
               >
                 <option value="">All Teams</option>
                 <option v-for="team in uniqueFeedbackDirections" :key="team.name" :value="team.name">
@@ -1684,7 +1676,7 @@
               <label class="block text-sm font-medium text-white dark:text-slate-300 mb-2">Category</label>
               <select 
                 v-model="aiFilters.category"
-                class="w-full border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-white rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                class="w-full border border-white/10 bg-ontop-navy-dark text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
               >
                 <option value="">All Categories</option>
                 <option v-for="cat in uniqueCategories" :key="cat.name" :value="cat.name">
