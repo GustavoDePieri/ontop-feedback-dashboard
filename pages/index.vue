@@ -157,6 +157,8 @@
               <option value="last-month">Last Month</option>
               <option value="last-30-days">Last 30 Days</option>
               <option value="last-90-days">Last 90 Days</option>
+              <option value="last-180-days">Last 180 Days</option>
+              <option value="this-year">This Year</option>
               <option value="custom">Custom Range</option>
             </select>
           </div>
@@ -1723,6 +1725,8 @@
                 <option value="last-month">Last Month</option>
                 <option value="last-30-days">Last 30 Days</option>
                 <option value="last-90-days">Last 90 Days</option>
+                <option value="last-180-days">Last 180 Days</option>
+                <option value="this-year">This Year</option>
               </select>
             </div>
 
@@ -2163,6 +2167,19 @@ const filteredFeedbackData = computed(() => {
       case 'last-90-days':
         startDate = new Date(now)
         startDate.setDate(now.getDate() - 90)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'last-180-days':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - 180)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'this-year':
+        startDate = new Date(now.getFullYear(), 0, 1)
         startDate.setHours(0, 0, 0, 0)
         endDate = new Date(now)
         endDate.setHours(23, 59, 59, 999)
@@ -2956,6 +2973,19 @@ const getAIFilteredData = () => {
         endDate = new Date(now)
         endDate.setHours(23, 59, 59, 999)
         break
+      case 'last-180-days':
+        startDate = new Date(now)
+        startDate.setDate(now.getDate() - 180)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'this-year':
+        startDate = new Date(now.getFullYear(), 0, 1)
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date(now)
+        endDate.setHours(23, 59, 59, 999)
+        break
     }
 
     if (startDate || endDate) {
@@ -3151,6 +3181,8 @@ const getDatePeriodLabel = (period) => {
     'last-month': 'Last Month',
     'last-30-days': 'Last 30 Days',
     'last-90-days': 'Last 90 Days',
+    'last-180-days': 'Last 180 Days',
+    'this-year': 'This Year',
     'custom': 'Custom Range'
   }
   return labels[period] || period
