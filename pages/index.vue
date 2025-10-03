@@ -3113,8 +3113,10 @@ const generateAIReport = async () => {
               <div style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">${request.request}</div>
               <div style="font-size: 13px; color: rgba(255, 255, 255, 0.8); margin-bottom: 8px;"><strong>Evidence:</strong> ${request.evidence}</div>
               <div style="font-size: 13px; color: rgba(255, 255, 255, 0.8); margin-bottom: 8px;"><strong>Recommended Action:</strong> ${request.recommendedAction}</div>
-              <div style="display: flex; gap: 15px; font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 8px;">
+              <div style="display: flex; gap: 15px; font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 8px; flex-wrap: wrap;">
                 <span><strong>Revenue Impact:</strong> ${request.revenueImpact}</span>
+                <span><strong>Urgency:</strong> ${request.urgency || 'Medium'}</span>
+                <span><strong>Client Tone:</strong> ${request.sentiment}</span>
                 <span><strong>Owner:</strong> ${request.crossFunctionalOwner}</span>
                 <span><strong>Quick Win:</strong> ${request.quickWinPotential}</span>
               </div>

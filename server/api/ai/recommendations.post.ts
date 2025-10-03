@@ -14,7 +14,8 @@ interface RecurringRequest {
   priority: 'high' | 'medium' | 'low'
   evidence: string
   revenueImpact: string
-  sentiment: string
+  sentiment: string // AI-inferred from raw text, not pre-labeled
+  urgency: string // How urgent based on client language
   recommendedAction: string
   quickWinPotential: string
   crossFunctionalOwner: string
@@ -23,7 +24,7 @@ interface RecurringRequest {
     id: string
     accountName: string
     feedback: string
-    sentiment: string
+    // sentiment removed - let viewers read raw feedback
   }>
 }
 
@@ -89,33 +90,31 @@ function prepareFeedbackSummary(
   segmentType: string, 
   segmentValue?: string
 ): string {
-  const segments = {
-    positive: items.filter(i => i.sentiment === 'Positive'),
-    neutral: items.filter(i => i.sentiment === 'Neutral'),
-    negative: items.filter(i => i.sentiment === 'Negative')
-  }
-
+  // 🎯 NEW APPROACH: Send ONLY raw feedback text + business context
+  // NO categories, NO sentiment labels, NO subcategories
+  // Let the AI discover patterns from the actual client words
+  
   const summary = {
     total: items.length,
-    sentimentBreakdown: {
-      positive: segments.positive.length,
-      neutral: segments.neutral.length,
-      negative: segments.negative.length
-    },
-    categories: getTopCategories(items),
-    subcategories: getTopSubcategories(items),
+    analysisMode: 'raw_text_only',
+    note: 'Categories and sentiment labels intentionally excluded to avoid AI bias. Analysis based purely on client feedback text.',
+    
+    // Business context (non-biased metadata)
     accountManagers: getAccountManagerStats(items),
     feedbackDirections: getFeedbackDirections(items),
     topAccounts: getTopAccounts(items),
-    recentFeedback: items.slice(0, 20).map(i => ({
+    
+    // Raw feedback - THIS IS THE GOLD 💰
+    // Sample more items for better pattern detection
+    feedbackItems: items.slice(0, 50).map(i => ({
+      id: i.id,
       date: new Date(i.createdDate).toLocaleDateString(),
       account: i.accountName,
-      sentiment: i.sentiment,
-      category: i.categoryFormulaText,
-      subcategory: i.subcategory,
-      feedback: i.feedback.substring(0, 200),
+      feedback: i.feedback, // FULL feedback text, no truncation
       directedTo: i.feedbackDirectedTo,
-      manager: i.accountOwner
+      manager: i.accountOwner,
+      mrr: i.realMrrLastMonth,
+      tpv: i.lastInvoicedTpv
     }))
   }
 
@@ -208,17 +207,28 @@ function createPrompt(
 CRITICAL CONTEXT:
 This dashboard is for LEADERSHIP VISIBILITY. We need to see what clients are asking for most consistently, so we can tackle the biggest problems first and work our way down. This is about crossing items off a priority list backed by data, not creating scattered feedback reports.
 
+🎯 CRITICAL: NO PRE-LABELED CATEGORIES OR SENTIMENT ANALYSIS PROVIDED
+The feedback data below contains ONLY raw client feedback text. You MUST:
+- Read the actual words clients wrote
+- Discover patterns from the text itself
+- NOT rely on any pre-existing categories (there are none)
+- Form your OWN understanding of sentiment from the feedback content
+- Group feedback by WHAT CLIENTS ARE SAYING, not by labels someone else created
+
 FEEDBACK DATA (${segmentDescription}):
 ${feedbackSummary}
 ${focusAreaText}
 
 ANALYSIS INSTRUCTIONS:
-1. **IGNORE department silos** - Look at ALL feedback holistically
-2. **GROUP by what clients actually want** - Not by internal categories
-3. **COUNT frequency** - How many times do we hear similar requests?
-4. **RANK by evidence** - Most mentioned = highest priority
-5. **IDENTIFY patterns** - What are the recurring themes week after week?
-6. **CONNECT revenue impact** - Which issues affect high-value clients (MRR/TPV)?
+1. **READ the actual feedback text** - Every word matters, don't skim
+2. **DISCOVER patterns naturally** - What do clients keep mentioning?
+3. **IGNORE any labels** - Start fresh from the raw text
+4. **GROUP by what clients actually want** - Not by internal categories
+5. **COUNT frequency** - How many times do we hear similar requests?
+6. **RANK by evidence** - Most mentioned = highest priority
+7. **IDENTIFY emerging themes** - What are the recurring themes week after week?
+8. **CONNECT revenue impact** - Which issues affect high-value clients (MRR/TPV)?
+9. **INFER sentiment from text** - Does the client sound frustrated? Happy? Neutral?
 
 Please provide a FREQUENCY-DRIVEN ANALYSIS in the following JSON format:
 
@@ -231,7 +241,8 @@ Please provide a FREQUENCY-DRIVEN ANALYSIS in the following JSON format:
       "priority": "high|medium|low (based on frequency + revenue impact)",
       "evidence": "Specific data points showing this pattern (e.g., '15 mentions across 10 accounts, including 3 high-MRR clients')",
       "revenueImpact": "How much MRR/TPV is affected by this issue",
-      "sentiment": "Overall sentiment about this issue (Positive/Negative/Mixed)",
+      "sentiment": "Inferred sentiment from reading the actual feedback text (Frustrated/Satisfied/Requesting/Mixed) - DO NOT use pre-labeled sentiment",
+      "urgency": "How urgent is this based on client language? (Critical/High/Medium/Low)",
       "recommendedAction": "Specific action to address this recurring request",
       "quickWinPotential": "Can this be solved quickly? (Yes/No + why)",
       "crossFunctionalOwner": "Who should own this (Product/Support/Operations/Sales/etc.)",
@@ -290,7 +301,8 @@ function parseAIResponse(text: string, feedbackItems: FeedbackItem[]): AIRecomme
               priority: item.priority || 'medium',
               evidence: item.evidence || '',
               revenueImpact: item.revenueImpact || 'Unknown',
-              sentiment: item.sentiment || 'Mixed',
+              sentiment: item.sentiment || 'Mixed', // AI-inferred from text, not pre-labeled
+              urgency: item.urgency || 'Medium',
               recommendedAction: item.recommendedAction || '',
               quickWinPotential: item.quickWinPotential || 'Unknown',
               crossFunctionalOwner: item.crossFunctionalOwner || 'TBD',
@@ -299,7 +311,7 @@ function parseAIResponse(text: string, feedbackItems: FeedbackItem[]): AIRecomme
                 id: f.id,
                 accountName: f.accountName,
                 feedback: f.feedback,
-                sentiment: f.sentiment || 'Neutral'
+                // NO sentiment included - let viewers read the raw feedback
               }))
             }
           })
@@ -337,7 +349,8 @@ function matchFeedbackByKeywords(
   const normalizedKeywords = keywords.map(k => k.toLowerCase())
   
   const scoredFeedback = feedbackItems.map(item => {
-    const feedbackText = `${item.feedback} ${item.categoryFormulaText || ''} ${item.subcategory || ''}`.toLowerCase()
+    // 🎯 ONLY use raw feedback text - NO categories or subcategories
+    const feedbackText = item.feedback.toLowerCase()
     
     // Calculate relevance score based on keyword matches
     let score = 0

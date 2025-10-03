@@ -6,7 +6,8 @@ export interface RecurringRequest {
   priority: 'high' | 'medium' | 'low'
   evidence: string
   revenueImpact: string
-  sentiment: string
+  sentiment: string // AI-inferred from raw text analysis
+  urgency: string // How urgent based on client language
   recommendedAction: string
   quickWinPotential: string
   crossFunctionalOwner: string
@@ -15,7 +16,7 @@ export interface RecurringRequest {
     id: string
     accountName: string
     feedback: string
-    sentiment: string
+    // sentiment removed - raw feedback only
   }>
 }
 

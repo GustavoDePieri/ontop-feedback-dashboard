@@ -29,8 +29,8 @@ A modern, AI-powered feedback analytics dashboard that connects to Google Sheets
 ### Key Features
 
 - ✅ **Real-time Google Sheets Integration** - Live Salesforce feedback data
-- ✅ **AI-Powered Insights** - Gemini AI generates recommendations
-- ✅ **Sentiment Analysis** - Automatic classification (Positive, Neutral, Negative)
+- ✅ **AI-Powered Insights** - Gemini AI generates recommendations from **raw feedback text only**
+- ✅ **Unbiased Analysis** - AI reads actual client words, not pre-labeled categories/sentiment
 - ✅ **Interactive Dashboard** - Metrics, charts, and visualizations
 - ✅ **Unified Reports** - Generate and export comprehensive reports
 - ✅ **Dark Mode** - Modern dark purple theme with Ontop branding
@@ -59,6 +59,34 @@ A modern, AI-powered feedback analytics dashboard that connects to Google Sheets
 - The AI report on `pages/index.vue` uses `v-html` to render HTML from `useReportTemplates.ts`
 
 **See the styling guide for detailed explanations, examples, and troubleshooting!**
+
+### 🧠 AI Analysis Philosophy: Unbiased Pattern Discovery
+
+> **🎯 CRITICAL DESIGN DECISION: The AI reads ONLY raw client feedback text**
+
+**Why this matters:**
+- ❌ **Old approach**: AI received pre-labeled categories and sentiment → Generic, biased insights
+- ✅ **New approach**: AI reads actual client words → Discovers real patterns naturally
+
+**What the AI receives:**
+- ✅ **Raw feedback text** (full, untruncated)
+- ✅ **Business context** (account name, MRR, TPV, manager, date)
+- ✅ **Metadata** (feedback directed to, account stats)
+- ❌ **NO categories** (removed to prevent bias)
+- ❌ **NO sentiment labels** (AI infers from text)
+- ❌ **NO subcategories** (AI discovers patterns itself)
+
+**Benefits:**
+1. **More specific insights** - AI finds exact client language patterns
+2. **No confirmation bias** - AI doesn't just echo pre-existing labels
+3. **Deeper analysis** - AI reads actual pain points, not summaries
+4. **Urgency detection** - AI picks up on client tone and language
+5. **Real priorities** - Ranked by actual frequency in text, not labels
+
+**Files involved:**
+- `server/api/ai/recommendations.post.ts` - Sends only raw text to AI
+- `composables/useAIRecommendations.ts` - Frontend interface
+- `pages/index.vue` - Displays urgency + inferred sentiment
 
 ### Tech Stack
 
