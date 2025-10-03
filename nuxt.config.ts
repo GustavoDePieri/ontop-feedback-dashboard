@@ -14,9 +14,13 @@ export default defineNuxtConfig({
     googlePrivateKeyId: process.env.GOOGLE_PRIVATE_KEY_ID,
     googleSheetsId: '1VfTbd2J91PgIj5skhUbqOst1oLgXEuoyLTqxCOPLJ2Q',
     geminiApiKey: process.env.GEMINI_API_KEY,
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
     public: {
       // Client-side environment variables
-      appName: 'Ontop Feedback Analytics'
+      appName: 'Ontop Feedback Analytics',
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY
     }
   },
   typescript: {

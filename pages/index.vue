@@ -1788,6 +1788,104 @@
       </div>
         </div>
         <!-- End Feedback Tab -->
+
+        <!-- Saved Reports Tab -->
+        <div v-show="activeTab === 'saved-reports'">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-white">💾 Saved Reports</h2>
+            <p class="text-white/70 text-sm mt-1">View and manage your previously generated AI reports</p>
+          </div>
+
+          <!-- Loading State -->
+          <div v-if="savedReportsLoading" class="flex items-center justify-center py-12">
+            <div class="text-white/70">Loading saved reports...</div>
+          </div>
+
+          <!-- Empty State -->
+          <div v-else-if="savedReports.length === 0" class="text-center py-12">
+            <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-white mb-2">No saved reports yet</h3>
+            <p class="text-white/70 text-sm">Generate an AI report and save it to see it here</p>
+          </div>
+
+          <!-- Reports Grid -->
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div 
+              v-for="report in savedReports" 
+              :key="report.id"
+              class="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 hover:border-white/20 transition-all duration-200 group"
+            >
+              <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-white mb-1">{{ report.title }}</h3>
+                    <p v-if="report.description" class="text-white/70 text-sm mb-2">{{ report.description }}</p>
+                    <div class="flex items-center text-xs text-white/60">
+                      <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {{ formatDate(report.created_at) }}
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <button
+                      @click="viewSavedReport(report)"
+                      class="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                      title="View report"
+                    >
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </button>
+                    <button
+                      @click="deleteSavedReport(report.id)"
+                      class="p-2 text-white/70 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                      title="Delete report"
+                    >
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Report Stats -->
+                <div class="grid grid-cols-2 gap-4 text-xs">
+                  <div class="bg-white/5 rounded-lg p-3">
+                    <div class="text-white/60 mb-1">Recurring Requests</div>
+                    <div class="text-white font-semibold">{{ report.report_data?.topRecurringRequests?.length || 0 }}</div>
+                  </div>
+                  <div class="bg-white/5 rounded-lg p-3">
+                    <div class="text-white/60 mb-1">Critical Risks</div>
+                    <div class="text-white font-semibold">{{ report.report_data?.criticalRisks?.length || 0 }}</div>
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-2 mt-4">
+                  <button
+                    @click="viewSavedReport(report)"
+                    class="flex-1 bg-gradient-cta hover:bg-gradient-cta-hover text-white font-medium py-2 px-3 rounded-lg transition-all duration-200 text-sm"
+                  >
+                    View Report
+                  </button>
+                  <button
+                    @click="downloadSavedReport(report)"
+                    class="bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-3 rounded-lg transition-all duration-200 text-sm"
+                  >
+                    Download
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Saved Reports Tab -->
       </div>
       <!-- End Tab Content -->
     </main>
@@ -1867,6 +1965,15 @@
               </p>
               <div class="flex space-x-3">
                 <button
+                  @click="saveCurrentReport"
+                  class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center shadow-lg hover:shadow-xl"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  Save Report
+                </button>
+                <button
                   @click="downloadAIReport"
                   class="bg-gradient-cta hover:bg-gradient-cta-hover text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center shadow-lg hover:shadow-xl"
                 >
@@ -1880,7 +1987,7 @@
                   class="bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center border border-white/20"
                 >
                   <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 00-2 2z" />
                   </svg>
                   Copy HTML
                 </button>
@@ -1921,6 +2028,11 @@ const generatingReport = ref(false)
 const showReportDisplay = ref(false)
 const currentReportData = ref(null)
 
+// Saved reports
+const savedReports = ref([])
+const savedReportsLoading = ref(false)
+const { saveReport, getSavedReports, deleteReport } = useSupabase()
+
 // Filtering and pagination
 const selectedSentiment = ref(null)
 const currentPage = ref(1)
@@ -1931,7 +2043,8 @@ const activeTab = ref('overview')
 const tabs = [
   { id: 'overview', label: 'Overview', icon: '📊' },
   { id: 'trends', label: 'Trends & Analytics', icon: '📈' },
-  { id: 'feedback', label: 'Feedback List', icon: '📝' }
+  { id: 'feedback', label: 'Feedback List', icon: '📝' },
+  { id: 'saved-reports', label: 'Saved Reports', icon: '💾' }
 ]
 
 // Filters panel
@@ -2842,6 +2955,113 @@ const copyAIReportHTML = async () => {
   }
 }
 
+// Saved Reports Functions
+const saveCurrentReport = async () => {
+  if (!currentAIReportHTML.value || !aiRecommendations.value) {
+    alert('No report to save. Please generate a report first.')
+    return
+  }
+
+  const title = prompt('Enter a title for this report:', `AI Report - ${new Date().toLocaleDateString()}`)
+  if (!title) return
+
+  const description = prompt('Enter a description (optional):', '') || undefined
+
+  try {
+    const reportData = {
+      title,
+      description,
+      report_html: currentAIReportHTML.value,
+      report_data: aiRecommendations.value,
+      filters_applied: {
+        accountManager: aiFilters.accountManager,
+        datePeriod: aiFilters.datePeriod,
+        feedbackDirectedTo: aiFilters.feedbackDirectedTo,
+        category: aiFilters.category,
+        platformClientId: aiFilters.platformClientId
+      },
+      created_by: 'system'
+    }
+
+    const { data, error } = await saveReport(reportData)
+    
+    if (error) {
+      console.error('Error saving report:', error)
+      alert('Failed to save report. Please try again.')
+      return
+    }
+
+    alert('Report saved successfully!')
+    // Refresh saved reports if we're on that tab
+    if (activeTab.value === 'saved-reports') {
+      await loadSavedReports()
+    }
+  } catch (error) {
+    console.error('Error saving report:', error)
+    alert('Failed to save report. Please try again.')
+  }
+}
+
+const loadSavedReports = async () => {
+  savedReportsLoading.value = true
+  try {
+    const { data, error } = await getSavedReports()
+    
+    if (error) {
+      console.error('Error loading reports:', error)
+      return
+    }
+    
+    savedReports.value = data || []
+  } catch (error) {
+    console.error('Error loading reports:', error)
+  } finally {
+    savedReportsLoading.value = false
+  }
+}
+
+const viewSavedReport = (report) => {
+  // Set the current report HTML and show the modal
+  currentAIReportHTML.value = report.report_html
+  aiRecommendations.value = report.report_data
+  showAIReportDisplay.value = true
+}
+
+const downloadSavedReport = (report) => {
+  const blob = new Blob([report.report_html], { type: 'text/html' })
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `${report.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.html`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(url)
+}
+
+const deleteSavedReport = async (reportId) => {
+  if (!confirm('Are you sure you want to delete this report? This action cannot be undone.')) {
+    return
+  }
+
+  try {
+    const { error } = await deleteReport(reportId)
+    
+    if (error) {
+      console.error('Error deleting report:', error)
+      alert('Failed to delete report. Please try again.')
+      return
+    }
+
+    // Remove from local array
+    savedReports.value = savedReports.value.filter(report => report.id !== reportId)
+    alert('Report deleted successfully!')
+  } catch (error) {
+    console.error('Error deleting report:', error)
+    alert('Failed to delete report. Please try again.')
+  }
+}
+
 const getAIFilteredData = () => {
   let filtered = feedbackData.value
 
@@ -3693,6 +3913,13 @@ const topRevenueAccounts = computed(() => {
     }))
     .sort((a, b) => (b.mrr + b.tpv) - (a.mrr + a.tpv))
     .slice(0, 10)
+})
+
+// Watch for tab changes to load saved reports
+watch(activeTab, (newTab) => {
+  if (newTab === 'saved-reports') {
+    loadSavedReports()
+  }
 })
 
 // Initialize data on mount
