@@ -2854,6 +2854,8 @@ const formatDate = (date: string | Date) => {
 const showFeedbackBySentiment = (sentiment: 'Positive' | 'Neutral' | 'Negative') => {
   selectedSentiment.value = sentiment
   currentPage.value = 1
+  // Switch to feedback tab
+  activeTab.value = 'feedback'
   // Scroll to filtered feedback section
   nextTick(() => {
     const element = document.querySelector('[data-sentiment-filter]')
