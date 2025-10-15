@@ -53,7 +53,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-gray-400 text-sm">Total Meetings</p>
-              <p class="text-3xl font-bold text-white mt-2">812</p>
+              <p class="text-3xl font-bold text-white mt-2">{{ meetingsTotal || '—' }}</p>
             </div>
             <div class="p-3 bg-purple-500/20 rounded-lg">
               <svg class="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -127,18 +127,27 @@
 
       <!-- User Filter (shown when meetings are loaded) -->
       <div v-if="meetings.length > 0" class="mb-6">
-        <div class="flex items-center gap-3">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <label class="text-white font-medium text-sm">Filter by User:</label>
           <select
             v-model="selectedUserEmail"
-            class="bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            class="bg-gray-800 text-white border border-white/30 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent min-w-[300px]"
+            style="color-scheme: dark;"
           >
-            <option value="">All Users</option>
-            <option v-for="user in users" :key="user.id" :value="user.email">
+            <option value="" class="bg-gray-800 text-white">All Users</option>
+            <option v-for="user in users" :key="user.id" :value="user.email" class="bg-gray-800 text-white">
               {{ user.name }} ({{ user.email }})
             </option>
           </select>
-          <span class="text-white/60 text-sm">{{ filteredMeetings.length }} of {{ meetings.length }} meetings</span>
+          <span class="text-white/60 text-sm">{{ filteredMeetings.length }} of {{ meetings.length }} meetings loaded</span>
+          <button
+            v-if="meetings.length < meetingsTotal"
+            @click="loadMoreMeetings"
+            :disabled="loading"
+            class="ml-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors disabled:opacity-50"
+          >
+            Load More ({{ meetingsTotal - meetings.length }} remaining)
+          </button>
         </div>
       </div>
 
@@ -162,7 +171,7 @@
             <h3 class="text-yellow-300 font-semibold mb-1">Waiting for Transcripts Scope</h3>
             <p class="text-yellow-200/80 text-sm">
               DIIO integration is ready! We're waiting for the <code class="px-2 py-0.5 bg-yellow-900/30 rounded text-yellow-300">transcripts</code> scope to be added by DIIO support. 
-              Once added, all 812 meetings with transcripts will be immediately accessible.
+              Once added, all {{ meetingsTotal || 812 }} meetings with transcripts will be immediately accessible.
             </p>
             <p class="text-yellow-200/70 text-xs mt-2">
               Current scopes: <span class="text-yellow-300">users, phone_calls, exports, meetings</span>
@@ -359,6 +368,8 @@ const users = ref<DiioUser[]>([])
 const phoneCalls = ref<DiioPhoneCall[]>([])
 const meetings = ref<DiioMeeting[]>([])
 const phoneCallsTotal = ref(0)
+const meetingsTotal = ref(0)
+const meetingsCurrentPage = ref(1)
 const exportedData = ref<any>(null)
 const selectedTranscript = ref<DiioTranscript | null>(null)
 const selectedTranscriptName = ref('')
@@ -387,8 +398,17 @@ const fetchPhoneCalls = async () => {
 }
 
 const fetchMeetings = async () => {
-  const result = await getMeetings(1, 20)
+  meetingsCurrentPage.value = 1
+  const result = await getMeetings(1, 100) // Load 100 meetings initially
   meetings.value = result.meetings
+  meetingsTotal.value = result.total
+}
+
+const loadMoreMeetings = async () => {
+  meetingsCurrentPage.value++
+  const result = await getMeetings(meetingsCurrentPage.value, 100)
+  meetings.value = [...meetings.value, ...result.meetings]
+  meetingsTotal.value = result.total
 }
 
 const fetchTranscript = async (transcriptId: string, name: string) => {

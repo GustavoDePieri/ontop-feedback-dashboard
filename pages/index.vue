@@ -1907,11 +1907,11 @@
               </div>
               <div class="text-white/60">|</div>
               <div class="flex items-center gap-2">
-                <span class="text-white/90">812 Meetings</span>
+                <span class="text-white/90">800+ Meetings</span>
               </div>
               <div class="text-white/60">|</div>
               <div class="flex items-center gap-2">
-                <span class="text-white/90">Multiple Users</span>
+                <span class="text-white/90">25+ Users</span>
               </div>
             </div>
 
