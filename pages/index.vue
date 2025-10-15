@@ -1878,6 +1878,88 @@
           </div>
         </div>
         <!-- End Saved Reports Tab -->
+
+        <!-- Call Transcripts Tab -->
+        <div v-show="activeTab === 'call-transcripts'">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-white">🎙️ Call Transcripts</h2>
+            <p class="text-white/70 text-sm mt-1">Access meeting and phone call transcripts from DIIO</p>
+          </div>
+
+          <!-- DIIO Integration Info -->
+          <div class="bg-gradient-to-br from-purple-900/30 to-blue-900/30 backdrop-blur-sm rounded-xl border border-white/10 p-8 text-center">
+            <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+            </div>
+            
+            <h3 class="text-2xl font-bold text-white mb-3">DIIO Integration Active</h3>
+            <p class="text-white/80 mb-6 max-w-2xl mx-auto">
+              Access your complete call transcription library with advanced search, filtering, and AI-powered insights.
+              View transcripts from meetings and phone calls all in one place.
+            </p>
+
+            <div class="flex items-center justify-center gap-6 mb-8 text-sm">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span class="text-white/90">Connected</span>
+              </div>
+              <div class="text-white/60">|</div>
+              <div class="flex items-center gap-2">
+                <span class="text-white/90">812 Meetings</span>
+              </div>
+              <div class="text-white/60">|</div>
+              <div class="flex items-center gap-2">
+                <span class="text-white/90">Multiple Users</span>
+              </div>
+            </div>
+
+            <a
+              href="/diio"
+              class="inline-flex items-center gap-2 bg-gradient-cta hover:bg-gradient-cta-hover text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+              Open Call Transcripts Dashboard
+            </a>
+
+            <!-- Feature Highlights -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 text-left">
+              <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                <div class="flex items-center gap-2 mb-2">
+                  <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <h4 class="text-white font-semibold">Search Transcripts</h4>
+                </div>
+                <p class="text-white/70 text-sm">Find specific conversations and topics across all your calls</p>
+              </div>
+
+              <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                <div class="flex items-center gap-2 mb-2">
+                  <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                  <h4 class="text-white font-semibold">User Management</h4>
+                </div>
+                <p class="text-white/70 text-sm">View transcripts by team member and track engagement</p>
+              </div>
+
+              <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                <div class="flex items-center gap-2 mb-2">
+                  <svg class="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <h4 class="text-white font-semibold">Export Data</h4>
+                </div>
+                <p class="text-white/70 text-sm">Download and export call data for reporting</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End Call Transcripts Tab -->
       </div>
       <!-- End Tab Content -->
     </main>
@@ -2036,7 +2118,8 @@ const tabs = [
   { id: 'overview', label: 'Overview', icon: '📊' },
   { id: 'trends', label: 'Trends & Analytics', icon: '📈' },
   { id: 'feedback', label: 'Feedback List', icon: '📝' },
-  { id: 'saved-reports', label: 'Saved Reports', icon: '💾' }
+  { id: 'saved-reports', label: 'Saved Reports', icon: '💾' },
+  { id: 'call-transcripts', label: 'Call Transcripts', icon: '🎙️' }
 ]
 
 // Filters panel
