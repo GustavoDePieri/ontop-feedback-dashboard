@@ -125,6 +125,23 @@
         </button>
       </div>
 
+      <!-- User Filter (shown when meetings are loaded) -->
+      <div v-if="meetings.length > 0" class="mb-6">
+        <div class="flex items-center gap-3">
+          <label class="text-white font-medium text-sm">Filter by User:</label>
+          <select
+            v-model="selectedUserEmail"
+            class="bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            <option value="">All Users</option>
+            <option v-for="user in users" :key="user.id" :value="user.email">
+              {{ user.name }} ({{ user.email }})
+            </option>
+          </select>
+          <span class="text-white/60 text-sm">{{ filteredMeetings.length }} of {{ meetings.length }} meetings</span>
+        </div>
+      </div>
+
       <!-- Error Display -->
       <div v-if="error" class="mb-6 p-4 bg-red-900/30 border border-red-500 rounded-lg backdrop-blur-sm">
         <div class="flex items-center gap-2">
@@ -191,12 +208,12 @@
             <svg class="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Recent Meetings ({{ meetings.length }})
+            Recent Meetings ({{ filteredMeetings.length }})
           </h2>
           
           <div class="space-y-3">
             <div
-              v-for="meeting in meetings"
+              v-for="meeting in filteredMeetings"
               :key="meeting.id"
               class="bg-white/5 rounded-lg p-4 border border-white/10 hover:border-purple-500/50 hover:bg-white/10 transition-all duration-200"
             >
@@ -345,6 +362,19 @@ const phoneCallsTotal = ref(0)
 const exportedData = ref<any>(null)
 const selectedTranscript = ref<DiioTranscript | null>(null)
 const selectedTranscriptName = ref('')
+const selectedUserEmail = ref('')
+
+// Computed property to filter meetings by selected user
+const filteredMeetings = computed(() => {
+  if (!selectedUserEmail.value) {
+    return meetings.value
+  }
+  
+  return meetings.value.filter(meeting => {
+    if (!meeting.attendees?.sellers) return false
+    return meeting.attendees.sellers.some(seller => seller.email === selectedUserEmail.value)
+  })
+})
 
 const fetchUsers = async () => {
   users.value = await getUsers()
