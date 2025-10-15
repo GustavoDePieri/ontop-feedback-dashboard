@@ -43,6 +43,17 @@
           </NuxtLink>
           
           <NuxtLink
+            to="/diio"
+            class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group"
+            :class="$route.path === '/diio' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
+          >
+            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+            Call Transcripts
+          </NuxtLink>
+          
+          <NuxtLink
             to="/test"
             class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group"
             :class="$route.path === '/test' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
@@ -84,11 +95,22 @@
           
           <!-- Data source info -->
           <div class="bg-white/5 backdrop-blur-sm rounded-lg p-3 border border-white/10 transition-colors duration-200">
-            <p class="text-xs text-white/80 font-medium">Data Source</p>
-            <p class="text-xs text-white/60">Google Sheets (Live)</p>
-            <div class="flex items-center mt-2">
-              <div class="w-2 h-2 bg-ontop-coral-500 rounded-full animate-pulse"></div>
-              <span class="ml-2 text-xs text-white/60">Connected</span>
+            <p class="text-xs text-white/80 font-medium mb-2">Data Sources</p>
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <p class="text-xs text-white/60">Google Sheets</p>
+                <div class="flex items-center">
+                  <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <span class="ml-1.5 text-xs text-green-400">Live</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <p class="text-xs text-white/60">DIIO Calls</p>
+                <div class="flex items-center">
+                  <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <span class="ml-1.5 text-xs text-green-400">Ready</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
