@@ -1,8 +1,8 @@
 # 📊 Ontop Feedback Analytics Dashboard - Complete Documentation
 
-**Version:** 2.0  
-**Last Updated:** October 1, 2025  
-**Tech Stack:** Nuxt 3 + Tailwind CSS + Google Sheets + Gemini AI
+**Version:** 2.1  
+**Last Updated:** October 15, 2025  
+**Tech Stack:** Nuxt 3 + Tailwind CSS + Google Sheets + DIIO + Gemini AI
 
 ---
 
@@ -29,6 +29,7 @@ A modern, AI-powered feedback analytics dashboard that connects to Google Sheets
 ### Key Features
 
 - ✅ **Real-time Google Sheets Integration** - Live Salesforce feedback data
+- ✅ **DIIO Call Transcription Integration** - Access to phone call and meeting transcripts
 - ✅ **AI-Powered Insights** - Gemini AI generates recommendations from **raw feedback text only**
 - ✅ **Unbiased Analysis** - AI reads actual client words, not pre-labeled categories/sentiment
 - ✅ **Interactive Dashboard** - Metrics, charts, and visualizations
@@ -95,6 +96,7 @@ A modern, AI-powered feedback analytics dashboard that connects to Google Sheets
 | **Nuxt 3** | Vue.js framework with SSR |
 | **Tailwind CSS** | Utility-first CSS framework |
 | **Google Sheets API** | Data source integration |
+| **DIIO API** | Call transcription integration |
 | **Gemini AI** | AI-powered recommendations |
 | **Pinia** | State management |
 | **Chart.js** | Data visualizations |
@@ -123,7 +125,7 @@ npm install
 # 3. Create .env file
 cp .env.example .env
 
-# 4. Add your Google credentials to .env
+# 4. Add your credentials to .env
 GOOGLE_PROJECT_ID=your-project-id
 GOOGLE_PRIVATE_KEY_ID=your-key-id
 GOOGLE_CLIENT_EMAIL=your-service-account@project.iam.gserviceaccount.com
@@ -131,6 +133,12 @@ GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
 [YOUR PRIVATE KEY]
 -----END PRIVATE KEY-----"
+
+# DIIO credentials (optional - for call transcription integration)
+DIIO_CLIENT_ID=your-diio-client-id
+DIIO_CLIENT_SECRET=your-diio-client-secret
+DIIO_REFRESH_TOKEN=your-diio-refresh-token
+DIIO_SUBDOMAIN=getontop
 
 # 5. Start development server
 npm run dev
@@ -209,6 +217,7 @@ feedbackAnalysis/
 | `/` | `pages/index.vue` | Main dashboard | Required |
 | `/analytics` | `pages/analytics.vue` | Advanced analytics | Required |
 | `/reports` | `pages/reports.vue` | Report generation | Required |
+| `/diio-test` | `pages/diio-test.vue` | DIIO integration test | Required |
 | `/login` | `pages/login.vue` | Login page | Public |
 | `/test` | `pages/test.vue` | Debug/testing | Required |
 
@@ -632,6 +641,61 @@ Visit `/test` page for:
 **Production (Vercel):**
 - Vercel Dashboard → Project → Functions → View Logs
 - Real-time function execution logs
+
+---
+
+## 📞 DIIO Integration
+
+### What is DIIO?
+
+DIIO is a call transcription service that records and transcribes sales calls and meetings. The integration allows you to:
+- Fetch call transcripts from DIIO
+- View users and their calls
+- Combine call transcripts with written feedback for comprehensive AI analysis
+- Export call data in JSON or CSV format
+
+### Setup
+
+1. **Get DIIO credentials** from your DIIO account
+2. **Add to `.env`:**
+   ```env
+   DIIO_CLIENT_ID=your-client-id
+   DIIO_CLIENT_SECRET=your-client-secret
+   DIIO_REFRESH_TOKEN=your-refresh-token
+   DIIO_SUBDOMAIN=getontop
+   ```
+3. **Test integration:** Visit `/diio-test` page
+
+### Usage
+
+```vue
+<script setup>
+const { getUsers, getPhoneCalls, getTranscript } = useDiio()
+
+// Fetch DIIO users
+const users = await getUsers()
+
+// Fetch phone calls
+const { calls, total } = await getPhoneCalls(1, 20)
+
+// Get transcript
+const transcript = await getTranscript('transcript-id')
+</script>
+```
+
+### Documentation
+
+- 📘 **Complete Guide:** See `DIIO_INTEGRATION_COMPLETE.md`
+- 📘 **Technical Docs:** See `DIIO_API_WORKING.md`
+- 📘 **API Reference:** See `diio_api_documentation.md`
+
+### Test Page
+
+Visit `/diio-test` to:
+- View all DIIO users (27 users found)
+- Fetch phone calls and transcripts
+- Export call data
+- Test the integration
 
 ---
 

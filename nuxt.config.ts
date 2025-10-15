@@ -16,6 +16,11 @@ export default defineNuxtConfig({
     geminiApiKey: process.env.GEMINI_API_KEY,
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    // DIIO API Configuration
+    diioClientId: process.env.DIIO_CLIENT_ID,
+    diioClientSecret: process.env.DIIO_CLIENT_SECRET,
+    diioRefreshToken: process.env.DIIO_REFRESH_TOKEN,
+    diioSubdomain: process.env.DIIO_SUBDOMAIN || 'getontop',
     public: {
       // Client-side environment variables
       appName: 'Ontop Feedback Analytics',
