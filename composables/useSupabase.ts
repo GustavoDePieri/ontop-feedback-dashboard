@@ -361,9 +361,9 @@ export const useSupabase = () => {
         .from('diio_transcripts')
         .select('id')
         .eq('diio_transcript_id', diioTranscriptId)
-        .single()
+        .maybeSingle()
 
-      if (error && error.code !== 'PGRST116') throw error // PGRST116 = no rows found
+      if (error) throw error
       return { exists: !!data, error: null }
     } catch (error) {
       console.error('Error checking transcript existence:', error)

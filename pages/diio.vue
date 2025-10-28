@@ -715,10 +715,12 @@ const fetchAllTranscripts = async () => {
       console.log(`📅 Processing meeting ${i + 1}/${allMeetings.length}: ${meeting.name}`)
       
       try {
-        // Check if transcript already exists
-        const { exists } = await transcriptExists(meeting.last_transcript_id!)
+        // Check if transcript already exists (continue if check fails)
+        const { exists, error: checkError } = await transcriptExists(meeting.last_transcript_id!)
         
-        if (exists) {
+        if (checkError) {
+          console.warn(`⚠️ Could not check if transcript exists, proceeding anyway: ${checkError}`)
+        } else if (exists) {
           console.log(`⏭️ Transcript ${meeting.last_transcript_id} already exists, skipping`)
           transcriptProcessing.value.skipped++
           continue
@@ -772,10 +774,12 @@ const fetchAllTranscripts = async () => {
       console.log(`📞 Processing call ${i + 1}/${allPhoneCalls.length}: ${call.name}`)
       
       try {
-        // Check if transcript already exists
-        const { exists } = await transcriptExists(call.last_transcript_id!)
+        // Check if transcript already exists (continue if check fails)
+        const { exists, error: checkError } = await transcriptExists(call.last_transcript_id!)
         
-        if (exists) {
+        if (checkError) {
+          console.warn(`⚠️ Could not check if transcript exists, proceeding anyway: ${checkError}`)
+        } else if (exists) {
           console.log(`⏭️ Transcript ${call.last_transcript_id} already exists, skipping`)
           transcriptProcessing.value.skipped++
           continue
