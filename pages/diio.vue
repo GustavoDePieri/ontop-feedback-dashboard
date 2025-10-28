@@ -66,12 +66,12 @@
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm">Integration</p>
-              <p class="text-lg font-semibold text-green-400 mt-2">Ready</p>
+              <p class="text-gray-400 text-sm">Database Storage</p>
+              <p class="text-lg font-semibold text-blue-400 mt-2">{{ storageStatus.totalTranscripts }} transcripts</p>
             </div>
-            <div class="p-3 bg-orange-500/20 rounded-lg">
-              <svg class="w-6 h-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <div class="p-3 bg-blue-500/20 rounded-lg">
+              <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
               </svg>
             </div>
           </div>
@@ -122,6 +122,17 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
           {{ loading ? 'Exporting...' : 'Export Data' }}
+        </button>
+
+        <button
+          @click="loadTranscriptStats"
+          :disabled="loading"
+          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+          </svg>
+          Refresh Stats
         </button>
       </div>
 
@@ -363,6 +374,15 @@ definePageMeta({
 })
 
 const { getUsers, getPhoneCalls, getMeetings, getTranscript, exportPhoneCalls, loading, error } = useDiio()
+const { 
+  saveDiioUsers, 
+  saveDiioMeetings, 
+  saveDiioPhoneCalls, 
+  saveDiioTranscript, 
+  getDiioTranscripts, 
+  getDiioTranscriptStats,
+  transcriptExists 
+} = useSupabase()
 
 const users = ref<DiioUser[]>([])
 const phoneCalls = ref<DiioPhoneCall[]>([])
@@ -374,6 +394,21 @@ const exportedData = ref<any>(null)
 const selectedTranscript = ref<DiioTranscript | null>(null)
 const selectedTranscriptName = ref('')
 const selectedUserEmail = ref('')
+
+// Database storage status
+const storageStatus = ref<{
+  usersStored: boolean
+  meetingsStored: boolean
+  phoneCallsStored: boolean
+  transcriptsStored: number
+  totalTranscripts: number
+}>({
+  usersStored: false,
+  meetingsStored: false,
+  phoneCallsStored: false,
+  transcriptsStored: 0,
+  totalTranscripts: 0
+})
 
 // Computed property to filter meetings by selected user
 const filteredMeetings = computed(() => {
@@ -389,12 +424,33 @@ const filteredMeetings = computed(() => {
 
 const fetchUsers = async () => {
   users.value = await getUsers()
+  // Store users in database
+  if (users.value.length > 0) {
+    const { error } = await saveDiioUsers(users.value)
+    if (!error) {
+      storageStatus.value.usersStored = true
+      console.log(`✅ Stored ${users.value.length} users in database`)
+    } else {
+      console.error('❌ Error storing users:', error)
+    }
+  }
 }
 
 const fetchPhoneCalls = async () => {
   const result = await getPhoneCalls(1, 50)
   phoneCalls.value = result.calls
   phoneCallsTotal.value = result.total
+  
+  // Store phone calls in database
+  if (phoneCalls.value.length > 0) {
+    const { error } = await saveDiioPhoneCalls(phoneCalls.value)
+    if (!error) {
+      storageStatus.value.phoneCallsStored = true
+      console.log(`✅ Stored ${phoneCalls.value.length} phone calls in database`)
+    } else {
+      console.error('❌ Error storing phone calls:', error)
+    }
+  }
 }
 
 const fetchMeetings = async () => {
@@ -402,6 +458,17 @@ const fetchMeetings = async () => {
   const result = await getMeetings(1, 100) // Load 100 meetings initially
   meetings.value = result.meetings
   meetingsTotal.value = result.total
+  
+  // Store meetings in database
+  if (meetings.value.length > 0) {
+    const { error } = await saveDiioMeetings(meetings.value)
+    if (!error) {
+      storageStatus.value.meetingsStored = true
+      console.log(`✅ Stored ${meetings.value.length} meetings in database`)
+    } else {
+      console.error('❌ Error storing meetings:', error)
+    }
+  }
 }
 
 const loadMoreMeetings = async () => {
@@ -409,13 +476,55 @@ const loadMoreMeetings = async () => {
   const result = await getMeetings(meetingsCurrentPage.value, 100)
   meetings.value = [...meetings.value, ...result.meetings]
   meetingsTotal.value = result.total
+  
+  // Store new meetings in database
+  if (result.meetings.length > 0) {
+    const { error } = await saveDiioMeetings(result.meetings)
+    if (!error) {
+      console.log(`✅ Stored ${result.meetings.length} additional meetings in database`)
+    } else {
+      console.error('❌ Error storing additional meetings:', error)
+    }
+  }
 }
 
 const fetchTranscript = async (transcriptId: string, name: string) => {
+  // Check if transcript already exists in database
+  const { exists } = await transcriptExists(transcriptId)
+  
+  if (exists) {
+    console.log(`📋 Transcript ${transcriptId} already exists in database`)
+  }
+  
   const transcript = await getTranscript(transcriptId)
   if (transcript) {
     selectedTranscript.value = transcript
     selectedTranscriptName.value = name
+    
+    // Store transcript in database if it doesn't exist
+    if (!exists) {
+      // Determine source type and metadata
+      const sourceType = name.toLowerCase().includes('meeting') ? 'meeting' : 'phone_call'
+      const sourceId = transcriptId // This would need to be mapped to actual meeting/call ID
+      
+      const { error } = await saveDiioTranscript(
+        transcript, 
+        sourceType, 
+        sourceId, 
+        name,
+        {
+          occurred_at: new Date().toISOString(),
+          attendees: {}
+        }
+      )
+      
+      if (!error) {
+        storageStatus.value.transcriptsStored++
+        console.log(`✅ Stored transcript ${transcriptId} in database`)
+      } else {
+        console.error('❌ Error storing transcript:', error)
+      }
+    }
   }
 }
 
@@ -423,14 +532,23 @@ const exportData = async () => {
   exportedData.value = await exportPhoneCalls()
 }
 
+const loadTranscriptStats = async () => {
+  const { data } = await getDiioTranscriptStats()
+  if (data) {
+    storageStatus.value.totalTranscripts = data.total_transcripts || 0
+    console.log(`📊 Database contains ${data.total_transcripts} transcripts`)
+  }
+}
+
 const formatDate = (dateString: string) => {
   if (!dateString) return 'Unknown'
   return new Date(dateString).toLocaleString()
 }
 
-// Auto-load users on mount
-onMounted(() => {
-  fetchUsers()
+// Auto-load users and stats on mount
+onMounted(async () => {
+  await fetchUsers()
+  await loadTranscriptStats()
 })
 </script>
 
