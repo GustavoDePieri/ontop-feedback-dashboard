@@ -134,6 +134,17 @@
           </svg>
           Refresh Stats
         </button>
+
+        <button
+          @click="fetchAllData"
+          :disabled="loading"
+          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          {{ loading ? 'Loading...' : '🚀 Fetch All Data' }}
+        </button>
       </div>
 
       <!-- User Filter (shown when meetings are loaded) -->
@@ -437,16 +448,20 @@ const fetchUsers = async () => {
 }
 
 const fetchPhoneCalls = async () => {
-  const result = await getPhoneCalls(1, 50)
+  console.log('🔄 Fetching all phone calls at once...')
+  const result = await getPhoneCalls(1, 1000) // Increased limit to 1000
   phoneCalls.value = result.calls
   phoneCallsTotal.value = result.total
   
+  console.log(`📊 Fetched ${result.calls.length} phone calls (total: ${result.total})`)
+  
   // Store phone calls in database
   if (phoneCalls.value.length > 0) {
+    console.log('💾 Storing all phone calls in database...')
     const { error } = await saveDiioPhoneCalls(phoneCalls.value)
     if (!error) {
       storageStatus.value.phoneCallsStored = true
-      console.log(`✅ Stored ${phoneCalls.value.length} phone calls in database`)
+      console.log(`✅ Successfully stored ${phoneCalls.value.length} phone calls in database`)
     } else {
       console.error('❌ Error storing phone calls:', error)
     }
@@ -455,16 +470,22 @@ const fetchPhoneCalls = async () => {
 
 const fetchMeetings = async () => {
   meetingsCurrentPage.value = 1
-  const result = await getMeetings(1, 100) // Load 100 meetings initially
+  
+  // Try to fetch all meetings at once with a high limit
+  console.log('🔄 Fetching all meetings at once...')
+  const result = await getMeetings(1, 1000) // Increased limit to 1000
   meetings.value = result.meetings
   meetingsTotal.value = result.total
   
-  // Store meetings in database
+  console.log(`📊 Fetched ${result.meetings.length} meetings (total: ${result.total})`)
+  
+  // Store all meetings in database at once
   if (meetings.value.length > 0) {
+    console.log('💾 Storing all meetings in database...')
     const { error } = await saveDiioMeetings(meetings.value)
     if (!error) {
       storageStatus.value.meetingsStored = true
-      console.log(`✅ Stored ${meetings.value.length} meetings in database`)
+      console.log(`✅ Successfully stored ${meetings.value.length} meetings in database`)
     } else {
       console.error('❌ Error storing meetings:', error)
     }
@@ -537,6 +558,32 @@ const loadTranscriptStats = async () => {
   if (data) {
     storageStatus.value.totalTranscripts = data.total_transcripts || 0
     console.log(`📊 Database contains ${data.total_transcripts} transcripts`)
+  }
+}
+
+const fetchAllData = async () => {
+  console.log('🚀 Starting bulk data fetch and storage...')
+  
+  try {
+    // Fetch and store users
+    console.log('1️⃣ Fetching users...')
+    await fetchUsers()
+    
+    // Fetch and store phone calls
+    console.log('2️⃣ Fetching phone calls...')
+    await fetchPhoneCalls()
+    
+    // Fetch and store meetings
+    console.log('3️⃣ Fetching meetings...')
+    await fetchMeetings()
+    
+    // Update stats
+    console.log('4️⃣ Updating statistics...')
+    await loadTranscriptStats()
+    
+    console.log('✅ Bulk data fetch and storage completed!')
+  } catch (error) {
+    console.error('❌ Error during bulk fetch:', error)
   }
 }
 

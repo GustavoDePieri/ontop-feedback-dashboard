@@ -189,9 +189,11 @@ export const useSupabase = () => {
     }
   }
 
-  // Save or update DIIO meetings
+  // Save or update DIIO meetings (optimized for large batches)
   const saveDiioMeetings = async (meetings: DiioMeeting[]) => {
     try {
+      console.log(`💾 Preparing to store ${meetings.length} meetings...`)
+      
       const meetingRecords: DiioMeetingRecord[] = meetings.map(meeting => ({
         diio_meeting_id: meeting.id,
         name: meeting.name,
@@ -202,25 +204,46 @@ export const useSupabase = () => {
         last_transcript_id: meeting.last_trancript_id
       }))
 
-      const { data, error } = await supabase
-        .from('diio_meetings')
-        .upsert(meetingRecords, { 
-          onConflict: 'diio_meeting_id',
-          ignoreDuplicates: false 
-        })
-        .select()
+      // Process in batches of 1000 to avoid database limits
+      const batchSize = 1000
+      const batches = []
+      
+      for (let i = 0; i < meetingRecords.length; i += batchSize) {
+        batches.push(meetingRecords.slice(i, i + batchSize))
+      }
 
-      if (error) throw error
-      return { data, error: null }
+      console.log(`📦 Processing ${batches.length} batches of meetings...`)
+      
+      let totalStored = 0
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i]
+        console.log(`📦 Storing batch ${i + 1}/${batches.length} (${batch.length} meetings)...`)
+        
+        const { data, error } = await supabase
+          .from('diio_meetings')
+          .upsert(batch, { 
+            onConflict: 'diio_meeting_id',
+            ignoreDuplicates: false 
+          })
+          .select()
+
+        if (error) throw error
+        totalStored += batch.length
+      }
+
+      console.log(`✅ Successfully stored ${totalStored} meetings in ${batches.length} batches`)
+      return { data: { count: totalStored }, error: null }
     } catch (error) {
       console.error('Error saving DIIO meetings:', error)
       return { data: null, error }
     }
   }
 
-  // Save or update DIIO phone calls
+  // Save or update DIIO phone calls (optimized for large batches)
   const saveDiioPhoneCalls = async (phoneCalls: DiioPhoneCall[]) => {
     try {
+      console.log(`💾 Preparing to store ${phoneCalls.length} phone calls...`)
+      
       const callRecords: DiioPhoneCallRecord[] = phoneCalls.map(call => ({
         diio_call_id: call.id,
         name: call.name,
@@ -233,16 +256,35 @@ export const useSupabase = () => {
         last_transcript_id: call.last_trancript_id
       }))
 
-      const { data, error } = await supabase
-        .from('diio_phone_calls')
-        .upsert(callRecords, { 
-          onConflict: 'diio_call_id',
-          ignoreDuplicates: false 
-        })
-        .select()
+      // Process in batches of 1000 to avoid database limits
+      const batchSize = 1000
+      const batches = []
+      
+      for (let i = 0; i < callRecords.length; i += batchSize) {
+        batches.push(callRecords.slice(i, i + batchSize))
+      }
 
-      if (error) throw error
-      return { data, error: null }
+      console.log(`📦 Processing ${batches.length} batches of phone calls...`)
+      
+      let totalStored = 0
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i]
+        console.log(`📦 Storing batch ${i + 1}/${batches.length} (${batch.length} calls)...`)
+        
+        const { data, error } = await supabase
+          .from('diio_phone_calls')
+          .upsert(batch, { 
+            onConflict: 'diio_call_id',
+            ignoreDuplicates: false 
+          })
+          .select()
+
+        if (error) throw error
+        totalStored += batch.length
+      }
+
+      console.log(`✅ Successfully stored ${totalStored} phone calls in ${batches.length} batches`)
+      return { data: { count: totalStored }, error: null }
     } catch (error) {
       console.error('Error saving DIIO phone calls:', error)
       return { data: null, error }
