@@ -201,7 +201,7 @@ export const useSupabase = () => {
         attendees: meeting.attendees,
         analyzed_status: meeting.analyzed_status || 'pending',
         error_cause: meeting.error_cause,
-        last_transcript_id: meeting.last_trancript_id
+        last_transcript_id: meeting.last_transcript_id
       }))
 
       // Process in batches of 1000 to avoid database limits
@@ -253,7 +253,7 @@ export const useSupabase = () => {
         attendees: call.attendees,
         analyzed_status: call.analyzed_status || 'pending',
         error_cause: call.error_cause,
-        last_transcript_id: call.last_trancript_id
+        last_transcript_id: call.last_transcript_id
       }))
 
       // Process in batches of 1000 to avoid database limits

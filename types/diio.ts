@@ -29,7 +29,7 @@ export interface DiioPhoneCall {
   occurred_at: string
   created_at: string
   updated_at: string
-  last_trancript_id?: string
+  last_transcript_id?: string
   attendees: DiioAttendees
   analyzed_status?: 'pending' | 'finished' | 'error'
   error_cause?: string | null
@@ -43,7 +43,7 @@ export interface DiioMeeting {
   scheduled_at: string
   created_at: string
   updated_at: string
-  last_trancript_id?: string
+  last_transcript_id?: string
   attendees: DiioAttendees
   analyzed_status?: 'pending' | 'finished' | 'error'
   error_cause?: string | null

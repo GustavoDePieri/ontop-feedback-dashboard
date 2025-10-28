@@ -383,8 +383,8 @@
                 </div>
 
                 <button
-                  v-if="call.last_trancript_id"
-                  @click="fetchTranscript(call.last_trancript_id, call.name)"
+                  v-if="call.last_transcript_id"
+                  @click="fetchTranscript(call.last_transcript_id, call.name)"
                   class="px-3 py-1.5 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 transition-colors duration-200"
                 >
                   View Transcript
@@ -675,9 +675,9 @@ const fetchAllTranscripts = async () => {
   
   try {
     // Get all meetings and phone calls that have transcripts
-    // Note: The field is 'last_trancript_id' (missing 's') in the API
-    const allMeetings = meetings.value.filter(meeting => meeting.last_trancript_id)
-    const allPhoneCalls = phoneCalls.value.filter(call => call.last_trancript_id)
+    // Note: The field is 'last_transcript_id' (with 's') in the API
+    const allMeetings = meetings.value.filter(meeting => meeting.last_transcript_id)
+    const allPhoneCalls = phoneCalls.value.filter(call => call.last_transcript_id)
     
     const totalTranscripts = allMeetings.length + allPhoneCalls.length
     console.log(`📊 Found ${totalTranscripts} transcripts to fetch (${allMeetings.length} meetings + ${allPhoneCalls.length} phone calls)`)
@@ -685,12 +685,12 @@ const fetchAllTranscripts = async () => {
     // Debug: Let's also check the first few meetings to see their structure
     if (meetings.value.length > 0) {
       console.log('🔍 Debug - First meeting structure:', meetings.value[0])
-      console.log('🔍 Debug - Meetings with transcript IDs:', meetings.value.filter(m => m.last_trancript_id).length)
+      console.log('🔍 Debug - Meetings with transcript IDs:', meetings.value.filter(m => m.last_transcript_id).length)
     }
     
     if (totalTranscripts === 0) {
       console.log('⚠️ No transcripts found. Please fetch meetings and phone calls first.')
-      console.log('💡 Tip: Check if meetings have "last_trancript_id" field populated')
+      console.log('💡 Tip: Check if meetings have "last_transcript_id" field populated')
       return
     }
     
@@ -716,16 +716,16 @@ const fetchAllTranscripts = async () => {
       
       try {
         // Check if transcript already exists
-        const { exists } = await transcriptExists(meeting.last_trancript_id!)
+        const { exists } = await transcriptExists(meeting.last_transcript_id!)
         
         if (exists) {
-          console.log(`⏭️ Transcript ${meeting.last_trancript_id} already exists, skipping`)
+          console.log(`⏭️ Transcript ${meeting.last_transcript_id} already exists, skipping`)
           transcriptProcessing.value.skipped++
           continue
         }
         
         // Fetch transcript
-        const transcript = await getTranscript(meeting.last_trancript_id!)
+        const transcript = await getTranscript(meeting.last_transcript_id!)
         
         if (transcript) {
           // Store transcript
@@ -773,16 +773,16 @@ const fetchAllTranscripts = async () => {
       
       try {
         // Check if transcript already exists
-        const { exists } = await transcriptExists(call.last_trancript_id!)
+        const { exists } = await transcriptExists(call.last_transcript_id!)
         
         if (exists) {
-          console.log(`⏭️ Transcript ${call.last_trancript_id} already exists, skipping`)
+          console.log(`⏭️ Transcript ${call.last_transcript_id} already exists, skipping`)
           transcriptProcessing.value.skipped++
           continue
         }
         
         // Fetch transcript
-        const transcript = await getTranscript(call.last_trancript_id!)
+        const transcript = await getTranscript(call.last_transcript_id!)
         
         if (transcript) {
           // Store transcript
@@ -852,8 +852,8 @@ const debugMeetingData = () => {
     console.log('🎙️ Transcript-related fields:', transcriptFields)
     
     // Count meetings with transcript IDs
-    const meetingsWithTranscripts = meetings.value.filter(m => m.last_trancript_id)
-    console.log(`📈 Meetings with last_trancript_id: ${meetingsWithTranscripts.length}`)
+    const meetingsWithTranscripts = meetings.value.filter(m => m.last_transcript_id)
+    console.log(`📈 Meetings with last_transcript_id: ${meetingsWithTranscripts.length}`)
     
     // Show sample of meetings with transcripts
     if (meetingsWithTranscripts.length > 0) {
