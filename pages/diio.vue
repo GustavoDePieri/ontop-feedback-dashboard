@@ -244,7 +244,7 @@
                   <h3 class="text-white font-medium mb-2">{{ transcript.source_display_name || transcript.source_name || 'Untitled' }}</h3>
                   
                   <p class="text-gray-300 text-sm mb-3 line-clamp-2">
-                    {{ transcript.transcript_text.substring(0, 200) }}{{ transcript.transcript_text.length > 200 ? '...' : '' }}
+                    {{ transcript.transcript_text ? (transcript.transcript_text.substring(0, 200) + (transcript.transcript_text.length > 200 ? '...' : '')) : 'No transcript text available' }}
                   </p>
                   
                   <div class="flex items-center gap-4 text-xs text-gray-400">
@@ -694,7 +694,7 @@ const loadStoredTranscripts = async () => {
 const viewStoredTranscript = (transcript: any) => {
   selectedTranscript.value = {
     id: transcript.diio_transcript_id,
-    transcript: transcript.transcript_text
+    transcript: transcript.transcript_text || 'No transcript text available'
   }
   selectedTranscriptName.value = transcript.source_display_name || transcript.source_name || 'Untitled'
 }
