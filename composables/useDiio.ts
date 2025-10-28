@@ -199,14 +199,21 @@ export const useDiio = () => {
   }
 
   /**
-   * Download export file data
+   * Download export file data via proxy
    */
   const downloadExport = async (fileUrl: string): Promise<any> => {
     loading.value = true
     error.value = null
 
     try {
-      const data = await $fetch(fileUrl)
+      console.log('📥 Downloading export via proxy...')
+      
+      // Use our server proxy to avoid CORS issues
+      const data = await $fetch('/api/diio/download', {
+        params: { url: fileUrl }
+      })
+      
+      console.log('✅ Export downloaded successfully')
       return data
     } catch (err: any) {
       error.value = err.message || 'Failed to download export'
@@ -214,6 +221,31 @@ export const useDiio = () => {
       return null
     } finally {
       loading.value = false
+    }
+  }
+
+  /**
+   * Download export file and trigger browser download
+   */
+  const downloadExportFile = async (fileUrl: string, filename?: string): Promise<void> => {
+    try {
+      console.log('📥 Initiating file download...')
+      
+      // Create a temporary link to trigger download
+      const link = document.createElement('a')
+      link.href = `/api/diio/download?url=${encodeURIComponent(fileUrl)}`
+      link.download = filename || 'export.json'
+      link.target = '_blank'
+      
+      // Trigger download
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      
+      console.log('✅ Download initiated')
+    } catch (err: any) {
+      error.value = err.message || 'Failed to initiate download'
+      console.error('Error initiating download:', err)
     }
   }
 
@@ -241,40 +273,53 @@ export const useDiio = () => {
    * Helper: Export and download phone calls data
    */
   const exportPhoneCalls = async (): Promise<any> => {
+    console.log('🚀 Starting phone calls export...')
+    
     // Create export
     const exportId = await createExport('phone_call', 'json')
     
     if (!exportId) {
+      console.error('❌ Failed to create export')
       return null
     }
     
-    // Wait for export to complete (poll every 2 seconds, max 30 seconds)
-    const maxAttempts = 15
+    console.log(`📋 Export created with ID: ${exportId}`)
+    
+    // Wait for export to complete (poll every 3 seconds, max 60 seconds)
+    const maxAttempts = 20
     let attempts = 0
     
     while (attempts < maxAttempts) {
+      console.log(`⏳ Checking export status (attempt ${attempts + 1}/${maxAttempts})...`)
+      
       const exportData = await getExport(exportId)
       
       if (!exportData) {
+        console.error('❌ Failed to get export status')
         return null
       }
       
+      console.log(`📊 Export status: ${exportData.status}`)
+      
       if (exportData.status === 'finished' && exportData.file_url) {
+        console.log('✅ Export completed, downloading file...')
         // Download the file
         return await downloadExport(exportData.file_url)
       }
       
       if (exportData.status === 'error') {
-        error.value = 'Export failed'
+        console.error('❌ Export failed:', exportData.error_cause || 'Unknown error')
+        error.value = `Export failed: ${exportData.error_cause || 'Unknown error'}`
         return null
       }
       
-      // Wait 2 seconds before next check
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Wait 3 seconds before next check
+      await new Promise(resolve => setTimeout(resolve, 3000))
       attempts++
     }
     
-    error.value = 'Export timeout'
+    console.error('⏰ Export timeout after 60 seconds')
+    error.value = 'Export timeout - please try again'
     return null
   }
 
@@ -301,6 +346,7 @@ export const useDiio = () => {
     createExport,
     getExport,
     downloadExport,
+    downloadExportFile,
     exportPhoneCalls,
     
     // Helpers
