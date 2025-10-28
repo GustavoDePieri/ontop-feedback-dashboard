@@ -181,11 +181,13 @@ CREATE OR REPLACE VIEW diio_transcripts_summary AS
 SELECT 
     t.id,
     t.diio_transcript_id,
+    t.transcript_text,
     t.transcript_type,
     t.source_id,
     t.source_name,
     t.occurred_at,
     t.duration,
+    t.attendees,
     t.analyzed_status,
     t.created_at,
     t.updated_at,

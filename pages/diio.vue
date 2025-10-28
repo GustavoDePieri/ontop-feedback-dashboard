@@ -256,13 +256,9 @@
                 
                 <button
                   @click="viewStoredTranscript(transcript)"
-                  :disabled="fetchingTranscript === transcript.diio_transcript_id"
-                  class="ml-4 px-3 py-1.5 bg-emerald-600 text-white text-xs rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-1"
+                  class="ml-4 px-3 py-1.5 bg-emerald-600 text-white text-xs rounded-lg hover:bg-emerald-700 transition-colors duration-200"
                 >
-                  <svg v-if="fetchingTranscript === transcript.diio_transcript_id" class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  {{ fetchingTranscript === transcript.diio_transcript_id ? 'Loading...' : 'View Full' }}
+                  View Full
                 </button>
               </div>
             </div>
@@ -479,7 +475,6 @@ const storedTranscripts = ref<any[]>([])
 const transcriptsLoading = ref(false)
 const transcriptsPage = ref(0)
 const transcriptsPerPage = 20
-const fetchingTranscript = ref<string | null>(null)
 
 // Database storage status
 const storageStatus = ref<{
@@ -688,6 +683,13 @@ const loadStoredTranscripts = async () => {
     if (data) {
       storedTranscripts.value = data
       console.log(`📋 Loaded ${data.length} stored transcripts`)
+      
+      // Debug: Check the first transcript structure
+      if (data.length > 0) {
+        console.log('🔍 First transcript structure:', data[0])
+        console.log('🔍 Transcript text length:', data[0].transcript_text?.length || 'undefined')
+        console.log('🔍 Transcript text preview:', data[0].transcript_text?.substring(0, 100) || 'undefined')
+      }
     }
   } catch (error) {
     console.error('❌ Error loading stored transcripts:', error)
@@ -696,40 +698,7 @@ const loadStoredTranscripts = async () => {
   }
 }
 
-const viewStoredTranscript = async (transcript: any) => {
-  // If transcript text is missing, try to fetch it from DIIO
-  if (!transcript.transcript_text || transcript.transcript_text === 'No transcript text available') {
-    fetchingTranscript.value = transcript.diio_transcript_id
-    console.log(`🔄 Fetching missing transcript text for: ${transcript.diio_transcript_id}`)
-    
-    try {
-      const fetchedTranscript = await getTranscript(transcript.diio_transcript_id)
-      if (fetchedTranscript && fetchedTranscript.transcript) {
-        // Update the stored transcript with the fetched text
-        transcript.transcript_text = fetchedTranscript.transcript
-        
-        // Update the transcript in the database
-        await saveDiioTranscript(
-          fetchedTranscript,
-          transcript.transcript_type,
-          transcript.source_id,
-          transcript.source_name,
-          {
-            occurred_at: transcript.occurred_at,
-            attendees: transcript.attendees,
-            duration: transcript.duration
-          }
-        )
-        
-        console.log(`✅ Successfully fetched and updated transcript: ${transcript.diio_transcript_id}`)
-      }
-    } catch (error) {
-      console.error(`❌ Error fetching transcript ${transcript.diio_transcript_id}:`, error)
-    } finally {
-      fetchingTranscript.value = null
-    }
-  }
-  
+const viewStoredTranscript = (transcript: any) => {
   selectedTranscript.value = {
     id: transcript.diio_transcript_id,
     transcript: transcript.transcript_text || 'No transcript text available'
