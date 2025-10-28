@@ -169,6 +169,7 @@ feedbackAnalysis/
 │   ├── index.vue               # Main dashboard (/)
 │   ├── analytics.vue           # Advanced analytics (/analytics)
 │   ├── reports.vue             # Reports page (/reports)
+│   ├── diio.vue                # DIIO integration test (/diio)
 │   ├── login.vue               # Login page (/login)
 │   └── test.vue                # Debug/test page (/test)
 │
@@ -182,10 +183,14 @@ feedbackAnalysis/
 │
 ├── 📁 composables/             # Business logic & utilities
 │   ├── useAIRecommendations.ts # AI insights generation
+│   ├── useDarkMode.ts          # Dark mode management
+│   ├── useDiio.ts              # DIIO API integration
 │   ├── useGoogleSheets.ts      # Google Sheets data fetching
-│   ├── useReportGenerator.ts   # Report generation logic
 │   ├── usePDFGenerator.ts      # PDF export functionality
-│   └── useSentimentAnalysis.ts # Sentiment classification
+│   ├── useReportGenerator.ts   # Report generation logic
+│   ├── useReportTemplates.ts   # Report HTML templates
+│   ├── useSentimentAnalysis.ts # Sentiment classification
+│   └── useSupabase.ts          # Supabase database operations
 │
 ├── 📁 layouts/                 # Page layouts
 │   └── default.vue             # Main layout with sidebar
@@ -194,20 +199,36 @@ feedbackAnalysis/
 │   └── auth.global.ts          # Authentication guard
 │
 ├── 📁 server/                  # Server-side code
-│   └── api/                    # API endpoints
-│       ├── sheets/             # Google Sheets endpoints
-│       │   ├── data.get.ts     # Fetch feedback data
-│       │   └── test.get.ts     # Test connection
-│       └── ai/                 # AI endpoints
-│           └── recommendations.post.ts  # Generate AI insights
+│   ├── api/                    # API endpoints
+│   │   ├── ai/                 # AI endpoints
+│   │   │   └── recommendations.post.ts
+│   │   ├── diio/               # DIIO integration endpoints
+│   │   │   ├── exports/        # Export functionality
+│   │   │   ├── meetings/       # Meeting data
+│   │   │   ├── phone-calls/    # Phone call data
+│   │   │   ├── transcripts/    # Transcript data
+│   │   │   └── users.get.ts    # User data
+│   │   └── sheets/             # Google Sheets endpoints
+│   │       ├── data.get.ts     # Fetch feedback data
+│   │       └── test.get.ts     # Test connection
+│   └── utils/                   # Server utilities
+│       └── diio.ts             # DIIO token management
 │
 ├── 📁 types/                   # TypeScript type definitions
+│   ├── diio.ts                 # DIIO API types
 │   └── feedback.ts             # Feedback data types
+│
+├── 📁 database/                # Database schema
+│   └── schema.sql              # Supabase schema
 │
 ├── 📄 nuxt.config.ts           # Nuxt configuration
 ├── 📄 tailwind.config.js       # Tailwind/Design system config
 ├── 📄 package.json             # Dependencies
-└── 📄 vercel.json             # Deployment config
+├── 📄 vercel.json             # Deployment config
+├── 📄 PRD_SIMPLE.md            # Product requirements
+├── 📄 REPORT_STYLING_GUIDE.md  # Report styling documentation
+├── 📄 DIIO_INTEGRATION_COMPLETE.md # DIIO integration docs
+└── 📄 diio_api_documentation.md # DIIO API reference
 ```
 
 ### Page Routes
@@ -217,7 +238,7 @@ feedbackAnalysis/
 | `/` | `pages/index.vue` | Main dashboard | Required |
 | `/analytics` | `pages/analytics.vue` | Advanced analytics | Required |
 | `/reports` | `pages/reports.vue` | Report generation | Required |
-| `/diio-test` | `pages/diio-test.vue` | DIIO integration test | Required |
+| `/diio` | `pages/diio.vue` | DIIO integration test | Required |
 | `/login` | `pages/login.vue` | Login page | Public |
 | `/test` | `pages/test.vue` | Debug/testing | Required |
 
