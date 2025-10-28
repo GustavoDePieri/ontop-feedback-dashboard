@@ -145,6 +145,59 @@
           </svg>
           {{ loading ? 'Loading...' : '🚀 Fetch All Data' }}
         </button>
+
+        <button
+          @click="fetchAllTranscripts"
+          :disabled="loading || (meetings.length === 0 && phoneCalls.length === 0)"
+          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          {{ loading ? 'Processing...' : '🎙️ Fetch All Transcripts' }}
+        </button>
+      </div>
+
+      <!-- Transcript Processing Progress -->
+      <div v-if="transcriptProcessing.isProcessing" class="mb-8">
+        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-white">🎙️ Processing Transcripts</h3>
+            <div class="text-sm text-gray-400">
+              {{ transcriptProcessing.current }} / {{ transcriptProcessing.total }}
+            </div>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div class="w-full bg-gray-700 rounded-full h-3 mb-4">
+            <div 
+              class="bg-gradient-to-r from-emerald-500 to-emerald-600 h-3 rounded-full transition-all duration-300"
+              :style="{ width: `${(transcriptProcessing.current / transcriptProcessing.total) * 100}%` }"
+            ></div>
+          </div>
+          
+          <!-- Current Item -->
+          <div class="text-gray-300 mb-4">
+            <div class="text-sm text-gray-400 mb-1">Currently processing:</div>
+            <div class="font-medium">{{ transcriptProcessing.currentItem }}</div>
+          </div>
+          
+          <!-- Stats -->
+          <div class="grid grid-cols-3 gap-4 text-center">
+            <div class="bg-green-500/20 rounded-lg p-3">
+              <div class="text-2xl font-bold text-green-400">{{ transcriptProcessing.stored }}</div>
+              <div class="text-sm text-gray-400">Stored</div>
+            </div>
+            <div class="bg-yellow-500/20 rounded-lg p-3">
+              <div class="text-2xl font-bold text-yellow-400">{{ transcriptProcessing.skipped }}</div>
+              <div class="text-sm text-gray-400">Skipped</div>
+            </div>
+            <div class="bg-red-500/20 rounded-lg p-3">
+              <div class="text-2xl font-bold text-red-400">{{ transcriptProcessing.errors }}</div>
+              <div class="text-sm text-gray-400">Errors</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- User Filter (shown when meetings are loaded) -->
@@ -421,6 +474,25 @@ const storageStatus = ref<{
   totalTranscripts: 0
 })
 
+// Transcript processing status
+const transcriptProcessing = ref<{
+  isProcessing: boolean
+  current: number
+  total: number
+  currentItem: string
+  stored: number
+  skipped: number
+  errors: number
+}>({
+  isProcessing: false,
+  current: 0,
+  total: 0,
+  currentItem: '',
+  stored: 0,
+  skipped: 0,
+  errors: 0
+})
+
 // Computed property to filter meetings by selected user
 const filteredMeetings = computed(() => {
   if (!selectedUserEmail.value) {
@@ -584,6 +656,163 @@ const fetchAllData = async () => {
     console.log('✅ Bulk data fetch and storage completed!')
   } catch (error) {
     console.error('❌ Error during bulk fetch:', error)
+  }
+}
+
+const fetchAllTranscripts = async () => {
+  console.log('🎙️ Starting bulk transcript fetch and storage...')
+  
+  try {
+    // Get all meetings and phone calls that have transcripts
+    const allMeetings = meetings.value.filter(meeting => meeting.last_trancript_id)
+    const allPhoneCalls = phoneCalls.value.filter(call => call.last_trancript_id)
+    
+    const totalTranscripts = allMeetings.length + allPhoneCalls.length
+    console.log(`📊 Found ${totalTranscripts} transcripts to fetch (${allMeetings.length} meetings + ${allPhoneCalls.length} phone calls)`)
+    
+    if (totalTranscripts === 0) {
+      console.log('⚠️ No transcripts found. Please fetch meetings and phone calls first.')
+      return
+    }
+    
+    // Initialize progress tracking
+    transcriptProcessing.value = {
+      isProcessing: true,
+      current: 0,
+      total: totalTranscripts,
+      currentItem: '',
+      stored: 0,
+      skipped: 0,
+      errors: 0
+    }
+    
+    // Process meeting transcripts
+    console.log('📅 Processing meeting transcripts...')
+    for (let i = 0; i < allMeetings.length; i++) {
+      const meeting = allMeetings[i]
+      transcriptProcessing.value.current = i + 1
+      transcriptProcessing.value.currentItem = `Meeting: ${meeting.name}`
+      
+      console.log(`📅 Processing meeting ${i + 1}/${allMeetings.length}: ${meeting.name}`)
+      
+      try {
+        // Check if transcript already exists
+        const { exists } = await transcriptExists(meeting.last_trancript_id!)
+        
+        if (exists) {
+          console.log(`⏭️ Transcript ${meeting.last_trancript_id} already exists, skipping`)
+          transcriptProcessing.value.skipped++
+          continue
+        }
+        
+        // Fetch transcript
+        const transcript = await getTranscript(meeting.last_trancript_id!)
+        
+        if (transcript) {
+          // Store transcript
+          const { error } = await saveDiioTranscript(
+            transcript,
+            'meeting',
+            meeting.id,
+            meeting.name,
+            {
+              occurred_at: meeting.scheduled_at,
+              attendees: meeting.attendees,
+              duration: null
+            }
+          )
+          
+          if (!error) {
+            transcriptProcessing.value.stored++
+            console.log(`✅ Stored meeting transcript: ${meeting.name}`)
+          } else {
+            transcriptProcessing.value.errors++
+            console.error(`❌ Error storing meeting transcript: ${meeting.name}`, error)
+          }
+        } else {
+          transcriptProcessing.value.errors++
+          console.error(`❌ Failed to fetch transcript for meeting: ${meeting.name}`)
+        }
+        
+        // Small delay to avoid overwhelming the API
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+      } catch (error) {
+        transcriptProcessing.value.errors++
+        console.error(`❌ Error processing meeting ${meeting.name}:`, error)
+      }
+    }
+    
+    // Process phone call transcripts
+    console.log('📞 Processing phone call transcripts...')
+    for (let i = 0; i < allPhoneCalls.length; i++) {
+      const call = allPhoneCalls[i]
+      transcriptProcessing.value.current = allMeetings.length + i + 1
+      transcriptProcessing.value.currentItem = `Call: ${call.name}`
+      
+      console.log(`📞 Processing call ${i + 1}/${allPhoneCalls.length}: ${call.name}`)
+      
+      try {
+        // Check if transcript already exists
+        const { exists } = await transcriptExists(call.last_trancript_id!)
+        
+        if (exists) {
+          console.log(`⏭️ Transcript ${call.last_trancript_id} already exists, skipping`)
+          transcriptProcessing.value.skipped++
+          continue
+        }
+        
+        // Fetch transcript
+        const transcript = await getTranscript(call.last_trancript_id!)
+        
+        if (transcript) {
+          // Store transcript
+          const { error } = await saveDiioTranscript(
+            transcript,
+            'phone_call',
+            call.id,
+            call.name,
+            {
+              occurred_at: call.occurred_at,
+              attendees: call.attendees,
+              duration: call.duration
+            }
+          )
+          
+          if (!error) {
+            transcriptProcessing.value.stored++
+            console.log(`✅ Stored phone call transcript: ${call.name}`)
+          } else {
+            transcriptProcessing.value.errors++
+            console.error(`❌ Error storing phone call transcript: ${call.name}`, error)
+          }
+        } else {
+          transcriptProcessing.value.errors++
+          console.error(`❌ Failed to fetch transcript for call: ${call.name}`)
+        }
+        
+        // Small delay to avoid overwhelming the API
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+      } catch (error) {
+        transcriptProcessing.value.errors++
+        console.error(`❌ Error processing call ${call.name}:`, error)
+      }
+    }
+    
+    // Update stats
+    await loadTranscriptStats()
+    
+    // Mark processing as complete
+    transcriptProcessing.value.isProcessing = false
+    transcriptProcessing.value.currentItem = 'Completed!'
+    
+    console.log('🎉 Bulk transcript processing completed!')
+    console.log(`📊 Results: ${transcriptProcessing.value.stored} stored, ${transcriptProcessing.value.skipped} skipped, ${transcriptProcessing.value.errors} errors`)
+    
+  } catch (error) {
+    transcriptProcessing.value.isProcessing = false
+    console.error('❌ Error during bulk transcript fetch:', error)
   }
 }
 
