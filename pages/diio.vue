@@ -79,93 +79,27 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex flex-wrap gap-3 mb-8">
+      <div class="flex flex-wrap gap-4 mb-8">
         <button
-          @click="fetchUsers"
+          @click="checkForNewMeetings"
           :disabled="loading"
-          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
         >
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          {{ loading ? 'Loading...' : 'Fetch Users' }}
-        </button>
-        
-        <button
-          @click="fetchPhoneCalls"
-          :disabled="loading"
-          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
-        >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-          </svg>
-          {{ loading ? 'Loading...' : 'Fetch Phone Calls' }}
-        </button>
-
-        <button
-          @click="fetchMeetings"
-          :disabled="loading"
-          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
-        >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          {{ loading ? 'Loading...' : 'Fetch Meetings' }}
-        </button>
-        
-        <button
-          @click="exportData"
-          :disabled="loading"
-          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:from-orange-700 hover:to-orange-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
-        >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-          </svg>
-          {{ loading ? 'Exporting...' : 'Export Data' }}
+          {{ loading ? 'Checking...' : '🔄 Check for New Meetings' }}
         </button>
 
         <button
           @click="loadTranscriptStats"
           :disabled="loading"
-          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+          class="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
         >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
           </svg>
           Refresh Stats
-        </button>
-
-        <button
-          @click="fetchAllData"
-          :disabled="loading"
-          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
-        >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          {{ loading ? 'Loading...' : '🚀 Fetch All Data' }}
-        </button>
-
-        <button
-          @click="fetchAllTranscripts"
-          :disabled="loading || (meetings.length === 0 && phoneCalls.length === 0)"
-          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
-        >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          {{ loading ? 'Processing...' : '🎙️ Fetch All Transcripts' }}
-        </button>
-
-        <button
-          @click="debugMeetingData"
-          :disabled="meetings.length === 0"
-          class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl text-sm"
-        >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-          </svg>
-          Debug Data
         </button>
       </div>
 
@@ -247,21 +181,87 @@
         </div>
       </div>
 
-      <!-- Transcripts Scope Warning -->
-      <div class="mb-6 p-6 bg-yellow-900/20 border border-yellow-500/50 rounded-lg backdrop-blur-sm">
-        <div class="flex items-start gap-3">
-          <svg class="w-6 h-6 text-yellow-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <h3 class="text-yellow-300 font-semibold mb-1">Waiting for Transcripts Scope</h3>
-            <p class="text-yellow-200/80 text-sm">
-              DIIO integration is ready! We're waiting for the <code class="px-2 py-0.5 bg-yellow-900/30 rounded text-yellow-300">transcripts</code> scope to be added by DIIO support. 
-              Once added, all {{ meetingsTotal || 812 }} meetings with transcripts will be immediately accessible.
-            </p>
-            <p class="text-yellow-200/70 text-xs mt-2">
-              Current scopes: <span class="text-yellow-300">users, phone_calls, exports, meetings</span>
-            </p>
+      <!-- Stored Transcripts Section -->
+      <div class="mb-8">
+        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+              <svg class="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Stored Transcripts ({{ storageStatus.totalTranscripts }})
+            </h2>
+            
+            <button
+              @click="loadStoredTranscripts"
+              :disabled="transcriptsLoading"
+              class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              {{ transcriptsLoading ? 'Loading...' : 'Refresh' }}
+            </button>
+          </div>
+
+          <!-- Transcripts List -->
+          <div v-if="transcriptsLoading" class="text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
+            <p class="text-gray-400 mt-2">Loading transcripts...</p>
+          </div>
+
+          <div v-else-if="storedTranscripts.length === 0" class="text-center py-8">
+            <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-gray-400 mb-2">No transcripts loaded yet</p>
+            <p class="text-gray-500 text-sm">Click "Check for New Meetings" to load transcripts from the database</p>
+          </div>
+
+          <div v-else class="space-y-4">
+            <div
+              v-for="transcript in storedTranscripts"
+              :key="transcript.id"
+              class="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-emerald-500/50 transition-colors duration-200"
+            >
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <span 
+                      class="px-2 py-1 text-xs font-medium rounded-full"
+                      :class="transcript.transcript_type === 'meeting' ? 'bg-blue-900/30 text-blue-300' : 'bg-green-900/30 text-green-300'"
+                    >
+                      {{ transcript.transcript_type === 'meeting' ? '📅 Meeting' : '📞 Call' }}
+                    </span>
+                    <span class="text-xs text-gray-400">
+                      {{ formatDate(transcript.occurred_at) }}
+                    </span>
+                    <span v-if="transcript.duration" class="text-xs text-gray-400">
+                      {{ Math.floor(transcript.duration / 60) }}m {{ transcript.duration % 60 }}s
+                    </span>
+                  </div>
+                  
+                  <h3 class="text-white font-medium mb-2">{{ transcript.source_display_name || transcript.source_name || 'Untitled' }}</h3>
+                  
+                  <p class="text-gray-300 text-sm mb-3 line-clamp-2">
+                    {{ transcript.transcript_text.substring(0, 200) }}{{ transcript.transcript_text.length > 200 ? '...' : '' }}
+                  </p>
+                  
+                  <div class="flex items-center gap-4 text-xs text-gray-400">
+                    <span>ID: {{ transcript.diio_transcript_id }}</span>
+                    <span v-if="transcript.total_attendees">Attendees: {{ transcript.total_attendees }}</span>
+                    <span>{{ formatDate(transcript.created_at) }}</span>
+                  </div>
+                </div>
+                
+                <button
+                  @click="viewStoredTranscript(transcript)"
+                  class="ml-4 px-3 py-1.5 bg-emerald-600 text-white text-xs rounded-lg hover:bg-emerald-700 transition-colors duration-200"
+                >
+                  View Full
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -470,6 +470,12 @@ const selectedTranscript = ref<DiioTranscript | null>(null)
 const selectedTranscriptName = ref('')
 const selectedUserEmail = ref('')
 
+// Stored transcripts from database
+const storedTranscripts = ref<any[]>([])
+const transcriptsLoading = ref(false)
+const transcriptsPage = ref(0)
+const transcriptsPerPage = 20
+
 // Database storage status
 const storageStatus = ref<{
   usersStored: boolean
@@ -642,6 +648,55 @@ const loadTranscriptStats = async () => {
     storageStatus.value.totalTranscripts = data.total_transcripts || 0
     console.log(`📊 Database contains ${data.total_transcripts} transcripts`)
   }
+}
+
+const checkForNewMeetings = async () => {
+  console.log('🔄 Checking for new meetings and transcripts...')
+  
+  try {
+    // Fetch users first
+    await fetchUsers()
+    
+    // Fetch meetings
+    await fetchMeetings()
+    
+    // Fetch phone calls
+    await fetchPhoneCalls()
+    
+    // Load stored transcripts
+    await loadStoredTranscripts()
+    
+    // Update stats
+    await loadTranscriptStats()
+    
+    console.log('✅ Check completed!')
+  } catch (error) {
+    console.error('❌ Error checking for new data:', error)
+  }
+}
+
+const loadStoredTranscripts = async () => {
+  transcriptsLoading.value = true
+  
+  try {
+    const { data } = await getDiioTranscripts(transcriptsPerPage, transcriptsPage.value * transcriptsPerPage)
+    if (data) {
+      storedTranscripts.value = data
+      console.log(`📋 Loaded ${data.length} stored transcripts`)
+    }
+  } catch (error) {
+    console.error('❌ Error loading stored transcripts:', error)
+  } finally {
+    transcriptsLoading.value = false
+  }
+}
+
+const viewStoredTranscript = (transcript: any) => {
+  selectedTranscript.value = {
+    id: transcript.diio_transcript_id,
+    transcript: transcript.transcript_text
+  }
+  selectedTranscriptName.value = transcript.source_display_name || transcript.source_name || 'Untitled'
 }
 
 const fetchAllData = async () => {
@@ -887,10 +942,11 @@ const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleString()
 }
 
-// Auto-load users and stats on mount
+// Auto-load users, stats, and stored transcripts on mount
 onMounted(async () => {
   await fetchUsers()
   await loadTranscriptStats()
+  await loadStoredTranscripts()
 })
 </script>
 
