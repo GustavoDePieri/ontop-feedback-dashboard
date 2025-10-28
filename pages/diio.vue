@@ -156,6 +156,17 @@
           </svg>
           {{ loading ? 'Processing...' : '🎙️ Fetch All Transcripts' }}
         </button>
+
+        <button
+          @click="debugMeetingData"
+          :disabled="meetings.length === 0"
+          class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl text-sm"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+          Debug Data
+        </button>
       </div>
 
       <!-- Transcript Processing Progress -->
@@ -664,14 +675,22 @@ const fetchAllTranscripts = async () => {
   
   try {
     // Get all meetings and phone calls that have transcripts
+    // Note: The field is 'last_trancript_id' (missing 's') in the API
     const allMeetings = meetings.value.filter(meeting => meeting.last_trancript_id)
     const allPhoneCalls = phoneCalls.value.filter(call => call.last_trancript_id)
     
     const totalTranscripts = allMeetings.length + allPhoneCalls.length
     console.log(`📊 Found ${totalTranscripts} transcripts to fetch (${allMeetings.length} meetings + ${allPhoneCalls.length} phone calls)`)
     
+    // Debug: Let's also check the first few meetings to see their structure
+    if (meetings.value.length > 0) {
+      console.log('🔍 Debug - First meeting structure:', meetings.value[0])
+      console.log('🔍 Debug - Meetings with transcript IDs:', meetings.value.filter(m => m.last_trancript_id).length)
+    }
+    
     if (totalTranscripts === 0) {
       console.log('⚠️ No transcripts found. Please fetch meetings and phone calls first.')
+      console.log('💡 Tip: Check if meetings have "last_trancript_id" field populated')
       return
     }
     
@@ -813,6 +832,49 @@ const fetchAllTranscripts = async () => {
   } catch (error) {
     transcriptProcessing.value.isProcessing = false
     console.error('❌ Error during bulk transcript fetch:', error)
+  }
+}
+
+const debugMeetingData = () => {
+  console.log('🔍 DEBUG: Meeting Data Analysis')
+  console.log(`📊 Total meetings loaded: ${meetings.value.length}`)
+  
+  if (meetings.value.length > 0) {
+    const firstMeeting = meetings.value[0]
+    console.log('📋 First meeting structure:', firstMeeting)
+    console.log('🔑 Available fields:', Object.keys(firstMeeting))
+    
+    // Check for transcript-related fields
+    const transcriptFields = Object.keys(firstMeeting).filter(key => 
+      key.toLowerCase().includes('transcript') || 
+      key.toLowerCase().includes('trancript')
+    )
+    console.log('🎙️ Transcript-related fields:', transcriptFields)
+    
+    // Count meetings with transcript IDs
+    const meetingsWithTranscripts = meetings.value.filter(m => m.last_trancript_id)
+    console.log(`📈 Meetings with last_trancript_id: ${meetingsWithTranscripts.length}`)
+    
+    // Show sample of meetings with transcripts
+    if (meetingsWithTranscripts.length > 0) {
+      console.log('📝 Sample meetings with transcripts:', meetingsWithTranscripts.slice(0, 3))
+    }
+    
+    // Check for alternative field names
+    const altFields = ['transcript_id', 'last_transcript_id', 'transcriptId', 'lastTranscriptId']
+    altFields.forEach(field => {
+      const count = meetings.value.filter(m => (m as any)[field]).length
+      if (count > 0) {
+        console.log(`🔍 Found ${count} meetings with field "${field}"`)
+      }
+    })
+  }
+  
+  console.log('📞 Phone calls loaded:', phoneCalls.value.length)
+  if (phoneCalls.value.length > 0) {
+    const firstCall = phoneCalls.value[0]
+    console.log('📋 First phone call structure:', firstCall)
+    console.log('🔑 Available fields:', Object.keys(firstCall))
   }
 }
 
