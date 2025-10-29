@@ -663,6 +663,36 @@ const checkForNewMeetings = async () => {
     // Fetch phone calls
     await fetchPhoneCalls()
     
+    // Get all stored transcript IDs to compare
+    console.log('📊 Checking for new transcripts...')
+    const { data: storedTranscriptsData } = await getDiioTranscripts(10000, 0) // Get all stored transcripts
+    const storedTranscriptIds = new Set((storedTranscriptsData || []).map(t => t.diio_transcript_id))
+    
+    console.log(`📋 Found ${storedTranscriptIds.size} transcripts already in database`)
+    
+    // Find new meetings with transcripts that aren't stored yet
+    const newMeetingsWithTranscripts = meetings.value.filter(meeting => 
+      meeting.last_transcript_id && 
+      !storedTranscriptIds.has(meeting.last_transcript_id)
+    )
+    
+    // Find new phone calls with transcripts that aren't stored yet
+    const newPhoneCallsWithTranscripts = phoneCalls.value.filter(call => 
+      call.last_transcript_id && 
+      !storedTranscriptIds.has(call.last_transcript_id)
+    )
+    
+    const totalNewTranscripts = newMeetingsWithTranscripts.length + newPhoneCallsWithTranscripts.length
+    
+    if (totalNewTranscripts > 0) {
+      console.log(`🎉 Found ${totalNewTranscripts} new transcripts to fetch (${newMeetingsWithTranscripts.length} meetings + ${newPhoneCallsWithTranscripts.length} calls)`)
+      
+      // Automatically fetch and store new transcripts
+      await fetchAndStoreNewTranscripts(newMeetingsWithTranscripts, newPhoneCallsWithTranscripts)
+    } else {
+      console.log('✅ No new transcripts found. All transcripts are already stored.')
+    }
+    
     // Load stored transcripts
     await loadStoredTranscripts()
     
@@ -673,6 +703,115 @@ const checkForNewMeetings = async () => {
   } catch (error) {
     console.error('❌ Error checking for new data:', error)
   }
+}
+
+const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneCalls: DiioPhoneCall[]) => {
+  console.log('🎙️ Starting automatic fetch and storage of new transcripts...')
+  
+  // Initialize progress tracking
+  const totalNewTranscripts = newMeetings.length + newPhoneCalls.length
+  transcriptProcessing.value = {
+    isProcessing: true,
+    current: 0,
+    total: totalNewTranscripts,
+    currentItem: '',
+    stored: 0,
+    skipped: 0,
+    errors: 0
+  }
+  
+  // Process new meeting transcripts
+  for (let i = 0; i < newMeetings.length; i++) {
+    const meeting = newMeetings[i]
+    transcriptProcessing.value.current = i + 1
+    transcriptProcessing.value.currentItem = `Meeting: ${meeting.name}`
+    
+    console.log(`📅 Fetching new meeting transcript ${i + 1}/${newMeetings.length}: ${meeting.name}`)
+    
+    try {
+      const transcript = await getTranscript(meeting.last_transcript_id!)
+      
+      if (transcript) {
+        const { error } = await saveDiioTranscript(
+          transcript,
+          'meeting',
+          meeting.id,
+          meeting.name,
+          {
+            occurred_at: meeting.scheduled_at,
+            attendees: meeting.attendees,
+            duration: null
+          }
+        )
+        
+        if (!error) {
+          transcriptProcessing.value.stored++
+          console.log(`✅ Stored new meeting transcript: ${meeting.name}`)
+        } else {
+          transcriptProcessing.value.errors++
+          console.error(`❌ Error storing transcript for ${meeting.name}:`, error)
+        }
+      } else {
+        transcriptProcessing.value.errors++
+        console.error(`❌ Failed to fetch transcript for ${meeting.name}`)
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 500))
+    } catch (error) {
+      transcriptProcessing.value.errors++
+      console.error(`❌ Error processing ${meeting.name}:`, error)
+    }
+  }
+  
+  // Process new phone call transcripts
+  for (let i = 0; i < newPhoneCalls.length; i++) {
+    const call = newPhoneCalls[i]
+    transcriptProcessing.value.current = newMeetings.length + i + 1
+    transcriptProcessing.value.currentItem = `Call: ${call.name}`
+    
+    console.log(`📞 Fetching new phone call transcript ${i + 1}/${newPhoneCalls.length}: ${call.name}`)
+    
+    try {
+      const transcript = await getTranscript(call.last_transcript_id!)
+      
+      if (transcript) {
+        const { error } = await saveDiioTranscript(
+          transcript,
+          'phone_call',
+          call.id,
+          call.name,
+          {
+            occurred_at: call.occurred_at,
+            attendees: call.attendees,
+            duration: call.duration
+          }
+        )
+        
+        if (!error) {
+          transcriptProcessing.value.stored++
+          console.log(`✅ Stored new phone call transcript: ${call.name}`)
+        } else {
+          transcriptProcessing.value.errors++
+          console.error(`❌ Error storing transcript for ${call.name}:`, error)
+        }
+      } else {
+        transcriptProcessing.value.errors++
+        console.error(`❌ Failed to fetch transcript for ${call.name}`)
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 500))
+    } catch (error) {
+      transcriptProcessing.value.errors++
+      console.error(`❌ Error processing ${call.name}:`, error)
+    }
+  }
+  
+  // Mark processing as complete
+  transcriptProcessing.value.isProcessing = false
+  transcriptProcessing.value.currentItem = 'Completed!'
+  
+  console.log('🎉 Automatic transcript fetch completed!')
+  console.log(`📊 Results: ${transcriptProcessing.value.stored} stored, ${transcriptProcessing.value.skipped} skipped, ${transcriptProcessing.value.errors} errors`)
 }
 
 const loadStoredTranscripts = async () => {
