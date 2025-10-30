@@ -317,13 +317,25 @@
                   <h3 class="text-white font-semibold mb-1">{{ meeting.name }}</h3>
                   <p class="text-gray-400 text-sm mb-2">{{ formatDate(meeting.scheduled_at) }}</p>
                   
-                  <div v-if="meeting.attendees" class="space-y-1">
-                    <p class="text-gray-500 text-xs">
-                      <span class="text-gray-400">Sellers:</span> {{ meeting.attendees.sellers?.map(s => s.name).join(', ') || 'None' }}
-                    </p>
-                    <p class="text-gray-500 text-xs">
-                      <span class="text-gray-400">Customers:</span> {{ meeting.attendees.customers?.map(c => c.name).join(', ') || 'None' }}
-                    </p>
+                  <div v-if="meeting.attendees" class="space-y-2">
+                    <div v-if="meeting.attendees.sellers && meeting.attendees.sellers.length > 0">
+                      <p class="text-gray-400 text-xs font-medium mb-1">Sellers:</p>
+                      <div class="space-y-1">
+                        <div v-for="seller in meeting.attendees.sellers" :key="seller.user_id || seller.name" class="text-gray-500 text-xs">
+                          <div class="font-medium">{{ seller.name }}</div>
+                          <div class="text-gray-600">{{ seller.email }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-if="meeting.attendees.customers && meeting.attendees.customers.length > 0">
+                      <p class="text-gray-400 text-xs font-medium mb-1">Customers:</p>
+                      <div class="space-y-1">
+                        <div v-for="customer in meeting.attendees.customers" :key="customer.name" class="text-gray-500 text-xs">
+                          <div class="font-medium">{{ customer.name }}</div>
+                          <div class="text-gray-600">{{ customer.email }}</div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
