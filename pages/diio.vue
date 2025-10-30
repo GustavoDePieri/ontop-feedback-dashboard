@@ -20,96 +20,27 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm">Total Users</p>
-              <p class="text-3xl font-bold text-white mt-2">{{ users.length }}</p>
-            </div>
-            <div class="p-3 bg-blue-500/20 rounded-lg">
-              <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm">Phone Calls</p>
-              <p class="text-3xl font-bold text-white mt-2">{{ phoneCallsTotal }}</p>
-            </div>
-            <div class="p-3 bg-green-500/20 rounded-lg">
-              <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm">Total Meetings</p>
-              <p class="text-3xl font-bold text-white mt-2">{{ meetingsTotal || '—' }}</p>
-            </div>
-            <div class="p-3 bg-purple-500/20 rounded-lg">
-              <svg class="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm">Database Storage</p>
-              <p class="text-lg font-semibold text-blue-400 mt-2">{{ storageStatus.totalTranscripts }} transcripts</p>
-            </div>
-            <div class="p-3 bg-blue-500/20 rounded-lg">
-              <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
+      <DiioStatsCards
+        :users-count="store.state.usersCount"
+        :phone-calls-count="store.state.phoneCallsCount"
+        :meetings-count="store.state.meetingsCount"
+        :total-transcripts="store.state.totalTranscripts"
+      />
 
       <!-- Action Buttons -->
-      <div class="flex flex-wrap gap-4 mb-8">
-        <button
-          @click="checkForNewMeetings"
-          :disabled="loading"
-          class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
-        >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          {{ loading ? 'Checking...' : '🔄 Check for New Meetings' }}
-        </button>
-
-        <button
-          @click="loadTranscriptStats"
-          :disabled="loading"
-          class="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-        >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
-          </svg>
-          Refresh Stats
-        </button>
-      </div>
+      <DiioActionButtons
+        :loading="store.isLoading"
+        @check-new-meetings="checkForNewMeetings"
+        @refresh-stats="loadTranscriptStats"
+      />
 
       <!-- Transcript Processing Progress -->
-      <div v-if="transcriptProcessing.isProcessing" class="mb-8">
+      <div v-if="store.state.transcriptProcessing.isProcessing" class="mb-8">
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-bold text-white">🎙️ Processing Transcripts</h3>
             <div class="text-sm text-gray-400">
-              {{ transcriptProcessing.current }} / {{ transcriptProcessing.total }}
+              {{ store.state.transcriptProcessing.current }} / {{ store.state.transcriptProcessing.total }}
             </div>
           </div>
           
@@ -117,28 +48,28 @@
           <div class="w-full bg-gray-700 rounded-full h-3 mb-4">
             <div 
               class="bg-gradient-to-r from-emerald-500 to-emerald-600 h-3 rounded-full transition-all duration-300"
-              :style="{ width: `${(transcriptProcessing.current / transcriptProcessing.total) * 100}%` }"
+              :style="{ width: `${(store.state.transcriptProcessing.current / store.state.transcriptProcessing.total) * 100}%` }"
             ></div>
           </div>
           
           <!-- Current Item -->
           <div class="text-gray-300 mb-4">
             <div class="text-sm text-gray-400 mb-1">Currently processing:</div>
-            <div class="font-medium">{{ transcriptProcessing.currentItem }}</div>
+            <div class="font-medium">{{ store.state.transcriptProcessing.currentItem }}</div>
           </div>
           
           <!-- Stats -->
           <div class="grid grid-cols-3 gap-4 text-center">
             <div class="bg-green-500/20 rounded-lg p-3">
-              <div class="text-2xl font-bold text-green-400">{{ transcriptProcessing.stored }}</div>
+              <div class="text-2xl font-bold text-green-400">{{ store.state.transcriptProcessing.stored }}</div>
               <div class="text-sm text-gray-400">Stored</div>
             </div>
             <div class="bg-yellow-500/20 rounded-lg p-3">
-              <div class="text-2xl font-bold text-yellow-400">{{ transcriptProcessing.skipped }}</div>
+              <div class="text-2xl font-bold text-yellow-400">{{ store.state.transcriptProcessing.skipped }}</div>
               <div class="text-sm text-gray-400">Skipped</div>
             </div>
             <div class="bg-red-500/20 rounded-lg p-3">
-              <div class="text-2xl font-bold text-red-400">{{ transcriptProcessing.errors }}</div>
+              <div class="text-2xl font-bold text-red-400">{{ store.state.transcriptProcessing.errors }}</div>
               <div class="text-sm text-gray-400">Errors</div>
             </div>
           </div>
@@ -146,7 +77,7 @@
       </div>
 
       <!-- User Filter (shown when meetings are loaded) -->
-      <div v-if="meetings.length > 0" class="mb-6">
+      <div v-if="store.state.meetings.length > 0" class="mb-6">
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <label class="text-white font-medium text-sm">Filter by User:</label>
           <select
@@ -155,31 +86,27 @@
             style="color-scheme: dark;"
           >
             <option value="" class="bg-gray-800 text-white">All Users</option>
-            <option v-for="user in users" :key="user.id" :value="user.email" class="bg-gray-800 text-white">
+            <option v-for="user in store.state.users" :key="user.id" :value="user.email" class="bg-gray-800 text-white">
               {{ user.name }} ({{ user.email }})
             </option>
           </select>
-          <span class="text-white/60 text-sm">{{ filteredMeetings.length }} of {{ meetings.length }} meetings loaded</span>
+          <span class="text-white/60 text-sm">{{ filteredMeetings.length }} of {{ store.state.meetings.length }} meetings loaded</span>
           <button
-            v-if="meetings.length < meetingsTotal"
+            v-if="store.state.meetings.length < store.state.meetingsTotal"
             @click="loadMoreMeetings"
-            :disabled="loading"
+            :disabled="store.isLoading"
             class="ml-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors disabled:opacity-50"
           >
-            Load More ({{ meetingsTotal - meetings.length }} remaining)
+            Load More ({{ store.state.meetingsTotal - store.state.meetings.length }} remaining)
           </button>
         </div>
       </div>
 
       <!-- Error Display -->
-      <div v-if="error" class="mb-6 p-4 bg-red-900/30 border border-red-500 rounded-lg backdrop-blur-sm">
-        <div class="flex items-center gap-2">
-          <svg class="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <p class="text-red-400">{{ error }}</p>
-        </div>
-      </div>
+      <DiioErrorDisplay
+        :error="store.state.error"
+        @dismiss="store.clearError"
+      />
 
       <!-- Stored Transcripts Section -->
       <div class="mb-8">
@@ -189,28 +116,28 @@
               <svg class="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Stored Transcripts ({{ storageStatus.totalTranscripts }})
+              Stored Transcripts ({{ store.state.totalTranscripts }})
             </h2>
             
             <button
               @click="loadStoredTranscripts"
-              :disabled="transcriptsLoading"
+              :disabled="store.state.transcriptsLoading"
               class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              {{ transcriptsLoading ? 'Loading...' : 'Refresh' }}
+              {{ store.state.transcriptsLoading ? 'Loading...' : 'Refresh' }}
             </button>
           </div>
 
           <!-- Transcripts List -->
-          <div v-if="transcriptsLoading" class="text-center py-8">
+          <div v-if="store.state.transcriptsLoading" class="text-center py-8">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
             <p class="text-gray-400 mt-2">Loading transcripts...</p>
           </div>
 
-          <div v-else-if="storedTranscripts.length === 0" class="text-center py-8">
+          <div v-else-if="store.state.storedTranscripts.length === 0" class="text-center py-8">
             <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
@@ -220,7 +147,7 @@
 
           <div v-else class="space-y-4">
             <div
-              v-for="transcript in storedTranscripts"
+              v-for="transcript in store.state.storedTranscripts"
               :key="transcript.id"
               class="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-emerald-500/50 transition-colors duration-200"
             >
@@ -267,18 +194,18 @@
       </div>
 
       <!-- Users Section -->
-      <div v-if="users.length > 0" class="mb-8">
+      <div v-if="store.state.users.length > 0" class="mb-8">
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
             <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            DIIO Users ({{ users.length }})
+            DIIO Users ({{ store.state.users.length }})
           </h2>
           
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div
-              v-for="user in users"
+              v-for="user in store.state.users"
               :key="user.id"
               class="bg-white/5 rounded-lg p-4 border border-white/10 hover:border-blue-500/50 hover:bg-white/10 transition-all duration-200"
             >
@@ -297,7 +224,7 @@
       </div>
 
       <!-- Meetings Section -->
-      <div v-if="meetings.length > 0" class="mb-8">
+      <div v-if="store.state.meetings.length > 0" class="mb-8">
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
             <svg class="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -306,79 +233,33 @@
             Recent Meetings ({{ filteredMeetings.length }})
           </h2>
           
-          <div class="space-y-3">
-            <div
+          <div v-if="store.state.meetingsLoading" class="space-y-3">
+            <DiioLoadingSkeleton :count="5" />
+          </div>
+          <div v-else class="space-y-3">
+            <DiioMeetingCard
               v-for="meeting in filteredMeetings"
               :key="meeting.id"
-              class="bg-white/5 rounded-lg p-4 border border-white/10 hover:border-purple-500/50 hover:bg-white/10 transition-all duration-200"
-            >
-              <div class="flex items-start justify-between gap-4">
-                <div class="flex-1 min-w-0">
-                  <h3 class="text-white font-semibold mb-1">{{ meeting.name }}</h3>
-                  <p class="text-gray-400 text-sm mb-2">{{ formatDate(meeting.scheduled_at) }}</p>
-                  
-                  <div v-if="meeting.attendees" class="space-y-2">
-                    <div v-if="meeting.attendees.sellers && meeting.attendees.sellers.length > 0">
-                      <p class="text-gray-400 text-xs font-medium mb-1">Sellers:</p>
-                      <div class="space-y-1">
-                        <div v-for="seller in meeting.attendees.sellers" :key="seller.user_id || seller.name" class="text-gray-500 text-xs">
-                          <div class="font-medium">{{ seller.name }}</div>
-                          <div class="text-gray-600">{{ seller.email }}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div v-if="meeting.attendees.customers && meeting.attendees.customers.length > 0">
-                      <p class="text-gray-400 text-xs font-medium mb-1">Customers:</p>
-                      <div class="space-y-1">
-                        <div v-for="customer in meeting.attendees.customers" :key="customer.name" class="text-gray-500 text-xs">
-                          <div class="font-medium">{{ customer.name }}</div>
-                          <div class="text-gray-600">{{ customer.email }}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                  <span
-                    class="px-2 py-1 text-xs rounded-lg"
-                    :class="{
-                      'bg-green-900/30 text-green-300 border border-green-500/30': meeting.analyzed_status === 'finished',
-                      'bg-yellow-900/30 text-yellow-300 border border-yellow-500/30': meeting.analyzed_status === 'pending',
-                      'bg-red-900/30 text-red-300 border border-red-500/30': meeting.analyzed_status === 'error'
-                    }"
-                  >
-                    {{ meeting.analyzed_status || 'unknown' }}
-                  </span>
-                  
-                  <button
-                    v-if="meeting.last_transcript_id"
-                    @click="fetchTranscript(meeting.last_transcript_id, meeting.name)"
-                    class="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                  >
-                    View Transcript
-                  </button>
-                  <span v-else class="text-xs text-gray-500">No transcript</span>
-                </div>
-              </div>
-            </div>
+              :meeting="meeting"
+              @view-transcript="fetchTranscript"
+            />
           </div>
         </div>
       </div>
 
       <!-- Phone Calls Section -->
-      <div v-if="phoneCalls.length > 0" class="mb-8">
+      <div v-if="store.state.phoneCalls.length > 0" class="mb-8">
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
             <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
             </svg>
-            Phone Calls ({{ phoneCallsTotal }})
+            Phone Calls ({{ store.state.phoneCallsCount }})
           </h2>
           
           <div class="space-y-3">
             <div
-              v-for="call in phoneCalls"
+              v-for="call in store.state.phoneCalls"
               :key="call.id"
               class="bg-white/5 rounded-lg p-4 border border-white/10 hover:border-green-500/50 hover:bg-white/10 transition-all duration-200"
             >
@@ -416,7 +297,7 @@
       </div>
 
       <!-- No Data Message -->
-      <div v-if="!loading && users.length === 0 && phoneCalls.length === 0 && meetings.length === 0" class="text-center py-16">
+      <div v-if="!store.isLoading && !store.hasData" class="text-center py-16">
         <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
         </svg>
@@ -455,12 +336,17 @@
 
 <script setup lang="ts">
 import type { DiioUser, DiioPhoneCall, DiioMeeting, DiioTranscript } from '~/types/diio'
+import { diioService } from '~/services/diioService'
+import { ErrorHandler } from '~/utils/errorHandler'
 
 definePageMeta({
   layout: 'default'
 })
 
-const { getUsers, getPhoneCalls, getMeetings, getTranscript, exportPhoneCalls, loading, error } = useDiio()
+// Use the centralized store
+const store = useDiioStore()
+
+// Legacy composables for database operations
 const { 
   saveDiioUsers, 
   saveDiioMeetings, 
@@ -471,182 +357,212 @@ const {
   transcriptExists 
 } = useSupabase()
 
-const users = ref<DiioUser[]>([])
-const phoneCalls = ref<DiioPhoneCall[]>([])
-const meetings = ref<DiioMeeting[]>([])
-const phoneCallsTotal = ref(0)
-const meetingsTotal = ref(0)
-const meetingsCurrentPage = ref(1)
-const exportedData = ref<any>(null)
+// Local state for UI
 const selectedTranscript = ref<DiioTranscript | null>(null)
 const selectedTranscriptName = ref('')
 const selectedUserEmail = ref('')
-
-// Stored transcripts from database
-const storedTranscripts = ref<any[]>([])
-const transcriptsLoading = ref(false)
-const transcriptsPage = ref(0)
-const transcriptsPerPage = 20
-
-// Database storage status
-const storageStatus = ref<{
-  usersStored: boolean
-  meetingsStored: boolean
-  phoneCallsStored: boolean
-  transcriptsStored: number
-  totalTranscripts: number
-}>({
-  usersStored: false,
-  meetingsStored: false,
-  phoneCallsStored: false,
-  transcriptsStored: 0,
-  totalTranscripts: 0
-})
-
-// Transcript processing status
-const transcriptProcessing = ref<{
-  isProcessing: boolean
-  current: number
-  total: number
-  currentItem: string
-  stored: number
-  skipped: number
-  errors: number
-}>({
-  isProcessing: false,
-  current: 0,
-  total: 0,
-  currentItem: '',
-  stored: 0,
-  skipped: 0,
-  errors: 0
-})
+const exportedData = ref<any>(null)
 
 // Computed property to filter meetings by selected user
 const filteredMeetings = computed(() => {
-  if (!selectedUserEmail.value) {
-    return meetings.value
-  }
-  
-  return meetings.value.filter(meeting => {
-    if (!meeting.attendees?.sellers) return false
-    return meeting.attendees.sellers.some(seller => seller.email === selectedUserEmail.value)
-  })
+  return store.getFilteredMeetings(selectedUserEmail.value)
 })
 
 const fetchUsers = async () => {
-  users.value = await getUsers()
-  // Store users in database
-  if (users.value.length > 0) {
-    const { error } = await saveDiioUsers(users.value)
-    if (!error) {
-      storageStatus.value.usersStored = true
-      console.log(`✅ Stored ${users.value.length} users in database`)
-    } else {
-      console.error('❌ Error storing users:', error)
+  store.setUsersLoading(true)
+  store.clearError()
+  
+  try {
+    const { users, error } = await diioService.getUsers()
+    
+    if (error) {
+      store.setError(error)
+      return
     }
+    
+    store.setUsers(users)
+    
+    // Store users in database
+    if (users.length > 0) {
+      const { error: dbError } = await saveDiioUsers(users)
+      if (dbError) {
+        const dbAppError = ErrorHandler.handleDatabaseError(dbError, 'saveDiioUsers')
+        store.setError(dbAppError)
+      } else {
+        store.updateStorageStatus({ usersStored: true })
+        console.log(`✅ Stored ${users.length} users in database`)
+      }
+    }
+  } catch (error: any) {
+    const appError = ErrorHandler.handleApiError(error, 'fetchUsers')
+    store.setError(appError)
+  } finally {
+    store.setUsersLoading(false)
   }
 }
 
 const fetchPhoneCalls = async () => {
-  console.log('🔄 Fetching all phone calls at once...')
-  const result = await getPhoneCalls(1, 1000) // Increased limit to 1000
-  phoneCalls.value = result.calls
-  phoneCallsTotal.value = result.total
+  store.setPhoneCallsLoading(true)
+  store.clearError()
   
-  console.log(`📊 Fetched ${result.calls.length} phone calls (total: ${result.total})`)
-  
-  // Store phone calls in database
-  if (phoneCalls.value.length > 0) {
-    console.log('💾 Storing all phone calls in database...')
-    const { error } = await saveDiioPhoneCalls(phoneCalls.value)
-    if (!error) {
-      storageStatus.value.phoneCallsStored = true
-      console.log(`✅ Successfully stored ${phoneCalls.value.length} phone calls in database`)
-    } else {
-      console.error('❌ Error storing phone calls:', error)
+  try {
+    console.log('🔄 Fetching all phone calls at once...')
+    const { calls, total, error } = await diioService.getPhoneCalls(1, 1000)
+    
+    if (error) {
+      store.setError(error)
+      return
     }
+    
+    store.setPhoneCalls(calls, total)
+    console.log(`📊 Fetched ${calls.length} phone calls (total: ${total})`)
+    
+    // Store phone calls in database
+    if (calls.length > 0) {
+      console.log('💾 Storing all phone calls in database...')
+      const { error: dbError } = await saveDiioPhoneCalls(calls)
+      if (dbError) {
+        const dbAppError = ErrorHandler.handleDatabaseError(dbError, 'saveDiioPhoneCalls')
+        store.setError(dbAppError)
+      } else {
+        store.updateStorageStatus({ phoneCallsStored: true })
+        console.log(`✅ Successfully stored ${calls.length} phone calls in database`)
+      }
+    }
+  } catch (error: any) {
+    const appError = ErrorHandler.handleApiError(error, 'fetchPhoneCalls')
+    store.setError(appError)
+  } finally {
+    store.setPhoneCallsLoading(false)
   }
 }
 
 const fetchMeetings = async () => {
-  meetingsCurrentPage.value = 1
+  store.setMeetingsLoading(true)
+  store.clearError()
   
-  // Try to fetch all meetings at once with a high limit
-  console.log('🔄 Fetching all meetings at once...')
-  const result = await getMeetings(1, 1000) // Increased limit to 1000
-  meetings.value = result.meetings
-  meetingsTotal.value = result.total
-  
-  console.log(`📊 Fetched ${result.meetings.length} meetings (total: ${result.total})`)
-  
-  // Store all meetings in database at once
-  if (meetings.value.length > 0) {
-    console.log('💾 Storing all meetings in database...')
-    const { error } = await saveDiioMeetings(meetings.value)
-    if (!error) {
-      storageStatus.value.meetingsStored = true
-      console.log(`✅ Successfully stored ${meetings.value.length} meetings in database`)
-    } else {
-      console.error('❌ Error storing meetings:', error)
+  try {
+    console.log('🔄 Fetching all meetings at once...')
+    const { meetings, total, error } = await diioService.getMeetings(1, 1000)
+    
+    if (error) {
+      store.setError(error)
+      return
     }
+    
+    store.setMeetings(meetings, total)
+    console.log(`📊 Fetched ${meetings.length} meetings (total: ${total})`)
+    
+    // Store all meetings in database at once
+    if (meetings.length > 0) {
+      console.log('💾 Storing all meetings in database...')
+      const { error: dbError } = await saveDiioMeetings(meetings)
+      if (dbError) {
+        const dbAppError = ErrorHandler.handleDatabaseError(dbError, 'saveDiioMeetings')
+        store.setError(dbAppError)
+      } else {
+        store.updateStorageStatus({ meetingsStored: true })
+        console.log(`✅ Successfully stored ${meetings.length} meetings in database`)
+      }
+    }
+  } catch (error: any) {
+    const appError = ErrorHandler.handleApiError(error, 'fetchMeetings')
+    store.setError(appError)
+  } finally {
+    store.setMeetingsLoading(false)
   }
 }
 
 const loadMoreMeetings = async () => {
-  meetingsCurrentPage.value++
-  const result = await getMeetings(meetingsCurrentPage.value, 100)
-  meetings.value = [...meetings.value, ...result.meetings]
-  meetingsTotal.value = result.total
+  store.setMeetingsLoading(true)
+  store.clearError()
   
-  // Store new meetings in database
-  if (result.meetings.length > 0) {
-    const { error } = await saveDiioMeetings(result.meetings)
-    if (!error) {
-      console.log(`✅ Stored ${result.meetings.length} additional meetings in database`)
-    } else {
-      console.error('❌ Error storing additional meetings:', error)
+  try {
+    const currentPage = store.state.meetingsCurrentPage + 1
+    const { meetings, total, error } = await diioService.getMeetings(currentPage, 100)
+    
+    if (error) {
+      store.setError(error)
+      return
     }
+    
+    store.addMeetings(meetings)
+    store.setMeetings(store.state.meetings, total)
+    
+    // Store new meetings in database
+    if (meetings.length > 0) {
+      const { error: dbError } = await saveDiioMeetings(meetings)
+      if (dbError) {
+        const dbAppError = ErrorHandler.handleDatabaseError(dbError, 'saveDiioMeetings')
+        store.setError(dbAppError)
+      } else {
+        console.log(`✅ Stored ${meetings.length} additional meetings in database`)
+      }
+    }
+  } catch (error: any) {
+    const appError = ErrorHandler.handleApiError(error, 'loadMoreMeetings')
+    store.setError(appError)
+  } finally {
+    store.setMeetingsLoading(false)
   }
 }
 
 const fetchTranscript = async (transcriptId: string, name: string) => {
-  // Check if transcript already exists in database
-  const { exists } = await transcriptExists(transcriptId)
+  store.setLoading(true)
+  store.clearError()
   
-  if (exists) {
-    console.log(`📋 Transcript ${transcriptId} already exists in database`)
-  }
-  
-  const transcript = await getTranscript(transcriptId)
-  if (transcript) {
-    selectedTranscript.value = transcript
-    selectedTranscriptName.value = name
+  try {
+    // Check if transcript already exists in database
+    const { exists } = await transcriptExists(transcriptId)
     
-    // Store transcript in database if it doesn't exist
-    if (!exists) {
-      // Determine source type and metadata
-      const sourceType = name.toLowerCase().includes('meeting') ? 'meeting' : 'phone_call'
-      const sourceId = transcriptId // This would need to be mapped to actual meeting/call ID
+    if (exists) {
+      console.log(`📋 Transcript ${transcriptId} already exists in database`)
+    }
+    
+    const { transcript, error } = await diioService.getTranscript(transcriptId)
+    
+    if (error) {
+      store.setError(error)
+      return
+    }
+    
+    if (transcript) {
+      selectedTranscript.value = transcript
+      selectedTranscriptName.value = name
       
-      const { error } = await saveDiioTranscript(
-        transcript, 
-        sourceType, 
-        sourceId, 
-        name,
-        {
-          occurred_at: new Date().toISOString(),
-          attendees: {}
+      // Store transcript in database if it doesn't exist
+      if (!exists) {
+        // Determine source type and metadata
+        const sourceType = name.toLowerCase().includes('meeting') ? 'meeting' : 'phone_call'
+        const sourceId = transcriptId // This would need to be mapped to actual meeting/call ID
+        
+        const { error: dbError } = await saveDiioTranscript(
+          transcript, 
+          sourceType, 
+          sourceId, 
+          name,
+          {
+            occurred_at: new Date().toISOString(),
+            attendees: {}
+          }
+        )
+        
+        if (dbError) {
+          const dbAppError = ErrorHandler.handleDatabaseError(dbError, 'saveDiioTranscript')
+          store.setError(dbAppError)
+        } else {
+          store.updateStorageStatus({ 
+            transcriptsStored: store.state.storageStatus.transcriptsStored + 1 
+          })
+          console.log(`✅ Stored transcript ${transcriptId} in database`)
         }
-      )
-      
-      if (!error) {
-        storageStatus.value.transcriptsStored++
-        console.log(`✅ Stored transcript ${transcriptId} in database`)
-      } else {
-        console.error('❌ Error storing transcript:', error)
       }
     }
+  } catch (error: any) {
+    const appError = ErrorHandler.handleApiError(error, 'fetchTranscript')
+    store.setError(appError)
+  } finally {
+    store.setLoading(false)
   }
 }
 
@@ -655,17 +571,25 @@ const exportData = async () => {
 }
 
 const loadTranscriptStats = async () => {
-  const { data } = await getDiioTranscriptStats()
-  if (data) {
-    storageStatus.value.totalTranscripts = data.total_transcripts || 0
-    console.log(`📊 Database contains ${data.total_transcripts} transcripts`)
+  try {
+    const { data } = await getDiioTranscriptStats()
+    if (data) {
+      store.setTotalTranscripts(data.total_transcripts || 0)
+      console.log(`📊 Database contains ${data.total_transcripts} transcripts`)
+    }
+  } catch (error: any) {
+    const appError = ErrorHandler.handleDatabaseError(error, 'loadTranscriptStats')
+    store.setError(appError)
   }
 }
 
 const checkForNewMeetings = async () => {
-  console.log('🔄 Checking for new meetings and transcripts...')
+  store.setLoading(true)
+  store.clearError()
   
   try {
+    console.log('🔄 Checking for new meetings and transcripts...')
+    
     // Fetch users first
     await fetchUsers()
     
@@ -683,13 +607,13 @@ const checkForNewMeetings = async () => {
     console.log(`📋 Found ${storedTranscriptIds.size} transcripts already in database`)
     
     // Find new meetings with transcripts that aren't stored yet
-    const newMeetingsWithTranscripts = meetings.value.filter(meeting => 
+    const newMeetingsWithTranscripts = store.state.meetings.filter(meeting => 
       meeting.last_transcript_id && 
       !storedTranscriptIds.has(meeting.last_transcript_id)
     )
     
     // Find new phone calls with transcripts that aren't stored yet
-    const newPhoneCallsWithTranscripts = phoneCalls.value.filter(call => 
+    const newPhoneCallsWithTranscripts = store.state.phoneCalls.filter(call => 
       call.last_transcript_id && 
       !storedTranscriptIds.has(call.last_transcript_id)
     )
@@ -712,8 +636,12 @@ const checkForNewMeetings = async () => {
     await loadTranscriptStats()
     
     console.log('✅ Check completed!')
-  } catch (error) {
+  } catch (error: any) {
+    const appError = ErrorHandler.handleApiError(error, 'checkForNewMeetings')
+    store.setError(appError)
     console.error('❌ Error checking for new data:', error)
+  } finally {
+    store.setLoading(false)
   }
 }
 
@@ -722,7 +650,7 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
   
   // Initialize progress tracking
   const totalNewTranscripts = newMeetings.length + newPhoneCalls.length
-  transcriptProcessing.value = {
+  store.setTranscriptProcessing({
     isProcessing: true,
     current: 0,
     total: totalNewTranscripts,
@@ -730,21 +658,29 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
     stored: 0,
     skipped: 0,
     errors: 0
-  }
+  })
   
   // Process new meeting transcripts
   for (let i = 0; i < newMeetings.length; i++) {
     const meeting = newMeetings[i]
-    transcriptProcessing.value.current = i + 1
-    transcriptProcessing.value.currentItem = `Meeting: ${meeting.name}`
+    store.setTranscriptProcessing({
+      current: i + 1,
+      currentItem: `Meeting: ${meeting.name}`
+    })
     
     console.log(`📅 Fetching new meeting transcript ${i + 1}/${newMeetings.length}: ${meeting.name}`)
     
     try {
-      const transcript = await getTranscript(meeting.last_transcript_id!)
+      const { transcript, error } = await diioService.getTranscript(meeting.last_transcript_id!)
+      
+      if (error) {
+        store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
+        console.error(`❌ Error fetching transcript for ${meeting.name}:`, error)
+        continue
+      }
       
       if (transcript) {
-        const { error } = await saveDiioTranscript(
+        const { error: dbError } = await saveDiioTranscript(
           transcript,
           'meeting',
           meeting.id,
@@ -756,21 +692,21 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
           }
         )
         
-        if (!error) {
-          transcriptProcessing.value.stored++
+        if (!dbError) {
+          store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })
           console.log(`✅ Stored new meeting transcript: ${meeting.name}`)
         } else {
-          transcriptProcessing.value.errors++
-          console.error(`❌ Error storing transcript for ${meeting.name}:`, error)
+          store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
+          console.error(`❌ Error storing transcript for ${meeting.name}:`, dbError)
         }
       } else {
-        transcriptProcessing.value.errors++
+        store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
         console.error(`❌ Failed to fetch transcript for ${meeting.name}`)
       }
       
       await new Promise(resolve => setTimeout(resolve, 500))
     } catch (error) {
-      transcriptProcessing.value.errors++
+      store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
       console.error(`❌ Error processing ${meeting.name}:`, error)
     }
   }
@@ -778,16 +714,24 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
   // Process new phone call transcripts
   for (let i = 0; i < newPhoneCalls.length; i++) {
     const call = newPhoneCalls[i]
-    transcriptProcessing.value.current = newMeetings.length + i + 1
-    transcriptProcessing.value.currentItem = `Call: ${call.name}`
+    store.setTranscriptProcessing({
+      current: newMeetings.length + i + 1,
+      currentItem: `Call: ${call.name}`
+    })
     
     console.log(`📞 Fetching new phone call transcript ${i + 1}/${newPhoneCalls.length}: ${call.name}`)
     
     try {
-      const transcript = await getTranscript(call.last_transcript_id!)
+      const { transcript, error } = await diioService.getTranscript(call.last_transcript_id!)
+      
+      if (error) {
+        store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
+        console.error(`❌ Error fetching transcript for ${call.name}:`, error)
+        continue
+      }
       
       if (transcript) {
-        const { error } = await saveDiioTranscript(
+        const { error: dbError } = await saveDiioTranscript(
           transcript,
           'phone_call',
           call.id,
@@ -799,40 +743,42 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
           }
         )
         
-        if (!error) {
-          transcriptProcessing.value.stored++
+        if (!dbError) {
+          store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })
           console.log(`✅ Stored new phone call transcript: ${call.name}`)
         } else {
-          transcriptProcessing.value.errors++
-          console.error(`❌ Error storing transcript for ${call.name}:`, error)
+          store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
+          console.error(`❌ Error storing transcript for ${call.name}:`, dbError)
         }
       } else {
-        transcriptProcessing.value.errors++
+        store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
         console.error(`❌ Failed to fetch transcript for ${call.name}`)
       }
       
       await new Promise(resolve => setTimeout(resolve, 500))
     } catch (error) {
-      transcriptProcessing.value.errors++
+      store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
       console.error(`❌ Error processing ${call.name}:`, error)
     }
   }
   
   // Mark processing as complete
-  transcriptProcessing.value.isProcessing = false
-  transcriptProcessing.value.currentItem = 'Completed!'
+  store.setTranscriptProcessing({
+    isProcessing: false,
+    currentItem: 'Completed!'
+  })
   
   console.log('🎉 Automatic transcript fetch completed!')
-  console.log(`📊 Results: ${transcriptProcessing.value.stored} stored, ${transcriptProcessing.value.skipped} skipped, ${transcriptProcessing.value.errors} errors`)
+  console.log(`📊 Results: ${store.state.transcriptProcessing.stored} stored, ${store.state.transcriptProcessing.skipped} skipped, ${store.state.transcriptProcessing.errors} errors`)
 }
 
 const loadStoredTranscripts = async () => {
-  transcriptsLoading.value = true
+  store.setTranscriptsLoading(true)
   
   try {
-    const { data } = await getDiioTranscripts(transcriptsPerPage, transcriptsPage.value * transcriptsPerPage)
+    const { data } = await getDiioTranscripts(20, 0) // Use reasonable pagination
     if (data) {
-      storedTranscripts.value = data
+      store.setStoredTranscripts(data)
       console.log(`📋 Loaded ${data.length} stored transcripts`)
       
       // Debug: Check the first transcript structure
@@ -842,10 +788,12 @@ const loadStoredTranscripts = async () => {
         console.log('🔍 Transcript text preview:', data[0].transcript_text?.substring(0, 100) || 'undefined')
       }
     }
-  } catch (error) {
+  } catch (error: any) {
+    const appError = ErrorHandler.handleDatabaseError(error, 'loadStoredTranscripts')
+    store.setError(appError)
     console.error('❌ Error loading stored transcripts:', error)
   } finally {
-    transcriptsLoading.value = false
+    store.setTranscriptsLoading(false)
   }
 }
 
