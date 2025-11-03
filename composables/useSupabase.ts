@@ -326,13 +326,33 @@ export const useSupabase = () => {
   // Get stored DIIO transcripts
   const getDiioTranscripts = async (limit = 50, offset = 0) => {
     try {
+      // Query the main table directly to ensure we get transcript_text
       const { data, error } = await supabase
-        .from('diio_transcripts_summary')
-        .select('*')
+        .from('diio_transcripts')
+        .select(`
+          id,
+          diio_transcript_id,
+          transcript_text,
+          transcript_type,
+          source_id,
+          source_name,
+          occurred_at,
+          duration,
+          attendees,
+          analyzed_status,
+          created_at,
+          updated_at
+        `)
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1)
 
       if (error) throw error
+      
+      // Log first transcript for debugging
+      if (data && data.length > 0) {
+        console.log('✅ Loaded transcript with text length:', data[0].transcript_text?.length || 0)
+      }
+      
       return { data, error: null }
     } catch (error) {
       console.error('Error fetching DIIO transcripts:', error)

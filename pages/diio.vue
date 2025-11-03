@@ -168,7 +168,7 @@
                     </span>
                   </div>
                   
-                  <h3 class="text-white font-medium mb-2">{{ transcript.source_display_name || transcript.source_name || 'Untitled' }}</h3>
+                  <h3 class="text-white font-medium mb-2">{{ transcript.source_name || 'Untitled' }}</h3>
                   
                   <p class="text-gray-300 text-sm mb-3 line-clamp-2">
                     {{ transcript.transcript_text ? (transcript.transcript_text.substring(0, 200) + (transcript.transcript_text.length > 200 ? '...' : '')) : 'No transcript text available' }}
@@ -591,16 +591,22 @@ const checkForNewMeetings = async () => {
     console.log('🔄 Checking for new meetings and transcripts...')
     
     // Fetch users first
+    console.log('👥 Step 1/7: Fetching users...')
     await fetchUsers()
+    console.log('✅ Users fetched')
     
     // Fetch meetings
+    console.log('📅 Step 2/7: Fetching meetings...')
     await fetchMeetings()
+    console.log('✅ Meetings fetched')
     
     // Fetch phone calls
+    console.log('📞 Step 3/7: Fetching phone calls...')
     await fetchPhoneCalls()
+    console.log('✅ Phone calls fetched')
     
     // Get all stored transcript IDs to compare
-    console.log('📊 Checking for new transcripts...')
+    console.log('📊 Step 4/7: Checking for new transcripts...')
     const { data: storedTranscriptsData } = await getDiioTranscripts(10000, 0) // Get all stored transcripts
     const storedTranscriptIds = new Set((storedTranscriptsData || []).map(t => t.diio_transcript_id))
     
@@ -621,26 +627,36 @@ const checkForNewMeetings = async () => {
     const totalNewTranscripts = newMeetingsWithTranscripts.length + newPhoneCallsWithTranscripts.length
     
     if (totalNewTranscripts > 0) {
-      console.log(`🎉 Found ${totalNewTranscripts} new transcripts to fetch (${newMeetingsWithTranscripts.length} meetings + ${newPhoneCallsWithTranscripts.length} calls)`)
+      console.log(`🎉 Step 5/7: Found ${totalNewTranscripts} new transcripts to fetch (${newMeetingsWithTranscripts.length} meetings + ${newPhoneCallsWithTranscripts.length} calls)`)
       
       // Automatically fetch and store new transcripts
-      await fetchAndStoreNewTranscripts(newMeetingsWithTranscripts, newPhoneCallsWithTranscripts)
+      try {
+        await fetchAndStoreNewTranscripts(newMeetingsWithTranscripts, newPhoneCallsWithTranscripts)
+        console.log('✅ New transcripts processed')
+      } catch (transcriptError) {
+        console.error('⚠️ Error processing new transcripts (continuing anyway):', transcriptError)
+      }
     } else {
-      console.log('✅ No new transcripts found. All transcripts are already stored.')
+      console.log('✅ Step 5/7: No new transcripts found. All transcripts are already stored.')
     }
     
     // Load stored transcripts
+    console.log('📋 Step 6/7: Loading stored transcripts...')
     await loadStoredTranscripts()
+    console.log('✅ Stored transcripts loaded')
     
     // Update stats
+    console.log('📊 Step 7/7: Updating statistics...')
     await loadTranscriptStats()
+    console.log('✅ Stats updated')
     
-    console.log('✅ Check completed!')
+    console.log('🎉 Check completed successfully!')
   } catch (error: any) {
     const appError = ErrorHandler.handleApiError(error, 'checkForNewMeetings')
     store.setError(appError)
     console.error('❌ Error checking for new data:', error)
   } finally {
+    console.log('🏁 Finishing check process...')
     store.setLoading(false)
   }
 }
@@ -802,7 +818,7 @@ const viewStoredTranscript = (transcript: any) => {
     id: transcript.diio_transcript_id,
     transcript: transcript.transcript_text || 'No transcript text available'
   }
-  selectedTranscriptName.value = transcript.source_display_name || transcript.source_name || 'Untitled'
+  selectedTranscriptName.value = transcript.source_name || 'Untitled'
 }
 
 const fetchAllData = async () => {
