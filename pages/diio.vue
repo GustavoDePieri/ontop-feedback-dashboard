@@ -3,12 +3,25 @@
     <div class="max-w-7xl mx-auto">
       <!-- Header -->
       <div class="mb-8">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">
-              Call Transcripts
-            </h1>
-            <p class="text-gray-400">Access and analyze meeting and call transcripts from DIIO</p>
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-4">
+            <!-- Home Button -->
+            <NuxtLink
+              to="/"
+              class="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-200 group"
+            >
+              <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <span class="text-sm text-gray-400 group-hover:text-white transition-colors">Home</span>
+            </NuxtLink>
+
+            <div>
+              <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">
+                Call Transcripts
+              </h1>
+              <p class="text-gray-400">Access and analyze meeting and call transcripts from DIIO</p>
+            </div>
           </div>
           
           <!-- Status Badge -->
@@ -111,24 +124,112 @@
       <!-- Stored Transcripts Section -->
       <div class="mb-8">
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
             <h2 class="text-2xl font-bold text-white flex items-center gap-2">
               <svg class="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Stored Transcripts ({{ store.state.totalTranscripts }})
+              Stored Transcripts ({{ filteredTranscriptsCount }})
             </h2>
             
-            <button
-              @click="loadStoredTranscripts"
-              :disabled="store.state.transcriptsLoading"
-              class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              {{ store.state.transcriptsLoading ? 'Loading...' : 'Refresh' }}
-            </button>
+            <div class="flex items-center gap-2">
+              <button
+                @click="loadStoredTranscripts"
+                :disabled="store.state.transcriptsLoading"
+                class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                {{ store.state.transcriptsLoading ? 'Loading...' : 'Refresh' }}
+              </button>
+
+              <button
+                @click="checkForNewMeetings"
+                :disabled="store.state.loading"
+                class="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                {{ store.state.loading ? 'Checking...' : 'Check for New' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div class="mb-6 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Search -->
+              <div class="relative">
+                <label class="block text-sm text-gray-400 mb-2">Search</label>
+                <input
+                  v-model="transcriptFilters.search"
+                  type="text"
+                  placeholder="Search by name or text..."
+                  class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+                <svg class="absolute right-3 top-10 w-4 h-4 text-gray-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+
+              <!-- Type Filter -->
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">Type</label>
+                <select
+                  v-model="transcriptFilters.type"
+                  class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                >
+                  <option value="">All Types</option>
+                  <option value="meeting">📅 Meetings</option>
+                  <option value="phone_call">📞 Phone Calls</option>
+                </select>
+              </div>
+
+              <!-- Date From -->
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">From Date</label>
+                <input
+                  v-model="transcriptFilters.dateFrom"
+                  type="date"
+                  class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+              </div>
+
+              <!-- Date To -->
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">To Date</label>
+                <input
+                  v-model="transcriptFilters.dateTo"
+                  type="date"
+                  class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                />
+              </div>
+            </div>
+
+            <!-- Filter Actions -->
+            <div class="flex items-center justify-between">
+              <div class="text-sm text-gray-400">
+                <span v-if="hasActiveFilters">
+                  Showing {{ filteredTranscriptsCount }} of {{ store.state.totalTranscripts }} transcripts
+                </span>
+                <span v-else>
+                  Showing all {{ store.state.totalTranscripts }} transcripts
+                </span>
+              </div>
+
+              <button
+                v-if="hasActiveFilters"
+                @click="clearFilters"
+                class="flex items-center gap-2 px-4 py-2 bg-white/5 text-gray-400 rounded-lg hover:bg-white/10 hover:text-white transition-colors duration-200"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Clear Filters
+              </button>
+            </div>
           </div>
 
           <!-- Transcripts List -->
@@ -142,12 +243,20 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <p class="text-gray-400 mb-2">No transcripts loaded yet</p>
-            <p class="text-gray-500 text-sm">Click "Check for New Meetings" to load transcripts from the database</p>
+            <p class="text-gray-500 text-sm">Click "Check for New" to load transcripts from the database</p>
+          </div>
+
+          <div v-else-if="filteredStoredTranscripts.length === 0" class="text-center py-8">
+            <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <p class="text-gray-400 mb-2">No transcripts match your filters</p>
+            <p class="text-gray-500 text-sm">Try adjusting your search criteria or clear the filters</p>
           </div>
 
           <div v-else class="space-y-4">
             <div
-              v-for="transcript in store.state.storedTranscripts"
+              v-for="transcript in filteredStoredTranscripts"
               :key="transcript.id"
               class="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-emerald-500/50 transition-colors duration-200"
             >
@@ -479,6 +588,70 @@ const selectedTranscript = ref<DiioTranscript | null>(null)
 const selectedTranscriptName = ref('')
 const selectedUserEmail = ref('')
 const exportedData = ref<any>(null)
+
+// Filter state for transcripts
+const transcriptFilters = reactive({
+  search: '',
+  type: '',
+  dateFrom: '',
+  dateTo: ''
+})
+
+// Computed: Check if any filters are active
+const hasActiveFilters = computed(() => {
+  return !!(transcriptFilters.search || transcriptFilters.type || transcriptFilters.dateFrom || transcriptFilters.dateTo)
+})
+
+// Computed: Filter transcripts based on criteria
+const filteredStoredTranscripts = computed(() => {
+  let filtered = [...store.state.storedTranscripts]
+  
+  // Search filter (name or text content)
+  if (transcriptFilters.search) {
+    const searchLower = transcriptFilters.search.toLowerCase()
+    filtered = filtered.filter(t => 
+      t.source_name?.toLowerCase().includes(searchLower) ||
+      t.transcript_text?.toLowerCase().includes(searchLower)
+    )
+  }
+  
+  // Type filter
+  if (transcriptFilters.type) {
+    filtered = filtered.filter(t => t.transcript_type === transcriptFilters.type)
+  }
+  
+  // Date from filter
+  if (transcriptFilters.dateFrom) {
+    const fromDate = new Date(transcriptFilters.dateFrom)
+    filtered = filtered.filter(t => {
+      const transcriptDate = new Date(t.occurred_at || t.created_at)
+      return transcriptDate >= fromDate
+    })
+  }
+  
+  // Date to filter
+  if (transcriptFilters.dateTo) {
+    const toDate = new Date(transcriptFilters.dateTo)
+    toDate.setHours(23, 59, 59, 999) // Include the entire end date
+    filtered = filtered.filter(t => {
+      const transcriptDate = new Date(t.occurred_at || t.created_at)
+      return transcriptDate <= toDate
+    })
+  }
+  
+  return filtered
+})
+
+// Computed: Count of filtered transcripts
+const filteredTranscriptsCount = computed(() => filteredStoredTranscripts.value.length)
+
+// Function to clear all filters
+const clearFilters = () => {
+  transcriptFilters.search = ''
+  transcriptFilters.type = ''
+  transcriptFilters.dateFrom = ''
+  transcriptFilters.dateTo = ''
+}
 
 // Back to Top functionality
 const showBackToTop = ref(false)
