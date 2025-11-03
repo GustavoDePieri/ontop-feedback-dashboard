@@ -1027,23 +1027,30 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
         continue
       }
       
-      if (transcript) {
-        const { error: dbError } = await saveDiioTranscript(
-          transcript,
-          'meeting',
-          meeting.id,
-          meeting.name,
-          {
-            occurred_at: meeting.scheduled_at,
-            attendees: meeting.attendees,
-            duration: null
-          }
-        )
-        
-        if (!dbError) {
-          store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })
-          console.log(`✅ Stored new meeting transcript: ${meeting.name}`)
-        } else {
+      // Skip if transcript is null (not ready yet or empty)
+      if (!transcript) {
+        store.setTranscriptProcessing({ skipped: store.state.transcriptProcessing.skipped + 1 })
+        console.warn(`⚠️ Skipping transcript for ${meeting.name} - not ready yet or empty`)
+        continue
+      }
+      
+      // Store valid transcript
+      const { error: dbError } = await saveDiioTranscript(
+        transcript,
+        'meeting',
+        meeting.id,
+        meeting.name,
+        {
+          occurred_at: meeting.scheduled_at,
+          attendees: meeting.attendees,
+          duration: null
+        }
+      )
+      
+      if (!dbError) {
+        store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })
+        console.log(`✅ Stored new meeting transcript: ${meeting.name}`)
+      } else {
           store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
           console.error(`❌ Error storing transcript for ${meeting.name}:`, dbError)
         }
@@ -1078,18 +1085,25 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
         continue
       }
       
-      if (transcript) {
-        const { error: dbError } = await saveDiioTranscript(
-          transcript,
-          'phone_call',
-          call.id,
-          call.name,
-          {
-            occurred_at: call.occurred_at,
-            attendees: call.attendees,
-            duration: call.duration
-          }
-        )
+      // Skip if transcript is null (not ready yet or empty)
+      if (!transcript) {
+        store.setTranscriptProcessing({ skipped: store.state.transcriptProcessing.skipped + 1 })
+        console.warn(`⚠️ Skipping transcript for ${call.name} - not ready yet or empty`)
+        continue
+      }
+      
+      // Store valid transcript
+      const { error: dbError } = await saveDiioTranscript(
+        transcript,
+        'phone_call',
+        call.id,
+        call.name,
+        {
+          occurred_at: call.occurred_at,
+          attendees: call.attendees,
+          duration: call.duration
+        }
+      )
         
         if (!dbError) {
           store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })

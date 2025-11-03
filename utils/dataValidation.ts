@@ -136,7 +136,7 @@ export const validateDiioPhoneCall = (call: any): DiioPhoneCall => {
   }
 }
 
-export const validateDiioTranscript = (transcript: any): DiioTranscript => {
+export const validateDiioTranscript = (transcript: any): DiioTranscript | null => {
   if (!transcript || typeof transcript !== 'object') {
     throw new ValidationError('Transcript data is required')
   }
@@ -145,12 +145,16 @@ export const validateDiioTranscript = (transcript: any): DiioTranscript => {
     throw new ValidationError('Transcript ID is required and must be a string', 'id')
   }
   
+  // Allow empty transcripts (they may not be ready yet or failed to process)
+  // Return null instead of throwing an error
   if (!transcript.transcript || typeof transcript.transcript !== 'string') {
-    throw new ValidationError('Transcript text is required and must be a string', 'transcript')
+    console.warn(`Transcript ${transcript.id} has no text content - may not be ready yet`)
+    return null
   }
   
   if (transcript.transcript.trim().length === 0) {
-    throw new ValidationError('Transcript text cannot be empty', 'transcript')
+    console.warn(`Transcript ${transcript.id} has empty text content`)
+    return null
   }
   
   return {

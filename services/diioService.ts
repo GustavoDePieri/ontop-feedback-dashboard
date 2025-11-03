@@ -203,6 +203,13 @@ class DiioService {
       })
       
       const validatedTranscript = validateApiResponse(transcript, 'transcript')
+      
+      // If validation returns null (empty transcript), treat as warning, not error
+      if (validatedTranscript === null) {
+        console.warn(`Transcript ${id} has no content yet`)
+        return { transcript: null, error: null }
+      }
+      
       return { transcript: validatedTranscript, error: null }
     } catch (error: any) {
       const appError = ErrorHandler.handleApiError(error, 'getTranscript')
