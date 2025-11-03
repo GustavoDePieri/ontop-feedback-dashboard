@@ -221,23 +221,23 @@ export const useSupabase = () => {
       console.log(`💾 Preparing to store ${meetings.length} meetings...`)
       
       const meetingRecords: DiioMeetingRecord[] = meetings.map(meeting => {
-        // Extract participant emails from attendees (temporarily disabled until migration)
-        // const participantEmails: string[] = []
-        // if (meeting.attendees) {
-        //   if (meeting.attendees.sellers) {
-        //     participantEmails.push(...meeting.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
-        //   }
-        //   if (meeting.attendees.customers) {
-        //     participantEmails.push(...meeting.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
-        //   }
-        // }
+        // Extract participant emails from attendees
+        const participantEmails: string[] = []
+        if (meeting.attendees) {
+          if (meeting.attendees.sellers) {
+            participantEmails.push(...meeting.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
+          }
+          if (meeting.attendees.customers) {
+            participantEmails.push(...meeting.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
+          }
+        }
         
         return {
           diio_meeting_id: meeting.id,
           name: meeting.name,
           scheduled_at: meeting.scheduled_at,
           attendees: meeting.attendees,
-          // participant_emails: participantEmails.length > 0 ? participantEmails : undefined, // Disabled until migration
+          participant_emails: participantEmails.length > 0 ? participantEmails : undefined,
           analyzed_status: meeting.analyzed_status || 'pending',
           error_cause: meeting.error_cause,
           last_transcript_id: meeting.last_transcript_id
@@ -285,16 +285,16 @@ export const useSupabase = () => {
       console.log(`💾 Preparing to store ${phoneCalls.length} phone calls...`)
       
       const callRecords: DiioPhoneCallRecord[] = phoneCalls.map(call => {
-        // Extract participant emails from attendees (temporarily disabled until migration)
-        // const participantEmails: string[] = []
-        // if (call.attendees) {
-        //   if (call.attendees.sellers) {
-        //     participantEmails.push(...call.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
-        //   }
-        //   if (call.attendees.customers) {
-        //     participantEmails.push(...call.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
-        //   }
-        // }
+        // Extract participant emails from attendees
+        const participantEmails: string[] = []
+        if (call.attendees) {
+          if (call.attendees.sellers) {
+            participantEmails.push(...call.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
+          }
+          if (call.attendees.customers) {
+            participantEmails.push(...call.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
+          }
+        }
         
         return {
           diio_call_id: call.id,
@@ -303,7 +303,7 @@ export const useSupabase = () => {
           duration: call.duration,
           call_from_number: call.call_from_number,
           attendees: call.attendees,
-          // participant_emails: participantEmails.length > 0 ? participantEmails : undefined, // Disabled until migration
+          participant_emails: participantEmails.length > 0 ? participantEmails : undefined,
           analyzed_status: call.analyzed_status || 'pending',
           error_cause: call.error_cause,
           last_transcript_id: call.last_transcript_id
