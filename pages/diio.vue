@@ -1008,7 +1008,7 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
     errors: 0
   })
   
-  // Process new meeting transcripts
+  // Process new meeting transcripts with rate limiting
   for (let i = 0; i < newMeetings.length; i++) {
     const meeting = newMeetings[i]
     store.setTranscriptProcessing({
@@ -1018,8 +1018,21 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
     
     console.log(`📅 Fetching new meeting transcript ${i + 1}/${newMeetings.length}: ${meeting.name}`)
     
+    // Add delay at start to respect rate limits (1.5 seconds between requests)
+    if (i > 0) {
+      await new Promise(resolve => setTimeout(resolve, 1500))
+    }
+    
     try {
       const { transcript, error } = await diioService.getTranscript(meeting.last_transcript_id!)
+      
+      // Handle rate limiting errors with longer delay
+      if (error && (error.code === 'RATE_LIMITED' || error.code === 'RATE_LIMIT')) {
+        console.warn(`⚠️ Rate limited on meeting ${meeting.name}, waiting 5 seconds...`)
+        await new Promise(resolve => setTimeout(resolve, 5000))
+        store.setTranscriptProcessing({ skipped: store.state.transcriptProcessing.skipped + 1 })
+        continue
+      }
       
       if (error) {
         store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
@@ -1054,15 +1067,13 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
         store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
         console.error(`❌ Error storing transcript for ${meeting.name}:`, dbError)
       }
-      
-      await new Promise(resolve => setTimeout(resolve, 500))
     } catch (error) {
       store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
       console.error(`❌ Error processing ${meeting.name}:`, error)
     }
   }
   
-  // Process new phone call transcripts
+  // Process new phone call transcripts with rate limiting
   for (let i = 0; i < newPhoneCalls.length; i++) {
     const call = newPhoneCalls[i]
     store.setTranscriptProcessing({
@@ -1072,8 +1083,21 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
     
     console.log(`📞 Fetching new phone call transcript ${i + 1}/${newPhoneCalls.length}: ${call.name}`)
     
+    // Add delay at start to respect rate limits (1.5 seconds between requests)
+    if (i > 0 || newMeetings.length > 0) {
+      await new Promise(resolve => setTimeout(resolve, 1500))
+    }
+    
     try {
       const { transcript, error } = await diioService.getTranscript(call.last_transcript_id!)
+      
+      // Handle rate limiting errors with longer delay
+      if (error && (error.code === 'RATE_LIMITED' || error.code === 'RATE_LIMIT')) {
+        console.warn(`⚠️ Rate limited on call ${call.name}, waiting 5 seconds...`)
+        await new Promise(resolve => setTimeout(resolve, 5000))
+        store.setTranscriptProcessing({ skipped: store.state.transcriptProcessing.skipped + 1 })
+        continue
+      }
       
       if (error) {
         store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
@@ -1101,15 +1125,13 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
         }
       )
         
-        if (!dbError) {
-          store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })
-          console.log(`✅ Stored new phone call transcript: ${call.name}`)
-        } else {
-          store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
-          console.error(`❌ Error storing transcript for ${call.name}:`, dbError)
-        }
-      
-      await new Promise(resolve => setTimeout(resolve, 500))
+      if (!dbError) {
+        store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })
+        console.log(`✅ Stored new phone call transcript: ${call.name}`)
+      } else {
+        store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
+        console.error(`❌ Error storing transcript for ${call.name}:`, dbError)
+      }
     } catch (error) {
       store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
       console.error(`❌ Error processing ${call.name}:`, error)
