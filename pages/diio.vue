@@ -189,6 +189,106 @@
                 </button>
               </div>
             </div>
+
+            <!-- Pagination Controls -->
+            <div v-if="totalTranscriptPages > 1" class="pt-6 border-t border-white/10 mt-6 space-y-4">
+              <!-- Page Info & Jump to Page -->
+              <div class="flex items-center justify-between flex-wrap gap-4">
+                <div class="text-gray-400 text-sm">
+                  Showing page <span class="text-white font-semibold">{{ transcriptPage }}</span> of 
+                  <span class="text-white font-semibold">{{ totalTranscriptPages }}</span>
+                  <span class="ml-2">
+                    ({{ (transcriptPage - 1) * transcriptsPerPage + 1 }}-{{ Math.min(transcriptPage * transcriptsPerPage, store.state.totalTranscripts) }} of {{ store.state.totalTranscripts }} transcripts)
+                  </span>
+                </div>
+
+                <!-- Jump to Page -->
+                <div class="flex items-center gap-2">
+                  <label class="text-gray-400 text-sm">Jump to page:</label>
+                  <input
+                    type="number"
+                    v-model.number="jumpToPageInput"
+                    @keyup.enter="jumpToCustomPage"
+                    :min="1"
+                    :max="totalTranscriptPages"
+                    class="w-20 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                    placeholder="1"
+                  />
+                  <button
+                    @click="jumpToCustomPage"
+                    :disabled="!jumpToPageInput || jumpToPageInput < 1 || jumpToPageInput > totalTranscriptPages"
+                    class="px-3 py-1.5 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Go
+                  </button>
+                </div>
+              </div>
+
+              <!-- Navigation Buttons -->
+              <div class="flex items-center gap-2">
+                <!-- Previous Button -->
+                <button
+                  @click="prevTranscriptPage"
+                  :disabled="transcriptPage === 1 || store.state.transcriptsLoading"
+                  class="px-4 py-2 bg-white/5 text-white rounded-lg border border-white/10 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
+                >
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Previous
+                </button>
+
+                <!-- Page Numbers -->
+                <div class="flex items-center gap-1">
+                  <!-- First Page -->
+                  <button
+                    v-if="transcriptPage > 3"
+                    @click="goToTranscriptPage(1)"
+                    class="w-10 h-10 bg-white/5 text-white rounded-lg border border-white/10 hover:bg-white/10 transition-all duration-200"
+                  >
+                    1
+                  </button>
+                  <span v-if="transcriptPage > 4" class="text-gray-500 px-2">...</span>
+
+                  <!-- Pages around current -->
+                  <button
+                    v-for="page in visiblePages"
+                    :key="page"
+                    @click="goToTranscriptPage(page)"
+                    :class="[
+                      'w-10 h-10 rounded-lg border transition-all duration-200',
+                      page === transcriptPage
+                        ? 'bg-emerald-600 border-emerald-600 text-white font-bold'
+                        : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                    ]"
+                  >
+                    {{ page }}
+                  </button>
+
+                  <!-- Last Page -->
+                  <span v-if="transcriptPage < totalTranscriptPages - 3" class="text-gray-500 px-2">...</span>
+                  <button
+                    v-if="transcriptPage < totalTranscriptPages - 2"
+                    @click="goToTranscriptPage(totalTranscriptPages)"
+                    class="w-10 h-10 bg-white/5 text-white rounded-lg border border-white/10 hover:bg-white/10 transition-all duration-200"
+                  >
+                    {{ totalTranscriptPages }}
+                  </button>
+                </div>
+
+                <!-- Next Button -->
+                <button
+                  @click="nextTranscriptPage"
+                  :disabled="transcriptPage === totalTranscriptPages || store.state.transcriptsLoading"
+                  class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
+                >
+                  Next
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -331,6 +431,23 @@
         </div>
       </div>
     </div>
+
+    <!-- Back to Top Button -->
+    <Transition name="fade">
+      <button
+        v-if="showBackToTop"
+        @click="scrollToTop"
+        class="fixed bottom-8 right-8 p-4 bg-emerald-600 text-white rounded-full shadow-2xl hover:bg-emerald-700 transition-all duration-300 hover:scale-110 z-50 group"
+        aria-label="Back to top"
+      >
+        <svg class="w-6 h-6 group-hover:-translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+        <span class="absolute -top-12 right-0 bg-gray-900 text-white text-sm px-3 py-1 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+          Back to Top
+        </span>
+      </button>
+    </Transition>
   </div>
 </template>
 
@@ -362,6 +479,30 @@ const selectedTranscript = ref<DiioTranscript | null>(null)
 const selectedTranscriptName = ref('')
 const selectedUserEmail = ref('')
 const exportedData = ref<any>(null)
+
+// Back to Top functionality
+const showBackToTop = ref(false)
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
+
+const handleScroll = () => {
+  showBackToTop.value = window.scrollY > 300
+}
+
+// Add scroll listener on mount
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+// Remove scroll listener on unmount
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 
 // Computed property to filter meetings by selected user
 const filteredMeetings = computed(() => {
@@ -583,6 +724,16 @@ const loadTranscriptStats = async () => {
   }
 }
 
+// Helper function to add timeout to promises
+const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, operation: string): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => 
+      setTimeout(() => reject(new Error(`Operation '${operation}' timed out after ${timeoutMs}ms`)), timeoutMs)
+    )
+  ])
+}
+
 const checkForNewMeetings = async () => {
   store.setLoading(true)
   store.clearError()
@@ -590,24 +741,28 @@ const checkForNewMeetings = async () => {
   try {
     console.log('🔄 Checking for new meetings and transcripts...')
     
-    // Fetch users first
+    // Fetch users first with timeout
     console.log('👥 Step 1/7: Fetching users...')
-    await fetchUsers()
+    await withTimeout(fetchUsers(), 30000, 'fetchUsers')
     console.log('✅ Users fetched')
     
-    // Fetch meetings
+    // Fetch meetings with timeout
     console.log('📅 Step 2/7: Fetching meetings...')
-    await fetchMeetings()
+    await withTimeout(fetchMeetings(), 30000, 'fetchMeetings')
     console.log('✅ Meetings fetched')
     
-    // Fetch phone calls
+    // Fetch phone calls with timeout
     console.log('📞 Step 3/7: Fetching phone calls...')
-    await fetchPhoneCalls()
+    await withTimeout(fetchPhoneCalls(), 30000, 'fetchPhoneCalls')
     console.log('✅ Phone calls fetched')
     
     // Get all stored transcript IDs to compare
     console.log('📊 Step 4/7: Checking for new transcripts...')
-    const { data: storedTranscriptsData } = await getDiioTranscripts(10000, 0) // Get all stored transcripts
+    const { data: storedTranscriptsData } = await withTimeout(
+      getDiioTranscripts(10000, 0),
+      30000,
+      'getDiioTranscripts'
+    )
     const storedTranscriptIds = new Set((storedTranscriptsData || []).map(t => t.diio_transcript_id))
     
     console.log(`📋 Found ${storedTranscriptIds.size} transcripts already in database`)
@@ -631,7 +786,11 @@ const checkForNewMeetings = async () => {
       
       // Automatically fetch and store new transcripts
       try {
-        await fetchAndStoreNewTranscripts(newMeetingsWithTranscripts, newPhoneCallsWithTranscripts)
+        await withTimeout(
+          fetchAndStoreNewTranscripts(newMeetingsWithTranscripts, newPhoneCallsWithTranscripts),
+          300000, // 5 minutes for processing all new transcripts
+          'fetchAndStoreNewTranscripts'
+        )
         console.log('✅ New transcripts processed')
       } catch (transcriptError) {
         console.error('⚠️ Error processing new transcripts (continuing anyway):', transcriptError)
@@ -642,12 +801,12 @@ const checkForNewMeetings = async () => {
     
     // Load stored transcripts
     console.log('📋 Step 6/7: Loading stored transcripts...')
-    await loadStoredTranscripts()
+    await withTimeout(loadStoredTranscripts(), 30000, 'loadStoredTranscripts')
     console.log('✅ Stored transcripts loaded')
     
     // Update stats
     console.log('📊 Step 7/7: Updating statistics...')
-    await loadTranscriptStats()
+    await withTimeout(loadTranscriptStats(), 30000, 'loadTranscriptStats')
     console.log('✅ Stats updated')
     
     console.log('🎉 Check completed successfully!')
@@ -788,14 +947,49 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
   console.log(`📊 Results: ${store.state.transcriptProcessing.stored} stored, ${store.state.transcriptProcessing.skipped} skipped, ${store.state.transcriptProcessing.errors} errors`)
 }
 
-const loadStoredTranscripts = async () => {
+// Pagination state for transcripts
+const transcriptPage = ref(1)
+const transcriptsPerPage = ref(50)
+const jumpToPageInput = ref<number | null>(null)
+const totalTranscriptPages = computed(() => Math.ceil(store.state.totalTranscripts / transcriptsPerPage.value))
+
+// Visible page numbers (show 5 pages around current)
+const visiblePages = computed(() => {
+  const pages = []
+  const current = transcriptPage.value
+  const total = totalTranscriptPages.value
+  
+  // Show up to 5 pages around current page
+  let start = Math.max(1, current - 2)
+  let end = Math.min(total, current + 2)
+  
+  // Adjust if we're near the beginning or end
+  if (current <= 3) {
+    end = Math.min(5, total)
+  }
+  if (current >= total - 2) {
+    start = Math.max(1, total - 4)
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  
+  return pages
+})
+
+const loadStoredTranscripts = async (page = 1) => {
   store.setTranscriptsLoading(true)
   
   try {
-    const { data } = await getDiioTranscripts(20, 0) // Use reasonable pagination
+    const offset = (page - 1) * transcriptsPerPage.value
+    console.log(`📋 Loading transcripts page ${page} (offset: ${offset}, limit: ${transcriptsPerPage.value})`)
+    
+    const { data } = await getDiioTranscripts(transcriptsPerPage.value, offset)
     if (data) {
       store.setStoredTranscripts(data)
-      console.log(`📋 Loaded ${data.length} stored transcripts`)
+      transcriptPage.value = page
+      console.log(`📋 Loaded ${data.length} stored transcripts (page ${page}/${totalTranscriptPages.value})`)
       
       // Debug: Check the first transcript structure
       if (data.length > 0) {
@@ -810,6 +1004,31 @@ const loadStoredTranscripts = async () => {
     console.error('❌ Error loading stored transcripts:', error)
   } finally {
     store.setTranscriptsLoading(false)
+  }
+}
+
+const nextTranscriptPage = () => {
+  if (transcriptPage.value < totalTranscriptPages.value) {
+    loadStoredTranscripts(transcriptPage.value + 1)
+  }
+}
+
+const prevTranscriptPage = () => {
+  if (transcriptPage.value > 1) {
+    loadStoredTranscripts(transcriptPage.value - 1)
+  }
+}
+
+const goToTranscriptPage = (page: number) => {
+  if (page >= 1 && page <= totalTranscriptPages.value) {
+    loadStoredTranscripts(page)
+  }
+}
+
+const jumpToCustomPage = () => {
+  if (jumpToPageInput.value && jumpToPageInput.value >= 1 && jumpToPageInput.value <= totalTranscriptPages.value) {
+    goToTranscriptPage(jumpToPageInput.value)
+    jumpToPageInput.value = null // Clear input after jump
   }
 }
 
@@ -1071,4 +1290,16 @@ onMounted(async () => {
   await loadStoredTranscripts()
 })
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
 
