@@ -1008,6 +1008,10 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
     errors: 0
   })
   
+  // Track consecutive authentication errors
+  let consecutiveAuthErrors = 0
+  const MAX_AUTH_ERRORS = 3 // Stop after 3 consecutive 401 errors
+  
   // Process new meeting transcripts with rate limiting
   for (let i = 0; i < newMeetings.length; i++) {
     const meeting = newMeetings[i]
@@ -1025,6 +1029,27 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
     
     try {
       const { transcript, error } = await diioService.getTranscript(meeting.last_transcript_id!)
+      
+      // Handle authentication errors (token expired)
+      if (error && error.code === 'AUTH_ERROR') {
+        consecutiveAuthErrors++
+        console.warn(`🔐 Authentication error ${consecutiveAuthErrors}/${MAX_AUTH_ERRORS} - Token may have expired`)
+        
+        if (consecutiveAuthErrors >= MAX_AUTH_ERRORS) {
+          console.error('🚨 Too many authentication errors! Token has expired.')
+          console.error('💡 Please refresh the page and click "Check for New" again to continue.')
+          store.setError({
+            title: 'Authentication Expired',
+            message: `Your DIIO token has expired after processing ${i} transcripts. Please refresh the page and click "Check for New" again to continue with the remaining ${newMeetings.length - i} transcripts.`,
+            code: 'AUTH_EXPIRED',
+            retryable: true
+          })
+          break // Stop processing
+        }
+        
+        store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
+        continue
+      }
       
       // Handle rate limiting errors with longer delay
       if (error && (error.code === 'RATE_LIMITED' || error.code === 'RATE_LIMIT')) {
@@ -1063,6 +1088,8 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
       if (!dbError) {
         store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })
         console.log(`✅ Stored new meeting transcript: ${meeting.name}`)
+        // Reset auth error counter on successful storage
+        consecutiveAuthErrors = 0
       } else {
         store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
         console.error(`❌ Error storing transcript for ${meeting.name}:`, dbError)
@@ -1090,6 +1117,27 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
     
     try {
       const { transcript, error } = await diioService.getTranscript(call.last_transcript_id!)
+      
+      // Handle authentication errors (token expired)
+      if (error && error.code === 'AUTH_ERROR') {
+        consecutiveAuthErrors++
+        console.warn(`🔐 Authentication error ${consecutiveAuthErrors}/${MAX_AUTH_ERRORS} - Token may have expired`)
+        
+        if (consecutiveAuthErrors >= MAX_AUTH_ERRORS) {
+          console.error('🚨 Too many authentication errors! Token has expired.')
+          console.error('💡 Please refresh the page and click "Check for New" again to continue.')
+          store.setError({
+            title: 'Authentication Expired',
+            message: `Your DIIO token has expired after processing ${newMeetings.length + i} transcripts. Please refresh the page and click "Check for New" again to continue with the remaining ${newPhoneCalls.length - i} transcripts.`,
+            code: 'AUTH_EXPIRED',
+            retryable: true
+          })
+          break // Stop processing
+        }
+        
+        store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
+        continue
+      }
       
       // Handle rate limiting errors with longer delay
       if (error && (error.code === 'RATE_LIMITED' || error.code === 'RATE_LIMIT')) {
@@ -1125,13 +1173,15 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
         }
       )
         
-      if (!dbError) {
-        store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })
-        console.log(`✅ Stored new phone call transcript: ${call.name}`)
-      } else {
-        store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
-        console.error(`❌ Error storing transcript for ${call.name}:`, dbError)
-      }
+        if (!dbError) {
+          store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })
+          console.log(`✅ Stored new phone call transcript: ${call.name}`)
+          // Reset auth error counter on successful storage
+          consecutiveAuthErrors = 0
+        } else {
+          store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
+          console.error(`❌ Error storing transcript for ${call.name}:`, dbError)
+        }
     } catch (error) {
       store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
       console.error(`❌ Error processing ${call.name}:`, error)
