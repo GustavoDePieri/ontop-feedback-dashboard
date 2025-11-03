@@ -3376,6 +3376,17 @@ const generateAIReport = async () => {
               `).join('')}
             </div>
           ` : ''}
+          
+          ${aiRecommendations.value.quickWins.length > 0 ? `
+            <div style="margin-top: 20px;">
+              <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 12px;">⚡ Quick Wins</h3>
+              ${aiRecommendations.value.quickWins.map(win => `
+                <div style="background: rgba(168, 85, 247, 0.1); border-left: 4px solid #a855f7; padding: 12px; margin-bottom: 8px; border-radius: 6px; backdrop-filter: blur(10px); border: 1px solid rgba(168, 85, 247, 0.2);">
+                  <p style="color: #e9d5ff; font-size: 13px; margin: 0;">${win}</p>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
         </div>
       `
       

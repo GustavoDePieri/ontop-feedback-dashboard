@@ -265,10 +265,11 @@ feedbackAnalysis/
 - 💡 **Weekly Insights** - Auto-generated summary
 
 **AI Features:**
-- 🤖 **Generate AI Report** - Comprehensive AI analysis
-- 🎯 **Priority Stack** - Most requested features
-- ⚡ **Quick Wins** - Easy-to-implement improvements
-- ⚠️ **Critical Risks** - Issues needing attention
+- 🤖 **Generate AI Report** - Comprehensive AI analysis with 2+ actionable insights per area
+- 🎯 **Top Recurring Requests** - Most requested features ranked by frequency
+- 📈 **Emerging Patterns** - Early warning signs (minimum 2 specific insights)
+- ⚠️ **Critical Risks** - Urgent issues needing attention (minimum 2 specific insights)
+- ⚡ **Quick Wins** - Low-effort, high-impact improvements (minimum 2 specific insights)
 
 ### 2. Reports Page (`pages/reports.vue`)
 
@@ -300,9 +301,16 @@ feedbackAnalysis/
 - **Pattern Recognition** - Identifies recurring themes
 - **Priority Ranking** - Sorts by frequency + revenue impact
 - **Evidence-Based** - Provides specific data points
-- **Actionable Recommendations** - Concrete next steps
+- **Actionable Recommendations** - Concrete next steps with clear ownership
 - **Cross-Functional Ownership** - Assigns to correct teams
 - **Quick Win Detection** - Identifies easy improvements
+
+**Quality Standards:**
+- ✅ **Minimum 2 insights per area** - Emerging Patterns, Critical Risks, Quick Wins
+- ✅ **Specific data points** - Includes counts, revenue impact, affected accounts
+- ✅ **Actionable format** - Each insight includes WHAT, WHO, WHY, and ACTION
+- ✅ **No generic advice** - Every recommendation tied to specific feedback data
+- ✅ **Clear ownership** - Assigns team/person responsible for each action
 
 **API Endpoint:** `POST /api/ai/recommendations`
 

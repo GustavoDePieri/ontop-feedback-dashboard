@@ -250,27 +250,40 @@ Please provide a FREQUENCY-DRIVEN ANALYSIS in the following JSON format:
     }
   ],
   "emergingPatterns": [
-    "Patterns that are starting to appear but haven't reached critical mass yet",
-    "Early warning signs that could become major issues if ignored"
+    "MINIMUM 2 REQUIRED: Specific patterns starting to appear that haven't reached critical mass yet. Include: what the pattern is, how many mentions, which accounts/teams, and why it matters. Example: 'API documentation requests appearing in 4 accounts (2 high-MRR) - suggests growing developer adoption needs better support materials'",
+    "Early warning signs that could become major issues if ignored. Be specific with numbers and actionable next steps."
   ],
   "criticalRisks": [
-    "Issues with strong evidence of potential churn or escalation",
-    "Problems affecting multiple high-value clients"
+    "MINIMUM 2 REQUIRED: Specific issues with strong evidence of potential churn or escalation. Include: what the risk is, which accounts are affected, revenue at risk, urgency level, and immediate action needed. Example: 'Payment delays affecting 3 high-value accounts ($45K MRR) - 2 mentioned switching providers - immediate escalation to Operations needed'",
+    "Each risk must be actionable with clear ownership and next steps, not just observations."
   ],
   "quickWins": [
-    "Low-hanging fruit that appears frequently and can be solved fast",
-    "Small changes with disproportionate positive impact"
+    "MINIMUM 2 REQUIRED: Specific low-effort, high-impact improvements that appear in feedback. Include: what the win is, how many clients requested it, estimated effort (hours/days), expected impact, and who should implement. Example: 'Add CSV export to reports (requested by 8 clients) - 2 day dev effort - would eliminate 15+ weekly manual export requests'",
+    "Focus on concrete actions that can be completed within 1-2 weeks and will visibly improve client satisfaction."
   ]
 }
 
-MANDATORY RULES:
-- Sort topRecurringRequests by FREQUENCY FIRST, then by revenue impact
+MANDATORY RULES FOR QUALITY INSIGHTS:
+- Sort topRecurringRequests by FREQUENCY FIRST, then by revenue impact (minimum 3 items)
+- MUST provide at least 2 specific, actionable items for: emergingPatterns, criticalRisks, and quickWins
 - Only include requests mentioned in at least 3+ feedback items
 - Be SPECIFIC about numbers - how many times, how much revenue, how many clients
-- Focus on ACTIONABLE insights, not descriptive observations
+- Each insight must include: WHAT (the issue), WHO (affected accounts/teams), WHY (impact/urgency), ACTION (next step)
+- NO generic observations - every item must be actionable and tied to specific data
 - If there's insufficient evidence (< 3 mentions), don't include it
 - Think like a CEO: What matters most? What should we fix first?
-- Avoid generic advice - every recommendation must be tied to specific data
+- Each insight should be 1-2 sentences with concrete data points and clear ownership
+
+EXAMPLES OF GOOD VS BAD INSIGHTS:
+
+❌ BAD (Generic): "Clients want better communication"
+✅ GOOD (Specific): "7 high-value accounts ($85K combined MRR) request Slack integration for real-time payment notifications - Product team can implement using existing webhook infrastructure in 5 days"
+
+❌ BAD (Vague): "Some clients are unhappy with reports"
+✅ GOOD (Actionable): "12 clients (including top 3 MRR accounts) request customizable report templates - Support currently spends 20 hours/week creating manual reports - Engineering team should prioritize report builder feature"
+
+❌ BAD (Observational): "Payment issues are concerning"
+✅ GOOD (Urgent): "4 enterprise clients ($120K MRR at risk) reported payment delays in last 7 days, 2 threatened to switch providers - Operations must investigate payment gateway within 24 hours"
 
 Return ONLY the JSON object, no additional text.`
 }
@@ -288,37 +301,55 @@ function parseAIResponse(text: string, feedbackItems: FeedbackItem[]): AIRecomme
     const parsed = JSON.parse(jsonText)
 
     // Validate and structure the response
+    const topRecurringRequests = Array.isArray(parsed.topRecurringRequests) 
+      ? parsed.topRecurringRequests.map((item: any) => {
+          const keywords = item.keywords || []
+          const relatedFeedback = matchFeedbackByKeywords(feedbackItems, keywords, item.request)
+          
+          return {
+            request: item.request || '',
+            frequency: item.frequency || 0,
+            priority: item.priority || 'medium',
+            evidence: item.evidence || '',
+            revenueImpact: item.revenueImpact || 'Unknown',
+            sentiment: item.sentiment || 'Mixed', // AI-inferred from text, not pre-labeled
+            urgency: item.urgency || 'Medium',
+            recommendedAction: item.recommendedAction || '',
+            quickWinPotential: item.quickWinPotential || 'Unknown',
+            crossFunctionalOwner: item.crossFunctionalOwner || 'TBD',
+            feedbackIds: relatedFeedback.map(f => f.id),
+            relatedFeedback: relatedFeedback.map(f => ({
+              id: f.id,
+              accountName: f.accountName,
+              feedback: f.feedback,
+              // NO sentiment included - let viewers read the raw feedback
+            }))
+          }
+        })
+      : []
+
+    // Ensure minimum 2 items per area for dashboard quality
+    const emergingPatterns = Array.isArray(parsed.emergingPatterns) ? parsed.emergingPatterns : []
+    const criticalRisks = Array.isArray(parsed.criticalRisks) ? parsed.criticalRisks : []
+    const quickWins = Array.isArray(parsed.quickWins) ? parsed.quickWins : []
+
+    // Validate minimum counts and log warnings
+    if (emergingPatterns.length < 2) {
+      console.warn(`⚠️ AI provided ${emergingPatterns.length} emerging patterns (minimum 2 expected)`)
+    }
+    if (criticalRisks.length < 2) {
+      console.warn(`⚠️ AI provided ${criticalRisks.length} critical risks (minimum 2 expected)`)
+    }
+    if (quickWins.length < 2) {
+      console.warn(`⚠️ AI provided ${quickWins.length} quick wins (minimum 2 expected)`)
+    }
+
     return {
       summary: parsed.summary || 'No summary provided',
-      topRecurringRequests: Array.isArray(parsed.topRecurringRequests) 
-        ? parsed.topRecurringRequests.map((item: any) => {
-            const keywords = item.keywords || []
-            const relatedFeedback = matchFeedbackByKeywords(feedbackItems, keywords, item.request)
-            
-            return {
-              request: item.request || '',
-              frequency: item.frequency || 0,
-              priority: item.priority || 'medium',
-              evidence: item.evidence || '',
-              revenueImpact: item.revenueImpact || 'Unknown',
-              sentiment: item.sentiment || 'Mixed', // AI-inferred from text, not pre-labeled
-              urgency: item.urgency || 'Medium',
-              recommendedAction: item.recommendedAction || '',
-              quickWinPotential: item.quickWinPotential || 'Unknown',
-              crossFunctionalOwner: item.crossFunctionalOwner || 'TBD',
-              feedbackIds: relatedFeedback.map(f => f.id),
-              relatedFeedback: relatedFeedback.map(f => ({
-                id: f.id,
-                accountName: f.accountName,
-                feedback: f.feedback,
-                // NO sentiment included - let viewers read the raw feedback
-              }))
-            }
-          })
-        : [],
-      emergingPatterns: Array.isArray(parsed.emergingPatterns) ? parsed.emergingPatterns : [],
-      criticalRisks: Array.isArray(parsed.criticalRisks) ? parsed.criticalRisks : [],
-      quickWins: Array.isArray(parsed.quickWins) ? parsed.quickWins : []
+      topRecurringRequests,
+      emergingPatterns,
+      criticalRisks,
+      quickWins
     }
   } catch (error) {
     // Return a fallback structure
