@@ -45,6 +45,7 @@ export interface DiioMeetingRecord {
   name: string
   scheduled_at?: string
   attendees?: any
+  participant_emails?: string[]
   analyzed_status?: 'pending' | 'finished' | 'error'
   error_cause?: string
   last_transcript_id?: string
@@ -60,9 +61,34 @@ export interface DiioPhoneCallRecord {
   duration?: number
   call_from_number?: string
   attendees?: any
+  participant_emails?: string[]
   analyzed_status?: 'pending' | 'finished' | 'error'
   error_cause?: string
   last_transcript_id?: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface DiioTranscriptFeedbackRecord {
+  id?: string
+  transcript_id: string
+  diio_transcript_id: string
+  source_type: 'meeting' | 'phone_call'
+  source_id: string
+  source_name?: string
+  segment_number: number
+  speaker_name?: string
+  speaker_type?: 'seller' | 'customer'
+  feedback_text: string
+  feedback_type: 'pain_point' | 'feature_request' | 'praise' | 'concern' | 'question'
+  urgency: 'critical' | 'high' | 'medium' | 'low'
+  sentiment: 'positive' | 'neutral' | 'negative'
+  keywords?: string[]
+  occurred_at?: string
+  participant_emails?: string[]
+  account_name?: string
+  analyzed_by_ai?: boolean
+  ai_analysis_date?: string
   created_at?: string
   updated_at?: string
 }
@@ -194,15 +220,29 @@ export const useSupabase = () => {
     try {
       console.log(`💾 Preparing to store ${meetings.length} meetings...`)
       
-      const meetingRecords: DiioMeetingRecord[] = meetings.map(meeting => ({
-        diio_meeting_id: meeting.id,
-        name: meeting.name,
-        scheduled_at: meeting.scheduled_at,
-        attendees: meeting.attendees,
-        analyzed_status: meeting.analyzed_status || 'pending',
-        error_cause: meeting.error_cause,
-        last_transcript_id: meeting.last_transcript_id
-      }))
+      const meetingRecords: DiioMeetingRecord[] = meetings.map(meeting => {
+        // Extract participant emails from attendees
+        const participantEmails: string[] = []
+        if (meeting.attendees) {
+          if (meeting.attendees.sellers) {
+            participantEmails.push(...meeting.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
+          }
+          if (meeting.attendees.customers) {
+            participantEmails.push(...meeting.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
+          }
+        }
+        
+        return {
+          diio_meeting_id: meeting.id,
+          name: meeting.name,
+          scheduled_at: meeting.scheduled_at,
+          attendees: meeting.attendees,
+          participant_emails: participantEmails.length > 0 ? participantEmails : undefined,
+          analyzed_status: meeting.analyzed_status || 'pending',
+          error_cause: meeting.error_cause,
+          last_transcript_id: meeting.last_transcript_id
+        }
+      })
 
       // Process in batches of 1000 to avoid database limits
       const batchSize = 1000
@@ -244,17 +284,31 @@ export const useSupabase = () => {
     try {
       console.log(`💾 Preparing to store ${phoneCalls.length} phone calls...`)
       
-      const callRecords: DiioPhoneCallRecord[] = phoneCalls.map(call => ({
-        diio_call_id: call.id,
-        name: call.name,
-        occurred_at: call.occurred_at,
-        duration: call.duration,
-        call_from_number: call.call_from_number,
-        attendees: call.attendees,
-        analyzed_status: call.analyzed_status || 'pending',
-        error_cause: call.error_cause,
-        last_transcript_id: call.last_transcript_id
-      }))
+      const callRecords: DiioPhoneCallRecord[] = phoneCalls.map(call => {
+        // Extract participant emails from attendees
+        const participantEmails: string[] = []
+        if (call.attendees) {
+          if (call.attendees.sellers) {
+            participantEmails.push(...call.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
+          }
+          if (call.attendees.customers) {
+            participantEmails.push(...call.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
+          }
+        }
+        
+        return {
+          diio_call_id: call.id,
+          name: call.name,
+          occurred_at: call.occurred_at,
+          duration: call.duration,
+          call_from_number: call.call_from_number,
+          attendees: call.attendees,
+          participant_emails: participantEmails.length > 0 ? participantEmails : undefined,
+          analyzed_status: call.analyzed_status || 'pending',
+          error_cause: call.error_cause,
+          last_transcript_id: call.last_transcript_id
+        }
+      })
 
       // Process in batches of 1000 to avoid database limits
       const batchSize = 1000
@@ -391,6 +445,104 @@ export const useSupabase = () => {
     }
   }
 
+  // Save transcript feedback segments
+  const saveTranscriptFeedback = async (feedbackSegments: DiioTranscriptFeedbackRecord[]) => {
+    try {
+      if (feedbackSegments.length === 0) {
+        return { data: null, error: null }
+      }
+
+      console.log(`💾 Saving ${feedbackSegments.length} transcript feedback segments...`)
+
+      const { data, error} = await supabase
+        .from('diio_transcript_feedback')
+        .upsert(feedbackSegments)
+        .select()
+
+      if (error) throw error
+      
+      console.log(`✅ Saved ${feedbackSegments.length} feedback segments`)
+      return { data, error: null }
+    } catch (error) {
+      console.error('Error saving transcript feedback:', error)
+      return { data: null, error }
+    }
+  }
+
+  // Get transcript feedback by transcript ID
+  const getTranscriptFeedback = async (transcriptId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('diio_transcript_feedback')
+        .select('*')
+        .eq('transcript_id', transcriptId)
+        .order('segment_number', { ascending: true })
+
+      if (error) throw error
+      return { data, error: null }
+    } catch (error) {
+      console.error('Error fetching transcript feedback:', error)
+      return { data: null, error }
+    }
+  }
+
+  // Get all transcript feedback with filters
+  const getAllTranscriptFeedback = async (filters?: {
+    startDate?: string
+    endDate?: string
+    feedbackType?: string
+    urgency?: string
+    limit?: number
+    offset?: number
+  }) => {
+    try {
+      let query = supabase
+        .from('diio_transcript_feedback_summary')
+        .select('*')
+
+      if (filters?.startDate) {
+        query = query.gte('occurred_at', filters.startDate)
+      }
+      if (filters?.endDate) {
+        query = query.lte('occurred_at', filters.endDate)
+      }
+      if (filters?.feedbackType) {
+        query = query.eq('feedback_type', filters.feedbackType)
+      }
+      if (filters?.urgency) {
+        query = query.eq('urgency', filters.urgency)
+      }
+
+      query = query.order('occurred_at', { ascending: false })
+
+      if (filters?.limit) {
+        query = query.range(filters.offset || 0, (filters.offset || 0) + filters.limit - 1)
+      }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      return { data, error: null }
+    } catch (error) {
+      console.error('Error fetching all transcript feedback:', error)
+      return { data: null, error }
+    }
+  }
+
+  // Get transcript feedback statistics
+  const getTranscriptFeedbackStats = async () => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_diio_transcript_feedback_stats')
+
+      if (error) throw error
+      return { data: data?.[0] || null, error: null }
+    } catch (error) {
+      console.error('Error fetching transcript feedback stats:', error)
+      return { data: null, error }
+    }
+  }
+
   return {
     supabase,
     // Saved Reports
@@ -406,6 +558,11 @@ export const useSupabase = () => {
     saveDiioTranscript,
     getDiioTranscripts,
     getDiioTranscriptStats,
-    transcriptExists
+    transcriptExists,
+    // DIIO Transcript Feedback Functions
+    saveTranscriptFeedback,
+    getTranscriptFeedback,
+    getAllTranscriptFeedback,
+    getTranscriptFeedbackStats
   }
 }
