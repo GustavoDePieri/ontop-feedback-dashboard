@@ -1703,6 +1703,29 @@
               </div>
             </div>
 
+            <!-- Include Call Transcripts Toggle -->
+            <div class="md:col-span-2">
+              <label class="flex items-start space-x-3 cursor-pointer group">
+                <div class="relative flex items-center">
+                  <input
+                    type="checkbox"
+                    v-model="aiFilters.includeTranscripts"
+                    class="sr-only peer"
+                  />
+                  <div class="w-11 h-6 bg-ontop-navy-light peer-focus:ring-2 peer-focus:ring-ontop-coral-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-purple-600 peer-checked:to-pink-600"></div>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-white">🎙️ Include Call Transcripts</span>
+                    <span v-if="aiFilters.includeTranscripts" class="px-2 py-0.5 text-xs rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">Active</span>
+                  </div>
+                  <p class="text-xs text-white/60 mt-1">
+                    Analyze verbal feedback from DIIO call recordings (last 30 days) alongside written feedback for comprehensive insights
+                  </p>
+                </div>
+              </label>
+            </div>
+
             <!-- Generate Button -->
             <div class="md:col-span-2 flex items-end">
               <button
@@ -2168,7 +2191,8 @@ const aiFilters = reactive({
   datePeriod: '',
   feedbackDirectedTo: '',
   category: '',
-  platformClientId: ''
+  platformClientId: '',
+  includeTranscripts: false
 })
 
 const hasAIFilters = computed(() => {
@@ -3278,11 +3302,35 @@ const generateAIReport = async () => {
     
         console.log(`🔄 Step 1: Generating AI report for ${filteredData.length} feedback items...`)
         
+        // Fetch transcripts if includeTranscripts is enabled
+        let transcriptFeedback = []
+        if (aiFilters.includeTranscripts) {
+          console.log('🎙️ Step 1.5: Fetching call transcripts...')
+          try {
+            const transcriptData = await $fetch('/api/diio/feedback-transcripts', {
+              params: {
+                days: 30,
+                limit: 50
+              }
+            })
+            
+            if (transcriptData.success && transcriptData.calls) {
+              transcriptFeedback = transcriptData.calls
+              console.log(`✅ Fetched ${transcriptFeedback.length} calls with feedback (${transcriptData.summary.totalFeedbackSegments} segments)`)
+            }
+          } catch (error) {
+            console.error('⚠️ Failed to fetch transcripts:', error)
+            // Continue with written feedback only
+          }
+        }
+        
         // Generate AI insights
         console.log('🤖 Step 2: Calling AI recommendations API...')
         await generateRecommendations(filteredData, {
           segmentType: 'all',
-          focusArea: 'recurring patterns and actionable insights for leadership'
+          focusArea: 'recurring patterns and actionable insights for leadership',
+          includeTranscripts: aiFilters.includeTranscripts,
+          transcriptFeedback
         })
         console.log('✅ Step 3: AI recommendations received:', aiRecommendations.value ? 'Yes' : 'No')
         
@@ -3323,12 +3371,27 @@ const generateAIReport = async () => {
       // ⚠️ IMPORTANT: This HTML gets injected into the report template from useReportTemplates.ts
       // The styles here MUST match the dark theme defined in useReportTemplates.ts
       // If you change styles here, make sure they're consistent with the main template!
+      const metadataText = aiFilters.includeTranscripts && transcriptFeedback.length > 0
+        ? `AI-analyzed recurring patterns and recommendations based on ${filteredData.length} written feedback items + ${transcriptFeedback.length} call transcripts (${transcriptFeedback.reduce((sum, t) => sum + (t.stats?.total || 0), 0)} feedback segments from calls)`
+        : `AI-analyzed recurring patterns and recommendations based on ${filteredData.length} feedback items`
+      
       const aiSection = `
         <div class="section">
           <h2 class="section-title">🤖 AI-Powered Insights</h2>
           <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 20px; font-size: 14px;">
-            AI-analyzed recurring patterns and recommendations based on ${filteredData.length} feedback items
+            ${metadataText}
           </p>
+          ${aiFilters.includeTranscripts && transcriptFeedback.length > 0 ? `
+            <div style="background: rgba(236, 72, 153, 0.1); border-left: 4px solid #ec4899; padding: 12px; margin-bottom: 16px; border-radius: 6px;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span style="font-size: 20px;">🎙️</span>
+                <span style="color: #f9a8d4; font-weight: 600; font-size: 14px;">Call Transcript Analysis Included</span>
+              </div>
+              <p style="color: rgba(255, 255, 255, 0.7); font-size: 12px; margin: 0;">
+                This report combines written feedback with verbal feedback from ${transcriptFeedback.length} recent client calls. Insights marked with source badges show data from both channels.
+              </p>
+            </div>
+          ` : ''}
           
           ${aiRecommendations.value.topRecurringRequests.slice(0, 5).map((request, index) => `
             <div class="priority-issue ${request.priority}">
@@ -3336,6 +3399,12 @@ const generateAIReport = async () => {
                 <div>
                   <span style="font-size: 18px; font-weight: 700; color: #ffffff; margin-right: 10px;">#${index + 1}</span>
                   <span class="priority-badge ${request.priority}">${request.priority}</span>
+                  ${request.sources ? `
+                    <span style="display: inline-flex; gap: 6px; margin-left: 10px; font-size: 11px;">
+                      ${request.sources.written > 0 ? `<span style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(139, 92, 246, 0.4);">📝 ${request.sources.written}</span>` : ''}
+                      ${request.sources.calls > 0 ? `<span style="background: rgba(236, 72, 153, 0.2); color: #f9a8d4; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(236, 72, 153, 0.4);">🎙️ ${request.sources.calls}</span>` : ''}
+                    </span>
+                  ` : ''}
                 </div>
                 <div style="text-align: right;">
                   <div style="font-size: 24px; font-weight: 800; color: #8b5cf6;">${request.frequency}</div>

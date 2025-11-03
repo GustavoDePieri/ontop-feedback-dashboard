@@ -59,6 +59,8 @@ export const useAIRecommendations = () => {
       segmentType?: 'all' | 'year' | 'sentiment' | 'category' | 'account_manager'
       segmentValue?: string
       focusArea?: string
+      includeTranscripts?: boolean
+      transcriptFeedback?: any[]
     } = {}
   ) => {
     loading.value = true
@@ -71,7 +73,9 @@ export const useAIRecommendations = () => {
           feedbackItems,
           segmentType: options.segmentType || 'all',
           segmentValue: options.segmentValue,
-          focusArea: options.focusArea
+          focusArea: options.focusArea,
+          includeTranscripts: options.includeTranscripts || false,
+          transcriptFeedback: options.transcriptFeedback || []
         }
       })
 

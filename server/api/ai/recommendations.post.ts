@@ -1,11 +1,25 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import type { FeedbackItem } from '~/types/feedback'
 
+interface TranscriptFeedback {
+  id: string
+  source: 'diio_call'
+  type: 'phone_call' | 'meeting'
+  date: string
+  accountName: string
+  callName: string
+  participants: string[]
+  feedbackText: string
+  stats: any
+}
+
 interface RecommendationRequest {
   feedbackItems: FeedbackItem[]
   segmentType?: 'all' | 'year' | 'sentiment' | 'category' | 'account_manager'
   segmentValue?: string
   focusArea?: string
+  includeTranscripts?: boolean
+  transcriptFeedback?: TranscriptFeedback[]
 }
 
 interface RecurringRequest {
@@ -19,11 +33,17 @@ interface RecurringRequest {
   recommendedAction: string
   quickWinPotential: string
   crossFunctionalOwner: string
+  sources?: {
+    written: number
+    calls: number
+    total: number
+  }
   feedbackIds?: string[]
   relatedFeedback?: Array<{
     id: string
     accountName: string
     feedback: string
+    source?: 'written' | 'call'
     // sentiment removed - let viewers read raw feedback
   }>
 }
@@ -41,7 +61,14 @@ export default defineEventHandler(async (event) => {
   
   try {
     const body = await readBody<RecommendationRequest>(event)
-    const { feedbackItems, segmentType = 'all', segmentValue, focusArea } = body
+    const { 
+      feedbackItems, 
+      segmentType = 'all', 
+      segmentValue, 
+      focusArea,
+      includeTranscripts = false,
+      transcriptFeedback = []
+    } = body
 
     if (!feedbackItems || feedbackItems.length === 0) {
       throw new Error('No feedback items provided')
@@ -52,10 +79,22 @@ export default defineEventHandler(async (event) => {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' })
 
     // Prepare feedback summary for AI
-    const feedbackSummary = prepareFeedbackSummary(feedbackItems, segmentType, segmentValue)
+    const feedbackSummary = prepareFeedbackSummary(
+      feedbackItems, 
+      segmentType, 
+      segmentValue,
+      includeTranscripts,
+      transcriptFeedback
+    )
 
     // Create the prompt
-    const prompt = createPrompt(feedbackSummary, segmentType, segmentValue, focusArea)
+    const prompt = createPrompt(
+      feedbackSummary, 
+      segmentType, 
+      segmentValue, 
+      focusArea,
+      includeTranscripts
+    )
 
     // Generate recommendations
     const result = await model.generateContent(prompt)
@@ -88,16 +127,20 @@ export default defineEventHandler(async (event) => {
 function prepareFeedbackSummary(
   items: FeedbackItem[], 
   segmentType: string, 
-  segmentValue?: string
+  segmentValue?: string,
+  includeTranscripts: boolean = false,
+  transcriptFeedback: TranscriptFeedback[] = []
 ): string {
   // 🎯 NEW APPROACH: Send ONLY raw feedback text + business context
   // NO categories, NO sentiment labels, NO subcategories
   // Let the AI discover patterns from the actual client words
   
-  const summary = {
+  const summary: any = {
     total: items.length,
-    analysisMode: 'raw_text_only',
-    note: 'Categories and sentiment labels intentionally excluded to avoid AI bias. Analysis based purely on client feedback text.',
+    analysisMode: includeTranscripts ? 'combined_written_and_calls' : 'raw_text_only',
+    note: includeTranscripts 
+      ? 'Analysis combines written feedback AND call transcripts. Categories excluded to avoid bias. Both verbal and written client feedback analyzed together.'
+      : 'Categories and sentiment labels intentionally excluded to avoid AI bias. Analysis based purely on client feedback text.',
     
     // Business context (non-biased metadata)
     accountManagers: getAccountManagerStats(items),
@@ -108,6 +151,7 @@ function prepareFeedbackSummary(
     // Sample more items for better pattern detection
     feedbackItems: items.slice(0, 50).map(i => ({
       id: i.id,
+      source: 'written',
       date: new Date(i.createdDate).toLocaleDateString(),
       account: i.accountName,
       feedback: i.feedback, // FULL feedback text, no truncation
@@ -116,6 +160,25 @@ function prepareFeedbackSummary(
       mrr: i.realMrrLastMonth,
       tpv: i.lastInvoicedTpv
     }))
+  }
+
+  // Add transcript feedback if included
+  if (includeTranscripts && transcriptFeedback.length > 0) {
+    summary.transcripts = {
+      total: transcriptFeedback.length,
+      note: 'Call transcripts with feedback extracted and parsed. Pay attention to urgency and tone in verbal feedback.',
+      calls: transcriptFeedback.slice(0, 30).map(t => ({
+        id: t.id,
+        source: 'call',
+        type: t.type,
+        date: t.date,
+        account: t.accountName,
+        callName: t.callName,
+        participants: t.participants,
+        feedback: t.feedbackText,
+        stats: t.stats
+      }))
+    }
   }
 
   return JSON.stringify(summary, null, 2)
@@ -192,7 +255,8 @@ function createPrompt(
   feedbackSummary: string, 
   segmentType: string, 
   segmentValue?: string,
-  focusArea?: string
+  focusArea?: string,
+  includeTranscripts: boolean = false
 ): string {
   const segmentDescription = segmentValue 
     ? `focusing specifically on ${segmentType}: ${segmentValue}`
@@ -201,6 +265,29 @@ function createPrompt(
   const focusAreaText = focusArea 
     ? `\n\nPay special attention to: ${focusArea}`
     : ''
+
+  const transcriptContext = includeTranscripts ? `
+
+🎙️ CRITICAL: TRANSCRIPT ANALYSIS INCLUDED
+This analysis includes BOTH written feedback AND call transcripts from DIIO.
+
+CALL TRANSCRIPT ANALYSIS GUIDELINES:
+- **Verbal feedback reveals deeper insights**: Clients are often more candid and emotional in calls than in writing
+- **Tone and urgency matter**: Pay special attention to frustration, excitement, or concern in verbal feedback
+- **Cross-validate**: Look for patterns that appear in BOTH written and verbal channels (highest priority!)
+- **Detect gaps**: Issues mentioned urgently in calls but NOT in written feedback = escalation risk signal
+- **Authenticity check**: Mismatch between written vs verbal feedback = client being "polite" in writing
+- **Churn signals**: Competitor mentions, switching language, or frustration in calls = immediate red flags
+
+WHEN CITING EVIDENCE:
+- Track sources separately: "Mentioned in 5 written feedback items and 3 client calls (8 total)"
+- Note when issues appear in calls but not writing: "Raised urgently in 4 calls but only 1 written mention - suggests clients hesitant to write complaints"
+- Flag verbal escalations: "Client tone in call suggests higher urgency than written feedback indicates"
+
+EXAMPLE INSIGHTS:
+- ❌ BAD: "Payment reports need improvement (mentioned 3 times)"
+- ✅ GOOD: "Payment reports cause manual work - 3 written mentions + raised urgently in 5 client calls (total 8). Verbal feedback reveals frustration: 'spending 2-3 hours weekly' (Acme Corp call, Oct 28)"
+` : ''
 
   return `You are a strategic analyst for Ontop leadership. Your goal is to identify the MOST RECURRING client requests and prioritize them by evidence and frequency - NOT by department or subcategory.
 
@@ -214,6 +301,7 @@ The feedback data below contains ONLY raw client feedback text. You MUST:
 - NOT rely on any pre-existing categories (there are none)
 - Form your OWN understanding of sentiment from the feedback content
 - Group feedback by WHAT CLIENTS ARE SAYING, not by labels someone else created
+${transcriptContext}
 
 FEEDBACK DATA (${segmentDescription}):
 ${feedbackSummary}
@@ -246,6 +334,11 @@ Please provide a FREQUENCY-DRIVEN ANALYSIS in the following JSON format:
       "recommendedAction": "Specific action to address this recurring request",
       "quickWinPotential": "Can this be solved quickly? (Yes/No + why)",
       "crossFunctionalOwner": "Who should own this (Product/Support/Operations/Sales/etc.)",
+      "sources": {
+        "written": "number of written feedback mentions",
+        "calls": "number of call transcript mentions (if transcripts included, otherwise 0)",
+        "total": "total mentions across both sources"
+      },
       "keywords": ["array", "of", "key", "terms", "that", "appear", "in", "related", "feedback"]
     }
   ],
