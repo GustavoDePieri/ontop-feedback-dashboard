@@ -1051,12 +1051,8 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
         store.setTranscriptProcessing({ stored: store.state.transcriptProcessing.stored + 1 })
         console.log(`✅ Stored new meeting transcript: ${meeting.name}`)
       } else {
-          store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
-          console.error(`❌ Error storing transcript for ${meeting.name}:`, dbError)
-        }
-      } else {
         store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
-        console.error(`❌ Failed to fetch transcript for ${meeting.name}`)
+        console.error(`❌ Error storing transcript for ${meeting.name}:`, dbError)
       }
       
       await new Promise(resolve => setTimeout(resolve, 500))
@@ -1112,10 +1108,6 @@ const fetchAndStoreNewTranscripts = async (newMeetings: DiioMeeting[], newPhoneC
           store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
           console.error(`❌ Error storing transcript for ${call.name}:`, dbError)
         }
-      } else {
-        store.setTranscriptProcessing({ errors: store.state.transcriptProcessing.errors + 1 })
-        console.error(`❌ Failed to fetch transcript for ${call.name}`)
-      }
       
       await new Promise(resolve => setTimeout(resolve, 500))
     } catch (error) {
