@@ -143,6 +143,20 @@ export default defineEventHandler(async (event): Promise<ExtractionResult> => {
               }
             }
             participantEmails = meeting.participant_emails || []
+            
+            // If participant_emails is empty/null, extract from attendees
+            if (!participantEmails || participantEmails.length === 0) {
+              const emails: string[] = []
+              if (meeting.attendees) {
+                if (meeting.attendees.sellers) {
+                  emails.push(...meeting.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
+                }
+                if (meeting.attendees.customers) {
+                  emails.push(...meeting.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
+                }
+              }
+              participantEmails = [...new Set(emails)] // Remove duplicates
+            }
           }
         } else if (transcript.transcript_type === 'phone_call') {
           const { data: call } = await supabase
@@ -163,6 +177,20 @@ export default defineEventHandler(async (event): Promise<ExtractionResult> => {
               }
             }
             participantEmails = call.participant_emails || []
+            
+            // If participant_emails is empty/null, extract from attendees
+            if (!participantEmails || participantEmails.length === 0) {
+              const emails: string[] = []
+              if (call.attendees) {
+                if (call.attendees.sellers) {
+                  emails.push(...call.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
+                }
+                if (call.attendees.customers) {
+                  emails.push(...call.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
+                }
+              }
+              participantEmails = [...new Set(emails)] // Remove duplicates
+            }
           }
         }
         
@@ -239,6 +267,17 @@ export default defineEventHandler(async (event): Promise<ExtractionResult> => {
             }
           }
           
+          // Calculate churn risk score for this segment
+          const segmentChurnScore = segment.churnSignals.reduce((score, signal) => {
+            const severityMap: Record<string, number> = {
+              critical: 25,
+              high: 15,
+              medium: 8,
+              low: 3
+            }
+            return score + (severityMap[signal.severity] || 0)
+          }, 0)
+          
           // Combine keywords with churn signal categories
           const allKeywords = [
             ...segment.keywords,
@@ -252,7 +291,7 @@ export default defineEventHandler(async (event): Promise<ExtractionResult> => {
             source_id: transcript.source_id,
             source_name: transcript.source_name,
             segment_number: index + 1,
-            speaker_name: segment.speaker,
+            speaker_name: segment.speaker || 'Unknown',
             speaker_type: speakerType,
             feedback_text: segment.text,
             feedback_type: segment.type,

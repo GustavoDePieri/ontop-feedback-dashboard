@@ -435,6 +435,137 @@
           </div>
         </div>
       </div>
+
+      <!-- Feedback & Churn Signals Modal -->
+      <div
+        v-if="selectedFeedbackTranscript"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        @click.self="selectedFeedbackTranscript = null"
+      >
+        <div class="bg-gray-800 rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-white">Feedback & Churn Signals</h2>
+              <p class="text-gray-400 text-sm mt-1">
+                {{ selectedFeedbackTranscript.source_name || 'Untitled' }} • 
+                {{ formatDate(selectedFeedbackTranscript.occurred_at || selectedFeedbackTranscript.created_at) }}
+              </p>
+            </div>
+            <button
+              @click="selectedFeedbackTranscript = null"
+              class="text-gray-400 hover:text-white text-2xl transition-colors duration-200"
+            >
+              ×
+            </button>
+          </div>
+
+          <div v-if="loadingFeedback" class="text-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-400 mx-auto"></div>
+            <p class="text-gray-400 mt-2">Loading feedback...</p>
+          </div>
+
+          <div v-else-if="feedbackSegments.length === 0" class="text-center py-8">
+            <p class="text-gray-400">No feedback segments found for this transcript.</p>
+          </div>
+
+          <div v-else class="space-y-4">
+            <!-- Summary Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                <p class="text-gray-400 text-sm">Total Segments</p>
+                <p class="text-2xl font-bold text-white">{{ feedbackSegments.length }}</p>
+              </div>
+              <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                <p class="text-gray-400 text-sm">Critical Signals</p>
+                <p class="text-2xl font-bold text-red-400">{{ criticalSignalsCount }}</p>
+              </div>
+              <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                <p class="text-gray-400 text-sm">Pain Points</p>
+                <p class="text-2xl font-bold text-orange-400">{{ painPointsCount }}</p>
+              </div>
+              <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+                <p class="text-gray-400 text-sm">Negative Sentiment</p>
+                <p class="text-2xl font-bold text-red-400">{{ negativeSentimentCount }}</p>
+              </div>
+            </div>
+
+            <!-- Feedback Segments -->
+            <div class="space-y-3">
+              <h3 class="text-lg font-semibold text-white mb-3">Feedback Segments</h3>
+              <div
+                v-for="(segment, index) in feedbackSegments"
+                :key="index"
+                class="bg-gray-900 rounded-lg p-4 border border-gray-700"
+                :class="{
+                  'border-red-500': segment.urgency === 'critical',
+                  'border-orange-500': segment.urgency === 'high' && segment.urgency !== 'critical',
+                  'border-yellow-500': segment.urgency === 'medium' && segment.urgency !== 'high' && segment.urgency !== 'critical'
+                }"
+              >
+                <div class="flex items-start justify-between mb-2">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="px-2 py-1 text-xs rounded bg-indigo-500/20 text-indigo-300">
+                      {{ segment.speaker_type === 'seller' ? 'Seller' : segment.speaker_type === 'customer' ? 'Customer' : 'Unknown' }}
+                    </span>
+                    <span class="px-2 py-1 text-xs rounded" :class="{
+                      'bg-red-500/20 text-red-300': segment.feedback_type === 'pain_point',
+                      'bg-blue-500/20 text-blue-300': segment.feedback_type === 'feature_request',
+                      'bg-green-500/20 text-green-300': segment.feedback_type === 'praise',
+                      'bg-yellow-500/20 text-yellow-300': segment.feedback_type === 'concern',
+                      'bg-purple-500/20 text-purple-300': segment.feedback_type === 'question'
+                    }">
+                      {{ segment.feedback_type.replace('_', ' ') }}
+                    </span>
+                    <span class="px-2 py-1 text-xs rounded" :class="{
+                      'bg-red-500/20 text-red-300': segment.urgency === 'critical',
+                      'bg-orange-500/20 text-orange-300': segment.urgency === 'high',
+                      'bg-yellow-500/20 text-yellow-300': segment.urgency === 'medium',
+                      'bg-gray-500/20 text-gray-300': segment.urgency === 'low'
+                    }">
+                      {{ segment.urgency }}
+                    </span>
+                    <span class="px-2 py-1 text-xs rounded" :class="{
+                      'bg-green-500/20 text-green-300': segment.sentiment === 'positive',
+                      'bg-red-500/20 text-red-300': segment.sentiment === 'negative',
+                      'bg-gray-500/20 text-gray-300': segment.sentiment === 'neutral'
+                    }">
+                      {{ segment.sentiment }}
+                    </span>
+                  </div>
+                </div>
+                
+                <p class="text-gray-300 mb-2">{{ segment.feedback_text }}</p>
+                
+                <div v-if="segment.keywords && segment.keywords.length > 0" class="mt-2">
+                  <p class="text-xs text-gray-500 mb-1">Keywords:</p>
+                  <div class="flex flex-wrap gap-1">
+                    <span
+                      v-for="keyword in segment.keywords"
+                      :key="keyword"
+                      class="px-2 py-1 text-xs rounded bg-gray-800 text-gray-400"
+                    >
+                      {{ keyword }}
+                    </span>
+                  </div>
+                </div>
+
+                <div v-if="segment.churn_signals && segment.churn_signals.length > 0" class="mt-3 pt-3 border-t border-gray-700">
+                  <p class="text-xs text-red-400 font-semibold mb-2">⚠️ Churn Signals Detected:</p>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      v-for="signal in segment.churn_signals"
+                      :key="signal"
+                      class="px-2 py-1 text-xs rounded bg-red-500/20 text-red-300 border border-red-500/50"
+                    >
+                      {{ signal }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -767,6 +898,57 @@ const extractFeedback = async () => {
 const viewTranscript = (transcript: any) => {
   selectedTranscript.value = transcript
 }
+
+const selectedFeedbackTranscript = ref<any>(null)
+const feedbackSegments = ref<any[]>([])
+const loadingFeedback = ref(false)
+
+const viewFeedback = async (transcript: any) => {
+  selectedFeedbackTranscript.value = transcript
+  loadingFeedback.value = true
+  feedbackSegments.value = []
+  
+  try {
+    const { getTranscriptFeedback } = useSupabase()
+    const { data, error } = await getTranscriptFeedback(transcript.id)
+    
+    if (error) throw error
+    
+    if (data) {
+      // Sort by segment_number and process keywords/churn_signals
+      feedbackSegments.value = data
+        .sort((a: any, b: any) => a.segment_number - b.segment_number)
+        .map((segment: any) => ({
+          ...segment,
+          keywords: segment.keywords || [],
+          churn_signals: segment.keywords?.filter((k: string) => 
+            k.startsWith('churn_') || k === 'payment_issue' || k === 'worker_payout_issue' || 
+            k === 'recurring_problem' || k === 'long_lasting_problem' || k === 'price_negotiation'
+          ) || []
+        }))
+    }
+  } catch (err: any) {
+    console.error('Error loading feedback:', err)
+    error.value = {
+      title: 'Failed to Load Feedback',
+      message: err.message || 'An error occurred while loading feedback segments.'
+    }
+  } finally {
+    loadingFeedback.value = false
+  }
+}
+
+const criticalSignalsCount = computed(() => {
+  return feedbackSegments.value.filter(s => s.urgency === 'critical').length
+})
+
+const painPointsCount = computed(() => {
+  return feedbackSegments.value.filter(s => s.feedback_type === 'pain_point').length
+})
+
+const negativeSentimentCount = computed(() => {
+  return feedbackSegments.value.filter(s => s.sentiment === 'negative').length
+})
 
 const clearFilters = () => {
   filters.search = ''
