@@ -30,21 +30,6 @@
             </div>
             
             <button
-              @click="extractFeedback"
-              :disabled="extracting"
-              class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              <svg v-if="!extracting" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              {{ extracting ? 'Extracting...' : 'Extract Feedback' }}
-            </button>
-            
-            <button
               @click="syncTranscripts"
               :disabled="syncing"
               class="flex items-center gap-2 px-4 py-2 bg-gradient-cta text-white rounded-lg hover:bg-gradient-cta-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
@@ -143,30 +128,6 @@
         </div>
       </div>
 
-      <!-- Extraction Progress -->
-      <div v-if="extractionProgress.show" class="mb-8 bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-xl font-bold text-white">🎯 Extracting Feedback</h3>
-          <div class="text-sm text-gray-400">
-            {{ extractionProgress.processed }} / {{ extractionProgress.total }}
-          </div>
-        </div>
-        
-        <div class="w-full bg-gray-700 rounded-full h-3 mb-4">
-          <div 
-            class="bg-gradient-to-r from-indigo-500 to-indigo-600 h-3 rounded-full transition-all duration-300"
-            :style="{ width: `${(extractionProgress.processed / extractionProgress.total) * 100}%` }"
-          ></div>
-        </div>
-        
-        <div class="text-gray-300 text-sm mb-2">
-          {{ extractionProgress.message }}
-        </div>
-        
-        <div v-if="extractionProgress.segmentsExtracted > 0" class="text-sm text-gray-400">
-          <span class="text-indigo-400 font-semibold">{{ extractionProgress.segmentsExtracted }}</span> feedback segments extracted
-        </div>
-      </div>
 
       <!-- Error Display -->
       <div v-if="error" class="mb-8 bg-red-500/10 border border-red-500/30 rounded-lg p-4">
@@ -833,7 +794,6 @@ const { getDiioTranscripts, getDiioTranscriptStats } = useSupabase()
 const transcripts = ref<any[]>([])
 const loading = ref(false)
 const syncing = ref(false)
-const extracting = ref(false)
 const error = ref<{ title?: string; message: string } | null>(null)
 const selectedTranscript = ref<any>(null)
 const currentPage = ref(1)
@@ -857,15 +817,6 @@ const syncProgress = reactive({
   show: false,
   current: 0,
   total: 0,
-  message: ''
-})
-
-// Extraction progress
-const extractionProgress = reactive({
-  show: false,
-  processed: 0,
-  total: 0,
-  segmentsExtracted: 0,
   message: ''
 })
 
@@ -1022,83 +973,6 @@ const syncTranscripts = async () => {
     syncProgress.show = false
   } finally {
     syncing.value = false
-  }
-}
-
-const extractFeedback = async () => {
-  // Check how many unprocessed transcripts exist
-  const unprocessedCount = transcripts.value.filter(t => !t.feedback_extracted).length
-  
-  if (unprocessedCount === 0) {
-    error.value = {
-      title: 'No Transcripts to Process',
-      message: 'All transcripts have already been processed. Use "Force Re-extraction" to process them again.'
-    }
-    return
-  }
-  
-  // Confirm with user (limit to 50 per batch to avoid overload)
-  const batchLimit = 50
-  const willProcess = Math.min(unprocessedCount, batchLimit)
-  
-  if (!confirm(
-    `Extract feedback from ${willProcess} unprocessed transcript${willProcess === 1 ? '' : 's'}?\n\n` +
-    `Note: This uses local pattern matching (not AI), so it's fast and free.\n` +
-    `Processing in batches of ${batchLimit}. ${unprocessedCount > batchLimit ? `\n\n(${unprocessedCount - batchLimit} more will be processed in subsequent batches)` : ''}`
-  )) {
-    return
-  }
-  
-  extracting.value = true
-  error.value = null
-  extractionProgress.show = true
-  extractionProgress.processed = 0
-  extractionProgress.total = willProcess
-  extractionProgress.segmentsExtracted = 0
-  extractionProgress.message = 'Starting feedback extraction...'
-  
-  try {
-    // Pass limit as query parameter
-    const url = new URL('/api/diio/extract-feedback', window.location.origin)
-    url.searchParams.set('limit', batchLimit.toString())
-    
-    const response = await fetch(url.toString(), {
-      method: 'POST'
-    })
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }))
-      throw new Error(errorData.message || `HTTP ${response.status}`)
-    }
-    
-    const result = await response.json()
-    
-    if (result.success) {
-      extractionProgress.message = result.message || 'Extraction completed successfully!'
-      extractionProgress.total = result.summary.transcriptsProcessed || 1
-      extractionProgress.processed = result.summary.transcriptsProcessed || 0
-      extractionProgress.segmentsExtracted = result.summary.feedbackSegmentsExtracted || 0
-      
-      // Show success message longer
-      setTimeout(() => {
-        extractionProgress.show = false
-      }, 5000)
-    } else {
-      error.value = {
-        title: 'Extraction Failed',
-        message: result.message || 'Extraction failed. Please check the error details and try again.'
-      }
-      extractionProgress.show = false
-    }
-  } catch (err: any) {
-    console.error('Extraction error:', err)
-    error.value = {
-      title: 'Extraction Failed',
-      message: err.message || err.statusMessage || 'An error occurred while extracting feedback. Please check the database connection.'
-    }
-    extractionProgress.show = false
-  } finally {
-    extracting.value = false
   }
 }
 
