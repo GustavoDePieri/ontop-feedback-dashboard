@@ -1,8 +1,16 @@
 /**
  * GET /api/diio/download
  * 
+ * ⚠️ LEGACY ENDPOINT - Currently unused
+ * 
  * Proxy for downloading DIIO export files from S3
  * This avoids CORS issues when accessing S3 URLs directly
+ * 
+ * Note: This endpoint was created during initial DIIO integration.
+ * Current implementation uses sync-transcripts endpoint which stores data in database.
+ * Keep for potential future use or remove if not needed.
+ * 
+ * Last reviewed: December 2025
  */
 
 export default defineEventHandler(async (event) => {

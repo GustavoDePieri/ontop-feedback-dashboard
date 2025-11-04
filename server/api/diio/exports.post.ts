@@ -1,7 +1,15 @@
 /**
  * POST /api/diio/exports
  * 
+ * ⚠️ LEGACY ENDPOINT - Currently unused
+ * 
  * Create an export of phone calls or meetings
+ * 
+ * Note: This endpoint was created during initial DIIO integration.
+ * Current implementation uses sync-transcripts endpoint which stores data in database.
+ * Keep for potential future use or remove if not needed.
+ * 
+ * Last reviewed: December 2025
  */
 
 export default defineEventHandler(async (event) => {

@@ -1,8 +1,16 @@
 /**
  * GET /api/diio/meetings
  * 
+ * ⚠️ LEGACY ENDPOINT - Currently unused
+ * 
  * Get list of meetings
  * Note: Requires 'meetings' scope in token
+ * 
+ * Note: This endpoint was created during initial DIIO integration.
+ * Current implementation uses sync-transcripts endpoint which stores data in database.
+ * Keep for potential future use or remove if not needed.
+ * 
+ * Last reviewed: December 2025
  */
 
 export default defineEventHandler(async (event) => {

@@ -1,8 +1,8 @@
 # 📊 Ontop Feedback Analytics Dashboard - Complete Documentation
 
-**Version:** 2.1  
-**Last Updated:** October 15, 2025  
-**Tech Stack:** Nuxt 3 + Tailwind CSS + Google Sheets + DIIO + Gemini AI
+**Version:** 2.2  
+**Last Updated:** December 2025  
+**Tech Stack:** Nuxt 3 + Tailwind CSS + Google Sheets + DIIO + Gemini AI + Supabase
 
 ---
 
@@ -169,7 +169,7 @@ feedbackAnalysis/
 │   ├── index.vue               # Main dashboard (/)
 │   ├── analytics.vue           # Advanced analytics (/analytics)
 │   ├── reports.vue             # Reports page (/reports)
-│   ├── diio.vue                # DIIO integration test (/diio)
+│   ├── diio.vue                # DIIO transcript management (/diio)
 │   ├── login.vue               # Login page (/login)
 │   └── test.vue                # Debug/test page (/test)
 │
@@ -184,7 +184,6 @@ feedbackAnalysis/
 ├── 📁 composables/             # Business logic & utilities
 │   ├── useAIRecommendations.ts # AI insights generation
 │   ├── useDarkMode.ts          # Dark mode management
-│   ├── useDiio.ts              # DIIO API integration
 │   ├── useGoogleSheets.ts      # Google Sheets data fetching
 │   ├── usePDFGenerator.ts      # PDF export functionality
 │   ├── useReportGenerator.ts   # Report generation logic
@@ -203,16 +202,18 @@ feedbackAnalysis/
 │   │   ├── ai/                 # AI endpoints
 │   │   │   └── recommendations.post.ts
 │   │   ├── diio/               # DIIO integration endpoints
-│   │   │   ├── exports/        # Export functionality
-│   │   │   ├── meetings/       # Meeting data
-│   │   │   ├── phone-calls/    # Phone call data
-│   │   │   ├── transcripts/    # Transcript data
-│   │   │   └── users.get.ts    # User data
+│   │   │   ├── sync-transcripts.post.ts # Main sync endpoint (ACTIVE)
+│   │   │   ├── sync-transcripts-daily.get.ts # Daily cron (ACTIVE)
+│   │   │   ├── feedback-transcripts.get.ts # AI analysis (ACTIVE)
+│   │   │   ├── fix-transcripts.post.ts # Admin fix (ACTIVE)
+│   │   │   ├── test-transcripts.get.ts # Debug (ACTIVE)
+│   │   │   └── [legacy endpoints] # ⚠️ Marked as unused, see comments
 │   │   └── sheets/             # Google Sheets endpoints
 │   │       ├── data.get.ts     # Fetch feedback data
 │   │       └── test.get.ts     # Test connection
 │   └── utils/                   # Server utilities
-│       └── diio.ts             # DIIO token management
+│       ├── diio.ts             # DIIO token management
+│       └── transcriptParser.ts # Transcript parsing for AI
 │
 ├── 📁 types/                   # TypeScript type definitions
 │   ├── diio.ts                 # DIIO API types
@@ -221,14 +222,19 @@ feedbackAnalysis/
 ├── 📁 database/                # Database schema
 │   └── schema.sql              # Supabase schema
 │
+├── 📁 docs/                    # Documentation
+│   └── archive/                # Archived historical documentation
+│       └── [10 archived files] # See docs/archive/ for historical docs
+│
 ├── 📄 nuxt.config.ts           # Nuxt configuration
 ├── 📄 tailwind.config.js       # Tailwind/Design system config
 ├── 📄 package.json             # Dependencies
 ├── 📄 vercel.json             # Deployment config
-├── 📄 PRD_SIMPLE.md            # Product requirements
+├── 📄 README.md                # This file - Main documentation
+├── 📄 DIIO_API_CONNECTION_CODE.md # Complete DIIO API reference
 ├── 📄 REPORT_STYLING_GUIDE.md  # Report styling documentation
-├── 📄 DIIO_INTEGRATION_COMPLETE.md # DIIO integration docs
-└── 📄 diio_api_documentation.md # DIIO API reference
+├── 📄 PROJECT_REVIEW_AND_CLEANUP.md # Codebase review & cleanup status
+└── 📄 COMPOSABLES_REVIEW.md    # Composables review documentation
 ```
 
 ### Page Routes
@@ -697,34 +703,27 @@ DIIO is a call transcription service that records and transcribes sales calls an
 
 ### Usage
 
-```vue
-<script setup>
-const { getUsers, getPhoneCalls, getTranscript } = useDiio()
+### DIIO Integration
 
-// Fetch DIIO users
-const users = await getUsers()
+**Current Implementation:**
+- Transcripts are synced from DIIO API and stored in Supabase database
+- Manual sync via `/diio` page or automatic daily sync via Vercel Cron
+- Transcripts are fetched from database for display and AI analysis
 
-// Fetch phone calls
-const { calls, total } = await getPhoneCalls(1, 20)
+**Documentation:**
+- 📘 **Complete API Reference:** See `DIIO_API_CONNECTION_CODE.md`
+- 📘 **Project Review:** See `PROJECT_REVIEW_AND_CLEANUP.md` for codebase status
+- 📘 **Historical Docs:** See `docs/archive/` for archived implementation guides
 
-// Get transcript
-const transcript = await getTranscript('transcript-id')
-</script>
-```
+**API Endpoints:**
+- ✅ `/api/diio/sync-transcripts` (POST) - Manual sync
+- ✅ `/api/diio/sync-transcripts-daily` (GET) - Daily cron sync
+- ✅ `/api/diio/feedback-transcripts` (GET) - Fetch for AI analysis
+- ✅ `/api/diio/fix-transcripts` (POST) - Admin fix endpoint
+- ⚠️ Legacy endpoints marked with `⚠️ LEGACY ENDPOINT` comments (see code)
 
-### Documentation
-
-- 📘 **Complete Guide:** See `DIIO_INTEGRATION_COMPLETE.md`
-- 📘 **Technical Docs:** See `DIIO_API_WORKING.md`
-- 📘 **API Reference:** See `diio_api_documentation.md`
-
-### Test Page
-
-Visit `/diio-test` to:
-- View all DIIO users (27 users found)
-- Fetch phone calls and transcripts
-- Export call data
-- Test the integration
+**Test Page:**
+Visit `/test` to test Google Sheets connection and DIIO transcript access
 
 ---
 
@@ -795,5 +794,48 @@ For issues or questions:
 
 **End of Documentation** 🚀
 
-_Last updated: October 1, 2025_
+_Last updated: December 2025_
+
+---
+
+## 📚 Documentation Archive
+
+Historical documentation has been archived to `docs/archive/` for reference:
+
+- `DIIO_INTEGRATION_COMPLETE.md` - Original integration guide
+- `DIIO_INTEGRATION_SUMMARY.md` - Integration summary
+- `DIIO_FIXES_AND_NEXT_STEPS.md` - Historical fixes and plans
+- `DIIO_AI_INTEGRATION_PLAN.md` - AI integration planning doc
+- `DIIO_SYNC_GUIDE.md` - Sync guide (info now in README)
+- `TRANSCRIPT_FEEDBACK_SEPARATION_GUIDE.md` - Implementation guide
+- `AI_INSIGHTS_IMPROVEMENTS.md` - Historical improvements
+- `PRD_SIMPLE.md` - Original product requirements
+- `diio_api_documentation.md` - Replaced by DIIO_API_CONNECTION_CODE.md
+- `ENABLE_PARTICIPANT_EMAILS_GUIDE.md` - Feature implementation guide
+
+**Active Documentation:**
+- `README.md` - This file (main documentation)
+- `DIIO_API_CONNECTION_CODE.md` - Complete DIIO API reference
+- `REPORT_STYLING_GUIDE.md` - Report styling guide
+- `PROJECT_REVIEW_AND_CLEANUP.md` - Codebase review and cleanup status
+- `COMPOSABLES_REVIEW.md` - Composables review documentation
+
+---
+
+## 🧹 Recent Cleanup (December 2025)
+
+**Removed Unused Code:**
+- ✅ Removed `components/diio/` directory (5 unused components)
+- ✅ Removed `services/diioService.ts` (unused service)
+- ✅ Removed `composables/useDiio.ts` (unused composable)
+- ✅ Removed `composables/useDiioStore.ts` (unused composable)
+
+**Archived Documentation:**
+- ✅ Moved 10 outdated documentation files to `docs/archive/`
+
+**API Endpoint Review:**
+- ✅ Added `⚠️ LEGACY ENDPOINT` comments to unused endpoints
+- ✅ All unused endpoints marked for future review/removal
+
+See `PROJECT_REVIEW_AND_CLEANUP.md` for complete details.
 

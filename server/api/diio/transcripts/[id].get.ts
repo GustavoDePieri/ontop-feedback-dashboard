@@ -1,7 +1,16 @@
 /**
  * GET /api/diio/transcripts/:id
  * 
+ * ⚠️ LEGACY ENDPOINT - Currently unused
+ * 
  * Get a transcript by ID
+ * 
+ * Note: This endpoint was created during initial DIIO integration.
+ * Current implementation uses sync-transcripts endpoint which stores data in database.
+ * Transcripts are fetched from Supabase database, not directly from DIIO API.
+ * Keep for potential future use or remove if not needed.
+ * 
+ * Last reviewed: December 2025
  */
 
 export default defineEventHandler(async (event) => {
