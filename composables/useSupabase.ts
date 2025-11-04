@@ -33,6 +33,8 @@ export interface DiioTranscriptRecord {
   occurred_at?: string
   duration?: number
   attendees?: any
+  ai_analysis?: any
+  ai_analysis_date?: string
   analyzed_status?: 'pending' | 'finished' | 'error'
   error_cause?: string
   created_at?: string
@@ -400,6 +402,8 @@ export const useSupabase = () => {
               occurred_at,
               duration,
               attendees,
+              ai_analysis,
+              ai_analysis_date,
               analyzed_status,
               created_at,
               updated_at
@@ -443,6 +447,8 @@ export const useSupabase = () => {
           occurred_at,
           duration,
           attendees,
+          ai_analysis,
+          ai_analysis_date,
           analyzed_status,
           created_at,
           updated_at
