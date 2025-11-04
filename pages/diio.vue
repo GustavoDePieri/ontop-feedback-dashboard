@@ -30,6 +30,21 @@
             </div>
             
             <button
+              @click="extractFeedback"
+              :disabled="extracting"
+              class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <svg v-if="!extracting" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ extracting ? 'Extracting...' : 'Extract Feedback' }}
+            </button>
+            
+            <button
               @click="syncTranscripts"
               :disabled="syncing"
               class="flex items-center gap-2 px-4 py-2 bg-gradient-cta text-white rounded-lg hover:bg-gradient-cta-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
@@ -106,6 +121,52 @@
         </div>
       </div>
 
+      <!-- Feedback Extraction Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-400 text-sm mb-1">Feedback Segments</p>
+              <p class="text-3xl font-bold text-white">{{ feedbackStats.totalSegments || 0 }}</p>
+            </div>
+            <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-400 text-sm mb-1">Churn Signals</p>
+              <p class="text-3xl font-bold text-white">{{ feedbackStats.criticalSignals || 0 }}</p>
+              <p class="text-xs text-gray-500 mt-1">Critical signals detected</p>
+            </div>
+            <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-400 text-sm mb-1">Last Extraction</p>
+              <p class="text-lg font-semibold text-white">{{ lastExtractionTime || 'Never' }}</p>
+            </div>
+            <div class="w-12 h-12 bg-indigo-500/20 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Sync Progress -->
       <div v-if="syncProgress.show" class="mb-8 bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
         <div class="flex items-center justify-between mb-4">
@@ -124,6 +185,31 @@
         
         <div class="text-gray-300 text-sm">
           {{ syncProgress.message }}
+        </div>
+      </div>
+
+      <!-- Extraction Progress -->
+      <div v-if="extractionProgress.show" class="mb-8 bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-white">🎯 Extracting Feedback</h3>
+          <div class="text-sm text-gray-400">
+            {{ extractionProgress.processed }} / {{ extractionProgress.total }}
+          </div>
+        </div>
+        
+        <div class="w-full bg-gray-700 rounded-full h-3 mb-4">
+          <div 
+            class="bg-gradient-to-r from-indigo-500 to-indigo-600 h-3 rounded-full transition-all duration-300"
+            :style="{ width: `${(extractionProgress.processed / extractionProgress.total) * 100}%` }"
+          ></div>
+        </div>
+        
+        <div class="text-gray-300 text-sm mb-2">
+          {{ extractionProgress.message }}
+        </div>
+        
+        <div v-if="extractionProgress.segmentsExtracted > 0" class="text-sm text-gray-400">
+          <span class="text-indigo-400 font-semibold">{{ extractionProgress.segmentsExtracted }}</span> feedback segments extracted
         </div>
       </div>
 
@@ -480,6 +566,19 @@ const loadStats = async () => {
   } catch (err) {
     console.error('Error loading stats:', err)
   }
+  
+  // Load feedback stats
+  try {
+    const { getTranscriptFeedbackStats } = useSupabase()
+    const { data: feedbackData } = await getTranscriptFeedbackStats()
+    if (feedbackData) {
+      feedbackStats.totalSegments = feedbackData.total_feedback_segments || 0
+      // Calculate critical signals from feedback types
+      feedbackStats.criticalSignals = (feedbackData.pain_points || 0) + (feedbackData.concerns || 0)
+    }
+  } catch (err) {
+    console.error('Error loading feedback stats:', err)
+  }
 }
 
 const syncTranscripts = async () => {
@@ -518,6 +617,15 @@ const syncTranscripts = async () => {
       const statsMessage = `Found ${result.summary.meetingsFetched || 0} meetings, ${result.summary.phoneCallsFetched || 0} calls. Stored ${result.summary.transcriptsStored || 0} new transcripts.`
       syncProgress.message = statsMessage
       
+      // Check if extraction was mentioned in the message (automatic extraction)
+      if (result.message.includes('Extracted')) {
+        // Extract feedback stats from message
+        const extractionMatch = result.message.match(/Extracted (\d+) feedback segments/)
+        if (extractionMatch) {
+          extractionProgress.segmentsExtracted = parseInt(extractionMatch[1])
+        }
+      }
+      
       // Show success message longer
       setTimeout(() => {
         syncProgress.show = false
@@ -538,6 +646,61 @@ const syncTranscripts = async () => {
     syncProgress.show = false
   } finally {
     syncing.value = false
+  }
+}
+
+const extractFeedback = async () => {
+  extracting.value = true
+  error.value = null
+  extractionProgress.show = true
+  extractionProgress.processed = 0
+  extractionProgress.total = 1
+  extractionProgress.segmentsExtracted = 0
+  extractionProgress.message = 'Starting feedback extraction...'
+  
+  try {
+    const response = await fetch('/api/diio/extract-feedback', {
+      method: 'POST'
+    })
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }))
+      throw new Error(errorData.message || `HTTP ${response.status}`)
+    }
+    
+    const result = await response.json()
+    
+    if (result.success) {
+      extractionProgress.message = result.message || 'Extraction completed successfully!'
+      extractionProgress.total = result.summary.transcriptsProcessed || 1
+      extractionProgress.processed = result.summary.transcriptsProcessed || 0
+      extractionProgress.segmentsExtracted = result.summary.feedbackSegmentsExtracted || 0
+      
+      lastExtractionTime.value = new Date().toLocaleString()
+      
+      // Reload stats to update feedback counts
+      await loadStats()
+      
+      // Show success message longer
+      setTimeout(() => {
+        extractionProgress.show = false
+      }, 5000)
+    } else {
+      error.value = {
+        title: 'Extraction Failed',
+        message: result.message || 'Extraction failed. Please check the error details and try again.'
+      }
+      extractionProgress.show = false
+    }
+  } catch (err: any) {
+    console.error('Extraction error:', err)
+    error.value = {
+      title: 'Extraction Failed',
+      message: err.message || err.statusMessage || 'An error occurred while extracting feedback. Please check the database connection.'
+    }
+    extractionProgress.show = false
+  } finally {
+    extracting.value = false
   }
 }
 

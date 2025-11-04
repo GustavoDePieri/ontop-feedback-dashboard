@@ -1,18 +1,42 @@
 /**
- * Transcript Parser Utility
+ * Enhanced Transcript Parser Utility
  * 
- * Extracts feedback-relevant segments from DIIO call transcripts
- * Uses keyword matching and context analysis to identify client concerns
+ * Extracts feedback, sentiment, and churn signals from DIIO call transcripts
+ * Designed for CS teams to detect deteriorating customer health before churn
  */
 
 export interface FeedbackSegment {
   speaker: string
+  speakerType: 'seller' | 'customer' | 'unknown'
   text: string
   type: 'pain_point' | 'feature_request' | 'praise' | 'concern' | 'question'
   urgency: 'critical' | 'high' | 'medium' | 'low'
   keywords: string[]
   sentiment: 'positive' | 'neutral' | 'negative'
+  churnSignals: ChurnSignal[]
 }
+
+export interface ChurnSignal {
+  category: ChurnSignalCategory
+  severity: 'critical' | 'high' | 'medium' | 'low'
+  description: string
+  keywords: string[]
+}
+
+export type ChurnSignalCategory =
+  | 'payment_issue'
+  | 'worker_payout_issue'
+  | 'recurring_problem'
+  | 'long_lasting_problem'
+  | 'price_negotiation'
+  | 'customer_situation'
+  | 'opportunity'
+  | 'churn_no_active_workforce'
+  | 'churn_shutdown_operations'
+  | 'churn_legal_compliance'
+  | 'churn_price_value'
+  | 'churn_product_fit'
+  | 'churn_worker_experience'
 
 export interface ParsedTranscript {
   feedbackSegments: FeedbackSegment[]
@@ -21,6 +45,159 @@ export interface ParsedTranscript {
     feedbackSegments: number
     speakerCount: number
     dominantType: string
+    churnRiskScore: number // 0-100, higher = more risk
+    overallSentiment: 'positive' | 'neutral' | 'negative'
+    criticalSignalsCount: number
+  }
+}
+
+export interface TranscriptMetadata {
+  callName?: string
+  participants?: string[]
+  sellerEmails?: string[]
+  customerEmails?: string[]
+  date?: string
+  accountName?: string
+}
+
+// Enhanced keyword patterns for churn signal detection
+const CHURN_SIGNALS: Record<ChurnSignalCategory, { keywords: string[], severity: 'critical' | 'high' | 'medium' | 'low' }> = {
+  // Payment Issues
+  payment_issue: {
+    keywords: [
+      'payment', 'invoice', 'billing', 'charge', 'fee', 'cost', 'price', 'expensive',
+      'payment failed', 'payment error', 'payment issue', 'billing problem',
+      'overcharged', 'wrong charge', 'unexpected fee', 'payment delay',
+      'late payment', 'payment processing', 'payment method', 'credit card',
+      'refund', 'chargeback', 'dispute', 'payment declined'
+    ],
+    severity: 'high'
+  },
+  
+  // Worker Payout Issues
+  worker_payout_issue: {
+    keywords: [
+      'payout', 'worker payment', 'contractor payment', 'freelancer payment',
+      'payout delay', 'payout issue', 'payout problem', 'payout error',
+      'workers not paid', 'payment to workers', 'contractor not paid',
+      'late payout', 'payout missing', 'payout failed', 'payout processing'
+    ],
+    severity: 'high'
+  },
+  
+  // Recurring Problems
+  recurring_problem: {
+    keywords: [
+      'again', 'still', 'recurring', 'repeated', 'happening again',
+      'keep happening', 'ongoing issue', 'persistent problem',
+      'same issue', 'same problem', 'continues to', 'repeatedly'
+    ],
+    severity: 'medium'
+  },
+  
+  // Long-lasting Problems
+  long_lasting_problem: {
+    keywords: [
+      'months', 'weeks', 'long time', 'for a while', 'since',
+      'ongoing', 'persistent', 'chronic', 'has been', 'still not fixed',
+      'taking too long', 'delayed', 'waiting', 'unresolved'
+    ],
+    severity: 'high'
+  },
+  
+  // Price Negotiation / Discount Requests
+  price_negotiation: {
+    keywords: [
+      'discount', 'cheaper', 'lower price', 'reduce cost', 'reduce fee',
+      'too expensive', 'cost too much', 'price too high', 'fees too high',
+      'negotiate', 'better price', 'competitive', 'competitor pricing',
+      'can\'t afford', 'budget', 'cost cutting', 'reduce expenses',
+      'price match', 'lower rate', 'discount code', 'promo'
+    ],
+    severity: 'medium'
+  },
+  
+  // Customer Situation Changes
+  customer_situation: {
+    keywords: [
+      'layoff', 'layoffs', 'firing', 'fired', 'let go', 'reduction',
+      'financial problem', 'financial issues', 'budget cuts', 'cutting costs',
+      'company downsizing', 'reducing workforce', 'closing', 'shutting down',
+      'bankruptcy', 'financial trouble', 'cash flow', 'revenue decline',
+      'economic downturn', 'market conditions', 'business slow'
+    ],
+    severity: 'critical'
+  },
+  
+  // Opportunities
+  opportunity: {
+    keywords: [
+      'expand', 'growing', 'hiring', 'scaling', 'new project', 'new business',
+      'upsell', 'upgrade', 'more features', 'additional', 'increase',
+      'new needs', 'considering', 'interested in', 'potential',
+      'opportunity', 'benefit', 'gym', 'insurance', 'new product'
+    ],
+    severity: 'low'
+  },
+  
+  // Churn: No Active Workforce
+  churn_no_active_workforce: {
+    keywords: [
+      'no workers', 'no contractors', 'no freelancers', 'no active workforce',
+      'stopped hiring', 'not using', 'not active', 'inactive workers',
+      'no activity', 'no usage', 'not utilizing', 'workforce inactive'
+    ],
+    severity: 'critical'
+  },
+  
+  // Churn: Shutdown Operations
+  churn_shutdown_operations: {
+    keywords: [
+      'shutting down', 'closing', 'ceasing operations', 'going out of business',
+      'closing shop', 'ending operations', 'winding down', 'discontinuing',
+      'no longer operating', 'shut down', 'closed', 'stopping business'
+    ],
+    severity: 'critical'
+  },
+  
+  // Churn: Legal/Compliance Issues
+  churn_legal_compliance: {
+    keywords: [
+      'legal', 'compliance', 'regulations', 'law', 'lawsuit', 'legal issue',
+      'compliance issue', 'regulatory', 'audit', 'violation', 'non-compliant',
+      'legal problem', 'compliance problem', 'regulatory issue'
+    ],
+    severity: 'high'
+  },
+  
+  // Churn: Price Value Perception
+  churn_price_value: {
+    keywords: [
+      'not worth it', 'not getting value', 'not worth the price', 'overpriced',
+      'value proposition', 'roi', 'return on investment', 'not seeing value',
+      'better value', 'more value', 'getting value', 'worth the cost'
+    ],
+    severity: 'high'
+  },
+  
+  // Churn: Product Fit
+  churn_product_fit: {
+    keywords: [
+      'not working', 'doesn\'t fit', 'not suitable', 'not right for us',
+      'wrong product', 'not what we need', 'doesn\'t meet needs',
+      'not aligned', 'not compatible', 'doesn\'t work for', 'not a fit'
+    ],
+    severity: 'high'
+  },
+  
+  // Churn: Worker Experience
+  churn_worker_experience: {
+    keywords: [
+      'worker complaint', 'worker issue', 'worker problem', 'worker unhappy',
+      'contractor complaint', 'freelancer issue', 'worker experience',
+      'workers not happy', 'worker dissatisfaction', 'worker feedback negative'
+    ],
+    severity: 'medium'
   }
 }
 
@@ -49,43 +226,41 @@ const PATTERNS = {
   urgency_critical: [
     'urgent', 'critical', 'asap', 'immediately', 'emergency', 'blocker',
     'show stopper', 'can\'t continue', 'must have', 'losing money',
-    'clients leaving', 'threatening to leave'
+    'clients leaving', 'threatening to leave', 'going to cancel', 'switching'
   ],
   urgency_high: [
     'soon', 'quickly', 'priority', 'important', 'need this', 'waiting for',
-    'affecting business', 'costing us', 'losing time'
+    'affecting business', 'costing us', 'losing time', 'affecting operations'
   ]
 }
 
 /**
- * Parse a transcript and extract feedback segments
+ * Parse a transcript and extract feedback segments with churn signals
  */
 export function parseTranscript(
   transcript: string,
-  metadata?: {
-    callName?: string
-    participants?: string[]
-    date?: string
-  }
+  metadata?: TranscriptMetadata
 ): ParsedTranscript {
   // Split transcript into segments (by speaker or logical breaks)
-  const segments = splitIntoSegments(transcript)
+  const segments = splitIntoSegments(transcript, metadata)
   
   // Extract feedback-relevant segments
   const feedbackSegments: FeedbackSegment[] = []
   
   for (const segment of segments) {
-    const analysis = analyzeSegment(segment)
+    const analysis = analyzeSegment(segment, metadata)
     
     // Only include segments that contain feedback
     if (analysis.isFeedback) {
       feedbackSegments.push({
         speaker: segment.speaker,
+        speakerType: segment.speakerType,
         text: segment.text,
         type: analysis.type,
         urgency: analysis.urgency,
         keywords: analysis.keywords,
-        sentiment: analysis.sentiment
+        sentiment: analysis.sentiment,
+        churnSignals: analysis.churnSignals
       })
     }
   }
@@ -101,22 +276,93 @@ export function parseTranscript(
   
   const speakers = new Set(feedbackSegments.map(s => s.speaker))
   
+  // Calculate churn risk score (0-100)
+  const churnRiskScore = calculateChurnRiskScore(feedbackSegments)
+  
+  // Calculate overall sentiment
+  const sentimentCounts = feedbackSegments.reduce((acc, seg) => {
+    acc[seg.sentiment] = (acc[seg.sentiment] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
+  
+  const overallSentiment = sentimentCounts.negative > sentimentCounts.positive
+    ? 'negative'
+    : sentimentCounts.positive > sentimentCounts.negative
+    ? 'positive'
+    : 'neutral'
+  
+  const criticalSignalsCount = feedbackSegments.reduce((count, seg) => {
+    return count + seg.churnSignals.filter(s => s.severity === 'critical').length
+  }, 0)
+  
   return {
     feedbackSegments,
     metadata: {
       totalSegments: segments.length,
       feedbackSegments: feedbackSegments.length,
       speakerCount: speakers.size,
-      dominantType
+      dominantType,
+      churnRiskScore,
+      overallSentiment,
+      criticalSignalsCount
     }
   }
 }
 
 /**
- * Split transcript into logical segments
+ * Calculate churn risk score based on signals
  */
-function splitIntoSegments(transcript: string): Array<{ speaker: string, text: string }> {
-  const segments: Array<{ speaker: string, text: string }> = []
+function calculateChurnRiskScore(segments: FeedbackSegment[]): number {
+  let score = 0
+  
+  // Critical signals = 25 points each
+  // High signals = 15 points each
+  // Medium signals = 5 points each
+  // Low signals = 1 point each
+  
+  for (const segment of segments) {
+    for (const signal of segment.churnSignals) {
+      switch (signal.severity) {
+        case 'critical':
+          score += 25
+          break
+        case 'high':
+          score += 15
+          break
+        case 'medium':
+          score += 5
+          break
+        case 'low':
+          score += 1
+          break
+      }
+    }
+    
+    // Negative sentiment adds to risk
+    if (segment.sentiment === 'negative') {
+      score += 3
+    }
+    
+    // High urgency adds to risk
+    if (segment.urgency === 'critical') {
+      score += 10
+    } else if (segment.urgency === 'high') {
+      score += 5
+    }
+  }
+  
+  // Cap at 100
+  return Math.min(100, score)
+}
+
+/**
+ * Split transcript into logical segments with speaker identification
+ */
+function splitIntoSegments(
+  transcript: string,
+  metadata?: TranscriptMetadata
+): Array<{ speaker: string, speakerType: 'seller' | 'customer' | 'unknown', text: string }> {
+  const segments: Array<{ speaker: string, speakerType: 'seller' | 'customer' | 'unknown', text: string }> = []
   
   // Try to parse transcript with speaker labels
   // Common formats:
@@ -126,6 +372,7 @@ function splitIntoSegments(transcript: string): Array<{ speaker: string, text: s
   
   const lines = transcript.split('\n')
   let currentSpeaker = 'Unknown'
+  let currentSpeakerType: 'seller' | 'customer' | 'unknown' = 'unknown'
   let currentText: string[] = []
   
   for (const line of lines) {
@@ -143,13 +390,19 @@ function splitIntoSegments(transcript: string): Array<{ speaker: string, text: s
       if (currentText.length > 0) {
         segments.push({
           speaker: currentSpeaker,
+          speakerType: currentSpeakerType,
           text: currentText.join(' ').trim()
         })
         currentText = []
       }
       
       // Start new segment
-      currentSpeaker = speakerMatch[1].trim()
+      const speakerName = speakerMatch[1].trim()
+      currentSpeaker = speakerName
+      
+      // Identify if speaker is seller or customer
+      currentSpeakerType = identifySpeakerType(speakerName, metadata)
+      
       if (speakerMatch[2]) {
         currentText.push(speakerMatch[2].trim())
       }
@@ -163,6 +416,7 @@ function splitIntoSegments(transcript: string): Array<{ speaker: string, text: s
   if (currentText.length > 0) {
     segments.push({
       speaker: currentSpeaker,
+      speakerType: currentSpeakerType,
       text: currentText.join(' ').trim()
     })
   }
@@ -171,6 +425,7 @@ function splitIntoSegments(transcript: string): Array<{ speaker: string, text: s
   if (segments.length === 0) {
     segments.push({
       speaker: 'Unknown',
+      speakerType: 'unknown',
       text: transcript.trim()
     })
   }
@@ -179,14 +434,57 @@ function splitIntoSegments(transcript: string): Array<{ speaker: string, text: s
 }
 
 /**
- * Analyze a segment to determine if it contains feedback
+ * Identify if speaker is a seller or customer based on metadata
  */
-function analyzeSegment(segment: { speaker: string, text: string }): {
+function identifySpeakerType(
+  speakerName: string,
+  metadata?: TranscriptMetadata
+): 'seller' | 'customer' | 'unknown' {
+  if (!metadata) return 'unknown'
+  
+  const nameLower = speakerName.toLowerCase()
+  
+  // Check if speaker matches any seller email or name
+  if (metadata.sellerEmails && metadata.sellerEmails.length > 0) {
+    for (const email of metadata.sellerEmails) {
+      // Extract name from email (before @)
+      const emailName = email.split('@')[0].toLowerCase()
+      if (nameLower.includes(emailName) || emailName.includes(nameLower)) {
+        return 'seller'
+      }
+    }
+  }
+  
+  // Check if speaker matches any customer email or name
+  if (metadata.customerEmails && metadata.customerEmails.length > 0) {
+    for (const email of metadata.customerEmails) {
+      // Extract name from email (before @)
+      const emailName = email.split('@')[0].toLowerCase()
+      if (nameLower.includes(emailName) || emailName.includes(nameLower)) {
+        return 'customer'
+      }
+    }
+  }
+  
+  // Try partial name matching (if we had participant names, we'd use them here)
+  // This will be enhanced further in the extraction endpoint with full attendee data
+  
+  return 'unknown'
+}
+
+/**
+ * Analyze a segment to determine if it contains feedback and detect churn signals
+ */
+function analyzeSegment(
+  segment: { speaker: string, speakerType: 'seller' | 'customer' | 'unknown', text: string },
+  metadata?: TranscriptMetadata
+): {
   isFeedback: boolean
   type: FeedbackSegment['type']
   urgency: FeedbackSegment['urgency']
   keywords: string[]
   sentiment: FeedbackSegment['sentiment']
+  churnSignals: ChurnSignal[]
 } {
   const text = segment.text.toLowerCase()
   const words = text.split(/\s+/)
@@ -198,7 +496,8 @@ function analyzeSegment(segment: { speaker: string, text: string }): {
       type: 'question',
       urgency: 'low',
       keywords: [],
-      sentiment: 'neutral'
+      sentiment: 'neutral',
+      churnSignals: []
     }
   }
   
@@ -227,6 +526,9 @@ function analyzeSegment(segment: { speaker: string, text: string }): {
   // Determine if this is feedback (at least 1 keyword match)
   const isFeedback = maxMatches > 0
   
+  // Detect churn signals
+  const churnSignals = detectChurnSignals(text)
+  
   // Determine urgency
   let urgency: FeedbackSegment['urgency'] = 'medium'
   if (PATTERNS.urgency_critical.some(k => text.includes(k))) {
@@ -237,14 +539,26 @@ function analyzeSegment(segment: { speaker: string, text: string }): {
     urgency = 'low'
   }
   
+  // If we have critical churn signals, elevate urgency
+  if (churnSignals.some(s => s.severity === 'critical')) {
+    urgency = 'critical'
+  } else if (churnSignals.some(s => s.severity === 'high')) {
+    urgency = urgency === 'low' ? 'medium' : urgency
+  }
+  
   // Determine sentiment
   let sentiment: FeedbackSegment['sentiment'] = 'neutral'
   const positiveScore = PATTERNS.praise.filter(k => text.includes(k)).length
   const negativeScore = [...PATTERNS.pain_point, ...PATTERNS.concern].filter(k => text.includes(k)).length
   
-  if (positiveScore > negativeScore + 1) {
+  // Churn signals also indicate negative sentiment
+  const churnNegativeScore = churnSignals.filter(s => 
+    ['critical', 'high'].includes(s.severity)
+  ).length
+  
+  if (positiveScore > negativeScore + churnNegativeScore + 1) {
     sentiment = 'positive'
-  } else if (negativeScore > positiveScore + 1) {
+  } else if (negativeScore + churnNegativeScore > positiveScore + 1) {
     sentiment = 'negative'
   }
   
@@ -253,8 +567,62 @@ function analyzeSegment(segment: { speaker: string, text: string }): {
     type,
     urgency,
     keywords: Array.from(new Set(matchedKeywords)),
-    sentiment
+    sentiment,
+    churnSignals
   }
+}
+
+/**
+ * Detect churn signals in text
+ */
+function detectChurnSignals(text: string): ChurnSignal[] {
+  const signals: ChurnSignal[] = []
+  
+  for (const [category, config] of Object.entries(CHURN_SIGNALS)) {
+    const matchedKeywords: string[] = []
+    
+    for (const keyword of config.keywords) {
+      // Use word boundary matching for better accuracy
+      const regex = new RegExp(`\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i')
+      if (regex.test(text)) {
+        matchedKeywords.push(keyword)
+      }
+    }
+    
+    if (matchedKeywords.length > 0) {
+      signals.push({
+        category: category as ChurnSignalCategory,
+        severity: config.severity,
+        description: getChurnSignalDescription(category as ChurnSignalCategory),
+        keywords: matchedKeywords
+      })
+    }
+  }
+  
+  return signals
+}
+
+/**
+ * Get human-readable description for churn signal
+ */
+function getChurnSignalDescription(category: ChurnSignalCategory): string {
+  const descriptions: Record<ChurnSignalCategory, string> = {
+    payment_issue: 'Payment or billing issue mentioned',
+    worker_payout_issue: 'Worker payout problem reported',
+    recurring_problem: 'Recurring or repeated problem identified',
+    long_lasting_problem: 'Long-lasting unresolved issue',
+    price_negotiation: 'Price negotiation or discount request',
+    customer_situation: 'Customer situation change (layoffs, financial issues)',
+    opportunity: 'Growth or upsell opportunity identified',
+    churn_no_active_workforce: 'No active workforce - potential churn risk',
+    churn_shutdown_operations: 'Customer shutting down operations',
+    churn_legal_compliance: 'Legal or compliance issue',
+    churn_price_value: 'Price value perception concern',
+    churn_product_fit: 'Product fit concern',
+    churn_worker_experience: 'Worker experience issue'
+  }
+  
+  return descriptions[category] || 'Churn signal detected'
 }
 
 /**
@@ -282,9 +650,12 @@ export function formatSegmentsForAI(
   lines.push('')
   
   for (const segment of segments) {
-    lines.push(`[${segment.type.toUpperCase()}] ${segment.speaker}:`)
+    lines.push(`[${segment.type.toUpperCase()}] ${segment.speaker} (${segment.speakerType}):`)
     lines.push(segment.text)
     lines.push(`→ Urgency: ${segment.urgency}, Sentiment: ${segment.sentiment}`)
+    if (segment.churnSignals.length > 0) {
+      lines.push(`→ Churn Signals: ${segment.churnSignals.map(s => `${s.category} (${s.severity})`).join(', ')}`)
+    }
     lines.push('')
   }
   
@@ -310,11 +681,18 @@ export function getSegmentStats(segments: FeedbackSegment[]) {
     return acc
   }, {} as Record<string, number>)
   
+  const churnSignalCounts = segments.reduce((acc, seg) => {
+    for (const signal of seg.churnSignals) {
+      acc[signal.category] = (acc[signal.category] || 0) + 1
+    }
+    return acc
+  }, {} as Record<string, number>)
+  
   return {
     total: segments.length,
     byType: typeCounts,
     byUrgency: urgencyCounts,
-    bySentiment: sentimentCounts
+    bySentiment: sentimentCounts,
+    byChurnSignal: churnSignalCounts
   }
 }
-

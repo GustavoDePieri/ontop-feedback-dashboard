@@ -393,6 +393,33 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
     result.success = true
     result.message = `Sync completed! Found ${meetings.length} meetings and ${phoneCalls.length} calls. Stored ${result.summary.transcriptsStored} new transcripts, skipped ${result.summary.transcriptsSkipped}, ${result.summary.errors} errors.`
     console.log(`✅ Sync completed: ${result.message}`)
+    
+    // Step 6: Automatically extract feedback from newly stored transcripts
+    if (result.summary.transcriptsStored > 0) {
+      console.log(`\n🎯 Starting automatic feedback extraction for ${result.summary.transcriptsStored} new transcripts...`)
+      
+      try {
+        // Call extraction endpoint internally
+        const extractionResult = await $fetch('/api/diio/extract-feedback', {
+          method: 'POST',
+          params: {
+            limit: result.summary.transcriptsStored
+          }
+        })
+        
+        if (extractionResult.success) {
+          console.log(`✅ Feedback extraction completed: ${extractionResult.message}`)
+          result.message += ` | Extracted ${extractionResult.summary.feedbackSegmentsExtracted} feedback segments from ${extractionResult.summary.transcriptsProcessed} transcripts.`
+        } else {
+          console.warn(`⚠️ Feedback extraction completed with warnings: ${extractionResult.message}`)
+          result.message += ` | Extraction: ${extractionResult.message}`
+        }
+      } catch (extractionError: any) {
+        console.error('⚠️ Feedback extraction failed (non-blocking):', extractionError)
+        // Don't fail the sync if extraction fails - it's non-blocking
+        result.message += ` | Extraction failed (can be run manually)`
+      }
+    }
 
     return result
 
