@@ -505,12 +505,17 @@ const syncTranscripts = async () => {
         syncProgress.show = false
       }, 3000)
     } else {
-      throw new Error(result.message || 'Sync failed')
+      error.value = {
+        title: 'Sync Failed',
+        message: result.message || 'Sync failed. Please check the error details and try again.'
+      }
+      syncProgress.show = false
     }
   } catch (err: any) {
+    console.error('Sync error:', err)
     error.value = {
       title: 'Sync Failed',
-      message: err.message || 'An error occurred while syncing transcripts'
+      message: err.data?.message || err.message || err.statusMessage || 'An error occurred while syncing transcripts. Please check your DIIO credentials and database connection.'
     }
     syncProgress.show = false
   } finally {

@@ -11,9 +11,6 @@
 import { diioRequest } from '~/server/utils/diio'
 import { createClient } from '@supabase/supabase-js'
 
-const config = useRuntimeConfig()
-const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey)
-
 interface SyncResult {
   success: boolean
   message: string
@@ -34,6 +31,18 @@ interface SyncResult {
 }
 
 export default defineEventHandler(async (event): Promise<SyncResult> => {
+  const config = useRuntimeConfig()
+  
+  // Initialize Supabase client
+  if (!config.public.supabaseUrl || !config.public.supabaseAnonKey) {
+    throw createError({
+      statusCode: 500,
+      message: 'Supabase configuration is missing. Please check SUPABASE_URL and SUPABASE_ANON_KEY environment variables.'
+    })
+  }
+  
+  const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey)
+  
   const result: SyncResult = {
     success: false,
     message: '',
@@ -102,12 +111,23 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
     console.log(`📋 Found ${allTranscriptIds.length} total transcript IDs (${meetingTranscriptIds.length} meetings, ${phoneCallTranscriptIds.length} calls)`)
 
     // Step 4: Check which transcripts already exist
-    const { data: existingTranscripts } = await supabase
-      .from('diio_transcripts')
-      .select('diio_transcript_id')
-      .in('diio_transcript_id', allTranscriptIds)
+    let existingIds = new Set<string>()
+    
+    if (allTranscriptIds.length > 0) {
+      // Supabase .in() doesn't work well with empty arrays, so check first
+      const { data: existingTranscripts, error: queryError } = await supabase
+        .from('diio_transcripts')
+        .select('diio_transcript_id')
+        .in('diio_transcript_id', allTranscriptIds)
 
-    const existingIds = new Set(existingTranscripts?.map(t => t.diio_transcript_id) || [])
+      if (queryError) {
+        console.error('Error querying existing transcripts:', queryError)
+        throw new Error(`Database query failed: ${queryError.message}`)
+      }
+
+      existingIds = new Set(existingTranscripts?.map(t => t.diio_transcript_id) || [])
+    }
+    
     const newTranscriptIds = allTranscriptIds.filter(id => !existingIds.has(id))
     
     result.summary.newTranscriptsFound = newTranscriptIds.length
@@ -226,7 +246,17 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
   } catch (error: any) {
     console.error('❌ Sync failed:', error)
     result.success = false
-    result.message = `Sync failed: ${error.message}`
+    result.message = `Sync failed: ${error.message || 'Unknown error'}`
+    
+    // If it's a createError, preserve the status code
+    if (error.statusCode) {
+      throw createError({
+        statusCode: error.statusCode,
+        message: result.message
+      })
+    }
+    
+    // Otherwise return the result with error details
     return result
   }
 })
