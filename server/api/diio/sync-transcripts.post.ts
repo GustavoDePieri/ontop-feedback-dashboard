@@ -162,22 +162,53 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
     const allTranscriptIds = [...meetingTranscriptIds, ...phoneCallTranscriptIds]
     console.log(`📋 Found ${allTranscriptIds.length} total transcript IDs (${meetingTranscriptIds.length} meetings, ${phoneCallTranscriptIds.length} calls)`)
 
-    // Step 4: Check which transcripts already exist
+    // Step 4: Check which transcripts already exist (in chunks to avoid query limits)
     let existingIds = new Set<string>()
     
     if (allTranscriptIds.length > 0) {
-      // Supabase .in() doesn't work well with empty arrays, so check first
-      const { data: existingTranscripts, error: queryError } = await supabase
-        .from('diio_transcripts')
-        .select('diio_transcript_id')
-        .in('diio_transcript_id', allTranscriptIds)
-
-      if (queryError) {
-        console.error('Error querying existing transcripts:', queryError)
-        throw new Error(`Database query failed: ${queryError.message}`)
+      console.log(`🔍 Checking which of ${allTranscriptIds.length} transcripts already exist in database...`)
+      
+      // Supabase .in() has limits, so we need to query in chunks
+      const chunkSize = 100 // Safe chunk size for .in() queries
+      const chunks: string[][] = []
+      
+      for (let i = 0; i < allTranscriptIds.length; i += chunkSize) {
+        chunks.push(allTranscriptIds.slice(i, i + chunkSize))
       }
+      
+      console.log(`📦 Processing ${chunks.length} chunks of transcript IDs...`)
+      
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i]
+        try {
+          const { data: existingTranscripts, error: queryError } = await supabase
+            .from('diio_transcripts')
+            .select('diio_transcript_id')
+            .in('diio_transcript_id', chunk)
 
-      existingIds = new Set(existingTranscripts?.map(t => t.diio_transcript_id) || [])
+          if (queryError) {
+            console.error(`Error querying chunk ${i + 1}/${chunks.length}:`, queryError)
+            // Continue with other chunks even if one fails
+            continue
+          }
+
+          if (existingTranscripts) {
+            existingTranscripts.forEach((t: any) => {
+              existingIds.add(t.diio_transcript_id)
+            })
+          }
+          
+          if ((i + 1) % 10 === 0 || i === chunks.length - 1) {
+            console.log(`✅ Processed ${i + 1}/${chunks.length} chunks (${existingIds.size} existing transcripts found so far)`)
+          }
+        } catch (error: any) {
+          console.error(`Error processing chunk ${i + 1}:`, error)
+          // Continue with next chunk
+          continue
+        }
+      }
+      
+      console.log(`✅ Found ${existingIds.size} existing transcripts in database`)
     }
     
     const newTranscriptIds = allTranscriptIds.filter(id => !existingIds.has(id))
