@@ -293,7 +293,30 @@ feedbackAnalysis/
 - Manager-specific reports
 - Custom date range reports
 
-### 3. Analytics Page (`pages/analytics.vue`)
+### 3. Call Transcripts Page (`pages/diio.vue`)
+
+**Features:**
+- 📞 **Transcript Management** - Access and analyze call/meeting transcripts
+- 👥 **Attendee Display** - View participants (sellers & customers) with emails
+- 🤖 **AI Sentiment Analysis** - Deep analysis powered by Gemini AI
+  - Overall sentiment and satisfaction scoring
+  - Churn risk assessment with signal detection
+  - Key themes, pain points, and positive feedback
+  - Actionable insights with priority and ownership
+- 📊 **Feedback Extraction** - Pattern-based feedback segment extraction
+- 🔄 **Sync from DIIO** - Manual and automatic daily sync
+- 🔍 **Advanced Filtering** - By type, date range, and keyword search
+
+**AI Sentiment Analysis Capabilities:**
+- Sentiment scoring (-100% to +100%)
+- Customer satisfaction assessment
+- Churn risk levels (Low/Medium/High/Critical)
+- Churn signal detection (competitors, pricing, escalation)
+- Theme identification with urgency classification
+- Pain point and highlight extraction
+- Prioritized recommendations with team ownership
+
+### 4. Analytics Page (`pages/analytics.vue`)
 
 **Features:**
 - 📈 **Advanced Metrics** - Detailed statistics
@@ -301,7 +324,24 @@ feedbackAnalysis/
 - 🎯 **Trend Analysis** - Historical performance
 - 💰 **Revenue Impact** - MRR/TPV correlation
 
-### 4. AI Intelligence (`Gemini AI`)
+### 4. Call Transcripts Page (`pages/diio.vue`)
+
+**Features:**
+- 📞 **Transcript Management** - View and manage meeting and call transcripts
+- 👥 **Attendee Information** - See sellers and customers with names and emails
+- 🤖 **AI Sentiment Analysis** - Analyze individual transcripts for:
+  - Overall sentiment (positive/neutral/negative)
+  - Customer satisfaction level (satisfied/neutral/frustrated/at_risk)
+  - Churn risk assessment (low/medium/high/critical)
+  - Churn signal detection (competitor mentions, cost concerns, etc.)
+  - Key themes with urgency levels
+  - Pain points and positive highlights
+  - Actionable insights with priority and ownership
+- 📊 **Feedback Extraction** - Extract structured feedback from transcripts
+- 🔍 **Search & Filters** - Filter by type, date, and search terms
+- 🔄 **Auto-sync** - Daily automatic sync of new transcripts from DIIO
+
+### 5. AI Intelligence (`Gemini AI`)
 
 **Capabilities:**
 - **Pattern Recognition** - Identifies recurring themes
@@ -310,6 +350,7 @@ feedbackAnalysis/
 - **Actionable Recommendations** - Concrete next steps with clear ownership
 - **Cross-Functional Ownership** - Assigns to correct teams
 - **Quick Win Detection** - Identifies easy improvements
+- **Transcript Sentiment Analysis** - Individual transcript analysis with churn detection
 
 **Quality Standards:**
 - ✅ **Minimum 2 insights per area** - Emerging Patterns, Critical Risks, Quick Wins
@@ -819,10 +860,33 @@ Historical documentation has been archived to `docs/archive/` for reference:
 - `REPORT_STYLING_GUIDE.md` - Report styling guide
 - `PROJECT_REVIEW_AND_CLEANUP.md` - Codebase review and cleanup status
 - `COMPOSABLES_REVIEW.md` - Composables review documentation
+- `TRANSCRIPT_IMPROVEMENTS.md` - ⭐ **NEW**: Transcript attendee display and AI sentiment analysis
+- `scripts/reset-transcripts.md` - Guide for dropping and re-syncing transcripts
 
 ---
 
-## 🧹 Recent Cleanup (December 2025)
+## 🧹 Recent Changes
+
+### ⭐ Latest: Transcript Improvements (January 2025)
+
+**New Features:**
+- ✅ Added attendee display (sellers & customers) with names and emails
+- ✅ Implemented AI-powered sentiment analysis for individual transcripts
+- ✅ Enhanced transcript cards with visual attendee badges
+- ✅ Created comprehensive AI analysis modal with churn risk detection
+- ✅ Added actionable insights with priority and ownership assignment
+
+**New API Endpoints:**
+- ✅ `POST /api/diio/analyze-transcript` - AI sentiment analysis endpoint
+
+**Documentation:**
+- ✅ Created `TRANSCRIPT_IMPROVEMENTS.md` - Complete implementation guide
+- ✅ Created `scripts/reset-transcripts.md` - Reset and re-sync guide
+- ✅ Updated README.md with new features
+
+**See `TRANSCRIPT_IMPROVEMENTS.md` for complete details and deployment instructions.**
+
+### Cleanup (December 2025)
 
 **Removed Unused Code:**
 - ✅ Removed `components/diio/` directory (5 unused components)

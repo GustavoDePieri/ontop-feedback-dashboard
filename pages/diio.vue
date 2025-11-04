@@ -367,28 +367,83 @@
                   {{ getTranscriptPreview(transcript.transcript_text) }}
                 </p>
                 
+                <!-- Attendees Section -->
+                <div v-if="transcript.attendees && (transcript.attendees.sellers || transcript.attendees.customers)" class="mb-3 p-2 bg-gray-900/50 rounded border border-gray-700">
+                  <div v-if="transcript.attendees.sellers && transcript.attendees.sellers.length > 0" class="mb-2">
+                    <p class="text-xs text-purple-400 font-semibold mb-1">👔 Sellers:</p>
+                    <div class="flex flex-wrap gap-2">
+                      <span
+                        v-for="(seller, idx) in transcript.attendees.sellers.slice(0, 3)"
+                        :key="idx"
+                        class="px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                        :title="seller.email"
+                      >
+                        {{ seller.name || seller.email || 'Unknown' }}
+                      </span>
+                      <span v-if="transcript.attendees.sellers.length > 3" class="px-2 py-1 text-xs text-gray-400">
+                        +{{ transcript.attendees.sellers.length - 3 }} more
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div v-if="transcript.attendees.customers && transcript.attendees.customers.length > 0">
+                    <p class="text-xs text-blue-400 font-semibold mb-1">🏢 Customers:</p>
+                    <div class="flex flex-wrap gap-2">
+                      <span
+                        v-for="(customer, idx) in transcript.attendees.customers.slice(0, 3)"
+                        :key="idx"
+                        class="px-2 py-1 text-xs rounded bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                        :title="customer.email"
+                      >
+                        {{ customer.name || customer.email || 'Unknown' }}
+                      </span>
+                      <span v-if="transcript.attendees.customers.length > 3" class="px-2 py-1 text-xs text-gray-400">
+                        +{{ transcript.attendees.customers.length - 3 }} more
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
                 <div class="flex items-center gap-4 text-xs text-gray-400">
                   <span>ID: {{ transcript.diio_transcript_id.substring(0, 20) }}...</span>
                   <span v-if="transcript.attendees">{{ getAttendeeCount(transcript.attendees) }} attendees</span>
                 </div>
               </div>
               
-              <div class="ml-4 flex items-center gap-2">
+              <div class="ml-4 flex flex-col items-end gap-2">
+                <div class="flex items-center gap-2">
+                  <button
+                    @click.stop="viewTranscript(transcript)"
+                    class="px-3 py-1.5 bg-emerald-600 text-white text-xs rounded-lg hover:bg-emerald-700 transition-colors duration-200"
+                  >
+                    View
+                  </button>
+                  <button
+                    v-if="transcript.feedback_extracted"
+                    @click.stop="viewFeedback(transcript)"
+                    class="px-3 py-1.5 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700 transition-colors duration-200 flex items-center gap-1"
+                  >
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Feedback
+                  </button>
+                </div>
+                
+                <!-- AI Sentiment Analysis Button -->
                 <button
-                  @click.stop="viewTranscript(transcript)"
-                  class="px-3 py-1.5 bg-emerald-600 text-white text-xs rounded-lg hover:bg-emerald-700 transition-colors duration-200"
+                  @click.stop="analyzeTranscriptWithAI(transcript)"
+                  :disabled="analyzingTranscript === transcript.id"
+                  class="px-3 py-1.5 bg-gradient-to-r from-pink-600 to-purple-600 text-white text-xs rounded-lg hover:from-pink-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-1"
                 >
-                  View
-                </button>
-                <button
-                  v-if="transcript.feedback_extracted"
-                  @click.stop="viewFeedback(transcript)"
-                  class="px-3 py-1.5 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700 transition-colors duration-200 flex items-center gap-1"
-                >
-                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <svg v-if="analyzingTranscript !== transcript.id" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
-                  Feedback
+                  <svg v-else class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {{ analyzingTranscript === transcript.id ? 'Analyzing...' : 'AI Analysis' }}
                 </button>
               </div>
             </div>
@@ -425,24 +480,56 @@
         class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
         @click.self="selectedTranscript = null"
       >
-        <div class="bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[80vh] overflow-auto border border-gray-700 shadow-2xl">
+        <div class="bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[85vh] overflow-auto border border-gray-700 shadow-2xl">
           <div class="flex justify-between items-start mb-4">
-            <div>
+            <div class="flex-1">
               <h2 class="text-2xl font-bold text-white">{{ selectedTranscript.source_name || 'Untitled' }}</h2>
               <p class="text-gray-400 text-sm mt-1">
                 {{ selectedTranscript.transcript_type === 'meeting' ? 'Meeting' : 'Phone Call' }} • 
                 {{ formatDate(selectedTranscript.occurred_at || selectedTranscript.created_at) }}
               </p>
+              
+              <!-- Attendees in Modal -->
+              <div v-if="selectedTranscript.attendees && (selectedTranscript.attendees.sellers || selectedTranscript.attendees.customers)" class="mt-3 p-3 bg-gray-900/50 rounded border border-gray-700">
+                <div v-if="selectedTranscript.attendees.sellers && selectedTranscript.attendees.sellers.length > 0" class="mb-3">
+                  <p class="text-xs text-purple-400 font-semibold mb-2">👔 Sellers:</p>
+                  <div class="space-y-1">
+                    <div
+                      v-for="(seller, idx) in selectedTranscript.attendees.sellers"
+                      :key="idx"
+                      class="flex items-center gap-2 text-sm"
+                    >
+                      <span class="text-purple-300">{{ seller.name || 'Unknown' }}</span>
+                      <span v-if="seller.email" class="text-gray-400 text-xs">{{ seller.email }}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div v-if="selectedTranscript.attendees.customers && selectedTranscript.attendees.customers.length > 0">
+                  <p class="text-xs text-blue-400 font-semibold mb-2">🏢 Customers:</p>
+                  <div class="space-y-1">
+                    <div
+                      v-for="(customer, idx) in selectedTranscript.attendees.customers"
+                      :key="idx"
+                      class="flex items-center gap-2 text-sm"
+                    >
+                      <span class="text-blue-300">{{ customer.name || 'Unknown' }}</span>
+                      <span v-if="customer.email" class="text-gray-400 text-xs">{{ customer.email }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+            
             <button
               @click="selectedTranscript = null"
-              class="text-gray-400 hover:text-white text-2xl transition-colors duration-200"
+              class="text-gray-400 hover:text-white text-2xl transition-colors duration-200 ml-4"
             >
               ×
             </button>
           </div>
           
-          <div class="bg-gray-900 rounded-lg p-4 text-gray-300 whitespace-pre-wrap border border-gray-700 max-h-[60vh] overflow-auto">
+          <div class="bg-gray-900 rounded-lg p-4 text-gray-300 whitespace-pre-wrap border border-gray-700 max-h-[50vh] overflow-auto">
             {{ formatTranscriptText(selectedTranscript.transcript_text) }}
           </div>
         </div>
@@ -578,6 +665,199 @@
           </div>
         </div>
       </div>
+      
+      <!-- AI Analysis Modal -->
+      <div
+        v-if="aiAnalysisResult"
+        class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        @click.self="aiAnalysisResult = null"
+      >
+        <div class="bg-gray-800 rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                <svg class="w-6 h-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                AI Sentiment Analysis
+              </h2>
+              <p class="text-gray-400 text-sm mt-1">
+                {{ aiAnalysisResult.metadata.sourceName }}
+              </p>
+            </div>
+            <button
+              @click="aiAnalysisResult = null"
+              class="text-gray-400 hover:text-white text-2xl transition-colors duration-200"
+            >
+              ×
+            </button>
+          </div>
+          
+          <!-- Summary -->
+          <div class="mb-6 p-4 bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-lg border border-purple-500/30">
+            <p class="text-white text-sm leading-relaxed">{{ aiAnalysisResult.analysis.summary }}</p>
+          </div>
+          
+          <!-- Key Metrics -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+              <p class="text-gray-400 text-xs mb-1">Overall Sentiment</p>
+              <p class="text-lg font-bold" :class="{
+                'text-green-400': aiAnalysisResult.analysis.overallSentiment === 'positive',
+                'text-yellow-400': aiAnalysisResult.analysis.overallSentiment === 'neutral' || aiAnalysisResult.analysis.overallSentiment === 'mixed',
+                'text-red-400': aiAnalysisResult.analysis.overallSentiment === 'negative'
+              }">
+                {{ aiAnalysisResult.analysis.overallSentiment.toUpperCase() }}
+              </p>
+            </div>
+            
+            <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+              <p class="text-gray-400 text-xs mb-1">Customer Status</p>
+              <p class="text-lg font-bold" :class="{
+                'text-green-400': aiAnalysisResult.analysis.customerSatisfaction === 'satisfied',
+                'text-yellow-400': aiAnalysisResult.analysis.customerSatisfaction === 'neutral',
+                'text-orange-400': aiAnalysisResult.analysis.customerSatisfaction === 'frustrated',
+                'text-red-400': aiAnalysisResult.analysis.customerSatisfaction === 'at_risk'
+              }">
+                {{ aiAnalysisResult.analysis.customerSatisfaction.replace('_', ' ').toUpperCase() }}
+              </p>
+            </div>
+            
+            <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+              <p class="text-gray-400 text-xs mb-1">Churn Risk</p>
+              <p class="text-lg font-bold" :class="{
+                'text-green-400': aiAnalysisResult.analysis.churnRisk === 'low',
+                'text-yellow-400': aiAnalysisResult.analysis.churnRisk === 'medium',
+                'text-orange-400': aiAnalysisResult.analysis.churnRisk === 'high',
+                'text-red-400': aiAnalysisResult.analysis.churnRisk === 'critical'
+              }">
+                {{ aiAnalysisResult.analysis.churnRisk.toUpperCase() }}
+              </p>
+            </div>
+            
+            <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+              <p class="text-gray-400 text-xs mb-1">Sentiment Score</p>
+              <p class="text-lg font-bold" :class="{
+                'text-green-400': aiAnalysisResult.analysis.sentimentScore > 0.3,
+                'text-yellow-400': aiAnalysisResult.analysis.sentimentScore >= -0.3 && aiAnalysisResult.analysis.sentimentScore <= 0.3,
+                'text-red-400': aiAnalysisResult.analysis.sentimentScore < -0.3
+              }">
+                {{ (aiAnalysisResult.analysis.sentimentScore * 100).toFixed(0) }}%
+              </p>
+            </div>
+          </div>
+          
+          <!-- Churn Signals -->
+          <div v-if="aiAnalysisResult.analysis.churnSignals.length > 0" class="mb-6">
+            <h3 class="text-lg font-semibold text-red-400 mb-3 flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              ⚠️ Churn Signals Detected
+            </h3>
+            <div class="space-y-2">
+              <div
+                v-for="(signal, idx) in aiAnalysisResult.analysis.churnSignals"
+                :key="idx"
+                class="p-3 bg-red-500/10 rounded border border-red-500/30 text-red-300 text-sm"
+              >
+                {{ signal }}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Key Themes -->
+          <div v-if="aiAnalysisResult.analysis.keyThemes.length > 0" class="mb-6">
+            <h3 class="text-lg font-semibold text-white mb-3">🎯 Key Themes</h3>
+            <div class="space-y-3">
+              <div
+                v-for="(theme, idx) in aiAnalysisResult.analysis.keyThemes"
+                :key="idx"
+                class="p-3 bg-gray-900 rounded border border-gray-700"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-white font-medium">{{ theme.theme }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-1 text-xs rounded" :class="{
+                      'bg-green-500/20 text-green-300': theme.sentiment === 'positive',
+                      'bg-yellow-500/20 text-yellow-300': theme.sentiment === 'neutral',
+                      'bg-red-500/20 text-red-300': theme.sentiment === 'negative'
+                    }">
+                      {{ theme.sentiment }}
+                    </span>
+                    <span class="px-2 py-1 text-xs rounded" :class="{
+                      'bg-red-500/20 text-red-300': theme.urgency === 'critical',
+                      'bg-orange-500/20 text-orange-300': theme.urgency === 'high',
+                      'bg-yellow-500/20 text-yellow-300': theme.urgency === 'medium',
+                      'bg-gray-500/20 text-gray-300': theme.urgency === 'low'
+                    }">
+                      {{ theme.urgency }}
+                    </span>
+                    <span class="text-gray-400 text-xs">{{ theme.mentions }} mentions</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Pain Points & Positive Highlights -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div v-if="aiAnalysisResult.analysis.painPoints.length > 0">
+              <h3 class="text-lg font-semibold text-orange-400 mb-3">😰 Pain Points</h3>
+              <div class="space-y-2">
+                <div
+                  v-for="(point, idx) in aiAnalysisResult.analysis.painPoints"
+                  :key="idx"
+                  class="p-3 bg-orange-500/10 rounded border border-orange-500/30 text-orange-200 text-sm"
+                >
+                  {{ point }}
+                </div>
+              </div>
+            </div>
+            
+            <div v-if="aiAnalysisResult.analysis.positiveHighlights.length > 0">
+              <h3 class="text-lg font-semibold text-green-400 mb-3">✨ Positive Highlights</h3>
+              <div class="space-y-2">
+                <div
+                  v-for="(highlight, idx) in aiAnalysisResult.analysis.positiveHighlights"
+                  :key="idx"
+                  class="p-3 bg-green-500/10 rounded border border-green-500/30 text-green-200 text-sm"
+                >
+                  {{ highlight }}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Actionable Insights -->
+          <div v-if="aiAnalysisResult.analysis.actionableInsights.length > 0">
+            <h3 class="text-lg font-semibold text-blue-400 mb-3">💡 Actionable Insights</h3>
+            <div class="space-y-3">
+              <div
+                v-for="(insight, idx) in aiAnalysisResult.analysis.actionableInsights"
+                :key="idx"
+                class="p-4 bg-blue-500/10 rounded border border-blue-500/30"
+              >
+                <div class="flex items-start justify-between mb-2">
+                  <span class="text-white font-medium flex-1">{{ insight.insight }}</span>
+                  <span class="px-2 py-1 text-xs rounded ml-2" :class="{
+                    'bg-red-500/20 text-red-300': insight.priority === 'critical',
+                    'bg-orange-500/20 text-orange-300': insight.priority === 'high',
+                    'bg-yellow-500/20 text-yellow-300': insight.priority === 'medium',
+                    'bg-gray-500/20 text-gray-300': insight.priority === 'low'
+                  }">
+                    {{ insight.priority.toUpperCase() }}
+                  </span>
+                </div>
+                <div class="flex items-center gap-4 text-xs text-gray-400">
+                  <span>👤 Owner: <span class="text-blue-300">{{ insight.owner }}</span></span>
+                  <span>📊 Impact: <span class="text-blue-300">{{ insight.estimatedImpact }}</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -598,6 +878,10 @@ const error = ref<{ title?: string; message: string } | null>(null)
 const selectedTranscript = ref<any>(null)
 const currentPage = ref(1)
 const itemsPerPage = 20
+
+// AI Analysis State
+const analyzingTranscript = ref<string | null>(null)
+const aiAnalysisResult = ref<any>(null)
 
 // Stats
 const stats = reactive({
@@ -909,6 +1193,45 @@ const extractFeedback = async () => {
 
 const viewTranscript = (transcript: any) => {
   selectedTranscript.value = transcript
+}
+
+const analyzeTranscriptWithAI = async (transcript: any) => {
+  analyzingTranscript.value = transcript.id
+  error.value = null
+  
+  try {
+    const response = await fetch('/api/diio/analyze-transcript', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        transcriptId: transcript.id
+      })
+    })
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }))
+      throw new Error(errorData.message || `HTTP ${response.status}`)
+    }
+    
+    const result = await response.json()
+    
+    if (result.success) {
+      aiAnalysisResult.value = result
+      console.log('✅ AI analysis completed:', result)
+    } else {
+      throw new Error('Analysis failed')
+    }
+  } catch (err: any) {
+    console.error('AI analysis error:', err)
+    error.value = {
+      title: 'AI Analysis Failed',
+      message: err.message || 'An error occurred while analyzing the transcript. Please try again.'
+    }
+  } finally {
+    analyzingTranscript.value = null
+  }
 }
 
 const selectedFeedbackTranscript = ref<any>(null)
