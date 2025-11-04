@@ -69,9 +69,10 @@ export default defineEventHandler(async (event) => {
     })
     
     phoneCalls = phoneCallsData.phone_calls || []
+    // Also check for alternative field names (last_trancript_id with typo in docs)
     phoneCallTranscriptIds = phoneCalls
-      .filter(call => call.last_transcript_id)
-      .map(call => call.last_transcript_id)
+      .filter(call => call.last_transcript_id || call.last_trancript_id)
+      .map(call => call.last_transcript_id || call.last_trancript_id)
     
     results[1] = {
       step: 'Fetch Phone Calls',
@@ -84,13 +85,16 @@ export default defineEventHandler(async (event) => {
       }
     }
   } catch (error: any) {
+    // Phone calls endpoint might not be available or might return 404
+    // This is OK - we can still test with meetings
     results[1] = {
       step: 'Fetch Phone Calls',
       success: false,
-      message: 'Failed to fetch phone calls',
+      message: `Phone calls endpoint not available (${error.statusCode || 'unknown error'})`,
       error: error.message,
       details: {
-        statusCode: error.statusCode
+        statusCode: error.statusCode,
+        note: 'This is OK if your account only has meetings'
       }
     }
   }
@@ -111,9 +115,10 @@ export default defineEventHandler(async (event) => {
     })
     
     meetings = meetingsData.meetings || []
+    // Also check for alternative field names (last_trancript_id with typo in docs)
     meetingTranscriptIds = meetings
-      .filter(meeting => meeting.last_transcript_id)
-      .map(meeting => meeting.last_transcript_id)
+      .filter(meeting => meeting.last_transcript_id || meeting.last_trancript_id)
+      .map(meeting => meeting.last_transcript_id || meeting.last_trancript_id)
     
     results[2] = {
       step: 'Fetch Meetings',
@@ -176,7 +181,40 @@ export default defineEventHandler(async (event) => {
     try {
       const transcript = await diioRequest(`/v1/transcripts/${transcriptId}`)
       
-      const transcriptText = transcript.transcript || transcript.text || ''
+      // Debug: Log the actual response structure
+      console.log(`[DEBUG] Transcript ${transcriptId} response type:`, typeof transcript)
+      console.log(`[DEBUG] Transcript ${transcriptId} response keys:`, transcript && typeof transcript === 'object' ? Object.keys(transcript) : 'N/A')
+      
+      // Handle different possible response structures
+      let transcriptText: string = ''
+      let transcriptType: string = 'unknown'
+      
+      if (typeof transcript === 'string') {
+        transcriptText = transcript
+        transcriptType = 'string'
+      } else if (transcript && typeof transcript === 'object') {
+        // Try different possible field names
+        transcriptText = transcript.transcript || transcript.text || transcript.content || ''
+        
+        // If transcript field is an object/array, try to stringify it
+        if (!transcriptText && transcript.transcript) {
+          if (Array.isArray(transcript.transcript)) {
+            transcriptText = transcript.transcript.map((item: any) => 
+              typeof item === 'string' ? item : JSON.stringify(item)
+            ).join('\n')
+            transcriptType = 'array'
+          } else if (typeof transcript.transcript === 'object') {
+            transcriptText = JSON.stringify(transcript.transcript)
+            transcriptType = 'object'
+          }
+        }
+        
+        // Ensure we have a string
+        if (typeof transcriptText !== 'string') {
+          transcriptText = String(transcriptText)
+        }
+      }
+      
       const hasContent = transcriptText.length > 0
       
       transcriptResults[i] = {
@@ -190,7 +228,11 @@ export default defineEventHandler(async (event) => {
           source,
           hasContent,
           contentLength: transcriptText.length,
-          preview: transcriptText.substring(0, 100) + (transcriptText.length > 100 ? '...' : '')
+          transcriptType,
+          responseStructure: Object.keys(transcript || {}),
+          preview: hasContent 
+            ? (transcriptText.substring(0, 100) + (transcriptText.length > 100 ? '...' : ''))
+            : 'No content available'
         }
       }
     } catch (error: any) {
