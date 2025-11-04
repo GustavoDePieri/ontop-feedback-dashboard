@@ -48,7 +48,7 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <div class="flex items-center justify-between">
             <div>
@@ -86,6 +86,21 @@
             <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
               <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-400 text-sm mb-1">AI Analyzed</p>
+              <p class="text-3xl font-bold text-white">{{ stats.aiAnalyzed }}</p>
+              <p class="text-xs text-gray-500 mt-1">{{ stats.total > 0 ? Math.round((stats.aiAnalyzed / stats.total) * 100) : 0 }}% complete</p>
+            </div>
+            <div class="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
             </div>
           </div>
@@ -149,7 +164,7 @@
 
       <!-- Filters -->
       <div class="mb-6 bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
           <!-- Search -->
           <div class="relative">
             <label class="block text-sm text-gray-400 mb-2">Search</label>
@@ -174,6 +189,19 @@
               <option value="">All Types</option>
               <option value="meeting">📅 Meetings</option>
               <option value="phone_call">📞 Phone Calls</option>
+            </select>
+          </div>
+
+          <!-- AI Analysis Filter -->
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">AI Analysis</label>
+            <select
+              v-model="filters.aiAnalysis"
+              class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
+            >
+              <option value="">All Transcripts</option>
+              <option value="analyzed">✅ Analyzed</option>
+              <option value="not_analyzed">⏳ Not Analyzed</option>
             </select>
           </div>
 
@@ -262,13 +290,23 @@
           >
             <div class="flex items-start justify-between">
               <div class="flex-1">
-                <div class="flex items-center gap-3 mb-2">
+                <div class="flex items-center gap-3 mb-2 flex-wrap">
                   <span 
                     class="px-2 py-1 text-xs font-medium rounded-full"
                     :class="transcript.transcript_type === 'meeting' ? 'bg-blue-900/30 text-blue-300' : 'bg-green-900/30 text-green-300'"
                   >
                     {{ transcript.transcript_type === 'meeting' ? '📅 Meeting' : '📞 Call' }}
                   </span>
+                  
+                  <!-- AI Analyzed Badge -->
+                  <span 
+                    v-if="transcript.ai_analysis"
+                    class="px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-pink-500/20 to-purple-500/20 text-pink-300 border border-pink-500/30"
+                    title="AI Analysis completed"
+                  >
+                    🤖 AI Analyzed
+                  </span>
+                  
                   <span class="text-xs text-gray-400">
                     {{ formatDate(transcript.occurred_at || transcript.created_at) }}
                   </span>
@@ -807,7 +845,8 @@ const aiAnalysisResult = ref<any>(null)
 const stats = reactive({
   total: 0,
   meetings: 0,
-  phoneCalls: 0
+  phoneCalls: 0,
+  aiAnalyzed: 0
 })
 
 const lastSyncTime = ref<string | null>(null)
@@ -824,13 +863,14 @@ const syncProgress = reactive({
 const filters = reactive({
   search: '',
   type: '',
+  aiAnalysis: '',
   dateFrom: '',
   dateTo: ''
 })
 
 // Computed
 const hasActiveFilters = computed(() => {
-  return !!(filters.search || filters.type || filters.dateFrom || filters.dateTo)
+  return !!(filters.search || filters.type || filters.aiAnalysis || filters.dateFrom || filters.dateTo)
 })
 
 const filteredTranscripts = computed(() => {
@@ -848,6 +888,13 @@ const filteredTranscripts = computed(() => {
   // Type filter
   if (filters.type) {
     filtered = filtered.filter(t => t.transcript_type === filters.type)
+  }
+  
+  // AI Analysis filter
+  if (filters.aiAnalysis === 'analyzed') {
+    filtered = filtered.filter(t => t.ai_analysis !== null && t.ai_analysis !== undefined)
+  } else if (filters.aiAnalysis === 'not_analyzed') {
+    filtered = filtered.filter(t => !t.ai_analysis)
   }
   
   // Date filters
@@ -915,6 +962,8 @@ const loadStats = async () => {
     console.error('Error loading stats:', err)
   }
   
+  // Count AI analyzed transcripts from loaded data
+  stats.aiAnalyzed = transcripts.value.filter(t => t.ai_analysis).length
 }
 
 const syncTranscripts = async () => {
@@ -1005,6 +1054,16 @@ const analyzeTranscriptWithAI = async (transcript: any) => {
     if (result.success) {
       aiAnalysisResult.value = result
       console.log('✅ AI analysis completed:', result)
+      
+      // Update the transcript in the list to show AI analyzed badge
+      const index = transcripts.value.findIndex(t => t.id === transcript.id)
+      if (index !== -1) {
+        transcripts.value[index].ai_analysis = result.analysis
+        transcripts.value[index].ai_analysis_date = result.metadata.analyzedAt
+      }
+      
+      // Update stats
+      stats.aiAnalyzed = transcripts.value.filter(t => t.ai_analysis).length
     } else {
       throw new Error('Analysis failed')
     }
@@ -1073,6 +1132,7 @@ const negativeSentimentCount = computed(() => {
 const clearFilters = () => {
   filters.search = ''
   filters.type = ''
+  filters.aiAnalysis = ''
   filters.dateFrom = ''
   filters.dateTo = ''
   currentPage.value = 1
@@ -1154,7 +1214,7 @@ const formatTranscriptText = (text: any): string => {
 }
 
 // Watch for filter changes to reset pagination
-watch([filters.search, filters.type, filters.dateFrom, filters.dateTo], () => {
+watch([filters.search, filters.type, filters.aiAnalysis, filters.dateFrom, filters.dateTo], () => {
   currentPage.value = 1
 })
 
