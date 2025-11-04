@@ -156,19 +156,19 @@ RETURNS TABLE (
 BEGIN
     RETURN QUERY
     SELECT 
-        COUNT(*) as total_feedback_segments,
-        COUNT(*) FILTER (WHERE feedback_type = 'pain_point') as pain_points,
-        COUNT(*) FILTER (WHERE feedback_type = 'feature_request') as feature_requests,
-        COUNT(*) FILTER (WHERE feedback_type = 'praise') as praise,
-        COUNT(*) FILTER (WHERE feedback_type = 'concern') as concerns,
-        COUNT(*) FILTER (WHERE feedback_type = 'question') as questions,
-        COUNT(*) FILTER (WHERE urgency = 'critical') as critical_urgency,
-        COUNT(*) FILTER (WHERE urgency = 'high') as high_urgency,
-        COUNT(*) FILTER (WHERE sentiment = 'positive') as positive_sentiment,
-        COUNT(*) FILTER (WHERE sentiment = 'negative') as negative_sentiment,
-        COUNT(*) FILTER (WHERE analyzed_by_ai = true) as analyzed_by_ai,
-        MAX(occurred_at) as latest_feedback_date
-    FROM diio_transcript_feedback;
+        COUNT(*)::BIGINT as total_feedback_segments,
+        COUNT(*) FILTER (WHERE tf.feedback_type = 'pain_point')::BIGINT as pain_points,
+        COUNT(*) FILTER (WHERE tf.feedback_type = 'feature_request')::BIGINT as feature_requests,
+        COUNT(*) FILTER (WHERE tf.feedback_type = 'praise')::BIGINT as praise,
+        COUNT(*) FILTER (WHERE tf.feedback_type = 'concern')::BIGINT as concerns,
+        COUNT(*) FILTER (WHERE tf.feedback_type = 'question')::BIGINT as questions,
+        COUNT(*) FILTER (WHERE tf.urgency = 'critical')::BIGINT as critical_urgency,
+        COUNT(*) FILTER (WHERE tf.urgency = 'high')::BIGINT as high_urgency,
+        COUNT(*) FILTER (WHERE tf.sentiment = 'positive')::BIGINT as positive_sentiment,
+        COUNT(*) FILTER (WHERE tf.sentiment = 'negative')::BIGINT as negative_sentiment,
+        COUNT(*) FILTER (WHERE tf.analyzed_by_ai = true)::BIGINT as analyzed_by_ai,
+        MAX(tf.occurred_at) as latest_feedback_date
+    FROM diio_transcript_feedback tf;
 END;
 $$ LANGUAGE plpgsql;
 

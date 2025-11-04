@@ -462,6 +462,11 @@ const stats = reactive({
   phoneCalls: 0
 })
 
+const feedbackStats = reactive({
+  totalSegments: 0,
+  criticalSignals: 0
+})
+
 const lastSyncTime = ref<string | null>(null)
 
 // Sync progress
