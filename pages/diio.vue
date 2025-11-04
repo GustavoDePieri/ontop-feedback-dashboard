@@ -451,11 +451,13 @@ const loadTranscripts = async () => {
   error.value = null
   
   try {
-    const { data, error: dbError } = await getDiioTranscripts(10000, 0)
+    // Fetch all transcripts (increase limit if needed)
+    const { data, error: dbError } = await getDiioTranscripts(50000, 0)
     
     if (dbError) throw dbError
     
     transcripts.value = data || []
+    console.log(`✅ Loaded ${transcripts.value.length} transcripts from database`)
     await loadStats()
   } catch (err: any) {
     error.value = {

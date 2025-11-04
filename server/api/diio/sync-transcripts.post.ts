@@ -65,31 +65,83 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
   try {
     console.log('🔄 Starting transcript sync...')
 
-    // Step 1: Fetch meetings
+    // Step 1: Fetch all meetings (with pagination)
     console.log('📅 Fetching meetings...')
     let meetings: any[] = []
     try {
-      const meetingsData = await diioRequest('/v1/meetings', {
-        params: { page: 1, limit: 1000 }
-      })
-      meetings = meetingsData.meetings || []
+      let currentPage = 1
+      let hasMore = true
+      const limit = 100 // Fetch in smaller batches to avoid timeouts
+      
+      while (hasMore) {
+        const meetingsData = await diioRequest('/v1/meetings', {
+          params: { page: currentPage, limit }
+        })
+        
+        const pageMeetings = meetingsData.meetings || []
+        meetings.push(...pageMeetings)
+        
+        console.log(`📄 Fetched page ${currentPage}: ${pageMeetings.length} meetings (total: ${meetings.length})`)
+        
+        // Check if there are more pages
+        hasMore = meetingsData.next !== null && pageMeetings.length === limit
+        currentPage++
+        
+        // Safety limit: stop after 100 pages (10,000 meetings)
+        if (currentPage > 100) {
+          console.warn('⚠️ Reached safety limit of 100 pages for meetings')
+          break
+        }
+        
+        // Small delay between pages to avoid rate limiting
+        if (hasMore) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+        }
+      }
+      
       result.summary.meetingsFetched = meetings.length
-      console.log(`✅ Found ${meetings.length} meetings`)
+      console.log(`✅ Found ${meetings.length} total meetings`)
     } catch (error: any) {
       console.error('Error fetching meetings:', error)
       // Continue anyway - might not have meetings
     }
 
-    // Step 2: Fetch phone calls
+    // Step 2: Fetch all phone calls (with pagination)
     console.log('📞 Fetching phone calls...')
     let phoneCalls: any[] = []
     try {
-      const phoneCallsData = await diioRequest('/v1/phone_calls', {
-        params: { page: 1, limit: 1000 }
-      })
-      phoneCalls = phoneCallsData.phone_calls || []
+      let currentPage = 1
+      let hasMore = true
+      const limit = 100 // Fetch in smaller batches
+      
+      while (hasMore) {
+        const phoneCallsData = await diioRequest('/v1/phone_calls', {
+          params: { page: currentPage, limit }
+        })
+        
+        const pageCalls = phoneCallsData.phone_calls || []
+        phoneCalls.push(...pageCalls)
+        
+        console.log(`📄 Fetched page ${currentPage}: ${pageCalls.length} calls (total: ${phoneCalls.length})`)
+        
+        // Check if there are more pages
+        hasMore = phoneCallsData.next !== null && pageCalls.length === limit
+        currentPage++
+        
+        // Safety limit: stop after 100 pages (10,000 calls)
+        if (currentPage > 100) {
+          console.warn('⚠️ Reached safety limit of 100 pages for phone calls')
+          break
+        }
+        
+        // Small delay between pages to avoid rate limiting
+        if (hasMore) {
+          await new Promise(resolve => setTimeout(resolve, 500))
+        }
+      }
+      
       result.summary.phoneCallsFetched = phoneCalls.length
-      console.log(`✅ Found ${phoneCalls.length} phone calls`)
+      console.log(`✅ Found ${phoneCalls.length} total phone calls`)
     } catch (error: any) {
       console.error('Error fetching phone calls (might not be available):', error)
       // Continue anyway - account might only have meetings
