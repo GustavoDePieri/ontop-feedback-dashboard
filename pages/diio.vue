@@ -121,51 +121,6 @@
         </div>
       </div>
 
-      <!-- Feedback Extraction Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Feedback Segments</p>
-              <p class="text-3xl font-bold text-white">{{ feedbackStats.totalSegments || 0 }}</p>
-            </div>
-            <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Churn Signals</p>
-              <p class="text-3xl font-bold text-white">{{ feedbackStats.criticalSignals || 0 }}</p>
-              <p class="text-xs text-gray-500 mt-1">Critical signals detected</p>
-            </div>
-            <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Last Extraction</p>
-              <p class="text-lg font-semibold text-white">{{ lastExtractionTime || 'Never' }}</p>
-            </div>
-            <div class="w-12 h-12 bg-indigo-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Sync Progress -->
       <div v-if="syncProgress.show" class="mb-8 bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
@@ -675,12 +630,17 @@
         <div class="bg-gray-800 rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
           <div class="flex justify-between items-start mb-4">
             <div>
-              <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                <svg class="w-6 h-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                AI Sentiment Analysis
-              </h2>
+              <div class="flex items-center gap-3">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                  <svg class="w-6 h-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                  AI Sentiment Analysis
+                </h2>
+                <span v-if="aiAnalysisResult.metadata.cached" class="px-3 py-1 text-xs font-medium rounded-full bg-green-500/20 text-green-300 border border-green-500/30">
+                  ⚡ Cached
+                </span>
+              </div>
               <p class="text-gray-400 text-sm mt-1">
                 {{ aiAnalysisResult.metadata.sourceName }}
               </p>
@@ -890,11 +850,6 @@ const stats = reactive({
   phoneCalls: 0
 })
 
-const feedbackStats = reactive({
-  totalSegments: 0,
-  criticalSignals: 0
-})
-
 const lastSyncTime = ref<string | null>(null)
 
 // Sync progress
@@ -913,8 +868,6 @@ const extractionProgress = reactive({
   segmentsExtracted: 0,
   message: ''
 })
-
-const lastExtractionTime = ref<string | null>(null)
 
 // Filters
 const filters = reactive({
@@ -1011,34 +964,6 @@ const loadStats = async () => {
     console.error('Error loading stats:', err)
   }
   
-  // Load feedback stats
-  try {
-    const { getTranscriptFeedbackStats } = useSupabase()
-    const { data: feedbackData, error: feedbackError } = await getTranscriptFeedbackStats()
-    
-    if (feedbackError) {
-      console.warn('Feedback stats not available (database function may not exist yet):', feedbackError)
-      // Set defaults if stats not available
-      feedbackStats.totalSegments = 0
-      feedbackStats.criticalSignals = 0
-      return
-    }
-    
-    if (feedbackData && typeof feedbackData === 'object') {
-      feedbackStats.totalSegments = feedbackData.total_feedback_segments || 0
-      // Calculate critical signals from feedback types
-      feedbackStats.criticalSignals = (feedbackData.pain_points || 0) + (feedbackData.concerns || 0)
-    } else {
-      // Set defaults if data is not available
-      feedbackStats.totalSegments = 0
-      feedbackStats.criticalSignals = 0
-    }
-  } catch (err) {
-    console.error('Error loading feedback stats:', err)
-    // Set defaults on error
-    feedbackStats.totalSegments = 0
-    feedbackStats.criticalSignals = 0
-  }
 }
 
 const syncTranscripts = async () => {
@@ -1076,15 +1001,6 @@ const syncTranscripts = async () => {
       // Show success message with stats
       const statsMessage = `Found ${result.summary.meetingsFetched || 0} meetings, ${result.summary.phoneCallsFetched || 0} calls. Stored ${result.summary.transcriptsStored || 0} new transcripts.`
       syncProgress.message = statsMessage
-      
-      // Check if extraction was mentioned in the message (automatic extraction)
-      if (result.message.includes('Extracted')) {
-        // Extract feedback stats from message
-        const extractionMatch = result.message.match(/Extracted (\d+) feedback segments/)
-        if (extractionMatch) {
-          extractionProgress.segmentsExtracted = parseInt(extractionMatch[1])
-        }
-      }
       
       // Show success message longer
       setTimeout(() => {
@@ -1162,11 +1078,6 @@ const extractFeedback = async () => {
       extractionProgress.total = result.summary.transcriptsProcessed || 1
       extractionProgress.processed = result.summary.transcriptsProcessed || 0
       extractionProgress.segmentsExtracted = result.summary.feedbackSegmentsExtracted || 0
-      
-      lastExtractionTime.value = new Date().toLocaleString()
-      
-      // Reload stats to update feedback counts
-      await loadStats()
       
       // Show success message longer
       setTimeout(() => {

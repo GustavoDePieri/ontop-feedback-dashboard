@@ -85,6 +85,24 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
       })
     }
     
+    // Check if we have a cached AI analysis
+    if (transcript.ai_analysis) {
+      console.log(`✅ Returning cached AI analysis for transcript ${transcriptId}`)
+      return {
+        success: true,
+        transcriptId,
+        analysis: transcript.ai_analysis,
+        metadata: {
+          analyzedAt: transcript.ai_analysis_date || transcript.updated_at,
+          sourceName: transcript.source_name || 'Unknown',
+          occurredAt: transcript.occurred_at,
+          attendees: transcript.attendees,
+          participantEmails: extractParticipantEmails(transcript.attendees),
+          cached: true
+        }
+      }
+    }
+    
     // Initialize Gemini AI
     if (!config.geminiApiKey) {
       throw createError({
@@ -97,19 +115,7 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' })
     
     // Extract participant emails from attendees
-    const participantEmails: string[] = []
-    if (transcript.attendees) {
-      if (transcript.attendees.sellers) {
-        transcript.attendees.sellers.forEach((s: any) => {
-          if (s.email) participantEmails.push(s.email)
-        })
-      }
-      if (transcript.attendees.customers) {
-        transcript.attendees.customers.forEach((c: any) => {
-          if (c.email) participantEmails.push(c.email)
-        })
-      }
-    }
+    const participantEmails = extractParticipantEmails(transcript.attendees)
     
     // Format transcript text
     let transcriptText = transcript.transcript_text
@@ -147,16 +153,23 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
     // Parse AI response
     const analysis = parseAnalysisResponse(aiText)
     
-    // Store analysis result in database (optional - can add an ai_analysis JSONB column)
-    await supabase
+    // Cache the analysis result in database
+    const { error: updateError } = await supabase
       .from('diio_transcripts')
       .update({
+        ai_analysis: analysis,
+        ai_analysis_date: new Date().toISOString(),
         analyzed_status: 'finished',
         updated_at: new Date().toISOString()
       })
       .eq('id', transcriptId)
     
-    console.log(`✅ Successfully analyzed transcript ${transcriptId}`)
+    if (updateError) {
+      console.error('Failed to cache AI analysis:', updateError)
+      // Continue anyway - analysis still worked
+    }
+    
+    console.log(`✅ Successfully analyzed and cached transcript ${transcriptId}`)
     
     return {
       success: true,
@@ -167,7 +180,8 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
         sourceName: transcript.source_name || 'Unknown',
         occurredAt: transcript.occurred_at,
         attendees: transcript.attendees,
-        participantEmails
+        participantEmails,
+        cached: false
       }
     }
     
@@ -179,6 +193,29 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
     })
   }
 })
+
+/**
+ * Extract participant emails from attendees JSONB
+ */
+function extractParticipantEmails(attendees: any): string[] {
+  const emails: string[] = []
+  
+  if (!attendees) return emails
+  
+  if (attendees.sellers && Array.isArray(attendees.sellers)) {
+    attendees.sellers.forEach((s: any) => {
+      if (s.email) emails.push(s.email)
+    })
+  }
+  
+  if (attendees.customers && Array.isArray(attendees.customers)) {
+    attendees.customers.forEach((c: any) => {
+      if (c.email) emails.push(c.email)
+    })
+  }
+  
+  return emails
+}
 
 /**
  * Create AI prompt for transcript sentiment analysis

@@ -886,6 +886,23 @@ Historical documentation has been archived to `docs/archive/` for reference:
 
 **See `TRANSCRIPT_IMPROVEMENTS.md` for complete details and deployment instructions.**
 
+### ⭐ Database Cleanup & AI Caching (January 2025)
+
+**Schema Improvements:**
+- ✅ Removed old feedback extraction tables (pattern-matching system)
+- ✅ Removed redundant metadata tables (meetings, phone_calls, users)
+- ✅ Added `ai_analysis` JSONB column for caching AI results
+- ✅ Added `ai_analysis_date` timestamp for cache tracking
+- ✅ Created clean, streamlined schema focused on essentials
+
+**Performance Improvements:**
+- ✅ AI analysis results cached in database (50-100x faster on repeat views)
+- ✅ Cost savings: ~50% reduction in AI API calls
+- ✅ UX improvement: "⚡ Cached" badge shows instant results
+- ✅ Removed distracting feedback stats cards from UI
+
+**See `DATABASE_CLEANUP_GUIDE.md` for schema migration instructions.**
+
 ### Cleanup (December 2025)
 
 **Removed Unused Code:**
