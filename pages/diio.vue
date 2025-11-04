@@ -345,7 +345,7 @@
           </div>
           
           <div class="bg-gray-900 rounded-lg p-4 text-gray-300 whitespace-pre-wrap border border-gray-700 max-h-[60vh] overflow-auto">
-            {{ selectedTranscript.transcript_text || 'No transcript text available' }}
+            {{ formatTranscriptText(selectedTranscript.transcript_text) }}
           </div>
         </div>
       </div>
@@ -548,6 +548,21 @@ const formatDuration = (seconds: number) => {
 
 const getTranscriptPreview = (text: string) => {
   if (!text) return 'No transcript text available'
+  
+  // Handle if text is stored as object/array (shouldn't happen but handle it)
+  if (typeof text !== 'string') {
+    try {
+      text = JSON.stringify(text)
+    } catch {
+      text = String(text)
+    }
+  }
+  
+  // Remove any "[object Object]" artifacts
+  text = text.replace(/\[object Object\]/g, '').trim()
+  
+  if (!text || text.length === 0) return 'No transcript text available'
+  
   return text.substring(0, 200) + (text.length > 200 ? '...' : '')
 }
 
@@ -556,6 +571,43 @@ const getAttendeeCount = (attendees: any) => {
   const sellers = attendees.sellers?.length || 0
   const customers = attendees.customers?.length || 0
   return sellers + customers
+}
+
+const formatTranscriptText = (text: any): string => {
+  if (!text) return 'No transcript text available'
+  
+  // Handle if text is stored as object/array
+  if (typeof text !== 'string') {
+    try {
+      // If it's an array, try to extract text from segments
+      if (Array.isArray(text)) {
+        return text.map((segment: any) => {
+          if (typeof segment === 'string') {
+            return segment
+          } else if (segment && typeof segment === 'object') {
+            return segment.text || 
+                   segment.content || 
+                   segment.transcript ||
+                   (segment.speaker && segment.text ? `${segment.speaker}: ${segment.text}` : null) ||
+                   JSON.stringify(segment)
+          }
+          return String(segment)
+        }).filter((t: string) => t && t.trim().length > 0).join('\n')
+      } else if (text && typeof text === 'object') {
+        // Single object - try to extract text
+        return text.text || text.content || text.transcript || JSON.stringify(text, null, 2)
+      } else {
+        return JSON.stringify(text)
+      }
+    } catch {
+      return String(text)
+    }
+  }
+  
+  // Remove any "[object Object]" artifacts
+  text = text.replace(/\[object Object\]/g, '').trim()
+  
+  return text || 'No transcript text available'
 }
 
 // Watch for filter changes to reset pagination

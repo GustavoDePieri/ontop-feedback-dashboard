@@ -162,26 +162,70 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         
         // Extract transcript text (handle different response structures)
         let transcriptText = ''
+        
         if (typeof transcriptData === 'string') {
           transcriptText = transcriptData
         } else if (transcriptData && typeof transcriptData === 'object') {
-          transcriptText = transcriptData.transcript || transcriptData.text || transcriptData.content || ''
+          // Check if transcript field exists
+          const transcriptField = transcriptData.transcript || transcriptData.text || transcriptData.content
           
-          // If transcript is an object/array, stringify it
-          if (!transcriptText && transcriptData.transcript) {
-            if (Array.isArray(transcriptData.transcript)) {
-              transcriptText = transcriptData.transcript.map((item: any) => 
-                typeof item === 'string' ? item : JSON.stringify(item)
-              ).join('\n')
-            } else if (typeof transcriptData.transcript === 'object') {
-              transcriptText = JSON.stringify(transcriptData.transcript)
+          if (typeof transcriptField === 'string') {
+            // Already a string
+            transcriptText = transcriptField
+          } else if (Array.isArray(transcriptField)) {
+            // Array of transcript segments - extract text from each segment
+            transcriptText = transcriptField.map((segment: any) => {
+              if (typeof segment === 'string') {
+                return segment
+              } else if (segment && typeof segment === 'object') {
+                // Try common field names for transcript segments
+                return segment.text || 
+                       segment.content || 
+                       segment.transcript || 
+                       segment.speech ||
+                       (segment.speaker && segment.text ? `${segment.speaker}: ${segment.text}` : null) ||
+                       JSON.stringify(segment)
+              }
+              return String(segment)
+            }).filter((text: string) => text && text.trim().length > 0).join('\n')
+          } else if (transcriptField && typeof transcriptField === 'object') {
+            // Single object - try to extract text or stringify
+            transcriptText = transcriptField.text || 
+                           transcriptField.content || 
+                           JSON.stringify(transcriptField)
+          } else if (transcriptField) {
+            // Fallback: convert to string
+            transcriptText = String(transcriptField)
+          }
+          
+          // Final check: if still empty, try the whole response
+          if (!transcriptText && transcriptData) {
+            // Log the structure for debugging
+            console.log(`[DEBUG] Transcript structure for ${transcriptId}:`, Object.keys(transcriptData))
+            
+            // Try to find any text-like fields
+            for (const key of Object.keys(transcriptData)) {
+              const value = transcriptData[key]
+              if (typeof value === 'string' && value.length > 10) {
+                transcriptText = value
+                break
+              }
+            }
+            
+            // Last resort: stringify the whole object
+            if (!transcriptText) {
+              transcriptText = JSON.stringify(transcriptData, null, 2)
             }
           }
-          
-          if (typeof transcriptText !== 'string') {
-            transcriptText = String(transcriptText)
-          }
         }
+        
+        // Ensure we have a string
+        if (typeof transcriptText !== 'string') {
+          transcriptText = String(transcriptText)
+        }
+        
+        // Clean up: remove any "[object Object]" strings
+        transcriptText = transcriptText.replace(/\[object Object\]/g, '').trim()
 
         // Skip if transcript is empty
         if (!transcriptText || transcriptText.trim().length === 0) {
