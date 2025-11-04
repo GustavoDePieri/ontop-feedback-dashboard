@@ -491,21 +491,37 @@ const syncTranscripts = async () => {
   syncProgress.message = 'Starting sync...'
   
   try {
-    const result = await $fetch('/api/diio/sync-transcripts', {
+    // Use fetch instead of $fetch to get streaming updates if needed
+    const response = await fetch('/api/diio/sync-transcripts', {
       method: 'POST'
     })
     
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }))
+      throw new Error(errorData.message || `HTTP ${response.status}`)
+    }
+    
+    const result = await response.json()
+    
     if (result.success) {
-      syncProgress.message = result.message
+      // Update progress with detailed message
+      syncProgress.message = result.message || 'Sync completed successfully!'
+      syncProgress.total = result.summary.newTranscriptsFound || 1
+      syncProgress.current = result.summary.transcriptsStored || 0
+      
       lastSyncTime.value = new Date().toLocaleString()
       
       // Reload transcripts after sync
       await loadTranscripts()
       
-      // Show success message
+      // Show success message with stats
+      const statsMessage = `Found ${result.summary.meetingsFetched || 0} meetings, ${result.summary.phoneCallsFetched || 0} calls. Stored ${result.summary.transcriptsStored || 0} new transcripts.`
+      syncProgress.message = statsMessage
+      
+      // Show success message longer
       setTimeout(() => {
         syncProgress.show = false
-      }, 3000)
+      }, 5000)
     } else {
       error.value = {
         title: 'Sync Failed',
@@ -517,7 +533,7 @@ const syncTranscripts = async () => {
     console.error('Sync error:', err)
     error.value = {
       title: 'Sync Failed',
-      message: err.data?.message || err.message || err.statusMessage || 'An error occurred while syncing transcripts. Please check your DIIO credentials and database connection.'
+      message: err.message || err.statusMessage || 'An error occurred while syncing transcripts. Please check your DIIO credentials and database connection.'
     }
     syncProgress.show = false
   } finally {
