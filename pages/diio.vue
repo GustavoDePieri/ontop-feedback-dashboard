@@ -570,14 +570,30 @@ const loadStats = async () => {
   // Load feedback stats
   try {
     const { getTranscriptFeedbackStats } = useSupabase()
-    const { data: feedbackData } = await getTranscriptFeedbackStats()
-    if (feedbackData) {
+    const { data: feedbackData, error: feedbackError } = await getTranscriptFeedbackStats()
+    
+    if (feedbackError) {
+      console.warn('Feedback stats not available (database function may not exist yet):', feedbackError)
+      // Set defaults if stats not available
+      feedbackStats.totalSegments = 0
+      feedbackStats.criticalSignals = 0
+      return
+    }
+    
+    if (feedbackData && typeof feedbackData === 'object') {
       feedbackStats.totalSegments = feedbackData.total_feedback_segments || 0
       // Calculate critical signals from feedback types
       feedbackStats.criticalSignals = (feedbackData.pain_points || 0) + (feedbackData.concerns || 0)
+    } else {
+      // Set defaults if data is not available
+      feedbackStats.totalSegments = 0
+      feedbackStats.criticalSignals = 0
     }
   } catch (err) {
     console.error('Error loading feedback stats:', err)
+    // Set defaults on error
+    feedbackStats.totalSegments = 0
+    feedbackStats.criticalSignals = 0
   }
 }
 
