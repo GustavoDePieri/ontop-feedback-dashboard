@@ -381,6 +381,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
           // Continue with next transcript
           continue
         }
+      }
       
       // Small delay between batches
       if (batchIndex < batches.length - 1) {
