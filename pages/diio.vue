@@ -187,8 +187,8 @@
               class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
             >
               <option value="">All Types</option>
-              <option value="meeting">📅 Meetings</option>
-              <option value="phone_call">📞 Phone Calls</option>
+              <option value="meeting">Meetings</option>
+              <option value="phone_call">Phone Calls</option>
             </select>
           </div>
 
@@ -200,8 +200,8 @@
               class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
             >
               <option value="">All Transcripts</option>
-              <option value="analyzed">✅ Analyzed</option>
-              <option value="not_analyzed">⏳ Not Analyzed</option>
+              <option value="analyzed">Analyzed</option>
+              <option value="not_analyzed">Not Analyzed</option>
             </select>
           </div>
 
