@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     diioClientSecret: process.env.DIIO_CLIENT_SECRET,
     diioRefreshToken: process.env.DIIO_REFRESH_TOKEN,
     diioSubdomain: process.env.DIIO_SUBDOMAIN || 'getontop',
+    cronSecret: process.env.CRON_SECRET, // Optional: for securing daily sync endpoint
     public: {
       // Client-side environment variables
       appName: 'Ontop Feedback Analytics',

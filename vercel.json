@@ -1,3 +1,9 @@
 {
-  "framework": "nuxtjs"
+  "framework": "nuxtjs",
+  "crons": [
+    {
+      "path": "/api/diio/sync-transcripts-daily",
+      "schedule": "0 2 * * *"
+    }
+  ]
 }
