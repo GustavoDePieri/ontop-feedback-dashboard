@@ -683,16 +683,43 @@ const syncTranscripts = async () => {
 }
 
 const extractFeedback = async () => {
+  // Check how many unprocessed transcripts exist
+  const unprocessedCount = transcripts.value.filter(t => !t.feedback_extracted).length
+  
+  if (unprocessedCount === 0) {
+    error.value = {
+      title: 'No Transcripts to Process',
+      message: 'All transcripts have already been processed. Use "Force Re-extraction" to process them again.'
+    }
+    return
+  }
+  
+  // Confirm with user (limit to 50 per batch to avoid overload)
+  const batchLimit = 50
+  const willProcess = Math.min(unprocessedCount, batchLimit)
+  
+  if (!confirm(
+    `Extract feedback from ${willProcess} unprocessed transcript${willProcess === 1 ? '' : 's'}?\n\n` +
+    `Note: This uses local pattern matching (not AI), so it's fast and free.\n` +
+    `Processing in batches of ${batchLimit}. ${unprocessedCount > batchLimit ? `\n\n(${unprocessedCount - batchLimit} more will be processed in subsequent batches)` : ''}`
+  )) {
+    return
+  }
+  
   extracting.value = true
   error.value = null
   extractionProgress.show = true
   extractionProgress.processed = 0
-  extractionProgress.total = 1
+  extractionProgress.total = willProcess
   extractionProgress.segmentsExtracted = 0
   extractionProgress.message = 'Starting feedback extraction...'
   
   try {
-    const response = await fetch('/api/diio/extract-feedback', {
+    // Pass limit as query parameter
+    const url = new URL('/api/diio/extract-feedback', window.location.origin)
+    url.searchParams.set('limit', batchLimit.toString())
+    
+    const response = await fetch(url.toString(), {
       method: 'POST'
     })
     
