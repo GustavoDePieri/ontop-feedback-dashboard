@@ -1,0 +1,233 @@
+/**
+ * POST /api/diio/sync-transcripts
+ * 
+ * Syncs transcripts from DIIO API to database
+ * - Fetches meetings and phone calls
+ * - Identifies new transcripts
+ * - Fetches and stores new transcripts
+ * - Returns summary of sync results
+ */
+
+import { diioRequest } from '~/server/utils/diio'
+import { createClient } from '@supabase/supabase-js'
+
+const config = useRuntimeConfig()
+const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey)
+
+interface SyncResult {
+  success: boolean
+  message: string
+  summary: {
+    meetingsFetched: number
+    phoneCallsFetched: number
+    newTranscriptsFound: number
+    transcriptsStored: number
+    transcriptsSkipped: number
+    errors: number
+  }
+  details: {
+    meetingTranscriptIds: string[]
+    phoneCallTranscriptIds: string[]
+    storedTranscriptIds: string[]
+    errors: Array<{ transcriptId: string; error: string }>
+  }
+}
+
+export default defineEventHandler(async (event): Promise<SyncResult> => {
+  const result: SyncResult = {
+    success: false,
+    message: '',
+    summary: {
+      meetingsFetched: 0,
+      phoneCallsFetched: 0,
+      newTranscriptsFound: 0,
+      transcriptsStored: 0,
+      transcriptsSkipped: 0,
+      errors: 0
+    },
+    details: {
+      meetingTranscriptIds: [],
+      phoneCallTranscriptIds: [],
+      storedTranscriptIds: [],
+      errors: []
+    }
+  }
+
+  try {
+    console.log('🔄 Starting transcript sync...')
+
+    // Step 1: Fetch meetings
+    console.log('📅 Fetching meetings...')
+    let meetings: any[] = []
+    try {
+      const meetingsData = await diioRequest('/v1/meetings', {
+        params: { page: 1, limit: 1000 }
+      })
+      meetings = meetingsData.meetings || []
+      result.summary.meetingsFetched = meetings.length
+      console.log(`✅ Found ${meetings.length} meetings`)
+    } catch (error: any) {
+      console.error('Error fetching meetings:', error)
+      // Continue anyway - might not have meetings
+    }
+
+    // Step 2: Fetch phone calls
+    console.log('📞 Fetching phone calls...')
+    let phoneCalls: any[] = []
+    try {
+      const phoneCallsData = await diioRequest('/v1/phone_calls', {
+        params: { page: 1, limit: 1000 }
+      })
+      phoneCalls = phoneCallsData.phone_calls || []
+      result.summary.phoneCallsFetched = phoneCalls.length
+      console.log(`✅ Found ${phoneCalls.length} phone calls`)
+    } catch (error: any) {
+      console.error('Error fetching phone calls (might not be available):', error)
+      // Continue anyway - account might only have meetings
+    }
+
+    // Step 3: Extract transcript IDs
+    const meetingTranscriptIds = meetings
+      .filter(m => m.last_transcript_id || m.last_trancript_id)
+      .map(m => m.last_transcript_id || m.last_trancript_id)
+    
+    const phoneCallTranscriptIds = phoneCalls
+      .filter(c => c.last_transcript_id || c.last_trancript_id)
+      .map(c => c.last_transcript_id || c.last_trancript_id)
+
+    result.details.meetingTranscriptIds = meetingTranscriptIds
+    result.details.phoneCallTranscriptIds = phoneCallTranscriptIds
+
+    const allTranscriptIds = [...meetingTranscriptIds, ...phoneCallTranscriptIds]
+    console.log(`📋 Found ${allTranscriptIds.length} total transcript IDs (${meetingTranscriptIds.length} meetings, ${phoneCallTranscriptIds.length} calls)`)
+
+    // Step 4: Check which transcripts already exist
+    const { data: existingTranscripts } = await supabase
+      .from('diio_transcripts')
+      .select('diio_transcript_id')
+      .in('diio_transcript_id', allTranscriptIds)
+
+    const existingIds = new Set(existingTranscripts?.map(t => t.diio_transcript_id) || [])
+    const newTranscriptIds = allTranscriptIds.filter(id => !existingIds.has(id))
+    
+    result.summary.newTranscriptsFound = newTranscriptIds.length
+    console.log(`🆕 Found ${newTranscriptIds.length} new transcripts to fetch`)
+
+    if (newTranscriptIds.length === 0) {
+      result.success = true
+      result.message = 'No new transcripts found. All transcripts are up to date.'
+      return result
+    }
+
+    // Step 5: Fetch and store new transcripts
+    console.log(`🎙️ Fetching and storing ${newTranscriptIds.length} new transcripts...`)
+    
+    for (let i = 0; i < newTranscriptIds.length; i++) {
+      const transcriptId = newTranscriptIds[i]
+      const isFromMeeting = meetingTranscriptIds.includes(transcriptId)
+      const source = isFromMeeting ? 'meeting' : 'phone_call'
+      
+      // Find the source meeting/call for metadata
+      const sourceMeeting = meetings.find(m => 
+        (m.last_transcript_id || m.last_trancript_id) === transcriptId
+      )
+      const sourceCall = phoneCalls.find(c => 
+        (c.last_transcript_id || c.last_trancript_id) === transcriptId
+      )
+      const sourceData = sourceMeeting || sourceCall
+
+      try {
+        // Fetch transcript
+        const transcriptData = await diioRequest(`/v1/transcripts/${transcriptId}`)
+        
+        // Extract transcript text (handle different response structures)
+        let transcriptText = ''
+        if (typeof transcriptData === 'string') {
+          transcriptText = transcriptData
+        } else if (transcriptData && typeof transcriptData === 'object') {
+          transcriptText = transcriptData.transcript || transcriptData.text || transcriptData.content || ''
+          
+          // If transcript is an object/array, stringify it
+          if (!transcriptText && transcriptData.transcript) {
+            if (Array.isArray(transcriptData.transcript)) {
+              transcriptText = transcriptData.transcript.map((item: any) => 
+                typeof item === 'string' ? item : JSON.stringify(item)
+              ).join('\n')
+            } else if (typeof transcriptData.transcript === 'object') {
+              transcriptText = JSON.stringify(transcriptData.transcript)
+            }
+          }
+          
+          if (typeof transcriptText !== 'string') {
+            transcriptText = String(transcriptText)
+          }
+        }
+
+        // Skip if transcript is empty
+        if (!transcriptText || transcriptText.trim().length === 0) {
+          console.log(`⚠️ Skipping empty transcript ${transcriptId}`)
+          result.summary.transcriptsSkipped++
+          continue
+        }
+
+        // Prepare transcript record
+        const transcriptRecord = {
+          diio_transcript_id: transcriptId,
+          transcript_text: transcriptText,
+          transcript_type: source,
+          source_id: sourceData?.id || transcriptId,
+          source_name: sourceData?.name || 'Unknown',
+          occurred_at: sourceData?.scheduled_at || sourceData?.occurred_at || null,
+          duration: sourceData?.duration || null,
+          attendees: sourceData?.attendees || null,
+          analyzed_status: 'pending'
+        }
+
+        // Store in database
+        const { error: insertError } = await supabase
+          .from('diio_transcripts')
+          .upsert(transcriptRecord, {
+            onConflict: 'diio_transcript_id',
+            ignoreDuplicates: false
+          })
+
+        if (insertError) {
+          throw insertError
+        }
+
+        result.summary.transcriptsStored++
+        result.details.storedTranscriptIds.push(transcriptId)
+        console.log(`✅ Stored transcript ${i + 1}/${newTranscriptIds.length}: ${transcriptId}`)
+
+        // Rate limiting: 1.5 seconds between requests
+        if (i < newTranscriptIds.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1500))
+        }
+
+      } catch (error: any) {
+        console.error(`❌ Error processing transcript ${transcriptId}:`, error)
+        result.summary.errors++
+        result.details.errors.push({
+          transcriptId,
+          error: error.message || 'Unknown error'
+        })
+        
+        // Continue with next transcript
+        continue
+      }
+    }
+
+    result.success = true
+    result.message = `Sync completed! Stored ${result.summary.transcriptsStored} new transcripts, skipped ${result.summary.transcriptsSkipped}, ${result.summary.errors} errors.`
+    console.log(`✅ Sync completed: ${result.message}`)
+
+    return result
+
+  } catch (error: any) {
+    console.error('❌ Sync failed:', error)
+    result.success = false
+    result.message = `Sync failed: ${error.message}`
+    return result
+  }
+})
+
