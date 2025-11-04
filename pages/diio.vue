@@ -477,6 +477,17 @@ const syncProgress = reactive({
   message: ''
 })
 
+// Extraction progress
+const extractionProgress = reactive({
+  show: false,
+  processed: 0,
+  total: 0,
+  segmentsExtracted: 0,
+  message: ''
+})
+
+const lastExtractionTime = ref<string | null>(null)
+
 // Filters
 const filters = reactive({
   search: '',
