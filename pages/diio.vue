@@ -359,7 +359,7 @@
                 </div>
                 
                 <div class="flex items-center gap-4 text-xs text-gray-400">
-                  <span>ID: {{ transcript.diio_transcript_id.substring(0, 20) }}...</span>
+                  <span class="select-all cursor-pointer hover:text-gray-300 transition-colors" title="Click to select full ID">ID: {{ transcript.diio_transcript_id }}</span>
                   <span v-if="transcript.attendees">{{ getAttendeeCount(transcript.attendees) }} attendees</span>
                 </div>
               </div>
