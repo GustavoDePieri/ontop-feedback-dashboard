@@ -28,7 +28,22 @@
               <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span class="text-sm text-white/80">DIIO Connected</span>
             </div>
-            
+
+            <button
+              @click="generateChurnedAccountsReport"
+              :disabled="generatingReport"
+              class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <svg v-if="!generatingReport" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ generatingReport ? 'Generating...' : '⚠️ Churned Report' }}
+            </button>
+
             <button
               @click="syncTranscripts"
               :disabled="syncing"
@@ -882,6 +897,7 @@ const { getDiioTranscripts, getDiioTranscriptStats } = useSupabase()
 const transcripts = ref<any[]>([])
 const loading = ref(false)
 const syncing = ref(false)
+const generatingReport = ref(false)
 const error = ref<{ title?: string; message: string } | null>(null)
 const selectedTranscript = ref<any>(null)
 const currentPage = ref(1)
@@ -1026,6 +1042,61 @@ const loadStats = async () => {
 
   // Count churned transcripts from loaded data
   stats.churned = transcripts.value.filter(t => t.client_platform_id).length
+}
+
+const generateChurnedAccountsReport = async () => {
+  generatingReport.value = true
+  error.value = null
+
+  try {
+    console.log('📊 Generating churned accounts report...')
+
+    const response = await fetch('/api/diio/reports/churned-accounts', {
+      method: 'GET'
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }))
+      throw new Error(errorData.message || `HTTP ${response.status}`)
+    }
+
+    const reportData = await response.json()
+    console.log('✅ Churned accounts report generated:', reportData)
+
+    // Show success message with stats
+    const successMessage = `
+🎉 **Churned Accounts Report Generated!**
+
+**Summary:**
+- 📊 **${reportData.totalChurnedAccounts}** churned accounts identified
+- 📝 **${reportData.totalTranscripts}** total transcripts from churned accounts
+- 🏢 **${reportData.accountsWithTranscripts}** accounts have transcripts
+- 📈 **${reportData.accountsWithoutTranscripts}** accounts have no transcripts
+
+**Top Accounts by Transcripts:**
+${reportData.topAccountsByTranscripts.slice(0, 5).map((account: any, index: number) =>
+  `${index + 1}. **${account.accountName}** (${account.clientPlatformId}): ${account.transcriptCount} transcripts`
+).join('\n')}
+
+**Distribution:**
+- 1 transcript: ${reportData.transcriptDistribution.accountsWith1Transcript} accounts
+- 2-5 transcripts: ${reportData.transcriptDistribution.accountsWith2To5Transcripts} accounts
+- 6-10 transcripts: ${reportData.transcriptDistribution.accountsWith6To10Transcripts} accounts
+- 10+ transcripts: ${reportData.transcriptDistribution.accountsWith10PlusTranscripts} accounts
+    `.trim()
+
+    // Show success notification (you could implement a toast notification here)
+    alert(successMessage.replace(/\*\*/g, '').replace(/`/g, ''))
+
+  } catch (err: any) {
+    console.error('❌ Error generating churned accounts report:', err)
+    error.value = {
+      title: 'Report Generation Failed',
+      message: err.message || 'An error occurred while generating the churned accounts report.'
+    }
+  } finally {
+    generatingReport.value = false
+  }
 }
 
 const syncTranscripts = async () => {
