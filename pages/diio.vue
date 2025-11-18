@@ -182,7 +182,7 @@
             <p class="text-red-300 text-sm">{{ error.message }}</p>
           </div>
           <button
-            @click="error = null"
+            @click="clearError"
             class="text-red-400 hover:text-red-300"
           >
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -496,8 +496,11 @@
                 <!-- AI Sentiment Analysis Button -->
                 <button
                   @click.stop="analyzeTranscriptWithAI(transcript)"
-                  :disabled="analyzingTranscript === transcript.id"
-                  class="px-3 py-1.5 bg-gradient-to-r from-pink-600 to-purple-600 text-white text-xs rounded-lg hover:from-pink-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-1"
+                  :disabled="analyzingTranscript === transcript.id || hasQuotaError"
+                  :class="hasQuotaError
+                    ? 'px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-700 text-gray-300 text-xs rounded-lg cursor-not-allowed flex items-center gap-1'
+                    : 'px-3 py-1.5 bg-gradient-to-r from-pink-600 to-purple-600 text-white text-xs rounded-lg hover:from-pink-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-1'"
+                  :title="hasQuotaError ? 'AI quota exceeded - please wait and try again' : 'Analyze with AI'"
                 >
                   <svg v-if="analyzingTranscript !== transcript.id" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -506,7 +509,7 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {{ analyzingTranscript === transcript.id ? 'Analyzing...' : 'AI Analysis' }}
+                  {{ analyzingTranscript === transcript.id ? 'Analyzing...' : hasQuotaError ? 'Quota Exceeded' : 'AI Analysis' }}
                 </button>
               </div>
             </div>
@@ -1169,6 +1172,7 @@ const showChurnedReportModal = ref(false)
 // AI Analysis State
 const analyzingTranscript = ref<string | null>(null)
 const aiAnalysisResult = ref<any>(null)
+const hasQuotaError = ref(false)
 
 // Stats
 const stats = reactive({
@@ -1444,9 +1448,53 @@ const analyzeTranscriptWithAI = async (transcript: any) => {
     }
   } catch (err: any) {
     console.error('AI analysis error:', err)
-    error.value = {
-      title: 'AI Analysis Failed',
-      message: err.message || 'An error occurred while analyzing the transcript. Please try again.'
+
+    // Check if this is a quota exceeded error
+    const isQuotaError = err.message?.includes('quota exceeded') ||
+                        err.message?.includes('Too Many Requests') ||
+                        err.message?.includes('429')
+
+    if (isQuotaError) {
+      // Extract retry delay from error message if available
+      const retryMatch = err.message?.match(/retryDelay["\s:]+([^"\s,}]+)/)
+      const retryDelay = retryMatch ? retryMatch[1] : 'a few minutes'
+
+      hasQuotaError.value = true
+
+      // Auto-clear quota error after the retry delay
+      const retryDelaySeconds = parseFloat(retryDelay) || 60 // Default to 60 seconds if parsing fails
+      setTimeout(() => {
+        hasQuotaError.value = false
+        if (error.value?.title === '🤖 AI Quota Exceeded') {
+          error.value = null
+        }
+      }, retryDelaySeconds * 1000)
+
+      error.value = {
+        title: '🤖 AI Quota Exceeded',
+        message: `You've reached your Google Gemini API free tier limit (resets hourly).
+
+💡 **Quick Solutions:**
+• Wait ${retryDelay} and try again
+• Upgrade to Google Cloud paid tier for higher limits
+• Reduce analysis frequency to stay within free limits
+
+🔗 **Upgrade Options:**
+• Visit: https://makersuite.google.com/app/apikey
+• Check usage: https://ai.google.dev/aistudio
+
+📊 **Free Tier Limits:**
+• 15 requests/minute per model
+• 32,000 tokens/minute per model
+• 1,000 requests/day
+
+The error will resolve automatically once your quota resets.`
+      }
+    } else {
+      error.value = {
+        title: 'AI Analysis Failed',
+        message: err.message || 'An error occurred while analyzing the transcript. Please try again.'
+      }
     }
   } finally {
     analyzingTranscript.value = null
@@ -1512,6 +1560,11 @@ const clearFilters = () => {
   filters.dateFrom = ''
   filters.dateTo = ''
   currentPage.value = 1
+}
+
+const clearError = () => {
+  error.value = null
+  hasQuotaError.value = false
 }
 
 const formatDate = (dateString: string) => {
