@@ -382,7 +382,7 @@
                         {{ transcript.account_name }}
                       </span>
                       <button
-                        @click="copyToClipboard(transcript.account_name)"
+                        @click.stop="copyToClipboard(transcript.account_name)"
                         class="text-red-400 hover:text-red-200 transition-colors p-1 rounded"
                         title="Copy Account Name"
                       >
@@ -396,7 +396,7 @@
                         ID: {{ transcript.client_platform_id }}
                       </span>
                       <button
-                        @click="copyToClipboard(transcript.client_platform_id)"
+                        @click.stop="copyToClipboard(transcript.client_platform_id)"
                         class="text-red-400 hover:text-red-200 transition-colors p-1 rounded"
                         title="Copy Client Platform ID"
                       >
@@ -449,7 +449,7 @@
                   <div class="flex items-center gap-1">
                     <span class="select-all cursor-pointer hover:text-gray-300 transition-colors" title="Click to select full ID">ID: {{ transcript.diio_transcript_id }}</span>
                     <button
-                      @click="copyToClipboard(transcript.diio_transcript_id)"
+                      @click.stop="copyToClipboard(transcript.diio_transcript_id)"
                       class="text-gray-500 hover:text-white transition-colors p-1 rounded"
                       title="Copy Transcript ID"
                     >
@@ -461,7 +461,7 @@
                   <span v-if="transcript.attendees">{{ getAttendeeCount(transcript.attendees) }} attendees</span>
                   <div v-if="transcript.client_platform_id" class="flex items-center gap-1">
                     <button
-                      @click="copyToClipboard(transcript.client_platform_id)"
+                      @click.stop="copyToClipboard(transcript.client_platform_id)"
                       class="text-gray-500 hover:text-white transition-colors p-1 rounded"
                       title="Copy Client Platform ID"
                     >
