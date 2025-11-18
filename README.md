@@ -1,7 +1,7 @@
 # 📊 Ontop Feedback Analytics Dashboard - Complete Documentation
 
-**Version:** 2.2  
-**Last Updated:** December 2025  
+**Version:** 2.3
+**Last Updated:** January 2025  
 **Tech Stack:** Nuxt 3 + Tailwind CSS + Google Sheets + DIIO + Gemini AI + Supabase
 
 ---
@@ -298,6 +298,9 @@ feedbackAnalysis/
 **Features:**
 - 📞 **Transcript Management** - Access and analyze call/meeting transcripts
 - 👥 **Attendee Display** - View participants (sellers & customers) with emails
+- ⚠️ **Churned Account Tagging** - Automatic identification of churned customer transcripts
+- 📋 **Copy Buttons** - One-click copying of transcript IDs, account names, and client IDs
+- 📊 **Churned Accounts Report** - Generate detailed reports on churned customer interactions
 - 🤖 **AI Sentiment Analysis** - Deep analysis powered by Gemini AI
   - Overall sentiment and satisfaction scoring
   - Churn risk assessment with signal detection
@@ -305,7 +308,8 @@ feedbackAnalysis/
   - Actionable insights with priority and ownership
 - 📊 **Feedback Extraction** - Pattern-based feedback segment extraction
 - 🔄 **Sync from DIIO** - Manual and automatic daily sync
-- 🔍 **Advanced Filtering** - By type, date range, and keyword search
+- 🔍 **Advanced Filtering** - By type, date range, account status, and keyword search
+- 🚨 **Smart Quota Management** - Intelligent handling of AI API limits with user guidance
 
 **AI Sentiment Analysis Capabilities:**
 - Sentiment scoring (-100% to +100%)
@@ -316,6 +320,13 @@ feedbackAnalysis/
 - Pain point and highlight extraction
 - Prioritized recommendations with team ownership
 
+**Churned Account Features:**
+- 🔍 **Churned Account Filtering** - Filter to show only transcripts from churned customers
+- 📈 **Churned Account Stats** - Dashboard showing churned transcript counts and percentages
+- 🏷️ **Visual Churned Badges** - Red/orange badges marking churned customer transcripts
+- 📋 **Churned Report Generation** - Interactive modal with detailed churned account analytics
+- 💾 **Account Data Export** - Copy individual account info or complete reports
+
 ### 4. Analytics Page (`pages/analytics.vue`)
 
 **Features:**
@@ -323,23 +334,6 @@ feedbackAnalysis/
 - 📊 **Custom Charts** - Multiple visualization options
 - 🎯 **Trend Analysis** - Historical performance
 - 💰 **Revenue Impact** - MRR/TPV correlation
-
-### 4. Call Transcripts Page (`pages/diio.vue`)
-
-**Features:**
-- 📞 **Transcript Management** - View and manage meeting and call transcripts
-- 👥 **Attendee Information** - See sellers and customers with names and emails
-- 🤖 **AI Sentiment Analysis** - Analyze individual transcripts for:
-  - Overall sentiment (positive/neutral/negative)
-  - Customer satisfaction level (satisfied/neutral/frustrated/at_risk)
-  - Churn risk assessment (low/medium/high/critical)
-  - Churn signal detection (competitor mentions, cost concerns, etc.)
-  - Key themes with urgency levels
-  - Pain points and positive highlights
-  - Actionable insights with priority and ownership
-- 📊 **Feedback Extraction** - Extract structured feedback from transcripts
-- 🔍 **Search & Filters** - Filter by type, date, and search terms
-- 🔄 **Auto-sync** - Daily automatic sync of new transcripts from DIIO
 
 ### 5. AI Intelligence (`Gemini AI`)
 
@@ -351,6 +345,14 @@ feedbackAnalysis/
 - **Cross-Functional Ownership** - Assigns to correct teams
 - **Quick Win Detection** - Identifies easy improvements
 - **Transcript Sentiment Analysis** - Individual transcript analysis with churn detection
+- **Smart Quota Management** - Intelligent handling of API limits with user guidance
+
+**Quota Management Features:**
+- 🚨 **Automatic Quota Detection** - Recognizes rate limit errors (429, "Too Many Requests")
+- 📊 **Detailed Error Messages** - Shows current limits, retry timing, and upgrade options
+- ⏱️ **Auto-Recovery** - Automatically re-enables features after quota reset
+- 💡 **User Guidance** - Direct links to billing and usage monitoring
+- 🎯 **Rate Limiting** - Prevents excessive API calls during quota periods
 
 **Quality Standards:**
 - ✅ **Minimum 2 insights per area** - Emerging Patterns, Critical Risks, Quick Wins
@@ -674,12 +676,27 @@ Generates AI insights using Gemini AI.
 **Symptoms:**
 - Spinner keeps loading
 - Error: "Failed to generate report"
+- Error: "AI Quota Exceeded"
 
 **Solutions:**
 - ✅ Check Gemini AI API key is set
 - ✅ Verify `NUXT_GEMINI_API_KEY` in runtime config
 - ✅ Check browser console for errors
 - ✅ Test with smaller data set
+
+#### 2.5. AI Quota Exceeded
+
+**Symptoms:**
+- Error: "🤖 AI Quota Exceeded"
+- AI Analysis buttons show "Quota Exceeded" (grayed out)
+- Detailed error message with upgrade links
+
+**Solutions:**
+- ✅ **Wait for reset** - Free tier resets hourly, paid tier has higher limits
+- ✅ **Upgrade plan** - Visit https://makersuite.google.com/app/apikey for paid options
+- ✅ **Check usage** - Monitor at https://ai.google.dev/aistudio
+- ✅ **Reduce usage** - Space out AI analysis requests to stay within limits
+- ✅ **Auto-recovery** - System automatically re-enables after quota reset
 
 #### 3. Dark Mode Not Applied
 
@@ -867,22 +884,37 @@ Historical documentation has been archived to `docs/archive/` for reference:
 
 ## 🧹 Recent Changes
 
-### ⭐ Latest: Transcript Improvements (January 2025)
+### ⭐ Latest: Churned Accounts & Enhanced UX (January 2025)
 
 **New Features:**
-- ✅ Added attendee display (sellers & customers) with names and emails
-- ✅ Implemented AI-powered sentiment analysis for individual transcripts
-- ✅ Enhanced transcript cards with visual attendee badges
-- ✅ Created comprehensive AI analysis modal with churn risk detection
-- ✅ Added actionable insights with priority and ownership assignment
+- ✅ **Churned Account Tagging** - Automatic identification and tagging of churned customer transcripts
+- ✅ **Interactive Churned Report** - Detailed analytics modal showing churned account statistics
+- ✅ **Copy Buttons** - One-click copying of transcript IDs, account names, and client platform IDs
+- ✅ **Advanced Filtering** - Filter by account status (churned/active) in transcript view
+- ✅ **Smart Quota Management** - Intelligent handling of Gemini AI API limits with user guidance
+- ✅ **Enhanced Error Handling** - Comprehensive AI quota error messages with upgrade guidance
+- ✅ **Visual Churned Badges** - Red/orange badges marking churned customer transcripts
+- ✅ **Attendee Display** - Sellers and customers with names and emails
+- ✅ **AI Sentiment Analysis** - Individual transcript analysis with churn risk detection
 
 **New API Endpoints:**
 - ✅ `POST /api/diio/analyze-transcript` - AI sentiment analysis endpoint
+- ✅ `GET /api/diio/reports/churned-accounts` - Churned accounts report generation
+
+**Database Schema Updates:**
+- ✅ Added `client_platform_id` and `account_name` columns to `diio_transcripts` table
+- ✅ Enhanced transcript storage with churned account metadata
+
+**User Experience Improvements:**
+- ✅ **Copy-to-Clipboard** functionality throughout transcript interface
+- ✅ **Auto-Recovery** from AI quota limits with smart timing
+- ✅ **Interactive Report Modals** replacing simple alerts
+- ✅ **Visual Feedback** for all user actions and states
 
 **Documentation:**
 - ✅ Created `TRANSCRIPT_IMPROVEMENTS.md` - Complete implementation guide
 - ✅ Created `scripts/reset-transcripts.md` - Reset and re-sync guide
-- ✅ Updated README.md with new features
+- ✅ Updated README.md with all new features and capabilities
 
 **See `TRANSCRIPT_IMPROVEMENTS.md` for complete details and deployment instructions.**
 
