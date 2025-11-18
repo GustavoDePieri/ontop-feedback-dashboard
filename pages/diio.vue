@@ -48,7 +48,7 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <div class="flex items-center justify-between">
             <div>
@@ -101,6 +101,21 @@
             <div class="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center">
               <svg class="w-6 h-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-400 text-sm mb-1">Churned Accounts</p>
+              <p class="text-3xl font-bold text-white">{{ stats.churned }}</p>
+              <p class="text-xs text-gray-500 mt-1">{{ stats.total > 0 ? Math.round((stats.churned / stats.total) * 100) : 0 }}% of transcripts</p>
+            </div>
+            <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
           </div>
@@ -164,7 +179,7 @@
 
       <!-- Filters -->
       <div class="mb-6 bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
           <!-- Search -->
           <div class="relative">
             <label class="block text-sm text-gray-400 mb-2">Search</label>
@@ -202,6 +217,19 @@
               <option value="" class="text-gray-900 bg-white">All Transcripts</option>
               <option value="analyzed" class="text-gray-900 bg-white">Analyzed</option>
               <option value="not_analyzed" class="text-gray-900 bg-white">Not Analyzed</option>
+            </select>
+          </div>
+
+          <!-- Churned Account Filter -->
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Account Status</label>
+            <select
+              v-model="filters.churnedStatus"
+              class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
+            >
+              <option value="" class="text-gray-900 bg-white">All Accounts</option>
+              <option value="churned" class="text-gray-900 bg-white">Churned Accounts</option>
+              <option value="active" class="text-gray-900 bg-white">Active Accounts</option>
             </select>
           </div>
 
@@ -298,8 +326,17 @@
                     {{ transcript.transcript_type === 'meeting' ? '📅 Meeting' : '📞 Call' }}
                   </span>
                   
+                  <!-- Churned Account Badge -->
+                  <span
+                    v-if="transcript.client_platform_id"
+                    class="px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-red-500/20 to-orange-500/20 text-red-300 border border-red-500/30"
+                    :title="`Churned Account: ${transcript.account_name} (${transcript.client_platform_id})`"
+                  >
+                    ⚠️ Churned
+                  </span>
+
                   <!-- AI Analyzed Badge -->
-                  <span 
+                  <span
                     v-if="transcript.ai_analysis"
                     class="px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-pink-500/20 to-purple-500/20 text-pink-300 border border-pink-500/30"
                     title="AI Analysis completed"
@@ -321,6 +358,19 @@
                   {{ getTranscriptPreview(transcript.transcript_text) }}
                 </p>
                 
+                <!-- Account Info Section (for churned accounts) -->
+                <div v-if="transcript.client_platform_id" class="mb-3 p-2 bg-red-900/20 rounded border border-red-500/30">
+                  <p class="text-xs text-red-400 font-semibold mb-1">⚠️ Churned Account:</p>
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-1 text-xs rounded bg-red-500/20 text-red-300 border border-red-500/30">
+                      {{ transcript.account_name }}
+                    </span>
+                    <span class="px-2 py-1 text-xs rounded bg-red-500/20 text-red-300 border border-red-500/30">
+                      ID: {{ transcript.client_platform_id }}
+                    </span>
+                  </div>
+                </div>
+
                 <!-- Attendees Section -->
                 <div v-if="transcript.attendees && (transcript.attendees.sellers || transcript.attendees.customers)" class="mb-3 p-2 bg-gray-900/50 rounded border border-gray-700">
                   <div v-if="transcript.attendees.sellers && transcript.attendees.sellers.length > 0" class="mb-2">
@@ -339,7 +389,7 @@
                       </span>
                     </div>
                   </div>
-                  
+
                   <div v-if="transcript.attendees.customers && transcript.attendees.customers.length > 0">
                     <p class="text-xs text-blue-400 font-semibold mb-1">🏢 Customers:</p>
                     <div class="flex flex-wrap gap-2">
@@ -846,7 +896,8 @@ const stats = reactive({
   total: 0,
   meetings: 0,
   phoneCalls: 0,
-  aiAnalyzed: 0
+  aiAnalyzed: 0,
+  churned: 0
 })
 
 const lastSyncTime = ref<string | null>(null)
@@ -864,13 +915,14 @@ const filters = reactive({
   search: '',
   type: '',
   aiAnalysis: '',
+  churnedStatus: '',
   dateFrom: '',
   dateTo: ''
 })
 
 // Computed
 const hasActiveFilters = computed(() => {
-  return !!(filters.search || filters.type || filters.aiAnalysis || filters.dateFrom || filters.dateTo)
+  return !!(filters.search || filters.type || filters.aiAnalysis || filters.churnedStatus || filters.dateFrom || filters.dateTo)
 })
 
 const filteredTranscripts = computed(() => {
@@ -896,7 +948,14 @@ const filteredTranscripts = computed(() => {
   } else if (filters.aiAnalysis === 'not_analyzed') {
     filtered = filtered.filter(t => !t.ai_analysis)
   }
-  
+
+  // Churned Account filter
+  if (filters.churnedStatus === 'churned') {
+    filtered = filtered.filter(t => t.client_platform_id !== null && t.client_platform_id !== undefined)
+  } else if (filters.churnedStatus === 'active') {
+    filtered = filtered.filter(t => !t.client_platform_id)
+  }
+
   // Date filters
   if (filters.dateFrom) {
     const fromDate = new Date(filters.dateFrom)
@@ -964,6 +1023,9 @@ const loadStats = async () => {
   
   // Count AI analyzed transcripts from loaded data
   stats.aiAnalyzed = transcripts.value.filter(t => t.ai_analysis).length
+
+  // Count churned transcripts from loaded data
+  stats.churned = transcripts.value.filter(t => t.client_platform_id).length
 }
 
 const syncTranscripts = async () => {
@@ -1133,6 +1195,7 @@ const clearFilters = () => {
   filters.search = ''
   filters.type = ''
   filters.aiAnalysis = ''
+  filters.churnedStatus = ''
   filters.dateFrom = ''
   filters.dateTo = ''
   currentPage.value = 1
@@ -1214,7 +1277,7 @@ const formatTranscriptText = (text: any): string => {
 }
 
 // Watch for filter changes to reset pagination
-watch([filters.search, filters.type, filters.aiAnalysis, filters.dateFrom, filters.dateTo], () => {
+watch([filters.search, filters.type, filters.aiAnalysis, filters.churnedStatus, filters.dateFrom, filters.dateTo], () => {
   currentPage.value = 1
 })
 

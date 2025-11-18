@@ -1,0 +1,1481 @@
+{
+  "email_to_account": {
+    "claudia.cano@siigo.com": {
+      "client_platform_id": "CL000447",
+      "account_name": "Siigo S.A.S",
+      "customer_success_path": "Churned"
+    },
+    "daniela.fernandez@siigo.com": {
+      "client_platform_id": "CL000447",
+      "account_name": "Siigo S.A.S",
+      "customer_success_path": "Churned"
+    },
+    "oscar.angel@siigo.com": {
+      "client_platform_id": "CL000447",
+      "account_name": "Siigo S.A.S",
+      "customer_success_path": "Churned"
+    },
+    "davidsalvador@b2w.ec": {
+      "client_platform_id": "CL000610",
+      "account_name": "B2W Communication",
+      "customer_success_path": "Churned"
+    },
+    "info@wecodeit.uy": {
+      "client_platform_id": "CL000943",
+      "account_name": "BairesQA",
+      "customer_success_path": "Churned"
+    },
+    "augusto@wecodeit.uy": {
+      "client_platform_id": "CL000943",
+      "account_name": "BairesQA",
+      "customer_success_path": "Churned"
+    },
+    "jaime@patients4you.com": {
+      "client_platform_id": "CL001044",
+      "account_name": "Patients4you",
+      "customer_success_path": "Churned"
+    },
+    "gonzalez.ulises@gmail.com": {
+      "client_platform_id": "CL001099",
+      "account_name": "Prozess",
+      "customer_success_path": "Churned"
+    },
+    "hector@barracudaadvertising.com": {
+      "client_platform_id": "CL001510",
+      "account_name": "Barracuda Advertising",
+      "customer_success_path": "Churned"
+    },
+    "mmartinez@crackthecode.la": {
+      "client_platform_id": "CL001961",
+      "account_name": "First Crack the Code",
+      "customer_success_path": "Churned"
+    },
+    "esanmiguel@crackthecode.la": {
+      "client_platform_id": "CL001961",
+      "account_name": "First Crack the Code",
+      "customer_success_path": "Churned"
+    },
+    "kmoscoso@crackthecode.com": {
+      "client_platform_id": "CL001966",
+      "account_name": "Crack The Code 2",
+      "customer_success_path": "Churned"
+    },
+    "lorena.duarte@izo.es": {
+      "client_platform_id": "CL002005",
+      "account_name": "Izo",
+      "customer_success_path": "Churned"
+    },
+    "raul.venegas@izo.es": {
+      "client_platform_id": "CL002005",
+      "account_name": "Izo",
+      "customer_success_path": "Churned"
+    },
+    "luis.moreno@capitalone.com": {
+      "client_platform_id": "CL002021",
+      "account_name": "VMCA",
+      "customer_success_path": "Churned"
+    },
+    "daniel.valenzuela@valormaximo.com": {
+      "client_platform_id": "CL002021",
+      "account_name": "VMCA",
+      "customer_success_path": "Churned"
+    },
+    "contacto@valormaximo.com": {
+      "client_platform_id": "CL002021",
+      "account_name": "VMCA",
+      "customer_success_path": "Churned"
+    },
+    "christian@t60a.com": {
+      "client_platform_id": "CL002658",
+      "account_name": "Tres60 Américas",
+      "customer_success_path": "Churned"
+    },
+    "ybravom@tres60.cl": {
+      "client_platform_id": "CL002658",
+      "account_name": "Tres60 Américas",
+      "customer_success_path": "Churned"
+    },
+    "phil@docsie.io": {
+      "client_platform_id": "CL002807",
+      "account_name": "Docsie.io",
+      "customer_success_path": "Churned"
+    },
+    "jose.barreto@glendale.com": {
+      "client_platform_id": "CL002949",
+      "account_name": "clothoholdings.com",
+      "customer_success_path": "Churned"
+    },
+    "mdelaroca@positive.agency": {
+      "client_platform_id": "CL002984",
+      "account_name": "Positive Agency | Agencia Digital",
+      "customer_success_path": "Churned"
+    },
+    "gabriela.fernandez@getstaffedup.com": {
+      "client_platform_id": "CL003110",
+      "account_name": "Get Staffed Up",
+      "customer_success_path": "Churned"
+    },
+    "rodrigo.tabernero@getstaffedup.com": {
+      "client_platform_id": "CL003110",
+      "account_name": "Get Staffed Up",
+      "customer_success_path": "Churned"
+    },
+    "daniela.miranda@getstaffedup.com": {
+      "client_platform_id": "CL003110",
+      "account_name": "Get Staffed Up",
+      "customer_success_path": "Churned"
+    },
+    "agustina.carrasco@getstaffedup.com": {
+      "client_platform_id": "CL003110",
+      "account_name": "Get Staffed Up",
+      "customer_success_path": "Churned"
+    },
+    "franz.vallecillos@getstaffedup.com": {
+      "client_platform_id": "CL003110",
+      "account_name": "Get Staffed Up",
+      "customer_success_path": "Churned"
+    },
+    "brett@getstaffedup.com": {
+      "client_platform_id": "CL003110",
+      "account_name": "Get Staffed Up",
+      "customer_success_path": "Churned"
+    },
+    "tom.sherman@getstaffedup.com": {
+      "client_platform_id": "CL003110",
+      "account_name": "Get Staffed Up",
+      "customer_success_path": "Churned"
+    },
+    "pramirez@cever.com.mx": {
+      "client_platform_id": "CL003110",
+      "account_name": "Get Staffed Up",
+      "customer_success_path": "Churned"
+    },
+    "mariel.barahona@getstaffedup.com": {
+      "client_platform_id": "CL003110",
+      "account_name": "Get Staffed Up",
+      "customer_success_path": "Churned"
+    },
+    "gabriela.metivier@getstaffedup.com-deleted": {
+      "client_platform_id": "CL003110",
+      "account_name": "Get Staffed Up",
+      "customer_success_path": "Churned"
+    },
+    "": {
+      "client_platform_id": "CL005398",
+      "account_name": "TrainMe Corp",
+      "customer_success_path": "Churned"
+    },
+    "adryprincipi@gmail.com": {
+      "client_platform_id": "CL003128",
+      "account_name": "Artificial Inventive",
+      "customer_success_path": "Churned"
+    },
+    "giselle.moreno@laincosoftware.com": {
+      "client_platform_id": "CL003134",
+      "account_name": "Lainco Software",
+      "customer_success_path": "Churned"
+    },
+    "pablo.revert@laincosoftware.com": {
+      "client_platform_id": "CL003134",
+      "account_name": "Lainco Software",
+      "customer_success_path": "Churned"
+    },
+    "payroll@laincosoftware.com": {
+      "client_platform_id": "CL003134",
+      "account_name": "Lainco Software",
+      "customer_success_path": "Churned"
+    },
+    "andres.calle@quanticsgroup.com": {
+      "client_platform_id": "CL003175",
+      "account_name": "Quantics",
+      "customer_success_path": "Churned"
+    },
+    "carolina@todoscomemos.com": {
+      "client_platform_id": "CL003331",
+      "account_name": "We All Eat Corporation",
+      "customer_success_path": "Churned"
+    },
+    "bienestar@todoscomemos.com": {
+      "client_platform_id": "CL003331",
+      "account_name": "We All Eat Corporation",
+      "customer_success_path": "Churned"
+    },
+    "santiago@studentenergy.org": {
+      "client_platform_id": "CL003331",
+      "account_name": "We All Eat Corporation",
+      "customer_success_path": "Churned"
+    },
+    "alfredo@w2wglobal.com": {
+      "client_platform_id": "CL003334",
+      "account_name": "Waste 2 Worth",
+      "customer_success_path": "Churned"
+    },
+    "viviana@w2wglobal.com": {
+      "client_platform_id": "CL003334",
+      "account_name": "Waste 2 Worth",
+      "customer_success_path": "Churned"
+    },
+    "jrivas@ifc.org": {
+      "client_platform_id": "CL003334",
+      "account_name": "Waste 2 Worth",
+      "customer_success_path": "Churned"
+    },
+    "gindriago@co2action.us": {
+      "client_platform_id": "CL003442",
+      "account_name": "Co2Action",
+      "customer_success_path": "Churned"
+    },
+    "alopez@co2action.us": {
+      "client_platform_id": "CL003442",
+      "account_name": "Co2Action",
+      "customer_success_path": "Churned"
+    },
+    "herman.rojas@total.com": {
+      "client_platform_id": "CL003442",
+      "account_name": "Co2Action",
+      "customer_success_path": "Churned"
+    },
+    "melina.libsfraint@solucionetglobal.com": {
+      "client_platform_id": "CL003461",
+      "account_name": "Glosol",
+      "customer_success_path": "Churned"
+    },
+    "melina@wearesolu.com": {
+      "client_platform_id": "CL003461",
+      "account_name": "Glosol",
+      "customer_success_path": "Churned"
+    },
+    "ezequiel.guerrero@wearesolu.com": {
+      "client_platform_id": "CL003461",
+      "account_name": "Glosol",
+      "customer_success_path": "Churned"
+    },
+    "alan.meller@wearesolu.com": {
+      "client_platform_id": "CL003461",
+      "account_name": "Glosol",
+      "customer_success_path": "Churned"
+    },
+    "andres.huczneker@wearesolu.com": {
+      "client_platform_id": "CL003461",
+      "account_name": "Glosol",
+      "customer_success_path": "Churned"
+    },
+    "jcuesta@serban.es": {
+      "client_platform_id": "CL003559",
+      "account_name": "Serban Group - Latam",
+      "customer_success_path": "Churned"
+    },
+    "jcuesta@serbangroup.com": {
+      "client_platform_id": "CL003559",
+      "account_name": "Serban Group - Latam",
+      "customer_success_path": "Churned"
+    },
+    "marcelo@soho.cl": {
+      "client_platform_id": "CL003627",
+      "account_name": "Soho",
+      "customer_success_path": "Churned"
+    },
+    "valeria.dabramo@soho.lat": {
+      "client_platform_id": "CL003627",
+      "account_name": "Soho",
+      "customer_success_path": "Churned"
+    },
+    "alvaro@soho.cl": {
+      "client_platform_id": "CL003627",
+      "account_name": "Soho",
+      "customer_success_path": "Churned"
+    },
+    "maria.hasenberg@rankmi.com": {
+      "client_platform_id": "CL003792",
+      "account_name": "Rankmi",
+      "customer_success_path": "Churned"
+    },
+    "karina.retamal@rankmi.com": {
+      "client_platform_id": "CL003792",
+      "account_name": "Rankmi",
+      "customer_success_path": "Churned"
+    },
+    "carolina.bruna@rankmi.com": {
+      "client_platform_id": "CL003792",
+      "account_name": "Rankmi",
+      "customer_success_path": "Churned"
+    },
+    "jesymar.capella@rankmi.com": {
+      "client_platform_id": "CL003792",
+      "account_name": "Rankmi",
+      "customer_success_path": "Churned"
+    },
+    "rocio.rocha@darwoft.com": {
+      "client_platform_id": "CL003876",
+      "account_name": "R2",
+      "customer_success_path": "Churned"
+    },
+    "thomas@comun.app": {
+      "client_platform_id": "CL003876",
+      "account_name": "R2",
+      "customer_success_path": "Churned"
+    },
+    "adriana.ortiz@r2capital.co": {
+      "client_platform_id": "CL003876",
+      "account_name": "R2",
+      "customer_success_path": "Churned"
+    },
+    "sergio.cattaneo@onecarnow.com": {
+      "client_platform_id": "CL003876",
+      "account_name": "R2",
+      "customer_success_path": "Churned"
+    },
+    "adriana.ortiz@r2.co": {
+      "client_platform_id": "CL003876",
+      "account_name": "R2",
+      "customer_success_path": "Churned"
+    },
+    "catalina.bernal@r2capital.co": {
+      "client_platform_id": "CL003876",
+      "account_name": "R2",
+      "customer_success_path": "Churned"
+    },
+    "sergio.cattaneo@r2capital.co": {
+      "client_platform_id": "CL003876",
+      "account_name": "R2",
+      "customer_success_path": "Churned"
+    },
+    "adrian.rivera@r2capital.co": {
+      "client_platform_id": "CL003876",
+      "account_name": "R2",
+      "customer_success_path": "Churned"
+    },
+    "diego.pereyra@r2capital.co": {
+      "client_platform_id": "CL003876",
+      "account_name": "R2",
+      "customer_success_path": "Churned"
+    },
+    "tom.wright@r2.co": {
+      "client_platform_id": "CL003876",
+      "account_name": "R2",
+      "customer_success_path": "Churned"
+    },
+    "miguel@heippi.com": {
+      "client_platform_id": "CL004001",
+      "account_name": "Heippi",
+      "customer_success_path": "Churned"
+    },
+    "murphy@heippi.com": {
+      "client_platform_id": "CL004001",
+      "account_name": "Heippi",
+      "customer_success_path": "Churned"
+    },
+    "anup.shendurwadkar@gruve.ai": {
+      "client_platform_id": "CL004062",
+      "account_name": "NetServ",
+      "customer_success_path": "Churned"
+    },
+    "billing@yoplabsglobal.com": {
+      "client_platform_id": "CL004090",
+      "account_name": "Yop Labs 2024",
+      "customer_success_path": "Churned"
+    },
+    "cesar.forero@bit.institute": {
+      "client_platform_id": "CL004139",
+      "account_name": "BOGOTA INSTITUTE OF TECHNOLOGY",
+      "customer_success_path": "Churned"
+    },
+    "lider.administrativo@bit.institute": {
+      "client_platform_id": "CL004139",
+      "account_name": "BOGOTA INSTITUTE OF TECHNOLOGY",
+      "customer_success_path": "Churned"
+    },
+    "michael@itshawaii.com": {
+      "client_platform_id": "CL004217",
+      "account_name": "ITS Hawaii",
+      "customer_success_path": "Churned"
+    },
+    "nubia@itshawaii.com": {
+      "client_platform_id": "CL004217",
+      "account_name": "ITS Hawaii",
+      "customer_success_path": "Churned"
+    },
+    "ap@itshawaii.com": {
+      "client_platform_id": "CL004217",
+      "account_name": "ITS Hawaii",
+      "customer_success_path": "Churned"
+    },
+    "martin.cornejo@gomango.co": {
+      "client_platform_id": "CL004221",
+      "account_name": "Go Mango Go",
+      "customer_success_path": "Churned"
+    },
+    "jruiz@colsugar.com": {
+      "client_platform_id": "CL004223",
+      "account_name": "Colsugar S.A.S",
+      "customer_success_path": "Churned"
+    },
+    "jcanas@colsugar.com": {
+      "client_platform_id": "CL004223",
+      "account_name": "Colsugar S.A.S",
+      "customer_success_path": "Churned"
+    },
+    "directorth@colsugar.com": {
+      "client_platform_id": "CL004223",
+      "account_name": "Colsugar S.A.S",
+      "customer_success_path": "Churned"
+    },
+    "gimena@inhausrh.com": {
+      "client_platform_id": "CL004386",
+      "account_name": "INHAUS",
+      "customer_success_path": "Churned"
+    },
+    "marek.burzanowski@inhausrh.com": {
+      "client_platform_id": "CL004386",
+      "account_name": "INHAUS",
+      "customer_success_path": "Churned"
+    },
+    "uhrichgimena@gmail.com": {
+      "client_platform_id": "CL004386",
+      "account_name": "INHAUS",
+      "customer_success_path": "Churned"
+    },
+    "jennyfer@c4c7us.com": {
+      "client_platform_id": "CL004456",
+      "account_name": "C4C7US",
+      "customer_success_path": "Churned"
+    },
+    "mateo.costa@epicio.com": {
+      "client_platform_id": "CL004515",
+      "account_name": "EPIC IO Technologies",
+      "customer_success_path": "Churned"
+    },
+    "sara.schiavone@appliedvaluetech.com": {
+      "client_platform_id": "CL004515",
+      "account_name": "EPIC IO Technologies",
+      "customer_success_path": "Churned"
+    },
+    "melodie.mclachlan@epicio.com": {
+      "client_platform_id": "CL004515",
+      "account_name": "EPIC IO Technologies",
+      "customer_success_path": "Churned"
+    },
+    "duncan@epicio.com": {
+      "client_platform_id": "CL004515",
+      "account_name": "EPIC IO Technologies",
+      "customer_success_path": "Churned"
+    },
+    "admin@maria.capital": {
+      "client_platform_id": "CL004523",
+      "account_name": "Maria Capital",
+      "customer_success_path": "Churned"
+    },
+    "joaquin@tumo.app": {
+      "client_platform_id": "CL004545",
+      "account_name": "tumo.app",
+      "customer_success_path": "Churned"
+    },
+    "lucas@tumo.app": {
+      "client_platform_id": "CL004545",
+      "account_name": "tumo.app",
+      "customer_success_path": "Churned"
+    },
+    "jose.palanco@plexicus.com": {
+      "client_platform_id": "CL004553",
+      "account_name": "plexicus.com",
+      "customer_success_path": "Churned"
+    },
+    "anish@merchantgmat.com": {
+      "client_platform_id": "CL004564",
+      "account_name": "Merchant GMAT & Admissions",
+      "customer_success_path": "Churned"
+    },
+    "accounting@merchantgmat.com": {
+      "client_platform_id": "CL004564",
+      "account_name": "Merchant GMAT & Admissions",
+      "customer_success_path": "Churned"
+    },
+    "afgb@komuty.com": {
+      "client_platform_id": "CL004601",
+      "account_name": "Komuty",
+      "customer_success_path": "Churned"
+    },
+    "dcastanohuertas@ifc.org": {
+      "client_platform_id": "CL004601",
+      "account_name": "Komuty",
+      "customer_success_path": "Churned"
+    },
+    "daniel@komuty.com": {
+      "client_platform_id": "CL004601",
+      "account_name": "Komuty",
+      "customer_success_path": "Churned"
+    },
+    "alejandro.ordonez@msc.com": {
+      "client_platform_id": "CL004610",
+      "account_name": "Swetro",
+      "customer_success_path": "Churned"
+    },
+    "alejandro@swetro.com": {
+      "client_platform_id": "CL004610",
+      "account_name": "Swetro",
+      "customer_success_path": "Churned"
+    },
+    "swetro@axiomllp.com": {
+      "client_platform_id": "CL004610",
+      "account_name": "Swetro",
+      "customer_success_path": "Churned"
+    },
+    "kvasquez@fluidattacks.com": {
+      "client_platform_id": "CL004636",
+      "account_name": "Fluid Attacks",
+      "customer_success_path": "Churned"
+    },
+    "jcarvajal@fluidattacks.com": {
+      "client_platform_id": "CL004636",
+      "account_name": "Fluid Attacks",
+      "customer_success_path": "Churned"
+    },
+    "fgomez@fluidattacks.com": {
+      "client_platform_id": "CL004636",
+      "account_name": "Fluid Attacks",
+      "customer_success_path": "Churned"
+    },
+    "mparra@fluidattacks.com": {
+      "client_platform_id": "CL004636",
+      "account_name": "Fluid Attacks",
+      "customer_success_path": "Churned"
+    },
+    "jcarrasco@fluidattacks.com": {
+      "client_platform_id": "CL004636",
+      "account_name": "Fluid Attacks",
+      "customer_success_path": "Churned"
+    },
+    "apabon@fluidattacks.com": {
+      "client_platform_id": "CL004636",
+      "account_name": "Fluid Attacks",
+      "customer_success_path": "Churned"
+    },
+    "dvelez@fluidattacks.com": {
+      "client_platform_id": "CL004636",
+      "account_name": "Fluid Attacks",
+      "customer_success_path": "Churned"
+    },
+    "vvilla@fluidsignal.com": {
+      "client_platform_id": "CL004636",
+      "account_name": "Fluid Attacks",
+      "customer_success_path": "Churned"
+    },
+    "vvilla@fluidattacks.com": {
+      "client_platform_id": "CL004636",
+      "account_name": "Fluid Attacks",
+      "customer_success_path": "Churned"
+    },
+    "daniel@nutrico.io": {
+      "client_platform_id": "CL004748",
+      "account_name": "nutrico.io",
+      "customer_success_path": "Churned"
+    },
+    "diana.vallejo@softwareestrategico.com": {
+      "client_platform_id": "CL004768",
+      "account_name": "Softgic SAS",
+      "customer_success_path": "Churned"
+    },
+    "stefanie@k50ventures.com": {
+      "client_platform_id": "CL004796",
+      "account_name": "K50 Ventures",
+      "customer_success_path": "Churned"
+    },
+    "admin@k50ventures.com": {
+      "client_platform_id": "CL004796",
+      "account_name": "K50 Ventures",
+      "customer_success_path": "Churned"
+    },
+    "ops@k50ventures.com": {
+      "client_platform_id": "CL004796",
+      "account_name": "K50 Ventures",
+      "customer_success_path": "Churned"
+    },
+    "omar.romerodominguez@mullenlowe.com": {
+      "client_platform_id": "CL004831",
+      "account_name": "The Victory Games",
+      "customer_success_path": "Churned"
+    },
+    "omar@thevictory.games": {
+      "client_platform_id": "CL004831",
+      "account_name": "The Victory Games",
+      "customer_success_path": "Churned"
+    },
+    "agustin@nurtureand.com": {
+      "client_platform_id": "CL004839",
+      "account_name": "nurtureand.com",
+      "customer_success_path": "Churned"
+    },
+    "martinez.eunice.1788@gmail.com": {
+      "client_platform_id": "CL004846",
+      "account_name": "Hacku",
+      "customer_success_path": "Churned"
+    },
+    "jeremy@hacku.co": {
+      "client_platform_id": "CL004846",
+      "account_name": "Hacku",
+      "customer_success_path": "Churned"
+    },
+    "francisco@hacku.co": {
+      "client_platform_id": "CL004846",
+      "account_name": "Hacku",
+      "customer_success_path": "Churned"
+    },
+    "ella@seaportsmiles.com": {
+      "client_platform_id": "CL004859",
+      "account_name": "Seaport Smiles",
+      "customer_success_path": "Churned"
+    },
+    "recruiting@roadscg.com": {
+      "client_platform_id": "CL004859",
+      "account_name": "Seaport Smiles",
+      "customer_success_path": "Churned"
+    },
+    "ella.osborn.dmd@gmail.com": {
+      "client_platform_id": "CL004859",
+      "account_name": "Seaport Smiles",
+      "customer_success_path": "Churned"
+    },
+    "mtimmermann@economia.cl": {
+      "client_platform_id": "CL004907",
+      "account_name": "OCTOS_BI",
+      "customer_success_path": "Churned"
+    },
+    "mario@octos.gt": {
+      "client_platform_id": "CL004907",
+      "account_name": "OCTOS_BI",
+      "customer_success_path": "Churned"
+    },
+    "santiago@getvincu.com": {
+      "client_platform_id": "CL004946",
+      "account_name": "getvincu",
+      "customer_success_path": "Churned"
+    },
+    "giancarlo@zeppelinlabs.io": {
+      "client_platform_id": "CL004959",
+      "account_name": "Zeppelin Labs",
+      "customer_success_path": "Churned"
+    },
+    "pfranco@zeppelinlabs.com": {
+      "client_platform_id": "CL004959",
+      "account_name": "Zeppelin Labs",
+      "customer_success_path": "Churned"
+    },
+    "alejandro@zeppelinlabs.io": {
+      "client_platform_id": "CL004959",
+      "account_name": "Zeppelin Labs",
+      "customer_success_path": "Churned"
+    },
+    "carlos@vanetechnologies.com": {
+      "client_platform_id": "CL004998",
+      "account_name": "Vane Technologies",
+      "customer_success_path": "Churned"
+    },
+    "mlince@jumpcube.io": {
+      "client_platform_id": "CL005007",
+      "account_name": "Jump Cube Technologies LLC",
+      "customer_success_path": "Churned"
+    },
+    "addison@prompthunt.com": {
+      "client_platform_id": "CL005116",
+      "account_name": "PromptHunt",
+      "customer_success_path": "Churned"
+    },
+    "rohan@temporal.exchange": {
+      "client_platform_id": "CL005159",
+      "account_name": "temporal.exchange",
+      "customer_success_path": "Churned"
+    },
+    "varun.verma@heidelbergdistributing.com": {
+      "client_platform_id": "CL005159",
+      "account_name": "temporal.exchange",
+      "customer_success_path": "Churned"
+    },
+    "varun@temporal.exchange": {
+      "client_platform_id": "CL005159",
+      "account_name": "temporal.exchange",
+      "customer_success_path": "Churned"
+    },
+    "mariana@theramart.com": {
+      "client_platform_id": "CL005166",
+      "account_name": "Theramart",
+      "customer_success_path": "Churned"
+    },
+    "vgracio@singcomunica.com.br": {
+      "client_platform_id": "CL005211",
+      "account_name": "Sing Comunicação de Resultados",
+      "customer_success_path": "Churned"
+    },
+    "gestores@singcomunica.com.br": {
+      "client_platform_id": "CL005211",
+      "account_name": "Sing Comunicação de Resultados",
+      "customer_success_path": "Churned"
+    },
+    "board@singcomunica.com.br": {
+      "client_platform_id": "CL005211",
+      "account_name": "Sing Comunicação de Resultados",
+      "customer_success_path": "Churned"
+    },
+    "dgrelva@singcomunica.com.br": {
+      "client_platform_id": "CL005211",
+      "account_name": "Sing Comunicação de Resultados",
+      "customer_success_path": "Churned"
+    },
+    "chris@ancient.gg": {
+      "client_platform_id": "CL005217",
+      "account_name": "Ancient Gaming",
+      "customer_success_path": "Churned"
+    },
+    "manuela@ancient.gg": {
+      "client_platform_id": "CL005217",
+      "account_name": "Ancient Gaming",
+      "customer_success_path": "Churned"
+    },
+    "chris@emberlabs.tech": {
+      "client_platform_id": "CL005217",
+      "account_name": "Ancient Gaming",
+      "customer_success_path": "Churned"
+    },
+    "samuel@ancient.gg": {
+      "client_platform_id": "CL005217",
+      "account_name": "Ancient Gaming",
+      "customer_success_path": "Churned"
+    },
+    "zhenya.dolzhanskaya@ancient.gg": {
+      "client_platform_id": "CL005217",
+      "account_name": "Ancient Gaming",
+      "customer_success_path": "Churned"
+    },
+    "keyvan@everydaydose.com": {
+      "client_platform_id": "CL005219",
+      "account_name": "Everyday Dose",
+      "customer_success_path": "Churned"
+    },
+    "bia@everydaydose.com": {
+      "client_platform_id": "CL005219",
+      "account_name": "Everyday Dose",
+      "customer_success_path": "Churned"
+    },
+    "catarina@everydaydose.com": {
+      "client_platform_id": "CL005219",
+      "account_name": "Everyday Dose",
+      "customer_success_path": "Churned"
+    },
+    "kayvon@everydaydose.com": {
+      "client_platform_id": "CL005219",
+      "account_name": "Everyday Dose",
+      "customer_success_path": "Churned"
+    },
+    "kaylin@everydaydose.com": {
+      "client_platform_id": "CL005219",
+      "account_name": "Everyday Dose",
+      "customer_success_path": "Churned"
+    },
+    "dmitry@everydaydose.com": {
+      "client_platform_id": "CL005219",
+      "account_name": "Everyday Dose",
+      "customer_success_path": "Churned"
+    },
+    "magdalena.estrade@xpantion.com": {
+      "client_platform_id": "CL005252",
+      "account_name": "XPANTION",
+      "customer_success_path": "Churned"
+    },
+    "gonzalo.besil@xpantion.com": {
+      "client_platform_id": "CL005252",
+      "account_name": "XPANTION",
+      "customer_success_path": "Churned"
+    },
+    "dperez@mfconsultores.com.uy": {
+      "client_platform_id": "CL005252",
+      "account_name": "XPANTION",
+      "customer_success_path": "Churned"
+    },
+    "omar.perdomo@symplifica.com": {
+      "client_platform_id": "CL005254",
+      "account_name": "ROE Innovation",
+      "customer_success_path": "Churned"
+    },
+    "omar@braintu.com": {
+      "client_platform_id": "CL005254",
+      "account_name": "ROE Innovation",
+      "customer_success_path": "Churned"
+    },
+    "angela.zapata@onerpm.com": {
+      "client_platform_id": "CL005286",
+      "account_name": "onerpm.com",
+      "customer_success_path": "Churned"
+    },
+    "bruno.delarica@onerpm.com": {
+      "client_platform_id": "CL005286",
+      "account_name": "onerpm.com",
+      "customer_success_path": "Churned"
+    },
+    "cyrielle@onerpm.com": {
+      "client_platform_id": "CL005286",
+      "account_name": "onerpm.com",
+      "customer_success_path": "Churned"
+    },
+    "dcheca70@gmail.com": {
+      "client_platform_id": "CL005286",
+      "account_name": "onerpm.com",
+      "customer_success_path": "Churned"
+    },
+    "mariacamila@onerpm.com": {
+      "client_platform_id": "CL005286",
+      "account_name": "onerpm.com",
+      "customer_success_path": "Churned"
+    },
+    "cristiane.almeida@escritoriocultural.com.br": {
+      "client_platform_id": "CL005286",
+      "account_name": "onerpm.com",
+      "customer_success_path": "Churned"
+    },
+    "marcelianocs@gmail.com": {
+      "client_platform_id": "CL005286",
+      "account_name": "onerpm.com",
+      "customer_success_path": "Churned"
+    },
+    "osvaldo@onerpm.com": {
+      "client_platform_id": "CL005286",
+      "account_name": "onerpm.com",
+      "customer_success_path": "Churned"
+    },
+    "felipecortesgomezg@gmail.com": {
+      "client_platform_id": "CL005286",
+      "account_name": "onerpm.com",
+      "customer_success_path": "Churned"
+    },
+    "osmartinezpa@gmail.com": {
+      "client_platform_id": "CL005286",
+      "account_name": "onerpm.com",
+      "customer_success_path": "Churned"
+    },
+    "catalina.irurita@be-cgi.com": {
+      "client_platform_id": "CL005342",
+      "account_name": "BE-CGI",
+      "customer_success_path": "Churned"
+    },
+    "cata@catalinairurita.com": {
+      "client_platform_id": "CL005342",
+      "account_name": "BE-CGI",
+      "customer_success_path": "Churned"
+    },
+    "canalcamila1018@gmail.com": {
+      "client_platform_id": "CL005392",
+      "account_name": "Bitual",
+      "customer_success_path": "Churned"
+    },
+    "bitualmx@gmail.com": {
+      "client_platform_id": "CL005392",
+      "account_name": "Bitual",
+      "customer_success_path": "Churned"
+    },
+    "darshak.bhatt@unlock.org.uk": {
+      "client_platform_id": "CL005394",
+      "account_name": "Wireframe Technologies Ltd",
+      "customer_success_path": "Churned"
+    },
+    "darshak@wireframe.london": {
+      "client_platform_id": "CL005394",
+      "account_name": "Wireframe Technologies Ltd",
+      "customer_success_path": "Churned"
+    },
+    "josue@trainme.education": {
+      "client_platform_id": "CL005398",
+      "account_name": "TrainMe Corp",
+      "customer_success_path": "Churned"
+    },
+    "mayadi@wipass.io": {
+      "client_platform_id": "CL005403",
+      "account_name": "WiPass",
+      "customer_success_path": "Churned"
+    },
+    "gonzalo.llosa@kavak.com": {
+      "client_platform_id": "CL005435",
+      "account_name": "Cometa",
+      "customer_success_path": "Churned"
+    },
+    "andres@evolucionmarketing.com": {
+      "client_platform_id": "CL005435",
+      "account_name": "Cometa",
+      "customer_success_path": "Churned"
+    },
+    "mateo@getcometa.com": {
+      "client_platform_id": "CL005435",
+      "account_name": "Cometa",
+      "customer_success_path": "Churned"
+    },
+    "alejandro@getcometa.com": {
+      "client_platform_id": "CL005435",
+      "account_name": "Cometa",
+      "customer_success_path": "Churned"
+    },
+    "gonzalo@getcometa.com": {
+      "client_platform_id": "CL005435",
+      "account_name": "Cometa",
+      "customer_success_path": "Churned"
+    },
+    "cemora@adidas-group.com": {
+      "client_platform_id": "CL005435",
+      "account_name": "Cometa",
+      "customer_success_path": "Churned"
+    },
+    "kathe@getcometa.com": {
+      "client_platform_id": "CL005435",
+      "account_name": "Cometa",
+      "customer_success_path": "Churned"
+    },
+    "andrea@getcometa.com": {
+      "client_platform_id": "CL005435",
+      "account_name": "Cometa",
+      "customer_success_path": "Churned"
+    },
+    "sofia@getcometa.com": {
+      "client_platform_id": "CL005435",
+      "account_name": "Cometa",
+      "customer_success_path": "Churned"
+    },
+    "adolfo.gomez@nowbit.co": {
+      "client_platform_id": "CL005465",
+      "account_name": "NowBit",
+      "customer_success_path": "Churned"
+    },
+    "jeyson.guzman@nowbit.co": {
+      "client_platform_id": "CL005465",
+      "account_name": "NowBit",
+      "customer_success_path": "Churned"
+    },
+    "daniela.paz@nowbit.co": {
+      "client_platform_id": "CL005465",
+      "account_name": "NowBit",
+      "customer_success_path": "Churned"
+    },
+    "gh@nowbit.co": {
+      "client_platform_id": "CL005465",
+      "account_name": "NowBit",
+      "customer_success_path": "Churned"
+    },
+    "nicolas@phero.app": {
+      "client_platform_id": "CL005478",
+      "account_name": "Phero SpA",
+      "customer_success_path": "Churned"
+    },
+    "finanzas@phero.app": {
+      "client_platform_id": "CL005478",
+      "account_name": "Phero SpA",
+      "customer_success_path": "Churned"
+    },
+    "ileana.valero@netatech.com": {
+      "client_platform_id": "CL005527",
+      "account_name": "Gennesaret IT&AI Corp",
+      "customer_success_path": "Churned"
+    },
+    "facthgm@netatech.com": {
+      "client_platform_id": "CL005527",
+      "account_name": "Gennesaret IT&AI Corp",
+      "customer_success_path": "Churned"
+    },
+    "james@tenorhq.com": {
+      "client_platform_id": "CL005539",
+      "account_name": "Tenor",
+      "customer_success_path": "Churned"
+    },
+    "cesar@justartmedia.com": {
+      "client_platform_id": "CL005566",
+      "account_name": "Just Art Media Inc",
+      "customer_success_path": "Churned"
+    },
+    "judy@justartmedia.com": {
+      "client_platform_id": "CL005566",
+      "account_name": "Just Art Media Inc",
+      "customer_success_path": "Churned"
+    },
+    "finzogroup@gmail.com": {
+      "client_platform_id": "CL005633",
+      "account_name": "FINZO GROUP",
+      "customer_success_path": "Churned"
+    },
+    "rpizarro@ramcolog.com": {
+      "client_platform_id": "CL005645",
+      "account_name": "ramcolog.com",
+      "customer_success_path": "Churned"
+    },
+    "maritza@cbrcleaning.com": {
+      "client_platform_id": "CL005694",
+      "account_name": "cbrcleaning.com",
+      "customer_success_path": "Churned"
+    },
+    "alena.boldina@joom.com": {
+      "client_platform_id": "CL005715",
+      "account_name": "Joom Group",
+      "customer_success_path": "Churned"
+    },
+    "muir@joom.com": {
+      "client_platform_id": "CL005715",
+      "account_name": "Joom Group",
+      "customer_success_path": "Churned"
+    },
+    "jc@swiset.com": {
+      "client_platform_id": "CL005729",
+      "account_name": "Swiset",
+      "customer_success_path": "Churned"
+    },
+    "sgomez@swiset.com": {
+      "client_platform_id": "CL005729",
+      "account_name": "Swiset",
+      "customer_success_path": "Churned"
+    },
+    "aj@swiset.com": {
+      "client_platform_id": "CL005729",
+      "account_name": "Swiset",
+      "customer_success_path": "Churned"
+    },
+    "josh@chatbet.gg": {
+      "client_platform_id": "CL005730",
+      "account_name": "Chat Bet",
+      "customer_success_path": "Churned"
+    },
+    "admin@houseedge.ai": {
+      "client_platform_id": "CL005768",
+      "account_name": "House Edge LLC",
+      "customer_success_path": "Churned"
+    },
+    "jfernandez@thecoffeecorp.com": {
+      "client_platform_id": "CL005773",
+      "account_name": "CAFEXPRESS USA LLC",
+      "customer_success_path": "Churned"
+    },
+    "peter@english4kidsonline.com": {
+      "client_platform_id": "CL005807",
+      "account_name": "E4CC Latam LLC",
+      "customer_success_path": "Churned"
+    },
+    "angelica@english4kidsonline.com": {
+      "client_platform_id": "CL005807",
+      "account_name": "E4CC Latam LLC",
+      "customer_success_path": "Churned"
+    },
+    "rodrigo.galdamez@english4kidsonline.com": {
+      "client_platform_id": "CL005807",
+      "account_name": "E4CC Latam LLC",
+      "customer_success_path": "Churned"
+    },
+    "yesenia.aguiluz@english4kidsonline.com": {
+      "client_platform_id": "CL005807",
+      "account_name": "E4CC Latam LLC",
+      "customer_success_path": "Churned"
+    },
+    "carlos.lopez@english4kidsonline.com": {
+      "client_platform_id": "CL005807",
+      "account_name": "E4CC Latam LLC",
+      "customer_success_path": "Churned"
+    },
+    "max@thecommagency.com": {
+      "client_platform_id": "CL005859",
+      "account_name": "THE COMMISSIONED AGENCY LLC",
+      "customer_success_path": "Churned"
+    },
+    "israel@carbonboxmedia.com": {
+      "client_platform_id": "CL005912",
+      "account_name": "carbonboxmedia.com",
+      "customer_success_path": "Churned"
+    }
+  },
+  "account_to_emails": {
+    "CL000447": [
+      "oscar.angel@siigo.com",
+      "daniela.fernandez@siigo.com",
+      "claudia.cano@siigo.com"
+    ],
+    "CL000610": [
+      "davidsalvador@b2w.ec"
+    ],
+    "CL000943": [
+      "info@wecodeit.uy",
+      "augusto@wecodeit.uy"
+    ],
+    "CL001044": [
+      "jaime@patients4you.com"
+    ],
+    "CL001099": [
+      "gonzalez.ulises@gmail.com"
+    ],
+    "CL001510": [
+      "hector@barracudaadvertising.com"
+    ],
+    "CL001961": [
+      "esanmiguel@crackthecode.la",
+      "mmartinez@crackthecode.la"
+    ],
+    "CL001966": [
+      "kmoscoso@crackthecode.com"
+    ],
+    "CL002005": [
+      "lorena.duarte@izo.es",
+      "raul.venegas@izo.es"
+    ],
+    "CL002021": [
+      "contacto@valormaximo.com",
+      "daniel.valenzuela@valormaximo.com",
+      "luis.moreno@capitalone.com"
+    ],
+    "CL002658": [
+      "christian@t60a.com",
+      "ybravom@tres60.cl"
+    ],
+    "CL002807": [
+      "phil@docsie.io"
+    ],
+    "CL002949": [
+      "jose.barreto@glendale.com"
+    ],
+    "CL002984": [
+      "mdelaroca@positive.agency"
+    ],
+    "CL003110": [
+      "rodrigo.tabernero@getstaffedup.com",
+      "daniela.miranda@getstaffedup.com",
+      "agustina.carrasco@getstaffedup.com",
+      "gabriela.fernandez@getstaffedup.com",
+      "brett@getstaffedup.com",
+      "franz.vallecillos@getstaffedup.com",
+      "tom.sherman@getstaffedup.com",
+      "mariel.barahona@getstaffedup.com",
+      "pramirez@cever.com.mx",
+      "gabriela.metivier@getstaffedup.com-deleted"
+    ],
+    "CL003128": [
+      "",
+      "adryprincipi@gmail.com"
+    ],
+    "CL003134": [
+      "payroll@laincosoftware.com",
+      "giselle.moreno@laincosoftware.com",
+      "pablo.revert@laincosoftware.com"
+    ],
+    "CL003175": [
+      "andres.calle@quanticsgroup.com"
+    ],
+    "CL003331": [
+      "bienestar@todoscomemos.com",
+      "santiago@studentenergy.org",
+      "carolina@todoscomemos.com"
+    ],
+    "CL003334": [
+      "viviana@w2wglobal.com",
+      "alfredo@w2wglobal.com",
+      "jrivas@ifc.org"
+    ],
+    "CL003442": [
+      "herman.rojas@total.com",
+      "gindriago@co2action.us",
+      "alopez@co2action.us"
+    ],
+    "CL003461": [
+      "andres.huczneker@wearesolu.com",
+      "melina@wearesolu.com",
+      "ezequiel.guerrero@wearesolu.com",
+      "alan.meller@wearesolu.com",
+      "melina.libsfraint@solucionetglobal.com"
+    ],
+    "CL003559": [
+      "jcuesta@serbangroup.com",
+      "jcuesta@serban.es"
+    ],
+    "CL003627": [
+      "",
+      "alvaro@soho.cl",
+      "valeria.dabramo@soho.lat",
+      "marcelo@soho.cl"
+    ],
+    "CL003792": [
+      "maria.hasenberg@rankmi.com",
+      "jesymar.capella@rankmi.com",
+      "carolina.bruna@rankmi.com",
+      "karina.retamal@rankmi.com"
+    ],
+    "CL003876": [
+      "thomas@comun.app",
+      "sergio.cattaneo@onecarnow.com",
+      "rocio.rocha@darwoft.com",
+      "adriana.ortiz@r2.co",
+      "adriana.ortiz@r2capital.co",
+      "catalina.bernal@r2capital.co",
+      "adrian.rivera@r2capital.co",
+      "sergio.cattaneo@r2capital.co",
+      "tom.wright@r2.co",
+      "diego.pereyra@r2capital.co"
+    ],
+    "CL004001": [
+      "miguel@heippi.com",
+      "murphy@heippi.com"
+    ],
+    "CL004062": [
+      "anup.shendurwadkar@gruve.ai"
+    ],
+    "CL004090": [
+      "billing@yoplabsglobal.com"
+    ],
+    "CL004139": [
+      "cesar.forero@bit.institute",
+      "lider.administrativo@bit.institute"
+    ],
+    "CL004217": [
+      "michael@itshawaii.com",
+      "ap@itshawaii.com",
+      "nubia@itshawaii.com"
+    ],
+    "CL004221": [
+      "martin.cornejo@gomango.co"
+    ],
+    "CL004223": [
+      "jcanas@colsugar.com",
+      "directorth@colsugar.com",
+      "jruiz@colsugar.com"
+    ],
+    "CL004386": [
+      "marek.burzanowski@inhausrh.com",
+      "gimena@inhausrh.com",
+      "uhrichgimena@gmail.com"
+    ],
+    "CL004456": [
+      "jennyfer@c4c7us.com"
+    ],
+    "CL004515": [
+      "mateo.costa@epicio.com",
+      "duncan@epicio.com",
+      "melodie.mclachlan@epicio.com",
+      "sara.schiavone@appliedvaluetech.com"
+    ],
+    "CL004523": [
+      "admin@maria.capital"
+    ],
+    "CL004545": [
+      "joaquin@tumo.app",
+      "lucas@tumo.app"
+    ],
+    "CL004553": [
+      "jose.palanco@plexicus.com"
+    ],
+    "CL004564": [
+      "accounting@merchantgmat.com",
+      "anish@merchantgmat.com"
+    ],
+    "CL004601": [
+      "afgb@komuty.com",
+      "dcastanohuertas@ifc.org",
+      "daniel@komuty.com"
+    ],
+    "CL004610": [
+      "swetro@axiomllp.com",
+      "alejandro@swetro.com",
+      "alejandro.ordonez@msc.com"
+    ],
+    "CL004636": [
+      "dvelez@fluidattacks.com",
+      "mparra@fluidattacks.com",
+      "apabon@fluidattacks.com",
+      "jcarrasco@fluidattacks.com",
+      "jcarvajal@fluidattacks.com",
+      "kvasquez@fluidattacks.com",
+      "vvilla@fluidsignal.com",
+      "fgomez@fluidattacks.com",
+      "vvilla@fluidattacks.com"
+    ],
+    "CL004748": [
+      "daniel@nutrico.io"
+    ],
+    "CL004768": [
+      "diana.vallejo@softwareestrategico.com"
+    ],
+    "CL004796": [
+      "admin@k50ventures.com",
+      "stefanie@k50ventures.com",
+      "ops@k50ventures.com"
+    ],
+    "CL004831": [
+      "omar@thevictory.games",
+      "omar.romerodominguez@mullenlowe.com"
+    ],
+    "CL004839": [
+      "agustin@nurtureand.com"
+    ],
+    "CL004846": [
+      "jeremy@hacku.co",
+      "martinez.eunice.1788@gmail.com",
+      "francisco@hacku.co"
+    ],
+    "CL004859": [
+      "ella@seaportsmiles.com",
+      "ella.osborn.dmd@gmail.com",
+      "recruiting@roadscg.com"
+    ],
+    "CL004907": [
+      "mtimmermann@economia.cl",
+      "mario@octos.gt"
+    ],
+    "CL004946": [
+      "santiago@getvincu.com"
+    ],
+    "CL004959": [
+      "alejandro@zeppelinlabs.io",
+      "pfranco@zeppelinlabs.com",
+      "giancarlo@zeppelinlabs.io"
+    ],
+    "CL004998": [
+      "carlos@vanetechnologies.com"
+    ],
+    "CL005007": [
+      "mlince@jumpcube.io"
+    ],
+    "CL005116": [
+      "addison@prompthunt.com"
+    ],
+    "CL005159": [
+      "varun@temporal.exchange",
+      "rohan@temporal.exchange",
+      "varun.verma@heidelbergdistributing.com"
+    ],
+    "CL005166": [
+      "mariana@theramart.com"
+    ],
+    "CL005211": [
+      "dgrelva@singcomunica.com.br",
+      "vgracio@singcomunica.com.br",
+      "board@singcomunica.com.br",
+      "gestores@singcomunica.com.br"
+    ],
+    "CL005217": [
+      "chris@ancient.gg",
+      "zhenya.dolzhanskaya@ancient.gg",
+      "manuela@ancient.gg",
+      "samuel@ancient.gg",
+      "chris@emberlabs.tech"
+    ],
+    "CL005219": [
+      "kaylin@everydaydose.com",
+      "catarina@everydaydose.com",
+      "bia@everydaydose.com",
+      "dmitry@everydaydose.com",
+      "keyvan@everydaydose.com",
+      "kayvon@everydaydose.com"
+    ],
+    "CL005252": [
+      "dperez@mfconsultores.com.uy",
+      "magdalena.estrade@xpantion.com",
+      "gonzalo.besil@xpantion.com"
+    ],
+    "CL005254": [
+      "omar.perdomo@symplifica.com",
+      "omar@braintu.com"
+    ],
+    "CL005286": [
+      "marcelianocs@gmail.com",
+      "bruno.delarica@onerpm.com",
+      "cyrielle@onerpm.com",
+      "felipecortesgomezg@gmail.com",
+      "cristiane.almeida@escritoriocultural.com.br",
+      "angela.zapata@onerpm.com",
+      "mariacamila@onerpm.com",
+      "osmartinezpa@gmail.com",
+      "dcheca70@gmail.com",
+      "osvaldo@onerpm.com"
+    ],
+    "CL005342": [
+      "catalina.irurita@be-cgi.com",
+      "cata@catalinairurita.com"
+    ],
+    "CL005392": [
+      "bitualmx@gmail.com",
+      "canalcamila1018@gmail.com"
+    ],
+    "CL005394": [
+      "darshak@wireframe.london",
+      "darshak.bhatt@unlock.org.uk"
+    ],
+    "CL005398": [
+      "",
+      "josue@trainme.education"
+    ],
+    "CL005403": [
+      "mayadi@wipass.io"
+    ],
+    "CL005435": [
+      "cemora@adidas-group.com",
+      "andres@evolucionmarketing.com",
+      "gonzalo.llosa@kavak.com",
+      "mateo@getcometa.com",
+      "gonzalo@getcometa.com",
+      "andrea@getcometa.com",
+      "alejandro@getcometa.com",
+      "kathe@getcometa.com",
+      "sofia@getcometa.com"
+    ],
+    "CL005465": [
+      "gh@nowbit.co",
+      "daniela.paz@nowbit.co",
+      "adolfo.gomez@nowbit.co",
+      "jeyson.guzman@nowbit.co"
+    ],
+    "CL005478": [
+      "nicolas@phero.app",
+      "finanzas@phero.app"
+    ],
+    "CL005527": [
+      "ileana.valero@netatech.com",
+      "facthgm@netatech.com"
+    ],
+    "CL005539": [
+      "james@tenorhq.com"
+    ],
+    "CL005566": [
+      "judy@justartmedia.com",
+      "cesar@justartmedia.com"
+    ],
+    "CL005633": [
+      "finzogroup@gmail.com"
+    ],
+    "CL005645": [
+      "rpizarro@ramcolog.com"
+    ],
+    "CL005694": [
+      "maritza@cbrcleaning.com"
+    ],
+    "CL005715": [
+      "muir@joom.com",
+      "alena.boldina@joom.com"
+    ],
+    "CL005729": [
+      "jc@swiset.com",
+      "sgomez@swiset.com",
+      "aj@swiset.com"
+    ],
+    "CL005730": [
+      "josh@chatbet.gg"
+    ],
+    "CL005768": [
+      "admin@houseedge.ai"
+    ],
+    "CL005773": [
+      "jfernandez@thecoffeecorp.com"
+    ],
+    "CL005807": [
+      "rodrigo.galdamez@english4kidsonline.com",
+      "angelica@english4kidsonline.com",
+      "yesenia.aguiluz@english4kidsonline.com",
+      "carlos.lopez@english4kidsonline.com",
+      "peter@english4kidsonline.com"
+    ],
+    "CL005859": [
+      "max@thecommagency.com"
+    ],
+    "CL005912": [
+      "israel@carbonboxmedia.com"
+    ]
+  },
+  "stats": {
+    "total_emails": 216,
+    "total_accounts": 86,
+    "csv_path": "C:\\Users\\gusta\\Documents\\Ontop\\feedbackAnalysis\\churnedAccounts.csv"
+  }
+}
