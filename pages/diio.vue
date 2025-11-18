@@ -765,7 +765,185 @@
           </div>
         </div>
       </div>
-      
+
+      <!-- Churned Accounts Report Modal -->
+      <div
+        v-if="showChurnedReportModal"
+        class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        @click.self="showChurnedReportModal = false"
+      >
+        <div class="bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
+          <div class="flex justify-between items-start mb-6">
+            <div>
+              <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                <svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Churned Accounts Report
+              </h2>
+              <p class="text-gray-400 text-sm mt-1">
+                Generated on {{ churnedReportData ? new Date(churnedReportData.generatedAt).toLocaleString() : 'Unknown' }}
+              </p>
+            </div>
+            <button
+              @click="showChurnedReportModal = false"
+              class="text-gray-400 hover:text-white text-2xl transition-colors duration-200"
+            >
+              ×
+            </button>
+          </div>
+
+          <div v-if="churnedReportData" class="space-y-6">
+            <!-- Executive Summary -->
+            <div class="bg-gradient-to-r from-red-900/30 to-orange-900/30 rounded-lg p-6 border border-red-500/30">
+              <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                Executive Summary
+              </h3>
+
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div class="bg-gray-900/50 rounded-lg p-4 text-center">
+                  <div class="text-2xl font-bold text-red-400">{{ churnedReportData.totalChurnedAccounts }}</div>
+                  <div class="text-xs text-gray-400">Churned Accounts</div>
+                </div>
+                <div class="bg-gray-900/50 rounded-lg p-4 text-center">
+                  <div class="text-2xl font-bold text-blue-400">{{ churnedReportData.totalTranscripts }}</div>
+                  <div class="text-xs text-gray-400">Total Transcripts</div>
+                </div>
+                <div class="bg-gray-900/50 rounded-lg p-4 text-center">
+                  <div class="text-2xl font-bold text-green-400">{{ churnedReportData.accountsWithTranscripts }}</div>
+                  <div class="text-xs text-gray-400">Accounts with Data</div>
+                </div>
+                <div class="bg-gray-900/50 rounded-lg p-4 text-center">
+                  <div class="text-2xl font-bold text-gray-400">{{ churnedReportData.accountsWithoutTranscripts }}</div>
+                  <div class="text-xs text-gray-400">Accounts without Data</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Distribution Chart -->
+            <div class="bg-gray-900/50 rounded-lg p-6 border border-gray-700">
+              <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Transcript Distribution
+              </h3>
+
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
+                  <span class="text-gray-300">1 transcript</span>
+                  <span class="text-blue-400 font-bold">{{ churnedReportData.transcriptDistribution.accountsWith1Transcript }}</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
+                  <span class="text-gray-300">2-5 transcripts</span>
+                  <span class="text-blue-400 font-bold">{{ churnedReportData.transcriptDistribution.accountsWith2To5Transcripts }}</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
+                  <span class="text-gray-300">6-10 transcripts</span>
+                  <span class="text-blue-400 font-bold">{{ churnedReportData.transcriptDistribution.accountsWith6To10Transcripts }}</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
+                  <span class="text-gray-300">10+ transcripts</span>
+                  <span class="text-red-400 font-bold">{{ churnedReportData.transcriptDistribution.accountsWith10PlusTranscripts }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Top Accounts -->
+            <div class="bg-gray-900/50 rounded-lg p-6 border border-gray-700">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                  <svg class="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                  Top Accounts by Transcripts
+                </h3>
+                <button
+                  @click="copyReportToClipboard()"
+                  class="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy Report
+                </button>
+              </div>
+
+              <div class="space-y-2">
+                <div
+                  v-for="(account, index) in churnedReportData.topAccountsByTranscripts.slice(0, 20)"
+                  :key="account.clientPlatformId"
+                  class="flex items-center justify-between p-3 bg-gray-800 rounded hover:bg-gray-700 transition-colors"
+                >
+                  <div class="flex items-center gap-3">
+                    <span class="text-lg font-bold text-yellow-400 min-w-[30px]">#{{ index + 1 }}</span>
+                    <div>
+                      <div class="text-white font-medium">{{ account.accountName }}</div>
+                      <div class="text-gray-400 text-sm">{{ account.clientPlatformId }}</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="text-right">
+                      <div class="text-blue-400 font-bold">{{ account.transcriptCount }}</div>
+                      <div class="text-gray-500 text-xs">transcripts</div>
+                    </div>
+                    <div class="flex gap-1">
+                      <button
+                        @click="copyToClipboard(account.accountName)"
+                        class="text-gray-500 hover:text-white transition-colors p-1 rounded"
+                        title="Copy Account Name"
+                      >
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                      <button
+                        @click="copyToClipboard(account.clientPlatformId)"
+                        class="text-gray-500 hover:text-white transition-colors p-1 rounded"
+                        title="Copy Client Platform ID"
+                      >
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Raw Data Section -->
+            <div class="bg-gray-900/50 rounded-lg p-6 border border-gray-700">
+              <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Raw Data
+              </h3>
+
+              <div class="bg-gray-800 rounded p-4 font-mono text-sm text-gray-300 overflow-x-auto">
+                <pre>{{ JSON.stringify(churnedReportData, null, 2) }}</pre>
+              </div>
+
+              <div class="flex justify-end mt-4">
+                <button
+                  @click="copyToClipboard(JSON.stringify(churnedReportData, null, 2))"
+                  class="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy JSON
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- AI Analysis Modal -->
       <div
         v-if="aiAnalysisResult"
@@ -984,6 +1162,10 @@ const selectedTranscript = ref<any>(null)
 const currentPage = ref(1)
 const itemsPerPage = 20
 
+// Report state
+const churnedReportData = ref<any>(null)
+const showChurnedReportModal = ref(false)
+
 // AI Analysis State
 const analyzingTranscript = ref<string | null>(null)
 const aiAnalysisResult = ref<any>(null)
@@ -1144,30 +1326,9 @@ const generateChurnedAccountsReport = async () => {
     const reportData = await response.json()
     console.log('✅ Churned accounts report generated:', reportData)
 
-    // Show success message with stats
-    const successMessage = `
-🎉 **Churned Accounts Report Generated!**
-
-**Summary:**
-- 📊 **${reportData.totalChurnedAccounts}** churned accounts identified
-- 📝 **${reportData.totalTranscripts}** total transcripts from churned accounts
-- 🏢 **${reportData.accountsWithTranscripts}** accounts have transcripts
-- 📈 **${reportData.accountsWithoutTranscripts}** accounts have no transcripts
-
-**Top Accounts by Transcripts:**
-${reportData.topAccountsByTranscripts.slice(0, 5).map((account: any, index: number) =>
-  `${index + 1}. **${account.accountName}** (${account.clientPlatformId}): ${account.transcriptCount} transcripts`
-).join('\n')}
-
-**Distribution:**
-- 1 transcript: ${reportData.transcriptDistribution.accountsWith1Transcript} accounts
-- 2-5 transcripts: ${reportData.transcriptDistribution.accountsWith2To5Transcripts} accounts
-- 6-10 transcripts: ${reportData.transcriptDistribution.accountsWith6To10Transcripts} accounts
-- 10+ transcripts: ${reportData.transcriptDistribution.accountsWith10PlusTranscripts} accounts
-    `.trim()
-
-    // Show success notification (you could implement a toast notification here)
-    alert(successMessage.replace(/\*\*/g, '').replace(/`/g, ''))
+    // Store report data and show modal
+    churnedReportData.value = reportData
+    showChurnedReportModal.value = true
 
   } catch (err: any) {
     console.error('❌ Error generating churned accounts report:', err)
@@ -1420,6 +1581,38 @@ const copyToClipboard = async (text: string) => {
     // Fallback: show alert
     alert(`Copy failed. Text: ${text}`)
   }
+}
+
+const copyReportToClipboard = async () => {
+  if (!churnedReportData.value) return
+
+  const report = churnedReportData.value
+  const formattedReport = `
+CHURNED ACCOUNTS REPORT
+Generated: ${new Date(report.generatedAt).toLocaleString()}
+
+EXECUTIVE SUMMARY
+================
+Total Churned Accounts: ${report.totalChurnedAccounts}
+Total Transcripts: ${report.totalTranscripts}
+Accounts with Data: ${report.accountsWithTranscripts}
+Accounts without Data: ${report.accountsWithoutTranscripts}
+
+TRANSCRIPT DISTRIBUTION
+======================
+1 transcript: ${report.transcriptDistribution.accountsWith1Transcript} accounts
+2-5 transcripts: ${report.transcriptDistribution.accountsWith2To5Transcripts} accounts
+6-10 transcripts: ${report.transcriptDistribution.accountsWith6To10Transcripts} accounts
+10+ transcripts: ${report.transcriptDistribution.accountsWith10PlusTranscripts} accounts
+
+TOP ACCOUNTS BY TRANSCRIPTS
+===========================
+${report.topAccountsByTranscripts.slice(0, 10).map((account: any, index: number) =>
+  `${index + 1}. ${account.accountName} (${account.clientPlatformId}): ${account.transcriptCount} transcripts`
+).join('\n')}
+  `.trim()
+
+  await copyToClipboard(formattedReport)
 }
 
 const formatTranscriptText = (text: any): string => {
