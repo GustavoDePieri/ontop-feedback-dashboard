@@ -405,6 +405,8 @@ export const useSupabase = () => {
               ai_analysis,
               ai_analysis_date,
               analyzed_status,
+              client_platform_id,
+              account_name,
               created_at,
               updated_at
             `)
@@ -450,6 +452,8 @@ export const useSupabase = () => {
           ai_analysis,
           ai_analysis_date,
           analyzed_status,
+          client_platform_id,
+          account_name,
           created_at,
           updated_at
         `)
