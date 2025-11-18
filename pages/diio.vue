@@ -377,12 +377,34 @@
                 <div v-if="transcript.client_platform_id" class="mb-3 p-2 bg-red-900/20 rounded border border-red-500/30">
                   <p class="text-xs text-red-400 font-semibold mb-1">⚠️ Churned Account:</p>
                   <div class="flex items-center gap-2">
-                    <span class="px-2 py-1 text-xs rounded bg-red-500/20 text-red-300 border border-red-500/30">
-                      {{ transcript.account_name }}
-                    </span>
-                    <span class="px-2 py-1 text-xs rounded bg-red-500/20 text-red-300 border border-red-500/30">
-                      ID: {{ transcript.client_platform_id }}
-                    </span>
+                    <div class="flex items-center gap-1">
+                      <span class="px-2 py-1 text-xs rounded bg-red-500/20 text-red-300 border border-red-500/30">
+                        {{ transcript.account_name }}
+                      </span>
+                      <button
+                        @click="copyToClipboard(transcript.account_name)"
+                        class="text-red-400 hover:text-red-200 transition-colors p-1 rounded"
+                        title="Copy Account Name"
+                      >
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <span class="px-2 py-1 text-xs rounded bg-red-500/20 text-red-300 border border-red-500/30">
+                        ID: {{ transcript.client_platform_id }}
+                      </span>
+                      <button
+                        @click="copyToClipboard(transcript.client_platform_id)"
+                        class="text-red-400 hover:text-red-200 transition-colors p-1 rounded"
+                        title="Copy Client Platform ID"
+                      >
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -424,8 +446,30 @@
                 </div>
                 
                 <div class="flex items-center gap-4 text-xs text-gray-400">
-                  <span class="select-all cursor-pointer hover:text-gray-300 transition-colors" title="Click to select full ID">ID: {{ transcript.diio_transcript_id }}</span>
+                  <div class="flex items-center gap-1">
+                    <span class="select-all cursor-pointer hover:text-gray-300 transition-colors" title="Click to select full ID">ID: {{ transcript.diio_transcript_id }}</span>
+                    <button
+                      @click="copyToClipboard(transcript.diio_transcript_id)"
+                      class="text-gray-500 hover:text-white transition-colors p-1 rounded"
+                      title="Copy Transcript ID"
+                    >
+                      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  </div>
                   <span v-if="transcript.attendees">{{ getAttendeeCount(transcript.attendees) }} attendees</span>
+                  <div v-if="transcript.client_platform_id" class="flex items-center gap-1">
+                    <button
+                      @click="copyToClipboard(transcript.client_platform_id)"
+                      class="text-gray-500 hover:text-white transition-colors p-1 rounded"
+                      title="Copy Client Platform ID"
+                    >
+                      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
               
@@ -502,11 +546,37 @@
         <div class="bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[85vh] overflow-auto border border-gray-700 shadow-2xl">
           <div class="flex justify-between items-start mb-4">
             <div class="flex-1">
-              <h2 class="text-2xl font-bold text-white">{{ selectedTranscript.source_name || 'Untitled' }}</h2>
-              <p class="text-gray-400 text-sm mt-1">
-                {{ selectedTranscript.transcript_type === 'meeting' ? 'Meeting' : 'Phone Call' }} • 
-                {{ formatDate(selectedTranscript.occurred_at || selectedTranscript.created_at) }}
-              </p>
+              <div class="flex items-center gap-2 mb-1">
+                <h2 class="text-2xl font-bold text-white">{{ selectedTranscript.source_name || 'Untitled' }}</h2>
+                <button
+                  @click="copyToClipboard(selectedTranscript.source_name || 'Untitled')"
+                  class="text-gray-400 hover:text-white transition-colors p-1 rounded"
+                  title="Copy transcript name"
+                >
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
+              <div class="flex items-center gap-4">
+                <p class="text-gray-400 text-sm">
+                  {{ selectedTranscript.transcript_type === 'meeting' ? 'Meeting' : 'Phone Call' }} •
+                  {{ formatDate(selectedTranscript.occurred_at || selectedTranscript.created_at) }}
+                </p>
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-500 text-xs">ID:</span>
+                  <button
+                    @click="copyToClipboard(selectedTranscript.diio_transcript_id)"
+                    class="text-gray-400 hover:text-white transition-colors px-2 py-1 bg-gray-800 rounded text-xs flex items-center gap-1"
+                    title="Copy Transcript ID"
+                  >
+                    <span>{{ selectedTranscript.diio_transcript_id }}</span>
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
               
               <!-- Attendees in Modal -->
               <div v-if="selectedTranscript.attendees && (selectedTranscript.attendees.sellers || selectedTranscript.attendees.customers)" class="mt-3 p-3 bg-gray-900/50 rounded border border-gray-700">
@@ -563,9 +633,20 @@
         <div class="bg-gray-800 rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
           <div class="flex justify-between items-start mb-4">
             <div>
-              <h2 class="text-2xl font-bold text-white">Feedback & Churn Signals</h2>
-              <p class="text-gray-400 text-sm mt-1">
-                {{ selectedFeedbackTranscript.source_name || 'Untitled' }} • 
+              <div class="flex items-center gap-2 mb-1">
+                <h2 class="text-2xl font-bold text-white">Feedback & Churn Signals</h2>
+                <button
+                  @click="copyToClipboard(selectedFeedbackTranscript.diio_transcript_id)"
+                  class="text-gray-400 hover:text-white transition-colors p-1 rounded"
+                  title="Copy Transcript ID"
+                >
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
+              <p class="text-gray-400 text-sm">
+                {{ selectedFeedbackTranscript.source_name || 'Untitled' }} •
                 {{ formatDate(selectedFeedbackTranscript.occurred_at || selectedFeedbackTranscript.created_at) }}
               </p>
             </div>
@@ -1308,6 +1389,37 @@ const getAttendeeCount = (attendees: any) => {
   const sellers = attendees.sellers?.length || 0
   const customers = attendees.customers?.length || 0
   return sellers + customers
+}
+
+const copyToClipboard = async (text: string) => {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+    } else {
+      // Fallback for older browsers or non-HTTPS
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      textArea.style.position = 'fixed'
+      textArea.style.left = '-999999px'
+      textArea.style.top = '-999999px'
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+
+      try {
+        document.execCommand('copy')
+      } finally {
+        document.body.removeChild(textArea)
+      }
+    }
+
+    // Show success feedback (you could implement a toast notification here)
+    console.log(`✅ Copied to clipboard: ${text}`)
+  } catch (err) {
+    console.error('❌ Failed to copy to clipboard:', err)
+    // Fallback: show alert
+    alert(`Copy failed. Text: ${text}`)
+  }
 }
 
 const formatTranscriptText = (text: any): string => {
