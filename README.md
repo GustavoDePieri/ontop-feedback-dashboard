@@ -145,7 +145,7 @@ npm run dev
 
 # 6. Open browser
 # Visit: http://localhost:3000
-# Default password: Ontop#2025
+# Use the default password configured in the application
 ```
 
 ### Project Commands
@@ -251,7 +251,7 @@ feedbackAnalysis/
 ### Authentication
 
 - **Global middleware** (`auth.global.ts`) protects all routes
-- **Login password:** `Ontop#2025` (hardcoded in `pages/login.vue`)
+- **Login password:** Configured in `pages/login.vue`
 - **Session:** Stored in `localStorage` and server cookie
 
 ---
@@ -564,12 +564,12 @@ vercel --prod
 Set in Vercel Dashboard → Settings → Environment Variables:
 
 ```bash
-GOOGLE_PROJECT_ID=omega-cosmos-469700-v8
-GOOGLE_PRIVATE_KEY_ID=9a944fbca32d21390e1ce9f29f752d90f1367db4
-GOOGLE_CLIENT_EMAIL=whatsappvalidaor@omega-cosmos-469700-v8.iam.gserviceaccount.com
-GOOGLE_CLIENT_ID=114119840940751151687
+GOOGLE_PROJECT_ID=your-project-id
+GOOGLE_PRIVATE_KEY_ID=your-private-key-id
+GOOGLE_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
+GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
-[FULL PRIVATE KEY]
+[YOUR PRIVATE KEY]
 -----END PRIVATE KEY-----"
 ```
 
@@ -581,7 +581,7 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
 ### Post-Deployment Checks
 
 1. ✅ Visit deployed URL
-2. ✅ Test login (password: `Ontop#2025`)
+2. ✅ Test login with configured password
 3. ✅ Click "Test Connection" in /test page
 4. ✅ Generate AI Report to verify Gemini AI
 5. ✅ Refresh data to verify Google Sheets
@@ -829,11 +829,6 @@ Visit `/test` to test Google Sheets connection and DIIO transcript access
 | `pages/index.vue` | Main dashboard |
 | `composables/useGoogleSheets.ts` | Data fetching logic |
 
-### Default Password
-
-```
-Ontop#2025
-```
 
 ### Ports
 
