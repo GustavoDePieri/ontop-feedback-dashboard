@@ -71,7 +71,7 @@ def parse_churned_accounts_csv(csv_path: str) -> Dict[str, Dict]:
 
 def main():
     # Path to the CSV file
-    csv_path = project_root / 'churnedAccounts.csv'
+    csv_path = project_root / 'churnsAccounts2.csv'
 
     if not csv_path.exists():
         print(f"❌ CSV file not found: {csv_path}")
