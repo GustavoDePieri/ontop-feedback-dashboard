@@ -139,6 +139,21 @@
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <div class="flex items-center justify-between">
             <div>
+              <p class="text-gray-400 text-sm mb-1">Active Accounts</p>
+              <p class="text-3xl font-bold text-white">{{ stats.active }}</p>
+              <p class="text-xs text-gray-500 mt-1">{{ stats.total > 0 ? Math.round((stats.active / stats.total) * 100) : 0 }}% of transcripts</p>
+            </div>
+            <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+          <div class="flex items-center justify-between">
+            <div>
               <p class="text-gray-400 text-sm mb-1">Last Sync</p>
               <p class="text-lg font-semibold text-white">{{ lastSyncTime || 'Never' }}</p>
             </div>
@@ -1180,7 +1195,8 @@ const stats = reactive({
   meetings: 0,
   phoneCalls: 0,
   aiAnalyzed: 0,
-  churned: 0
+  churned: 0,
+  active: 0
 })
 
 const lastSyncTime = ref<string | null>(null)
@@ -1232,11 +1248,11 @@ const filteredTranscripts = computed(() => {
     filtered = filtered.filter(t => !t.ai_analysis)
   }
 
-  // Churned Account filter
+  // Account Status filter
   if (filters.churnedStatus === 'churned') {
-    filtered = filtered.filter(t => t.client_platform_id !== null && t.client_platform_id !== undefined)
+    filtered = filtered.filter(t => t.account_status === 'churned')
   } else if (filters.churnedStatus === 'active') {
-    filtered = filtered.filter(t => !t.client_platform_id)
+    filtered = filtered.filter(t => t.account_status === 'active')
   }
 
   // Date filters
@@ -1307,8 +1323,9 @@ const loadStats = async () => {
   // Count AI analyzed transcripts from loaded data
   stats.aiAnalyzed = transcripts.value.filter(t => t.ai_analysis).length
 
-  // Count churned transcripts from loaded data
-  stats.churned = transcripts.value.filter(t => t.client_platform_id).length
+  // Count account status transcripts from loaded data
+  stats.churned = transcripts.value.filter(t => t.account_status === 'churned').length
+  stats.active = transcripts.value.filter(t => t.account_status === 'active').length
 }
 
 const generateChurnedAccountsReport = async () => {

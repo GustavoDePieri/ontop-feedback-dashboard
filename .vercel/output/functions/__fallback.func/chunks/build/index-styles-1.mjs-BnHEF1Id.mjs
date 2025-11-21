@@ -1,0 +1,4 @@
+const index_vue_vue_type_style_index_0_scoped_9fe621d0_lang = ".line-clamp-2[data-v-9fe621d0]{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}@keyframes blob-9fe621d0{0%{transform:translate(0) scale(1)}33%{transform:translate(30px,-50px) scale(1.1)}66%{transform:translate(-20px,20px) scale(.9)}to{transform:translate(0) scale(1)}}.animate-blob[data-v-9fe621d0]{animation:blob-9fe621d0 7s infinite}.animation-delay-2000[data-v-9fe621d0]{animation-delay:2s}.animation-delay-4000[data-v-9fe621d0]{animation-delay:4s}@keyframes gradient-shift-9fe621d0{0%,to{background-position:0 50%}50%{background-position:100% 50%}}.animate-gradient[data-v-9fe621d0]{animation:gradient-shift-9fe621d0 15s ease infinite;background-size:200% 200%}";
+
+export { index_vue_vue_type_style_index_0_scoped_9fe621d0_lang as i };
+//# sourceMappingURL=index-styles-1.mjs-BnHEF1Id.mjs.map
