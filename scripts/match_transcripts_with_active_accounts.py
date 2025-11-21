@@ -36,7 +36,7 @@ def parse_active_accounts_csv(csv_path: str) -> Dict[str, Dict]:
     email_to_account = {}
     account_to_emails = {}
 
-    print(f"📖 Reading CSV file: {csv_path}")
+    print(f"Reading CSV file: {csv_path}")
 
     # Detect encoding
     encoding = 'utf-8'
@@ -45,13 +45,13 @@ def parse_active_accounts_csv(csv_path: str) -> Dict[str, Dict]:
             raw_data = f.read()
             detected = chardet.detect(raw_data)
             encoding = detected.get('encoding', 'utf-8')
-            print(f"🔍 Detected encoding: {encoding}")
+            print(f"Detected encoding: {encoding}")
 
     with open(csv_path, 'r', encoding=encoding, errors='replace') as f:
         # Read with DictReader - first line contains headers
         reader = csv.DictReader(f)
 
-        print(f"📋 Detected headers: {reader.fieldnames}")
+        print(f"Detected headers: {reader.fieldnames}")
 
         for row in reader:
             client_platform_id = row['Client Platform ID'].strip('"')
@@ -74,7 +74,7 @@ def parse_active_accounts_csv(csv_path: str) -> Dict[str, Dict]:
                     account_to_emails[client_platform_id] = set()
                 account_to_emails[client_platform_id].add(email)
 
-    print(f"✅ Parsed {len(email_to_account)} unique emails from {len(account_to_emails)} active accounts")
+    print(f"Parsed {len(email_to_account)} unique emails from {len(account_to_emails)} active accounts")
     return email_to_account, account_to_emails
 
 def extract_customer_emails(attendees_json: Dict) -> List[str]:
@@ -117,11 +117,11 @@ def update_transcript_with_active_account(supabase: Client, transcript_id: str, 
         if result.data and len(result.data) > 0:
             return True
         else:
-            print(f"⚠️ No rows updated for transcript {transcript_id}")
+            print(f"WARNING: No rows updated for transcript {transcript_id}")
             return False
 
     except Exception as e:
-        print(f"❌ Error updating transcript {transcript_id}: {e}")
+        print(f"ERROR updating transcript {transcript_id}: {e}")
         return False
 
 def process_transcripts_batch(supabase: Client, transcripts: List[Dict], email_to_account: Dict, batch_size: int = 50) -> Dict:
@@ -136,7 +136,7 @@ def process_transcripts_batch(supabase: Client, transcripts: List[Dict], email_t
 
     for i in range(0, len(transcripts), batch_size):
         batch = transcripts[i:i + batch_size]
-        print(f"📦 Processing batch {i//batch_size + 1} ({len(batch)} transcripts)...")
+        print(f"Processing batch {i//batch_size + 1} ({len(batch)} transcripts)...")
 
         for transcript in batch:
             stats['processed'] += 1
@@ -167,41 +167,41 @@ def process_transcripts_batch(supabase: Client, transcripts: List[Dict], email_t
                 success = update_transcript_with_active_account(supabase, transcript['id'], account_match)
                 if success:
                     stats['updated'] += 1
-                    print(f"✅ Updated transcript {transcript['id'][:8]}... -> {account_match['account_name']} (ACTIVE)")
+                    print(f"Updated transcript {transcript['id'][:8]}... -> {account_match['account_name']} (ACTIVE)")
                 else:
                     stats['errors'] += 1
 
     return stats
 
 def main():
-    # Path to the CSV file (same as churned accounts for now)
-    csv_path = project_root / 'churnsAccounts2.csv'
+    # Path to the CSV file (active clients CSV)
+    csv_path = project_root / 'activeClients.csv'
 
     if not csv_path.exists():
-        print(f"❌ CSV file not found: {csv_path}")
+        print(f"ERROR: CSV file not found: {csv_path}")
         sys.exit(1)
 
     # Parse the CSV for active accounts
     email_to_account, account_to_emails = parse_active_accounts_csv(str(csv_path))
 
     if len(email_to_account) == 0:
-        print("❌ No active accounts found in CSV. Check the 'Customer Success Path' values.")
+        print("ERROR: No active accounts found in CSV. Check the 'Customer Success Path' values.")
         sys.exit(1)
 
     # Print some statistics
-    print("\n📊 Active Accounts Statistics:")
+    print("\nActive Accounts Statistics:")
     print(f"   - Total unique emails: {len(email_to_account)}")
     print(f"   - Total accounts: {len(account_to_emails)}")
 
     # Show sample mappings
-    print("\n📋 Sample active account mappings:")
+    print("\nSample active account mappings:")
     sample_emails = list(email_to_account.keys())[:5]
     for email in sample_emails:
         account = email_to_account[email]
         print(f"   {email} -> {account['account_name']} ({account['client_platform_id']}) - {account['customer_success_path']}")
 
     # Show accounts with most emails
-    print("\n🏢 Active accounts with most emails:")
+    print("\nActive accounts with most emails:")
     sorted_accounts = sorted(account_to_emails.items(), key=lambda x: len(x[1]), reverse=True)[:5]
     for client_id, emails in sorted_accounts:
         account_name = email_to_account[list(emails)[0]]['account_name']
@@ -212,15 +212,15 @@ def main():
     supabase_key = os.getenv('SUPABASE_ANON_KEY')
 
     if not supabase_url or not supabase_key:
-        print("❌ Supabase credentials not found in environment variables")
+        print("ERROR: Supabase credentials not found in environment variables")
         print("   Make sure SUPABASE_URL and SUPABASE_ANON_KEY are set in your .env file")
         sys.exit(1)
 
-    print("\n🔗 Connecting to Supabase...")
+    print("\nConnecting to Supabase...")
     supabase: Client = create_client(supabase_url, supabase_key)
 
     # Get all transcripts in batches (only those without account_status set)
-    print("📊 Fetching transcripts that don't have account status set...")
+    print("Fetching transcripts that don't have account status set...")
 
     all_transcripts = []
     offset = 0
@@ -238,25 +238,25 @@ def main():
             all_transcripts.extend(result.data)
             offset += batch_size
 
-            print(f"📄 Loaded {len(result.data)} unmatched transcripts (total: {len(all_transcripts)})")
+            print(f"Loaded {len(result.data)} unmatched transcripts (total: {len(all_transcripts)})")
 
             # Safety limit
             if offset > 100000:
-                print("⚠️ Reached safety limit of 100,000 transcripts")
+                print("WARNING: Reached safety limit of 100,000 transcripts")
                 break
 
         except Exception as e:
-            print(f"❌ Error fetching transcripts: {e}")
+            print(f"ERROR fetching transcripts: {e}")
             sys.exit(1)
 
-    print(f"✅ Loaded {len(all_transcripts)} transcripts without account status")
+    print(f"Loaded {len(all_transcripts)} transcripts without account status")
 
     # Process transcripts
-    print("\n🔄 Processing transcripts for active account matches...")
+    print("\nProcessing transcripts for active account matches...")
     stats = process_transcripts_batch(supabase, all_transcripts, email_to_account)
 
     # Print final statistics
-    print("\n📊 Final Statistics:")
+    print("\nFinal Statistics:")
     print(f"   - Total transcripts processed: {stats['processed']}")
     print(f"   - Transcripts with customer emails: {stats['matched']}")
     print(f"   - Transcripts updated with active status: {stats['updated']}")
@@ -267,7 +267,7 @@ def main():
         success_rate = (stats['updated'] / (stats['matched'] - stats['skipped_already_matched'])) * 100 if (stats['matched'] - stats['skipped_already_matched']) > 0 else 0
         print(".1f")
 
-    print("\n✅ Active accounts matching completed!")
+    print("\nSUCCESS: Active accounts matching completed!")
     print("   Transcripts are now tagged with account_status = 'active' where applicable")
 
 if __name__ == '__main__':

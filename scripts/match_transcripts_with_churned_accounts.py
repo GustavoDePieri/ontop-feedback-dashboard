@@ -29,7 +29,7 @@ def parse_churned_accounts_csv(csv_path: str) -> Dict[str, Dict]:
     email_to_account = {}
     account_to_emails = {}
 
-    print(f"📖 Reading CSV file: {csv_path}")
+    print(f"Reading CSV file: {csv_path}")
 
     # Detect encoding
     encoding = 'utf-8'
@@ -38,13 +38,13 @@ def parse_churned_accounts_csv(csv_path: str) -> Dict[str, Dict]:
             raw_data = f.read()
             detected = chardet.detect(raw_data)
             encoding = detected.get('encoding', 'utf-8')
-            print(f"🔍 Detected encoding: {encoding}")
+            print(f"Detected encoding: {encoding}")
 
     with open(csv_path, 'r', encoding=encoding, errors='replace') as f:
         # Read with DictReader - first line contains headers
         reader = csv.DictReader(f)
 
-        print(f"📋 Detected headers: {reader.fieldnames}")
+        print(f"Detected headers: {reader.fieldnames}")
 
         for row in reader:
             client_platform_id = row['Client Platform ID'].strip('"')
@@ -66,7 +66,7 @@ def parse_churned_accounts_csv(csv_path: str) -> Dict[str, Dict]:
                     account_to_emails[client_platform_id] = set()
                 account_to_emails[client_platform_id].add(email)
 
-    print(f"✅ Parsed {len(email_to_account)} unique emails from {len(account_to_emails)} accounts")
+    print(f"Parsed {len(email_to_account)} unique emails from {len(account_to_emails)} accounts")
     return email_to_account, account_to_emails
 
 def main():
@@ -81,19 +81,19 @@ def main():
     email_to_account, account_to_emails = parse_churned_accounts_csv(str(csv_path))
 
     # Print some statistics
-    print("\n📊 Statistics:")
+    print("\nStatistics:")
     print(f"   - Total unique emails: {len(email_to_account)}")
     print(f"   - Total accounts: {len(account_to_emails)}")
 
     # Show sample mappings
-    print("\n📋 Sample email mappings:")
+    print("\nSample email mappings:")
     sample_emails = list(email_to_account.keys())[:5]
     for email in sample_emails:
         account = email_to_account[email]
         print(f"   {email} -> {account['account_name']} ({account['client_platform_id']})")
 
     # Show accounts with most emails
-    print("\n🏢 Accounts with most emails:")
+    print("\nAccounts with most emails:")
     sorted_accounts = sorted(account_to_emails.items(), key=lambda x: len(x[1]), reverse=True)[:5]
     for client_id, emails in sorted_accounts:
         account_name = email_to_account[list(emails)[0]]['account_name']
@@ -112,7 +112,7 @@ def main():
             }
         }, f, indent=2, ensure_ascii=False)
 
-    print(f"\n💾 Saved mappings to: {mappings_file}")
+    print(f"\nSaved mappings to: {mappings_file}")
 
 if __name__ == '__main__':
     main()

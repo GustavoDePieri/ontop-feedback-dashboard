@@ -17,7 +17,7 @@ load_dotenv()
 try:
     from supabase import create_client, Client
 except ImportError:
-    print("❌ Supabase client not installed. Run: pip install -r requirements.txt")
+    print("ERROR: Supabase client not installed. Run: pip install -r requirements.txt")
     sys.exit(1)
 
 # Add the project root to Python path
@@ -28,7 +28,7 @@ def load_mappings() -> Dict:
     """Load the email-to-account mappings from JSON file."""
     mappings_file = project_root / 'churned_accounts_mappings.json'
     if not mappings_file.exists():
-        print(f"❌ Mappings file not found: {mappings_file}")
+        print(f"ERROR: Mappings file not found: {mappings_file}")
         print("   Run the CSV parsing script first: py scripts/match_transcripts_with_churned_accounts.py")
         sys.exit(1)
 
@@ -66,7 +66,8 @@ def update_transcript_with_account(supabase: Client, transcript_id: str, account
     try:
         update_data = {
             'client_platform_id': account_info['client_platform_id'],
-            'account_name': account_info['account_name']
+            'account_name': account_info['account_name'],
+            'account_status': 'churned'
         }
 
         result = supabase.table('diio_transcripts').update(update_data).eq('id', transcript_id).execute()
@@ -92,7 +93,7 @@ def process_transcripts_batch(supabase: Client, transcripts: List[Dict], email_t
 
     for i in range(0, len(transcripts), batch_size):
         batch = transcripts[i:i + batch_size]
-        print(f"📦 Processing batch {i//batch_size + 1} ({len(batch)} transcripts)...")
+        print(f"Processing batch {i//batch_size + 1} ({len(batch)} transcripts)...")
 
         for transcript in batch:
             stats['processed'] += 1
@@ -109,11 +110,14 @@ def process_transcripts_batch(supabase: Client, transcripts: List[Dict], email_t
             if account_match:
                 stats['matched'] += 1
 
-                # Check if already has this account info
+                # Check if already has this account info and status
                 current_client_id = transcript.get('client_platform_id')
                 current_account_name = transcript.get('account_name')
+                current_status = transcript.get('account_status')
 
-                if (current_client_id == account_match['client_platform_id'] and
+                # If already set to churned with correct account info, skip
+                if (current_status == 'churned' and
+                    current_client_id == account_match['client_platform_id'] and
                     current_account_name == account_match['account_name']):
                     # Already up to date
                     continue
@@ -122,7 +126,7 @@ def process_transcripts_batch(supabase: Client, transcripts: List[Dict], email_t
                 success = update_transcript_with_account(supabase, transcript['id'], account_match)
                 if success:
                     stats['updated'] += 1
-                    print(f"✅ Updated transcript {transcript['id'][:8]}... -> {account_match['account_name']} ({account_match['client_platform_id']})")
+                    print(f"Updated transcript {transcript['id'][:8]}... -> {account_match['account_name']} ({account_match['client_platform_id']})")
                 else:
                     stats['errors'] += 1
 
@@ -130,26 +134,26 @@ def process_transcripts_batch(supabase: Client, transcripts: List[Dict], email_t
 
 def main():
     # Load mappings
-    print("📖 Loading email-to-account mappings...")
+    print("Loading email-to-account mappings...")
     mappings = load_mappings()
     email_to_account = mappings['email_to_account']
 
-    print(f"✅ Loaded {len(email_to_account)} email mappings")
+    print(f"Loaded {len(email_to_account)} email mappings")
 
     # Initialize Supabase client
     supabase_url = os.getenv('SUPABASE_URL')
     supabase_key = os.getenv('SUPABASE_ANON_KEY')
 
     if not supabase_url or not supabase_key:
-        print("❌ Supabase credentials not found in environment variables")
+        print("ERROR: Supabase credentials not found in environment variables")
         print("   Make sure SUPABASE_URL and SUPABASE_ANON_KEY are set in your .env file")
         sys.exit(1)
 
-    print("🔗 Connecting to Supabase...")
+    print("Connecting to Supabase...")
     supabase: Client = create_client(supabase_url, supabase_key)
 
     # Get all transcripts in batches
-    print("📊 Fetching transcripts from database...")
+    print("Fetching transcripts from database...")
 
     all_transcripts = []
     offset = 0
@@ -158,7 +162,7 @@ def main():
     while True:
         try:
             result = supabase.table('diio_transcripts').select(
-                'id, diio_transcript_id, attendees, client_platform_id, account_name'
+                'id, diio_transcript_id, attendees, client_platform_id, account_name, account_status'
             ).range(offset, offset + batch_size - 1).execute()
 
             if not result.data:
@@ -167,7 +171,7 @@ def main():
             all_transcripts.extend(result.data)
             offset += batch_size
 
-            print(f"📄 Loaded {len(result.data)} transcripts (total: {len(all_transcripts)})")
+            print(f"Loaded {len(result.data)} transcripts (total: {len(all_transcripts)})")
 
             # Safety limit
             if offset > 100000:
@@ -178,14 +182,14 @@ def main():
             print(f"❌ Error fetching transcripts: {e}")
             sys.exit(1)
 
-    print(f"✅ Loaded {len(all_transcripts)} total transcripts")
+    print(f"Loaded {len(all_transcripts)} total transcripts")
 
     # Process transcripts
-    print("\n🔄 Processing transcripts for churned account matches...")
+    print("\nProcessing transcripts for churned account matches...")
     stats = process_transcripts_batch(supabase, all_transcripts, email_to_account)
 
     # Print final statistics
-    print("\n📊 Final Statistics:")
+    print("\nFinal Statistics:")
     print(f"   - Total transcripts processed: {stats['processed']}")
     print(f"   - Transcripts with customer emails: {stats['matched']}")
     print(f"   - Transcripts updated: {stats['updated']}")
@@ -194,7 +198,7 @@ def main():
     if stats['matched'] > 0:
         success_rate = (stats['updated'] / stats['matched']) * 100
         print(f"   - Success rate: {success_rate:.1f}%")
-    print("\n✅ Script completed successfully!")
+    print("\nScript completed successfully!")
 
 if __name__ == '__main__':
     main()
