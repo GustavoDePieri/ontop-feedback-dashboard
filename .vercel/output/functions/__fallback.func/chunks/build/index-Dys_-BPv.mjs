@@ -2,7 +2,7 @@ import { u as useAIRecommendations, _ as __nuxt_component_0 } from './useAIRecom
 import { defineComponent, ref, reactive, computed, watch, resolveComponent, mergeProps, unref, withCtx, createVNode, createBlock, openBlock, toDisplayString, createTextVNode, Fragment, renderList, createCommentVNode, readonly, nextTick, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrInterpolate, ssrIncludeBooleanAttr, ssrRenderClass, ssrRenderStyle, ssrLooseContain, ssrLooseEqual, ssrRenderList, ssrRenderAttr, ssrRenderComponent } from 'vue/server-renderer';
 import { u as useHead } from './composables-BNSvOOTx.mjs';
-import { u as useSupabase } from './useSupabase-C1W25sD6.mjs';
+import { u as useSupabase } from './useSupabase-OiP577xr.mjs';
 import { _ as _export_sfc } from './_plugin-vue_export-helper-1tPrXgE0.mjs';
 import './server.mjs';
 import '../_/nitro.mjs';
@@ -3107,4 +3107,4 @@ _sfc_main.setup = (props, ctx) => {
 const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-9fe621d0"]]);
 
 export { index as default };
-//# sourceMappingURL=index-kgqIZyY0.mjs.map
+//# sourceMappingURL=index-Dys_-BPv.mjs.map

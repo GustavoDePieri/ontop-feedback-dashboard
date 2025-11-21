@@ -453,7 +453,7 @@ const _routes = [
     name: "diio",
     path: "/diio",
     meta: __nuxt_page_meta$1 || {},
-    component: () => import('./diio-DHAhhNoN.mjs')
+    component: () => import('./diio-dgBjjetf.mjs')
   },
   {
     name: "test",
@@ -463,7 +463,7 @@ const _routes = [
   {
     name: "index",
     path: "/",
-    component: () => import('./index-kgqIZyY0.mjs')
+    component: () => import('./index-Dys_-BPv.mjs')
   },
   {
     name: "login",

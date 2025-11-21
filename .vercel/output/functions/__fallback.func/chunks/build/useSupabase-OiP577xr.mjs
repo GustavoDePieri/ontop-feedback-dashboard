@@ -220,6 +220,7 @@ const useSupabase = () => {
               analyzed_status,
               client_platform_id,
               account_name,
+              account_status,
               created_at,
               updated_at
             `).order("created_at", { ascending: false }).range(currentOffset, currentOffset + chunkSize - 1);
@@ -254,6 +255,7 @@ const useSupabase = () => {
           analyzed_status,
           client_platform_id,
           account_name,
+          account_status,
           created_at,
           updated_at
         `).order("created_at", { ascending: false }).range(offset, offset + limit - 1);
@@ -374,4 +376,4 @@ const useSupabase = () => {
 };
 
 export { useSupabase as u };
-//# sourceMappingURL=useSupabase-C1W25sD6.mjs.map
+//# sourceMappingURL=useSupabase-OiP577xr.mjs.map

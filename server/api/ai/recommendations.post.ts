@@ -90,7 +90,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Initialize HuggingFace client
-    const hf = new HfInference(config.huggingFaceApiKey)
+    const hf = new HfInference(config.huggingfaceApiKey)
 
     // Perform sentiment analysis on all feedback items
     const sentimentResults = await analyzeSentimentBatch(hf, feedbackItems, transcriptFeedback)

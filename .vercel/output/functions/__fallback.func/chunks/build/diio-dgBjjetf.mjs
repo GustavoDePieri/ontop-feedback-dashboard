@@ -1,7 +1,7 @@
 import { _ as __nuxt_component_0 } from './nuxt-link-DirVq4_Y.mjs';
 import { defineComponent, useSSRContext, ref, reactive, computed, watch, mergeProps, withCtx, createBlock, createVNode, openBlock, unref } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrIncludeBooleanAttr, ssrInterpolate, ssrRenderStyle, ssrRenderAttr, ssrLooseContain, ssrLooseEqual, ssrRenderList, ssrRenderClass } from 'vue/server-renderer';
-import { u as useSupabase } from './useSupabase-C1W25sD6.mjs';
+import { u as useSupabase } from './useSupabase-OiP577xr.mjs';
 import { _ as _export_sfc } from './_plugin-vue_export-helper-1tPrXgE0.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
@@ -554,4 +554,4 @@ _sfc_main.setup = (props, ctx) => {
 const diio = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-142df71f"]]);
 
 export { diio as default };
-//# sourceMappingURL=diio-DHAhhNoN.mjs.map
+//# sourceMappingURL=diio-dgBjjetf.mjs.map
