@@ -13,7 +13,8 @@ export default defineNuxtConfig({
     googleClientId: process.env.GOOGLE_CLIENT_ID,
     googlePrivateKeyId: process.env.GOOGLE_PRIVATE_KEY_ID,
     googleSheetsId: '1VfTbd2J91PgIj5skhUbqOst1oLgXEuoyLTqxCOPLJ2Q',
-    geminiApiKey: process.env.GEMINI_API_KEY,
+    huggingFaceApiKey: process.env.HUGGINGFACE_API_KEY,
+    huggingFaceApiKey: process.env.HUGGINGFACE_API_KEY,
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
     // DIIO API Configuration

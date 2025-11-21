@@ -1,11 +1,11 @@
 /**
  * POST /api/diio/analyze-transcript
- * 
- * AI-powered sentiment analysis for a single transcript
- * Analyzes customer feedback, identifies churn risk, and provides actionable insights
+ *
+ * Sentiment analysis for a single transcript using HuggingFace model
+ * Provides basic sentiment classification and simplified insights
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { HfInference } from '@huggingface/inference'
 import { createClient } from '@supabase/supabase-js'
 
 interface AnalysisRequest {
@@ -43,24 +43,25 @@ interface AnalysisResult {
     occurredAt: string | null
     attendees: any
     participantEmails: string[]
+    cached?: boolean
   }
 }
 
 export default defineEventHandler(async (event): Promise<AnalysisResult> => {
   const config = useRuntimeConfig()
-  
+
   try {
     // Parse request body
     const body = await readBody<AnalysisRequest>(event)
     const { transcriptId } = body
-    
+
     if (!transcriptId) {
       throw createError({
         statusCode: 400,
         message: 'Transcript ID is required'
       })
     }
-    
+
     // Initialize Supabase
     if (!config.public.supabaseUrl || !config.public.supabaseAnonKey) {
       throw createError({
@@ -68,26 +69,26 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
         message: 'Supabase configuration is missing'
       })
     }
-    
+
     const supabase = createClient(config.public.supabaseUrl, config.public.supabaseAnonKey)
-    
+
     // Fetch transcript from database
     const { data: transcript, error: fetchError } = await supabase
       .from('diio_transcripts')
       .select('*')
       .eq('id', transcriptId)
       .single()
-    
+
     if (fetchError || !transcript) {
       throw createError({
         statusCode: 404,
         message: 'Transcript not found'
       })
     }
-    
+
     // Check if we have a cached AI analysis
     if (transcript.ai_analysis) {
-      console.log(`✅ Returning cached AI analysis for transcript ${transcriptId}`)
+      console.log(`✅ Returning cached sentiment analysis for transcript ${transcriptId}`)
       return {
         success: true,
         transcriptId,
@@ -102,21 +103,20 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
         }
       }
     }
-    
-    // Initialize Gemini AI
-    if (!config.geminiApiKey) {
+
+    // Initialize HuggingFace client
+    if (!config.huggingFaceApiKey) {
       throw createError({
         statusCode: 500,
-        message: 'Gemini API key not configured'
+        message: 'HuggingFace API key not configured'
       })
     }
-    
-    const genAI = new GoogleGenerativeAI(config.geminiApiKey)
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' })
-    
+
+    const hf = new HfInference(config.huggingFaceApiKey)
+
     // Extract participant emails from attendees
     const participantEmails = extractParticipantEmails(transcript.attendees)
-    
+
     // Format transcript text
     let transcriptText = transcript.transcript_text
     if (typeof transcriptText !== 'string') {
@@ -133,26 +133,25 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
         transcriptText = String(transcriptText)
       }
     }
-    
-    // Create AI prompt for sentiment analysis
-    const prompt = createAnalysisPrompt(
+
+    console.log(`🤖 Analyzing transcript ${transcriptId} with HuggingFace sentiment analysis...`)
+
+    // Perform sentiment analysis on the transcript
+    const sentiment = await hf.textClassification({
+      model: 'cardiffnlp/twitter-xlm-roberta-base-sentiment',
+      inputs: transcriptText
+    })
+
+    const topSentiment = Array.isArray(sentiment) ? sentiment[0] : sentiment
+
+    // Generate simplified analysis based on sentiment
+    const analysis = generateSentimentAnalysis(
+      topSentiment,
       transcriptText,
       transcript.source_name,
-      transcript.transcript_type,
-      transcript.attendees,
-      transcript.occurred_at
+      transcript.transcript_type
     )
-    
-    console.log(`🤖 Analyzing transcript ${transcriptId} with AI...`)
-    
-    // Generate analysis
-    const result = await model.generateContent(prompt)
-    const response = result.response
-    const aiText = response.text()
-    
-    // Parse AI response
-    const analysis = parseAnalysisResponse(aiText)
-    
+
     // Cache the analysis result in database
     const { error: updateError } = await supabase
       .from('diio_transcripts')
@@ -163,14 +162,14 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
         updated_at: new Date().toISOString()
       })
       .eq('id', transcriptId)
-    
+
     if (updateError) {
-      console.error('Failed to cache AI analysis:', updateError)
+      console.error('Failed to cache sentiment analysis:', updateError)
       // Continue anyway - analysis still worked
     }
-    
+
     console.log(`✅ Successfully analyzed and cached transcript ${transcriptId}`)
-    
+
     return {
       success: true,
       transcriptId,
@@ -184,7 +183,7 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
         cached: false
       }
     }
-    
+
   } catch (error: any) {
     console.error('Transcript analysis error:', error)
     throw createError({
@@ -199,174 +198,129 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
  */
 function extractParticipantEmails(attendees: any): string[] {
   const emails: string[] = []
-  
+
   if (!attendees) return emails
-  
+
   if (attendees.sellers && Array.isArray(attendees.sellers)) {
     attendees.sellers.forEach((s: any) => {
       if (s.email) emails.push(s.email)
     })
   }
-  
+
   if (attendees.customers && Array.isArray(attendees.customers)) {
     attendees.customers.forEach((c: any) => {
       if (c.email) emails.push(c.email)
     })
   }
-  
+
   return emails
 }
 
 /**
- * Create AI prompt for transcript sentiment analysis
+ * Generate simplified sentiment analysis from HuggingFace results
  */
-function createAnalysisPrompt(
+function generateSentimentAnalysis(
+  sentiment: { label: string; score: number },
   transcriptText: string,
   sourceName: string,
-  transcriptType: string,
-  attendees: any,
-  occurredAt: string | null
-): string {
-  const attendeeList = formatAttendees(attendees)
-  const date = occurredAt ? new Date(occurredAt).toLocaleDateString() : 'Unknown date'
-  
-  return `You are an expert customer success analyst specializing in sentiment analysis and churn risk detection for B2B SaaS companies.
+  transcriptType: string
+): any {
+  const { label, score } = sentiment
 
-TRANSCRIPT DETAILS:
-- Source: ${sourceName}
-- Type: ${transcriptType}
-- Date: ${date}
-- Participants: ${attendeeList}
+  // Map HuggingFace labels to our format
+  const sentimentMapping = {
+    'Positive': 'positive',
+    'Neutral': 'neutral',
+    'Negative': 'negative'
+  }
 
-TRANSCRIPT TEXT:
-${transcriptText}
+  const overallSentiment = sentimentMapping[label as keyof typeof sentimentMapping] || 'neutral'
 
-ANALYSIS INSTRUCTIONS:
-Analyze this call/meeting transcript and provide a comprehensive sentiment and risk analysis. Focus on:
+  // Convert to -1 to 1 scale
+  const sentimentScore = label === 'Positive' ? score : label === 'Negative' ? -score : 0
 
-1. **Overall Sentiment**: Determine if the customer is satisfied, neutral, frustrated, or at risk of churning
-2. **Churn Risk Assessment**: Evaluate churn risk based on language, tone, and specific signals
-3. **Key Themes**: Identify recurring topics, concerns, and requests mentioned
-4. **Pain Points**: Extract specific problems or frustrations the customer expressed
-5. **Positive Highlights**: Note any praise, satisfaction, or positive feedback
-6. **Actionable Insights**: Provide specific recommendations with priority and ownership
+  // Determine customer satisfaction based on sentiment
+  let customerSatisfaction: 'satisfied' | 'neutral' | 'frustrated' | 'at_risk'
+  if (overallSentiment === 'positive') {
+    customerSatisfaction = 'satisfied'
+  } else if (overallSentiment === 'negative') {
+    customerSatisfaction = score > 0.7 ? 'at_risk' : 'frustrated'
+  } else {
+    customerSatisfaction = 'neutral'
+  }
 
-CHURN SIGNALS TO DETECT:
-- Competitor mentions or comparisons
-- Price negotiation or cost concerns
-- Escalation language ("need to talk to my boss", "considering alternatives")
-- Repeated unresolved issues
-- Frustration with support or service
-- Contract renewal hesitation
-- Feature gaps blocking adoption
-- Integration or technical blockers
+  // Determine churn risk
+  let churnRisk: 'low' | 'medium' | 'high' | 'critical'
+  if (overallSentiment === 'positive') {
+    churnRisk = 'low'
+  } else if (overallSentiment === 'negative') {
+    churnRisk = score > 0.8 ? 'critical' : score > 0.6 ? 'high' : 'medium'
+  } else {
+    churnRisk = 'low'
+  }
 
-Please return your analysis in the following JSON format:
+  // Generate basic churn signals based on sentiment
+  const churnSignals: string[] = []
+  if (churnRisk === 'high' || churnRisk === 'critical') {
+    churnSignals.push('Negative sentiment detected in conversation')
+    if (transcriptText.toLowerCase().includes('competitor') || transcriptText.toLowerCase().includes('alternative')) {
+      churnSignals.push('Mention of competitors or alternatives')
+    }
+  }
 
-{
-  "overallSentiment": "positive|neutral|negative|mixed",
-  "sentimentScore": 0.5,
-  "customerSatisfaction": "satisfied|neutral|frustrated|at_risk",
-  "churnRisk": "low|medium|high|critical",
-  "churnSignals": [
-    "Specific phrases or behaviors indicating churn risk"
-  ],
-  "keyThemes": [
+  // Generate basic themes
+  const keyThemes = [
     {
-      "theme": "Brief description of the theme (e.g., 'Payment processing speed', 'API documentation')",
-      "sentiment": "positive|neutral|negative",
-      "mentions": 3,
-      "urgency": "low|medium|high|critical"
+      theme: overallSentiment === 'positive' ? 'General satisfaction' : 'General concerns',
+      sentiment: overallSentiment,
+      mentions: 1,
+      urgency: overallSentiment === 'negative' ? (churnRisk === 'critical' ? 'critical' : 'medium') : 'low'
     }
-  ],
-  "painPoints": [
-    "Specific pain point #1 with context",
-    "Specific pain point #2 with context"
-  ],
-  "positiveHighlights": [
-    "Specific positive feedback #1",
-    "Specific positive feedback #2"
-  ],
-  "actionableInsights": [
-    {
-      "insight": "Specific action to take (e.g., 'Schedule follow-up call to address API integration concerns within 48 hours')",
-      "priority": "low|medium|high|critical",
-      "owner": "Team or person responsible (e.g., 'Customer Success', 'Product Team', 'Support')",
-      "estimatedImpact": "Expected outcome (e.g., 'Prevent churn, increase adoption, improve satisfaction')"
-    }
-  ],
-  "summary": "2-3 sentence executive summary of the call, highlighting key sentiment, main topics discussed, and immediate actions needed"
-}
+  ]
 
-QUALITY GUIDELINES:
-- Be specific and actionable - cite actual phrases from the transcript when possible
-- Prioritize churn risk factors - this is critical for customer retention
-- Identify the emotional tone (frustrated, enthusiastic, confused, etc.)
-- Look for patterns across the conversation (improving, declining, stable sentiment)
-- Consider both verbal content AND implied meaning (what they're not saying)
-- Provide concrete next steps with clear ownership
-- If churn risk is high or critical, make this very clear and urgent
+  // Basic pain points and highlights
+  const painPoints: string[] = []
+  const positiveHighlights: string[] = []
 
-Return ONLY the JSON object, no additional text.`
-}
-
-/**
- * Format attendees for display in prompt
- */
-function formatAttendees(attendees: any): string {
-  if (!attendees) return 'Unknown'
-  
-  const parts: string[] = []
-  
-  if (attendees.sellers && Array.isArray(attendees.sellers)) {
-    const sellerNames = attendees.sellers.map((s: any) => s.name || s.email || 'Unknown').join(', ')
-    if (sellerNames) parts.push(`Sellers: ${sellerNames}`)
+  if (overallSentiment === 'negative') {
+    painPoints.push('Customer expressed dissatisfaction during the conversation')
+  } else if (overallSentiment === 'positive') {
+    positiveHighlights.push('Customer showed positive sentiment during the conversation')
   }
-  
-  if (attendees.customers && Array.isArray(attendees.customers)) {
-    const customerNames = attendees.customers.map((c: any) => c.name || c.email || 'Unknown').join(', ')
-    if (customerNames) parts.push(`Customers: ${customerNames}`)
-  }
-  
-  return parts.length > 0 ? parts.join(' | ') : 'Unknown'
-}
 
-/**
- * Parse AI response JSON
- */
-function parseAnalysisResponse(text: string): any {
-  try {
-    // Extract JSON from markdown code blocks if present
-    let jsonText = text.trim()
-    if (jsonText.startsWith('```json')) {
-      jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?$/g, '')
-    } else if (jsonText.startsWith('```')) {
-      jsonText = jsonText.replace(/```\n?/g, '').replace(/```\n?$/g, '')
-    }
-    
-    const parsed = JSON.parse(jsonText)
-    
-    // Validate required fields
-    if (!parsed.overallSentiment || !parsed.churnRisk || !parsed.summary) {
-      throw new Error('Invalid AI response: missing required fields')
-    }
-    
-    return {
-      overallSentiment: parsed.overallSentiment || 'neutral',
-      sentimentScore: parsed.sentimentScore || 0,
-      customerSatisfaction: parsed.customerSatisfaction || 'neutral',
-      churnRisk: parsed.churnRisk || 'low',
-      churnSignals: Array.isArray(parsed.churnSignals) ? parsed.churnSignals : [],
-      keyThemes: Array.isArray(parsed.keyThemes) ? parsed.keyThemes : [],
-      painPoints: Array.isArray(parsed.painPoints) ? parsed.painPoints : [],
-      positiveHighlights: Array.isArray(parsed.positiveHighlights) ? parsed.positiveHighlights : [],
-      actionableInsights: Array.isArray(parsed.actionableInsights) ? parsed.actionableInsights : [],
-      summary: parsed.summary || 'No summary available'
-    }
-  } catch (error: any) {
-    console.error('Failed to parse AI response:', error)
-    console.error('Raw AI response:', text)
-    throw new Error(`Failed to parse AI analysis: ${error.message}`)
+  // Basic actionable insights
+  const actionableInsights = []
+  if (churnRisk === 'high' || churnRisk === 'critical') {
+    actionableInsights.push({
+      insight: 'Schedule follow-up call to address concerns and prevent potential churn',
+      priority: churnRisk === 'critical' ? 'critical' : 'high',
+      owner: 'Customer Success',
+      estimatedImpact: 'Improve customer satisfaction and reduce churn risk'
+    })
+  } else if (overallSentiment === 'positive') {
+    actionableInsights.push({
+      insight: 'Continue providing excellent service to maintain customer satisfaction',
+      priority: 'low',
+      owner: 'Account Management',
+      estimatedImpact: 'Maintain strong customer relationship'
+    })
+  }
+
+  // Generate summary
+  const summary = `This ${transcriptType} showed ${overallSentiment} sentiment with a ${customerSatisfaction} customer satisfaction level. ${
+    churnRisk !== 'low' ? `Churn risk is ${churnRisk} - follow-up recommended.` : 'Customer appears satisfied with current service.'
+  }`
+
+  return {
+    overallSentiment,
+    sentimentScore,
+    customerSatisfaction,
+    churnRisk,
+    churnSignals,
+    keyThemes,
+    painPoints,
+    positiveHighlights,
+    actionableInsights,
+    summary
   }
 }
-
