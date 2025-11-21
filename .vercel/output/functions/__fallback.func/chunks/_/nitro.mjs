@@ -4307,7 +4307,7 @@ function _expandFromEnv(value) {
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/",
-    "buildId": "842050ad-d209-41c6-bd18-8574f20ba6e6",
+    "buildId": "c2d2a197-4c81-48b2-97e5-f2943e39dba0",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
@@ -4346,7 +4346,7 @@ const _inlineRuntimeConfig = {
   "googleClientId": "",
   "googlePrivateKeyId": "",
   "googleSheetsId": "1VfTbd2J91PgIj5skhUbqOst1oLgXEuoyLTqxCOPLJ2Q",
-  "huggingFaceApiKey": "",
+  "huggingfaceApiKey": "",
   "supabaseUrl": "https://igzrepnzsjdxzekfwaxq.supabase.co",
   "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlnenJlcG56c2pkeHpla2Z3YXhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTI5MTgsImV4cCI6MjA3NTA2ODkxOH0.qygCB6CCKAMamlwIuo15UQeJnwbWIiRbONyKKWMBhfo",
   "diioClientId": "",
@@ -4754,6 +4754,8 @@ const plugins = [
 const _SxA8c9 = defineEventHandler(() => {});
 
 const _lazy_kKOeQW = () => import('../routes/api/ai/recommendations.post.mjs');
+const _lazy_5XXR_M = () => import('../routes/api/debug/db.get.mjs');
+const _lazy_hNHqsW = () => import('../routes/api/debug/env.get.mjs');
 const _lazy_tq2pfm = () => import('../routes/api/diio/analyze-transcript.post.mjs');
 const _lazy_jwvgjF = () => import('../routes/api/diio/download.get.mjs');
 const _lazy_ACU9VF = () => import('../routes/api/diio/exports.post.mjs');
@@ -4777,6 +4779,8 @@ const _lazy_ijDcZ8 = () => import('../routes/renderer.mjs').then(function (n) { 
 
 const handlers = [
   { route: '/api/ai/recommendations', handler: _lazy_kKOeQW, lazy: true, middleware: false, method: "post" },
+  { route: '/api/debug/db', handler: _lazy_5XXR_M, lazy: true, middleware: false, method: "get" },
+  { route: '/api/debug/env', handler: _lazy_hNHqsW, lazy: true, middleware: false, method: "get" },
   { route: '/api/diio/analyze-transcript', handler: _lazy_tq2pfm, lazy: true, middleware: false, method: "post" },
   { route: '/api/diio/download', handler: _lazy_jwvgjF, lazy: true, middleware: false, method: "get" },
   { route: '/api/diio/exports', handler: _lazy_ACU9VF, lazy: true, middleware: false, method: "post" },

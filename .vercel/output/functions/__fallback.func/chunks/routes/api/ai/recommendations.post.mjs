@@ -23,7 +23,7 @@ const recommendations_post = defineEventHandler(async (event) => {
     if (!feedbackItems || feedbackItems.length === 0) {
       throw new Error("No feedback items provided");
     }
-    const hf = new HfInference(config.huggingFaceApiKey);
+    const hf = new HfInference(config.huggingfaceApiKey);
     const sentimentResults = await analyzeSentimentBatch(hf, feedbackItems, transcriptFeedback);
     const recommendations = generateSentimentReport(sentimentResults, feedbackItems, transcriptFeedback);
     return {
