@@ -188,7 +188,7 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "CZE3ngE3.js",
+    "file": "D4RcZZ-a.js",
     "name": "entry",
     "src": "node_modules/nuxt/dist/app/entry.js",
     "isEntry": true,
@@ -226,7 +226,7 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "BoCRILFd.js",
+    "file": "CQWHGkJA.js",
     "name": "diio",
     "src": "pages/diio.vue",
     "isDynamicEntry": true,
@@ -239,8 +239,8 @@ const client_manifest = {
     ],
     "css": []
   },
-  "diio.BQ7EGSgc.css": {
-    "file": "diio.BQ7EGSgc.css",
+  "diio.ZJC46Veo.css": {
+    "file": "diio.ZJC46Veo.css",
     "resourceType": "style",
     "prefetch": true,
     "preload": true
