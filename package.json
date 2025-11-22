@@ -22,7 +22,7 @@
     "googleapis": "^160.0.0",
     "jspdf": "^3.0.3",
     "jspdf-autotable": "^5.0.2",
-    "nuxt": "^4.1.2",
+    "nuxt": "^3.13.0",
     "pinia": "^3.0.3",
     "vue": "^3.5.21",
     "vue-bundle-renderer": "^2.1.1",

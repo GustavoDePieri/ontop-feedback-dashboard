@@ -1,10 +1,11 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  ssr: true,
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt'
   ],
+  css: ['~/assets/css/main.css'],
   runtimeConfig: {
     // Server-side environment variables
     googleProjectId: process.env.GOOGLE_PROJECT_ID,
@@ -29,14 +30,11 @@ export default defineNuxtConfig({
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY
     }
   },
+  nitro: {
+    preset: 'vercel-edge'
+  },
   typescript: {
     strict: true,
     typeCheck: false // Disable type checking during build for Vercel compatibility
-  },
-  nitro: {
-    preset: 'vercel',
-    experimental: {
-      wasm: true
-    }
   }
 })
