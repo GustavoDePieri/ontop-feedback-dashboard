@@ -34,6 +34,9 @@ export default defineNuxtConfig({
     typeCheck: false // Disable type checking during build for Vercel compatibility
   },
   nitro: {
-    preset: 'vercel'
+    preset: 'vercel',
+    experimental: {
+      wasm: true
+    }
   }
 })

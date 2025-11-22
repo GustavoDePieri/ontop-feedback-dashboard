@@ -1,5 +1,8 @@
 {
   "framework": "nuxtjs",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".output",
+  "installCommand": "npm install",
   "crons": [
     {
       "path": "/api/diio/sync-transcripts-daily",
