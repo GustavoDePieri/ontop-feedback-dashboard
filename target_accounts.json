@@ -1,0 +1,11 @@
+{
+  "description": "List of 117 target accounts for sentiment analysis",
+  "accounts": [
+    // Add your 117 account IDs here, for example:
+    // "CL001234",
+    // "CL005678",
+    // "CL009012"
+  ],
+  "lastUpdated": "2025-01-01",
+  "totalAccounts": 0
+}
