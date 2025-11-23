@@ -168,6 +168,64 @@ This downloads the ~1.7GB model so you can run analysis offline later.
 python local_sentiment_db.py
 ```
 
+## 📊 CSV Output Formats
+
+### **Main Results CSV: `local_sentiment_analysis_results.csv`**
+
+Contains both account-level summaries and individual transcript details:
+
+**Account Summary Rows:**
+- `account_id`: Client platform ID (e.g., CL001234)
+- `account_name`: Account name
+- `transcript_count`: Total transcripts for this account
+- `analyzed_count`: Number of transcripts analyzed
+- `average_sentiment`: Average sentiment score (-1 to +1)
+- `churn_risk`: Account-level risk (low/medium/high/critical)
+- `sentiment_positive`: Count of positive transcripts
+- `sentiment_neutral`: Count of neutral transcripts
+- `sentiment_negative`: Count of negative transcripts
+
+**Transcript Detail Rows:**
+- `transcript_id`: Individual transcript UUID
+- `source_name`: Call/meeting name
+- `occurred_at`: Date/time of transcript
+- `sentiment_label`: positive/neutral/negative
+- `sentiment_score`: Confidence score (-1 to +1)
+- `confidence`: Model confidence (0-1)
+- `churn_risk_individual`: Individual transcript risk
+- `customer_satisfaction`: satisfied/neutral/frustrated/at_risk
+- `cached`: Whether result was from cache
+
+### **High-Risk Report CSV: `high_risk_accounts_report.csv`**
+
+Focused report for urgent action items:
+
+**Columns:**
+- `priority`: Ranking (1 = highest priority)
+- `account_id`: Client platform ID
+- `account_name`: Account name
+- `churn_risk_level`: CRITICAL/HIGH
+- `average_sentiment`: Average sentiment score
+- `transcript_count`: Total transcripts
+- `negative_transcripts`: Number of negative transcripts
+- `most_negative_transcript`: Name of most negative interaction
+- `most_negative_score`: Lowest sentiment score
+- `recommendation`: Actionable next steps
+
+### **CSV Usage Tips**
+
+**Open in Excel/Google Sheets:**
+```bash
+# The CSV files can be opened directly in Excel or Google Sheets
+# Filter by churn_risk to focus on high-priority accounts
+# Sort by average_sentiment to find most dissatisfied customers
+```
+
+**Power BI/Tableau Analysis:**
+- Use `sentiment_positive/neutral/negative` for stacked bar charts
+- Filter by `churn_risk` for risk heatmaps
+- Create dashboards showing sentiment trends over time
+
 ## 📥 Model Download Details
 
 ### Automatic Download
@@ -193,7 +251,9 @@ python download_model.py
 - **Total:** ~1.7GB one-time download
 
 ### Local Results
-- **Output:** `local_sentiment_analysis_results.json`
+- **JSON Output:** `local_sentiment_analysis_results.json` (full detailed data)
+- **CSV Output:** `local_sentiment_analysis_results.csv` (spreadsheet-friendly)
+- **High-Risk Report:** `high_risk_accounts_report.csv` (prioritized action items)
 - **Speed:** ~5-10 transcripts per second
 - **Memory:** ~3-4GB RAM required
 - **Storage:** ~1.7GB for model (downloaded once)

@@ -6,6 +6,7 @@ Run sentiment analysis locally using your actual transcript data
 
 import os
 import json
+import csv
 import sys
 from pathlib import Path
 from typing import List, Dict, Any
@@ -225,6 +226,120 @@ def get_customer_satisfaction(label: str, score: float) -> str:
     else:
         return 'neutral'
 
+def save_results_as_csv(analysis_results: Dict, json_file: str, csv_file: str):
+    """Save analysis results in CSV format for easier analysis"""
+    results = analysis_results['results']
+
+    with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = [
+            'account_id', 'account_name', 'transcript_count', 'analyzed_count',
+            'average_sentiment', 'churn_risk', 'sentiment_positive', 'sentiment_neutral', 'sentiment_negative',
+            'transcript_id', 'source_name', 'occurred_at', 'sentiment_label', 'sentiment_score',
+            'confidence', 'churn_risk_individual', 'customer_satisfaction', 'cached'
+        ]
+
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        # Write account-level summary rows (without transcript details)
+        for account_id, data in results.items():
+            summary_row = {
+                'account_id': account_id,
+                'account_name': data.get('account_name', ''),
+                'transcript_count': data.get('transcript_count', 0),
+                'analyzed_count': data.get('analyzed_count', 0),
+                'average_sentiment': round(data.get('average_sentiment', 0), 4),
+                'churn_risk': data.get('churn_risk', ''),
+                'sentiment_positive': data.get('sentiment_distribution', {}).get('positive', 0),
+                'sentiment_neutral': data.get('sentiment_distribution', {}).get('neutral', 0),
+                'sentiment_negative': data.get('sentiment_distribution', {}).get('negative', 0),
+            }
+            writer.writerow(summary_row)
+
+            # Write individual transcript rows
+            for transcript in data.get('transcripts', []):
+                transcript_row = {
+                    'account_id': account_id,
+                    'account_name': data.get('account_name', ''),
+                    'transcript_id': transcript.get('id', ''),
+                    'source_name': transcript.get('source_name', ''),
+                    'occurred_at': transcript.get('occurred_at', ''),
+                    'sentiment_label': transcript.get('sentiment', {}).get('overall', ''),
+                    'sentiment_score': round(transcript.get('sentiment', {}).get('score', 0), 4),
+                    'confidence': round(transcript.get('sentiment', {}).get('confidence', 0), 4),
+                    'churn_risk_individual': transcript.get('sentiment', {}).get('churn_risk', ''),
+                    'customer_satisfaction': transcript.get('sentiment', {}).get('customer_satisfaction', ''),
+                    'cached': transcript.get('cached', False)
+                }
+                writer.writerow(transcript_row)
+
+    print(f"📊 CSV results saved to: {csv_file}")
+
+def save_high_risk_report(analysis_results: Dict, report_file: str):
+    """Save a focused report on high-risk accounts"""
+    results = analysis_results['results']
+
+    # Find high-risk accounts
+    high_risk_accounts = []
+    for account_id, data in results.items():
+        if data.get('churn_risk') in ['high', 'critical'] and data.get('transcript_count', 0) > 0:
+            high_risk_accounts.append((account_id, data))
+
+    # Sort by risk level and sentiment
+    high_risk_accounts.sort(key=lambda x: (
+        {'critical': 0, 'high': 1}.get(x[1].get('churn_risk', ''), 2),
+        x[1].get('average_sentiment', 0)
+    ))
+
+    with open(report_file, 'w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = [
+            'priority', 'account_id', 'account_name', 'churn_risk_level',
+            'average_sentiment', 'transcript_count', 'negative_transcripts',
+            'most_negative_transcript', 'most_negative_score', 'recommendation'
+        ]
+
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for priority, (account_id, data) in enumerate(high_risk_accounts[:20], 1):  # Top 20
+            # Find most negative transcript
+            most_negative = None
+            most_negative_score = 0
+
+            for transcript in data.get('transcripts', []):
+                score = transcript.get('sentiment', {}).get('score', 0)
+                if score < most_negative_score:
+                    most_negative_score = score
+                    most_negative = transcript.get('source_name', 'Unknown')
+
+            # Generate recommendation
+            risk_level = data.get('churn_risk', '')
+            avg_sentiment = data.get('average_sentiment', 0)
+
+            if risk_level == 'critical':
+                recommendation = "URGENT: Schedule immediate customer success intervention within 24 hours"
+            elif risk_level == 'high':
+                recommendation = "HIGH PRIORITY: Contact customer within 3-5 business days"
+            else:
+                recommendation = "MONITOR: Track sentiment in upcoming interactions"
+
+            writer.writerow({
+                'priority': priority,
+                'account_id': account_id,
+                'account_name': data.get('account_name', ''),
+                'churn_risk_level': risk_level.upper(),
+                'average_sentiment': round(avg_sentiment, 4),
+                'transcript_count': data.get('transcript_count', 0),
+                'negative_transcripts': data.get('sentiment_distribution', {}).get('negative', 0),
+                'most_negative_transcript': most_negative or 'N/A',
+                'most_negative_score': round(most_negative_score, 4) if most_negative_score < 0 else 'N/A',
+                'recommendation': recommendation
+            })
+
+    if high_risk_accounts:
+        print(f"🚨 High-risk accounts report saved to: {report_file}")
+        print(f"   📊 {len(high_risk_accounts)} high-risk accounts identified")
+
 def analyze_account_sentiments(analyzer: LocalSentimentAnalyzer, account_data: Dict[str, List[Dict]]) -> Dict[str, Any]:
     """Analyze sentiments for all accounts"""
     results = {}
@@ -371,15 +486,27 @@ def main():
     print("\n🚀 Starting sentiment analysis...")
     analysis_results = analyze_account_sentiments(analyzer, account_data)
 
-    # Save results
-    output_file = 'local_sentiment_analysis_results.json'
-    with open(output_file, 'w', encoding='utf-8') as f:
+    # Save results in both JSON and CSV formats
+    json_file = 'local_sentiment_analysis_results.json'
+    csv_file = 'local_sentiment_analysis_results.csv'
+    high_risk_file = 'high_risk_accounts_report.csv'
+
+    # Save JSON (full detailed results)
+    with open(json_file, 'w', encoding='utf-8') as f:
         json.dump(analysis_results, f, indent=2, ensure_ascii=False)
+
+    # Save CSV (spreadsheet-friendly format)
+    save_results_as_csv(analysis_results, json_file, csv_file)
+
+    # Save high-risk accounts report
+    save_high_risk_report(analysis_results, high_risk_file)
 
     # Print summary
     summary = analysis_results['summary']
     print("\n📊 Analysis Complete!")
-    print(f"   📁 Results saved to: {output_file}")
+    print(f"   📁 JSON results: {json_file}")
+    print(f"   📊 CSV results: {csv_file}")
+    print(f"   🚨 High-risk report: {high_risk_file}")
     print(f"   🏢 Accounts processed: {summary['total_accounts']}")
     print(f"   📝 Accounts with transcripts: {summary['accounts_with_transcripts']}")
     print(f"   📄 Total transcripts: {summary['total_transcripts']}")
@@ -393,22 +520,23 @@ def main():
         if data['churn_risk'] in ['high', 'critical'] and data['transcript_count'] > 0
     ]
 
+    # Sort by risk level and sentiment
+    high_risk_accounts.sort(key=lambda x: (
+        {'critical': 0, 'high': 1}.get(x[1]['churn_risk'], 2),
+        x[1]['average_sentiment']
+    ))
+
     if high_risk_accounts:
         print(f"\n🚨 HIGH PRIORITY ACCOUNTS ({len(high_risk_accounts)}):")
-        # Sort by risk level and sentiment
-        high_risk_accounts.sort(key=lambda x: (
-            {'critical': 0, 'high': 1}.get(x[1]['churn_risk'], 2),
-            x[1]['average_sentiment']
-        ))
-
-        for account_id, data in high_risk_accounts[:10]:  # Show top 10
-            print(f"   ⚠️ {account_id} ({data['account_name']})")
+        for i, (account_id, data) in enumerate(high_risk_accounts[:10], 1):  # Show top 10
+            print(f"   {i}. ⚠️ {account_id} ({data['account_name']})")
             print(".3f")
             print(f"      📊 Transcripts: {data['transcript_count']}")
 
     print("\n✅ Local sentiment analysis completed!")
     print("💰 This method is COMPLETELY FREE and runs on your machine!")
     print("⚡ Much faster than API calls - no rate limits!")
+    print("\n📈 Open the CSV files in Excel/Google Sheets for easy analysis!")
 
 if __name__ == '__main__':
     main()
