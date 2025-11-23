@@ -58,6 +58,21 @@
               </svg>
               {{ syncing ? 'Syncing...' : 'Sync New Transcripts' }}
             </button>
+
+            <button
+              @click="testSentimentAnalysis"
+              :disabled="testingSentiment"
+              class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <svg v-if="!testingSentiment" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ testingSentiment ? 'Testing...' : '🧪 Test Sentiment Analysis' }}
+            </button>
           </div>
         </div>
       </div>
@@ -1187,6 +1202,7 @@ const transcripts = ref<any[]>([])
 const loading = ref(false)
 const syncing = ref(false)
 const generatingReport = ref(false)
+const testingSentiment = ref(false)
 const error = ref<{ title?: string; message: string } | null>(null)
 const selectedTranscript = ref<any>(null)
 const currentPage = ref(1)
@@ -1431,6 +1447,77 @@ const syncTranscripts = async () => {
     syncProgress.show = false
   } finally {
     syncing.value = false
+  }
+}
+
+const testSentimentAnalysis = async () => {
+  testingSentiment.value = true
+  error.value = null
+
+  try {
+    // Test on first 5 transcripts that haven't been analyzed yet
+    const unanalyzedTranscripts = transcripts.value
+      .filter(t => !t.ai_analysis)
+      .slice(0, 5)
+
+    if (unanalyzedTranscripts.length === 0) {
+      alert('No unanalyzed transcripts found. All transcripts have already been analyzed.')
+      return
+    }
+
+    console.log(`Testing sentiment analysis on ${unanalyzedTranscripts.length} transcripts...`)
+
+    let successCount = 0
+    let errorCount = 0
+    const results = []
+
+    for (const transcript of unanalyzedTranscripts) {
+      try {
+        const response = await $fetch('/api/diio/analyze-transcript', {
+          method: 'POST',
+          body: { transcriptId: transcript.id }
+        })
+
+        if (response.success) {
+          successCount++
+          results.push({
+            id: transcript.id,
+            sourceName: response.metadata.sourceName,
+            sentiment: response.analysis.overallSentiment,
+            score: response.analysis.sentimentScore,
+            churnRisk: response.analysis.churnRisk,
+            cached: response.metadata.cached
+          })
+        } else {
+          errorCount++
+        }
+      } catch (err) {
+        console.error(`Analysis failed for ${transcript.id}:`, err)
+        errorCount++
+      }
+    }
+
+    // Show results
+    const message = `Sentiment Analysis Test Results:\n\n` +
+      `✅ Successful: ${successCount}\n` +
+      `❌ Failed: ${errorCount}\n\n` +
+      `Results:\n${results.map(r =>
+        `${r.sourceName}: ${r.sentiment} (${r.score.toFixed(3)}) - Risk: ${r.churnRisk}${r.cached ? ' (cached)' : ''}`
+      ).join('\n')}`
+
+    alert(message)
+
+    // Refresh data to show new analysis
+    await loadTranscripts()
+    await loadStats()
+
+  } catch (err: any) {
+    error.value = {
+      title: 'Sentiment analysis test failed',
+      message: err.message || 'An error occurred during sentiment analysis testing'
+    }
+  } finally {
+    testingSentiment.value = false
   }
 }
 
