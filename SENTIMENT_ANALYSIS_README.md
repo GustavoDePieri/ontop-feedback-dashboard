@@ -148,7 +148,13 @@ For processing your 117 accounts, **local analysis is recommended**:
 pip install transformers torch numpy scipy supabase python-dotenv
 ```
 
-2. **Add your account IDs to `target_accounts.json`:**
+2. **(Optional) Pre-download the model:**
+```bash
+python download_model.py
+```
+This downloads the ~1.7GB model so you can run analysis offline later.
+
+3. **Add your account IDs to `target_accounts.json`:**
 ```json
 {
   "accounts": ["CL001234", "CL005678", "CL009012"],
@@ -157,10 +163,34 @@ pip install transformers torch numpy scipy supabase python-dotenv
 }
 ```
 
-3. **Run local analysis:**
+4. **Run local analysis:**
 ```bash
 python local_sentiment_db.py
 ```
+
+## 📥 Model Download Details
+
+### Automatic Download
+- **When:** First time you run `local_sentiment_db.py` or `download_model.py`
+- **Size:** ~1.7GB (XLM-RoBERTa model)
+- **Time:** 5-15 minutes (depends on internet speed)
+- **Location:** `~/.cache/huggingface/transformers/`
+
+### Manual Download (Recommended)
+```bash
+python download_model.py
+```
+**Benefits:**
+- ✅ Download once, use forever (even offline)
+- ✅ See progress and any errors
+- ✅ Verify model works before processing data
+- ✅ No surprises during analysis
+
+### What Gets Downloaded
+- **Tokenizer:** Text preprocessing (~400MB)
+- **Model:** XLM-RoBERTa sentiment classifier (~1.3GB)
+- **Config:** Model settings and label mappings
+- **Total:** ~1.7GB one-time download
 
 ### Local Results
 - **Output:** `local_sentiment_analysis_results.json`
