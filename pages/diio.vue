@@ -216,7 +216,7 @@
             <input
               v-model="filters.search"
               type="text"
-              placeholder="Search transcripts..."
+              placeholder="Search transcripts, client ID..."
               class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
             />
             <svg class="absolute right-3 top-10 w-4 h-4 text-gray-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1232,7 +1232,8 @@ const filteredTranscripts = computed(() => {
     const searchLower = filters.search.toLowerCase()
     filtered = filtered.filter(t => 
       t.source_name?.toLowerCase().includes(searchLower) ||
-      t.transcript_text?.toLowerCase().includes(searchLower)
+      t.transcript_text?.toLowerCase().includes(searchLower) ||
+      t.client_platform_id?.toLowerCase().includes(searchLower)
     )
   }
   
