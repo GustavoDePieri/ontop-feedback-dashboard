@@ -378,8 +378,8 @@ def main():
 
     # Print summary
     summary = analysis_results['summary']
-    print("
-📊 Analysis Complete!"    print(f"   📁 Results saved to: {output_file}")
+    print("\n📊 Analysis Complete!")
+    print(f"   📁 Results saved to: {output_file}")
     print(f"   🏢 Accounts processed: {summary['total_accounts']}")
     print(f"   📝 Accounts with transcripts: {summary['accounts_with_transcripts']}")
     print(f"   📄 Total transcripts: {summary['total_transcripts']}")
@@ -406,8 +406,8 @@ def main():
             print(".3f")
             print(f"      📊 Transcripts: {data['transcript_count']}")
 
-    print("
-✅ Local sentiment analysis completed!"    print("💰 This method is COMPLETELY FREE and runs on your machine!")
+    print("\n✅ Local sentiment analysis completed!")
+    print("💰 This method is COMPLETELY FREE and runs on your machine!")
     print("⚡ Much faster than API calls - no rate limits!")
 
 if __name__ == '__main__':
