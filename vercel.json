@@ -1,9 +1,4 @@
 {
-  "functions": {
-    ".output/server/index.mjs": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "crons": [
     {
       "path": "/api/diio/sync-transcripts-daily",
