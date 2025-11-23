@@ -130,12 +130,52 @@ Analyze a single transcript.
 - **Churn Risk:** Individual transcript risk level
 - **Customer Satisfaction:** satisfied/neutral/frustrated/at_risk
 
+## 🖥️ Local Analysis (FREE & FAST!)
+
+For processing your 117 accounts, **local analysis is recommended**:
+
+### Why Local Analysis?
+- ✅ **Completely FREE** - No API costs
+- ✅ **No rate limits** - Process all 117 accounts at once
+- ✅ **Much faster** - 10-50x faster than API calls
+- ✅ **Privacy** - Data stays on your machine
+- ✅ **Caching** - Uses existing cached results
+
+### Setup Local Analysis
+
+1. **Install dependencies:**
+```bash
+pip install transformers torch numpy scipy supabase python-dotenv
+```
+
+2. **Add your account IDs to `target_accounts.json`:**
+```json
+{
+  "accounts": ["CL001234", "CL005678", "CL009012"],
+  "lastUpdated": "2025-01-23",
+  "totalAccounts": 117
+}
+```
+
+3. **Run local analysis:**
+```bash
+python local_sentiment_db.py
+```
+
+### Local Results
+- **Output:** `local_sentiment_analysis_results.json`
+- **Speed:** ~5-10 transcripts per second
+- **Memory:** ~3-4GB RAM required
+- **Storage:** ~1.7GB for model (downloaded once)
+
 ## 🛠️ Configuration
 
-### Environment Variables
+### Environment Variables (for both local and API)
 ```env
-HUGGINGFACE_API_KEY=your-huggingface-api-key
-VERCEL_URL=https://your-app.vercel.app
+HUGGINGFACE_API_KEY=your-huggingface-api-key  # Only needed for API version
+VERCEL_URL=https://your-app.vercel.app         # Only needed for API version
+SUPABASE_URL=your-supabase-url                # Needed for local database access
+SUPABASE_ANON_KEY=your-supabase-anon-key      # Needed for local database access
 ```
 
 ### Model Configuration
