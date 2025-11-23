@@ -358,11 +358,23 @@
                   
                   <!-- Churned Account Badge -->
                   <span
-                    v-if="transcript.client_platform_id"
+                    v-if="transcript.account_status === 'churned'"
                     class="px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-red-500/20 to-orange-500/20 text-red-300 border border-red-500/30"
                     :title="`Churned Account: ${transcript.account_name} (${transcript.client_platform_id})`"
                   >
                     ⚠️ Churned
+                  </span>
+
+                  <!-- Debug: Show account_status for all transcripts -->
+                  <span class="text-xs text-gray-500 ml-2">[{{ transcript.account_status || 'NULL' }}]</span>
+
+                  <!-- Active Account Badge -->
+                  <span
+                    v-if="transcript.account_status === 'active'"
+                    class="px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 border border-green-500/30"
+                    :title="`Active Account: ${transcript.account_name} (${transcript.client_platform_id})`"
+                  >
+                    ✅ Active
                   </span>
 
                   <!-- AI Analyzed Badge -->
@@ -389,7 +401,7 @@
                 </p>
                 
                 <!-- Account Info Section (for churned accounts) -->
-                <div v-if="transcript.client_platform_id" class="mb-3 p-2 bg-red-900/20 rounded border border-red-500/30">
+                <div v-if="transcript.client_platform_id && transcript.account_status === 'churned'" class="mb-3 p-2 bg-red-900/20 rounded border border-red-500/30">
                   <p class="text-xs text-red-400 font-semibold mb-1">⚠️ Churned Account:</p>
                   <div class="flex items-center gap-2">
                     <div class="flex items-center gap-1">

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Script to update existing churned transcripts with account_status = 'churned'.
-This preserves the existing churned account tracking while adding the new status column.
+Script to update existing transcripts with proper account_status based on email matching.
+This ensures active accounts are not incorrectly marked as churned.
 """
 
 import os
@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Set, Optional
 from dotenv import load_dotenv
+import json
 
 # Load environment variables
 load_dotenv()
@@ -23,52 +24,112 @@ except ImportError:
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-def update_churned_transcripts_status(supabase: Client) -> Dict:
-    """Update all transcripts with client_platform_id to have account_status = 'churned'."""
+def load_churned_mappings() -> Dict:
+    """Load the churned accounts email mappings."""
+    mappings_file = project_root / 'churned_accounts_mappings.json'
+    if not mappings_file.exists():
+        print(f"ERROR: Churned accounts mappings file not found: {mappings_file}")
+        print("   Run the churned accounts matching script first: py scripts/match_transcripts_with_churned_accounts.py")
+        sys.exit(1)
+
+    with open(mappings_file, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+def extract_customer_emails(attendees_json: Dict) -> List[str]:
+    """Extract customer emails from attendees JSON structure."""
+    emails = []
+
+    if not attendees_json or not isinstance(attendees_json, dict):
+        return emails
+
+    # Extract from customers section
+    customers = attendees_json.get('customers', [])
+    if isinstance(customers, list):
+        for customer in customers:
+            if isinstance(customer, dict) and 'email' in customer:
+                email = customer['email']
+                if email and isinstance(email, str):
+                    emails.append(email.lower().strip())
+
+    return emails
+
+def find_matching_churned_account(customer_emails: List[str], email_to_account: Dict) -> Optional[Dict]:
+    """Find if any of the customer emails match churned accounts."""
+    for email in customer_emails:
+        if email in email_to_account:
+            account_info = email_to_account[email]
+            # Double-check that this is actually a churned account
+            if account_info.get('customer_success_path', '').lower() == 'churned':
+                return account_info
+
+    return None
+
+def update_transcript_statuses(supabase: Client, email_to_account: Dict) -> Dict:
+    """Update transcripts with correct account_status based on email matching."""
     stats = {
-        'found': 0,
-        'updated': 0,
+        'processed': 0,
+        'marked_churned': 0,
+        'already_churned': 0,
+        'marked_active': 0,
         'errors': 0
     }
 
     try:
-        # First, count how many transcripts have client_platform_id set
-        count_result = supabase.table('diio_transcripts').select(
-            'id', count='exact'
-        ).not_('client_platform_id', 'is', None).execute()
+        # Get all transcripts (we'll filter in Python to avoid query issues)
+        transcripts_result = supabase.table('diio_transcripts').select(
+            'id, attendees, client_platform_id, account_name, account_status'
+        ).execute()
 
-        stats['found'] = count_result.count if hasattr(count_result, 'count') else len(count_result.data)
+        all_transcripts = transcripts_result.data or []
+        print(f"Found {len(all_transcripts)} total transcripts")
 
-        print(f"Found {stats['found']} transcripts with client_platform_id set")
+        # Filter to only transcripts with client_platform_id set but no account_status
+        transcripts = [t for t in all_transcripts if t.get('client_platform_id') and not t.get('account_status')]
+        print(f"Found {len(transcripts)} transcripts with client_platform_id that need account_status assignment")
 
-        if stats['found'] == 0:
-            print("INFO: No transcripts found with client_platform_id. Run the churned accounts matching script first.")
-            return stats
+        for transcript in transcripts:
+            stats['processed'] += 1
 
-        # Update all transcripts with client_platform_id to have account_status = 'churned'
-        update_result = supabase.table('diio_transcripts').update({
-            'account_status': 'churned'
-        }).neq('client_platform_id', None).execute()
+            # Extract customer emails from attendees
+            customer_emails = extract_customer_emails(transcript.get('attendees', {}))
 
-        stats['updated'] = len(update_result.data) if update_result.data else 0
+            # Check if this matches a churned account
+            churned_match = find_matching_churned_account(customer_emails, email_to_account)
 
-        print(f"SUCCESS: Updated {stats['updated']} transcripts with account_status = 'churned'")
+            try:
+                if churned_match:
+                    # This is actually a churned account
+                    supabase.table('diio_transcripts').update({
+                        'account_status': 'churned'
+                    }).eq('id', transcript['id']).execute()
+                    stats['marked_churned'] += 1
+                    print(f"✓ Marked as CHURNED: {transcript['id'][:8]}... ({churned_match['account_name']})")
+                else:
+                    # This is an active account (or should be treated as such)
+                    supabase.table('diio_transcripts').update({
+                        'account_status': 'active'
+                    }).eq('id', transcript['id']).execute()
+                    stats['marked_active'] += 1
+                    print(f"✓ Marked as ACTIVE: {transcript['id'][:8]}... ({transcript.get('account_name', 'Unknown')})")
 
-        # Verify the updates
-        verify_result = supabase.table('diio_transcripts').select(
-            'account_status', count='exact'
-        ).eq('account_status', 'churned').execute()
-
-        verified_count = verify_result.count if hasattr(verify_result, 'count') else len(verify_result.data)
-        print(f"VERIFICATION: {verified_count} transcripts now have account_status = 'churned'")
+            except Exception as e:
+                print(f"ERROR updating transcript {transcript['id']}: {e}")
+                stats['errors'] += 1
 
     except Exception as e:
-        print(f"ERROR updating churned transcripts: {e}")
+        print(f"ERROR processing transcripts: {e}")
         stats['errors'] += 1
 
     return stats
 
 def main():
+    # Load churned account mappings
+    print("Loading churned account email mappings...")
+    mappings = load_churned_mappings()
+    email_to_account = mappings['email_to_account']
+
+    print(f"Loaded {len(email_to_account)} churned account email mappings")
+
     # Initialize Supabase client
     supabase_url = os.getenv('SUPABASE_URL')
     supabase_key = os.getenv('SUPABASE_ANON_KEY')
@@ -81,24 +142,29 @@ def main():
     print("Connecting to Supabase...")
     supabase: Client = create_client(supabase_url, supabase_key)
 
-    print("\nUpdating existing churned transcripts with account_status = 'churned'...")
+    print("\nProcessing transcripts to set correct account_status...")
 
-    # Update churned transcripts
-    stats = update_churned_transcripts_status(supabase)
+    # Update transcript statuses based on email matching
+    stats = update_transcript_statuses(supabase, email_to_account)
 
     # Print final statistics
-    print("\nUpdate Statistics:")
-    print(f"   - Transcripts with client_platform_id: {stats['found']}")
-    print(f"   - Updated with account_status: {stats['updated']}")
+    print("\nProcessing Statistics:")
+    print(f"   - Total transcripts processed: {stats['processed']}")
+    print(f"   - Marked as churned: {stats['marked_churned']}")
+    print(f"   - Marked as active: {stats['marked_active']}")
+    print(f"   - Already had churned status: {stats['already_churned']}")
     print(f"   - Errors: {stats['errors']}")
 
-    if stats['found'] > 0 and stats['updated'] > 0:
-        success_rate = (stats['updated'] / stats['found']) * 100
+    total_successful = stats['marked_churned'] + stats['marked_active'] + stats['already_churned']
+    if stats['processed'] > 0:
+        success_rate = (total_successful / stats['processed']) * 100
         print(f"   - Success rate: {success_rate:.1f}%")
 
     if stats['errors'] == 0:
-        print("\nSUCCESS: Successfully preserved existing churned account tracking!")
-        print("   All existing churned transcripts now have account_status = 'churned'")
+        print("\nSUCCESS: Account statuses have been correctly assigned!")
+        print(f"   - {stats['marked_churned']} transcripts marked as churned (verified by email match)")
+        print(f"   - {stats['marked_active']} transcripts marked as active (no churned email match)")
+        print(f"   - {stats['already_churned']} transcripts were already correctly marked as churned")
     else:
         print("\nWARNING: Completed with errors. Check the output above.")
 
