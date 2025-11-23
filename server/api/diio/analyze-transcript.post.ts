@@ -105,14 +105,14 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
     }
 
     // Initialize HuggingFace client
-    if (!config.huggingFaceApiKey) {
+    if (!config.huggingfaceApiKey) {
       throw createError({
         statusCode: 500,
         message: 'HuggingFace API key not configured'
       })
     }
 
-    const hf = new HfInference(config.huggingFaceApiKey)
+    const hf = new HfInference(config.huggingfaceApiKey)
 
     // Extract participant emails from attendees
     const participantEmails = extractParticipantEmails(transcript.attendees)
@@ -186,6 +186,20 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
 
   } catch (error: any) {
     console.error('Transcript analysis error:', error)
+    console.error('Error details:', {
+      message: error.message,
+      statusCode: error.statusCode,
+      stack: error.stack
+    })
+
+    // Check if it's a HuggingFace API error
+    if (error.message && error.message.includes('HuggingFace')) {
+      throw createError({
+        statusCode: 500,
+        message: 'HuggingFace API error: Please check your API key configuration'
+      })
+    }
+
     throw createError({
       statusCode: error.statusCode || 500,
       message: error.message || 'Failed to analyze transcript'
