@@ -257,7 +257,12 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         try {
           // Fetch transcript
           const transcriptData = await diioRequest(`/v1/transcripts/${transcriptId}`)
-          
+
+          // DEBUG: Log raw transcript structure for first transcript
+          if (batchIndex === 0 && i === 0) {
+            console.log(`[DEBUG] Raw DIIO transcript response for ${transcriptId}:`, JSON.stringify(transcriptData, null, 2))
+          }
+
           // Extract transcript text (handle different response structures)
           let transcriptText = ''
           
@@ -277,11 +282,15 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
                   return segment
                 } else if (segment && typeof segment === 'object') {
                   // Try common field names for transcript segments
-                  return segment.text || 
-                         segment.content || 
-                         segment.transcript || 
+                  // Prioritize speaker reconstruction if both speaker and text are available
+                  if (segment.speaker && segment.text) {
+                    return `${segment.speaker}: ${segment.text}`
+                  }
+
+                  return segment.text ||
+                         segment.content ||
+                         segment.transcript ||
                          segment.speech ||
-                         (segment.speaker && segment.text ? `${segment.speaker}: ${segment.text}` : null) ||
                          JSON.stringify(segment)
                 }
                 return String(segment)
