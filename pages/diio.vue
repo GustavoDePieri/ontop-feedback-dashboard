@@ -809,9 +809,9 @@
             <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
               <p class="text-gray-400 text-xs mb-1">Overall Sentiment</p>
               <p class="text-lg font-bold" :class="{
-                'text-green-400': aiAnalysisResult.analysis.overallSentiment === 'Positive',
-                'text-yellow-400': aiAnalysisResult.analysis.overallSentiment === 'Neutral',
-                'text-red-400': aiAnalysisResult.analysis.overallSentiment === 'Negative'
+                'text-green-400': aiAnalysisResult.analysis.overallSentiment === 'positive',
+                'text-yellow-400': aiAnalysisResult.analysis.overallSentiment === 'neutral',
+                'text-red-400': aiAnalysisResult.analysis.overallSentiment === 'negative'
               }">
                 {{ aiAnalysisResult.analysis.overallSentiment.toUpperCase() }}
               </p>
