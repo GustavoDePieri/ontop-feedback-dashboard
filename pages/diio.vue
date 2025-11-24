@@ -68,26 +68,12 @@
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm mb-1">Meetings</p>
-              <p class="text-3xl font-bold text-white">{{ stats.meetings }}</p>
+              <p class="text-gray-400 text-sm mb-1">Total Transcripts</p>
+              <p class="text-3xl font-bold text-white">{{ stats.total }}</p>
             </div>
-            <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Phone Calls</p>
-              <p class="text-3xl font-bold text-white">{{ stats.phoneCalls }}</p>
-            </div>
-            <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
           </div>
@@ -884,8 +870,6 @@ const aiAnalysisResult = ref<any>(null)
 // Stats
 const stats = reactive({
   total: 0,
-  meetings: 0,
-  phoneCalls: 0,
   aiAnalyzed: 0,
   churned: 0,
   active: 0
@@ -1006,8 +990,6 @@ const loadStats = async () => {
     const { data } = await getDiioTranscriptStats()
     if (data) {
       stats.total = data.total_transcripts || 0
-      stats.meetings = data.meeting_transcripts || 0
-      stats.phoneCalls = data.phone_call_transcripts || 0
     }
   } catch (err) {
     console.error('Error loading stats:', err)
@@ -1056,7 +1038,7 @@ const syncTranscripts = async () => {
       await loadTranscripts()
       
       // Show success message with stats
-      const statsMessage = `Found ${result.summary.meetingsFetched || 0} meetings, ${result.summary.phoneCallsFetched || 0} calls. Stored ${result.summary.transcriptsStored || 0} new transcripts.`
+      const statsMessage = `Sync completed. Stored ${result.summary.transcriptsStored || 0} new transcripts.`
       syncProgress.message = statsMessage
       
       // Show success message longer
