@@ -537,21 +537,15 @@
                 
                 <!-- AI Sentiment Analysis Button -->
                 <button
-                  @click.stop="analyzeTranscriptWithAI(transcript)"
-                  :disabled="analyzingTranscript === transcript.id || hasQuotaError"
-                  :class="hasQuotaError
-                    ? 'px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-700 text-gray-300 text-xs rounded-lg cursor-not-allowed flex items-center gap-1'
-                    : 'px-3 py-1.5 bg-gradient-to-r from-pink-600 to-purple-600 text-white text-xs rounded-lg hover:from-pink-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-1'"
-                  :title="hasQuotaError ? 'AI quota exceeded - please wait and try again' : 'Analyze with AI'"
+                  @click.stop="showSentimentAnalysis(transcript)"
+                  :disabled="!transcript.ai_analysis"
+                  class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xs rounded-lg hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-1"
+                  :title="!transcript.ai_analysis ? 'No sentiment analysis available' : 'View sentiment analysis'"
                 >
-                  <svg v-if="analyzingTranscript !== transcript.id" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
-                  <svg v-else class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {{ analyzingTranscript === transcript.id ? 'Analyzing...' : hasQuotaError ? 'Quota Exceeded' : 'AI Analysis' }}
+                  Sentiment
                 </button>
               </div>
             </div>
@@ -989,28 +983,31 @@
         </div>
       </div>
 
-      <!-- AI Analysis Modal -->
+      <!-- Sentiment Analysis Modal -->
       <div
         v-if="aiAnalysisResult"
         class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50"
         @click.self="aiAnalysisResult = null"
       >
-        <div class="bg-gray-800 rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
+        <div class="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
           <div class="flex justify-between items-start mb-4">
             <div>
               <div class="flex items-center gap-3">
                 <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                  <svg class="w-6 h-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
-                  AI Sentiment Analysis
+                  Sentiment Analysis
                 </h2>
-                <span v-if="aiAnalysisResult.metadata.cached" class="px-3 py-1 text-xs font-medium rounded-full bg-green-500/20 text-green-300 border border-green-500/30">
-                  ⚡ Cached
+                <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  🤖 AI Generated
                 </span>
               </div>
               <p class="text-gray-400 text-sm mt-1">
                 {{ aiAnalysisResult.metadata.sourceName }}
+              </p>
+              <p class="text-gray-500 text-xs mt-1">
+                Analyzed: {{ new Date(aiAnalysisResult.metadata.analyzedAt).toLocaleString() }}
               </p>
             </div>
             <button
@@ -1020,49 +1017,25 @@
               ×
             </button>
           </div>
-          
-          <!-- Summary -->
-          <div class="mb-6 p-4 bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-lg border border-purple-500/30">
+
+          <!-- Sentiment Summary -->
+          <div class="mb-6 p-4 bg-gradient-to-r from-blue-900/30 to-cyan-900/30 rounded-lg border border-blue-500/30">
             <p class="text-white text-sm leading-relaxed">{{ aiAnalysisResult.analysis.summary }}</p>
           </div>
-          
+
           <!-- Key Metrics -->
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
               <p class="text-gray-400 text-xs mb-1">Overall Sentiment</p>
               <p class="text-lg font-bold" :class="{
-                'text-green-400': aiAnalysisResult.analysis.overallSentiment === 'positive',
-                'text-yellow-400': aiAnalysisResult.analysis.overallSentiment === 'neutral' || aiAnalysisResult.analysis.overallSentiment === 'mixed',
-                'text-red-400': aiAnalysisResult.analysis.overallSentiment === 'negative'
+                'text-green-400': aiAnalysisResult.analysis.overallSentiment === 'Positive',
+                'text-yellow-400': aiAnalysisResult.analysis.overallSentiment === 'Neutral',
+                'text-red-400': aiAnalysisResult.analysis.overallSentiment === 'Negative'
               }">
                 {{ aiAnalysisResult.analysis.overallSentiment.toUpperCase() }}
               </p>
             </div>
-            
-            <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
-              <p class="text-gray-400 text-xs mb-1">Customer Status</p>
-              <p class="text-lg font-bold" :class="{
-                'text-green-400': aiAnalysisResult.analysis.customerSatisfaction === 'satisfied',
-                'text-yellow-400': aiAnalysisResult.analysis.customerSatisfaction === 'neutral',
-                'text-orange-400': aiAnalysisResult.analysis.customerSatisfaction === 'frustrated',
-                'text-red-400': aiAnalysisResult.analysis.customerSatisfaction === 'at_risk'
-              }">
-                {{ aiAnalysisResult.analysis.customerSatisfaction.replace('_', ' ').toUpperCase() }}
-              </p>
-            </div>
-            
-            <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
-              <p class="text-gray-400 text-xs mb-1">Churn Risk</p>
-              <p class="text-lg font-bold" :class="{
-                'text-green-400': aiAnalysisResult.analysis.churnRisk === 'low',
-                'text-yellow-400': aiAnalysisResult.analysis.churnRisk === 'medium',
-                'text-orange-400': aiAnalysisResult.analysis.churnRisk === 'high',
-                'text-red-400': aiAnalysisResult.analysis.churnRisk === 'critical'
-              }">
-                {{ aiAnalysisResult.analysis.churnRisk.toUpperCase() }}
-              </p>
-            </div>
-            
+
             <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
               <p class="text-gray-400 text-xs mb-1">Sentiment Score</p>
               <p class="text-lg font-bold" :class="{
@@ -1070,118 +1043,19 @@
                 'text-yellow-400': aiAnalysisResult.analysis.sentimentScore >= -0.3 && aiAnalysisResult.analysis.sentimentScore <= 0.3,
                 'text-red-400': aiAnalysisResult.analysis.sentimentScore < -0.3
               }">
-                {{ (aiAnalysisResult.analysis.sentimentScore * 100).toFixed(0) }}%
+                {{ (aiAnalysisResult.analysis.sentimentScore * 100).toFixed(1) }}%
               </p>
             </div>
-          </div>
-          
-          <!-- Churn Signals -->
-          <div v-if="aiAnalysisResult.analysis.churnSignals.length > 0" class="mb-6">
-            <h3 class="text-lg font-semibold text-red-400 mb-3 flex items-center gap-2">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-              ⚠️ Churn Signals Detected
-            </h3>
-            <div class="space-y-2">
-              <div
-                v-for="(signal, idx) in aiAnalysisResult.analysis.churnSignals"
-                :key="idx"
-                class="p-3 bg-red-500/10 rounded border border-red-500/30 text-red-300 text-sm"
-              >
-                {{ signal }}
-              </div>
-            </div>
-          </div>
-          
-          <!-- Key Themes -->
-          <div v-if="aiAnalysisResult.analysis.keyThemes.length > 0" class="mb-6">
-            <h3 class="text-lg font-semibold text-white mb-3">🎯 Key Themes</h3>
-            <div class="space-y-3">
-              <div
-                v-for="(theme, idx) in aiAnalysisResult.analysis.keyThemes"
-                :key="idx"
-                class="p-3 bg-gray-900 rounded border border-gray-700"
-              >
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-white font-medium">{{ theme.theme }}</span>
-                  <div class="flex items-center gap-2">
-                    <span class="px-2 py-1 text-xs rounded" :class="{
-                      'bg-green-500/20 text-green-300': theme.sentiment === 'positive',
-                      'bg-yellow-500/20 text-yellow-300': theme.sentiment === 'neutral',
-                      'bg-red-500/20 text-red-300': theme.sentiment === 'negative'
-                    }">
-                      {{ theme.sentiment }}
-                    </span>
-                    <span class="px-2 py-1 text-xs rounded" :class="{
-                      'bg-red-500/20 text-red-300': theme.urgency === 'critical',
-                      'bg-orange-500/20 text-orange-300': theme.urgency === 'high',
-                      'bg-yellow-500/20 text-yellow-300': theme.urgency === 'medium',
-                      'bg-gray-500/20 text-gray-300': theme.urgency === 'low'
-                    }">
-                      {{ theme.urgency }}
-                    </span>
-                    <span class="text-gray-400 text-xs">{{ theme.mentions }} mentions</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Pain Points & Positive Highlights -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div v-if="aiAnalysisResult.analysis.painPoints.length > 0">
-              <h3 class="text-lg font-semibold text-orange-400 mb-3">😰 Pain Points</h3>
-              <div class="space-y-2">
-                <div
-                  v-for="(point, idx) in aiAnalysisResult.analysis.painPoints"
-                  :key="idx"
-                  class="p-3 bg-orange-500/10 rounded border border-orange-500/30 text-orange-200 text-sm"
-                >
-                  {{ point }}
-                </div>
-              </div>
-            </div>
-            
-            <div v-if="aiAnalysisResult.analysis.positiveHighlights.length > 0">
-              <h3 class="text-lg font-semibold text-green-400 mb-3">✨ Positive Highlights</h3>
-              <div class="space-y-2">
-                <div
-                  v-for="(highlight, idx) in aiAnalysisResult.analysis.positiveHighlights"
-                  :key="idx"
-                  class="p-3 bg-green-500/10 rounded border border-green-500/30 text-green-200 text-sm"
-                >
-                  {{ highlight }}
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Actionable Insights -->
-          <div v-if="aiAnalysisResult.analysis.actionableInsights.length > 0">
-            <h3 class="text-lg font-semibold text-blue-400 mb-3">💡 Actionable Insights</h3>
-            <div class="space-y-3">
-              <div
-                v-for="(insight, idx) in aiAnalysisResult.analysis.actionableInsights"
-                :key="idx"
-                class="p-4 bg-blue-500/10 rounded border border-blue-500/30"
-              >
-                <div class="flex items-start justify-between mb-2">
-                  <span class="text-white font-medium flex-1">{{ insight.insight }}</span>
-                  <span class="px-2 py-1 text-xs rounded ml-2" :class="{
-                    'bg-red-500/20 text-red-300': insight.priority === 'critical',
-                    'bg-orange-500/20 text-orange-300': insight.priority === 'high',
-                    'bg-yellow-500/20 text-yellow-300': insight.priority === 'medium',
-                    'bg-gray-500/20 text-gray-300': insight.priority === 'low'
-                  }">
-                    {{ insight.priority.toUpperCase() }}
-                  </span>
-                </div>
-                <div class="flex items-center gap-4 text-xs text-gray-400">
-                  <span>👤 Owner: <span class="text-blue-300">{{ insight.owner }}</span></span>
-                  <span>📊 Impact: <span class="text-blue-300">{{ insight.estimatedImpact }}</span></span>
-                </div>
-              </div>
+
+            <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+              <p class="text-gray-400 text-xs mb-1">Confidence</p>
+              <p class="text-lg font-bold" :class="{
+                'text-green-400': aiAnalysisResult.analysis.confidence > 0.15,
+                'text-yellow-400': aiAnalysisResult.analysis.confidence >= 0.05 && aiAnalysisResult.analysis.confidence <= 0.15,
+                'text-red-400': aiAnalysisResult.analysis.confidence < 0.05
+              }">
+                {{ (aiAnalysisResult.analysis.confidence * 100).toFixed(1) }}%
+              </p>
             </div>
           </div>
         </div>
@@ -1212,10 +1086,8 @@ const itemsPerPage = 20
 const churnedReportData = ref<any>(null)
 const showChurnedReportModal = ref(false)
 
-// AI Analysis State
-const analyzingTranscript = ref<string | null>(null)
+// Sentiment Analysis State
 const aiAnalysisResult = ref<any>(null)
-const hasQuotaError = ref(false)
 
 // Stats
 const stats = reactive({
@@ -1525,98 +1397,40 @@ const viewTranscript = (transcript: any) => {
   selectedTranscript.value = transcript
 }
 
-const analyzeTranscriptWithAI = async (transcript: any) => {
-  analyzingTranscript.value = transcript.id
-  error.value = null
-  
+const showSentimentAnalysis = (transcript: any) => {
+  if (!transcript.ai_analysis) return
+
+  // Parse the stored sentiment analysis from the database
+  let sentimentData
   try {
-    const response = await fetch('/api/diio/analyze-transcript', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        transcriptId: transcript.id
-      })
-    })
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }))
-      throw new Error(errorData.message || `HTTP ${response.status}`)
-    }
-    
-    const result = await response.json()
-    
-    if (result.success) {
-      aiAnalysisResult.value = result
-      console.log('✅ AI analysis completed:', result)
-      
-      // Update the transcript in the list to show AI analyzed badge
-      const index = transcripts.value.findIndex(t => t.id === transcript.id)
-      if (index !== -1) {
-        transcripts.value[index].ai_analysis = result.analysis
-        transcripts.value[index].ai_analysis_date = result.metadata.analyzedAt
-      }
-      
-      // Update stats
-      stats.aiAnalyzed = transcripts.value.filter(t => t.ai_analysis).length
-    } else {
-      throw new Error('Analysis failed')
-    }
-  } catch (err: any) {
-    console.error('AI analysis error:', err)
-
-    // Check if this is a quota exceeded error
-    const isQuotaError = err.message?.includes('quota exceeded') ||
-                        err.message?.includes('Too Many Requests') ||
-                        err.message?.includes('429')
-
-    if (isQuotaError) {
-      // Extract retry delay from error message if available
-      const retryMatch = err.message?.match(/retryDelay["\s:]+([^"\s,}]+)/)
-      const retryDelay = retryMatch ? retryMatch[1] : 'a few minutes'
-
-      hasQuotaError.value = true
-
-      // Auto-clear quota error after the retry delay
-      const retryDelaySeconds = parseFloat(retryDelay) || 60 // Default to 60 seconds if parsing fails
-      setTimeout(() => {
-        hasQuotaError.value = false
-        if (error.value?.title === '🤖 AI Quota Exceeded') {
-          error.value = null
-        }
-      }, retryDelaySeconds * 1000)
-
-      error.value = {
-        title: '🤖 AI Quota Exceeded',
-        message: `You've reached your Google Gemini API free tier limit (resets hourly).
-
-💡 **Quick Solutions:**
-• Wait ${retryDelay} and try again
-• Upgrade to Google Cloud paid tier for higher limits
-• Reduce analysis frequency to stay within free limits
-
-🔗 **Upgrade Options:**
-• Visit: https://makersuite.google.com/app/apikey
-• Check usage: https://ai.google.dev/aistudio
-
-📊 **Free Tier Limits:**
-• 15 requests/minute per model
-• 32,000 tokens/minute per model
-• 1,000 requests/day
-
-The error will resolve automatically once your quota resets.`
-      }
-    } else {
-      error.value = {
-        title: 'AI Analysis Failed',
-        message: err.message || 'An error occurred while analyzing the transcript. Please try again.'
-      }
-    }
-  } finally {
-    analyzingTranscript.value = null
+    sentimentData = typeof transcript.ai_analysis === 'string'
+      ? JSON.parse(transcript.ai_analysis)
+      : transcript.ai_analysis
+  } catch (e) {
+    console.error('Error parsing sentiment data:', e)
+    return
   }
+
+  // Format for display in the modal
+  aiAnalysisResult.value = {
+    analysis: {
+      overallSentiment: sentimentData.sentiment || 'neutral',
+      sentimentScore: sentimentData.score || 0.5,
+      confidence: sentimentData.confidence || 0,
+      churnSignals: [], // Not available in basic sentiment analysis
+      summary: `Sentiment analysis shows ${sentimentData.sentiment || 'neutral'} sentiment with ${(sentimentData.confidence * 100 || 0).toFixed(1)}% confidence.`
+    },
+    metadata: {
+      sourceName: transcript.source_name || 'Unknown',
+      analyzedAt: sentimentData.analyzed_at || new Date().toISOString(),
+      cached: false // This is stored data
+    }
+  }
+
+  console.log('📊 Showing stored sentiment analysis:', sentimentData)
 }
+
+// Removed: analyzeTranscriptWithAI function - now using stored sentiment data
 
 const selectedFeedbackTranscript = ref<any>(null)
 const feedbackSegments = ref<any[]>([])

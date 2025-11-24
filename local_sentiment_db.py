@@ -22,7 +22,7 @@ try:
     from scipy.special import softmax
     from supabase import create_client, Client
 except ImportError as e:
-    print(f"❌ Missing required libraries: {e}")
+    print(f"Missing required libraries: {e}")
     print("\nInstall with:")
     print("pip install transformers torch numpy scipy supabase")
     sys.exit(1)
@@ -30,7 +30,7 @@ except ImportError as e:
 class LocalSentimentAnalyzer:
     def __init__(self, model_name: str = "cardiffnlp/twitter-xlm-roberta-base-sentiment"):
         """Initialize the local sentiment analysis model"""
-        print(f"🚀 Loading model: {model_name}")
+        print(f"Loading model: {model_name}")
         print("(This may take 2-5 minutes on first run - downloading ~1.7GB)")
 
         try:
@@ -40,11 +40,11 @@ class LocalSentimentAnalyzer:
 
             # Test the model
             test_result = self.analyze_sentiment("This is a test message.")
-            print("✅ Model loaded and tested successfully!")
-            print(f"📊 Labels: {list(self.config.id2label.values())}")
+            print("Model loaded and tested successfully!")
+            print(f"Labels: {list(self.config.id2label.values())}")
 
         except Exception as e:
-            print(f"❌ Failed to load model: {e}")
+            print(f"Failed to load model: {e}")
             print("\nTroubleshooting:")
             print("1. Check your internet connection")
             print("2. Make sure you have ~2GB free disk space")
@@ -102,6 +102,14 @@ class LocalSentimentAnalyzer:
             top_label_idx = ranking[0]
             top_score = float(scores[top_label_idx])
 
+            # Calculate confidence as the difference between top and second-best scores
+            # Higher difference = higher confidence
+            if len(ranking) > 1:
+                second_score = float(scores[ranking[1]])
+                confidence = top_score - second_score
+            else:
+                confidence = top_score  # Fallback if only one class
+
             # Map to our labels
             label_mapping = {
                 'LABEL_0': 'Negative',
@@ -115,16 +123,16 @@ class LocalSentimentAnalyzer:
             return {
                 'label': final_label,
                 'score': top_score,
-                'confidence': top_score,
+                'confidence': confidence,
                 'original_label': original_label
             }
 
         except Exception as e:
-            print(f"❌ Error analyzing text: {e}")
+            print(f"Error analyzing text: {e}")
             return {
                 'label': 'Neutral',
                 'score': 0.5,
-                'confidence': 0.5,
+                'confidence': 0.0,  # Low confidence for errors
                 'error': str(e)
             }
 
@@ -134,28 +142,28 @@ def load_target_accounts() -> List[str]:
         with open('target_accounts.json', 'r') as f:
             data = json.load(f)
             accounts = data.get('accounts', [])
-            print(f"✅ Loaded {len(accounts)} target accounts from target_accounts.json")
+            print(f"Loaded {len(accounts)} target accounts from target_accounts.json")
             return accounts
     except FileNotFoundError:
-        print("❌ target_accounts.json not found.")
+        print("target_accounts.json not found.")
         print("   Please create this file with your 117 account IDs.")
         print("   Example format:")
         print('   {"accounts": ["CL001234", "CL005678", ...]}')
         return []
     except json.JSONDecodeError as e:
-        print(f"❌ Error reading target_accounts.json: {e}")
+        print(f"Error reading target_accounts.json: {e}")
         return []
 
 def get_transcripts_from_database(accounts: List[str], limit_per_account: int = 50) -> Dict[str, List[Dict]]:
     """Fetch transcripts from Supabase database"""
-    print("🔗 Connecting to Supabase database...")
+    print("Connecting to Supabase database...")
 
     # Get Supabase credentials
     supabase_url = os.getenv('SUPABASE_URL')
     supabase_key = os.getenv('SUPABASE_ANON_KEY')
 
     if not supabase_url or not supabase_key:
-        print("❌ Supabase credentials not found in environment variables")
+        print("Supabase credentials not found in environment variables")
         print("   Make sure SUPABASE_URL and SUPABASE_ANON_KEY are set in your .env file")
         return {}
 
@@ -165,7 +173,7 @@ def get_transcripts_from_database(accounts: List[str], limit_per_account: int = 
         account_transcripts = {}
 
         for account_id in accounts:
-            print(f"📊 Fetching transcripts for account: {account_id}")
+            print(f"Fetching transcripts for account: {account_id}")
 
             try:
                 # Get transcripts for this account
@@ -176,28 +184,28 @@ def get_transcripts_from_database(accounts: List[str], limit_per_account: int = 
                 transcripts = result.data or []
 
                 if transcripts:
-                    print(f"   ✅ Found {len(transcripts)} transcripts")
+                    print(f"   Found {len(transcripts)} transcripts")
                     account_transcripts[account_id] = transcripts
                 else:
-                    print(f"   ℹ️ No transcripts found for {account_id}")
+                    print(f"   No transcripts found for {account_id}")
                     account_transcripts[account_id] = []
 
             except Exception as e:
-                print(f"   ❌ Error fetching transcripts for {account_id}: {e}")
+                print(f"   Error fetching transcripts for {account_id}: {e}")
                 account_transcripts[account_id] = []
 
         total_transcripts = sum(len(transcripts) for transcripts in account_transcripts.values())
         accounts_with_data = len([acc for acc, trans in account_transcripts.items() if trans])
 
-        print(f"📊 Database query complete:")
-        print(f"   🏢 Accounts processed: {len(account_transcripts)}")
-        print(f"   📝 Accounts with transcripts: {accounts_with_data}")
-        print(f"   📄 Total transcripts: {total_transcripts}")
+        print(f"Database query complete:")
+        print(f"   Accounts processed: {len(account_transcripts)}")
+        print(f"   Accounts with transcripts: {accounts_with_data}")
+        print(f"   Total transcripts: {total_transcripts}")
 
         return account_transcripts
 
     except Exception as e:
-        print(f"❌ Database connection error: {e}")
+        print(f"Database connection error: {e}")
         return {}
 
 def calculate_churn_risk(sentiment: Dict) -> str:
@@ -234,6 +242,7 @@ def save_results_as_csv(analysis_results: Dict, json_file: str, csv_file: str):
         fieldnames = [
             'account_id', 'account_name', 'transcript_count', 'analyzed_count',
             'average_sentiment', 'churn_risk', 'sentiment_positive', 'sentiment_neutral', 'sentiment_negative',
+            'Diio Sentiment Result', 'Diio Sentiment Conclusion',
             'transcript_id', 'source_name', 'occurred_at', 'sentiment_label', 'sentiment_score',
             'confidence', 'churn_risk_individual', 'customer_satisfaction', 'cached'
         ]
@@ -243,6 +252,33 @@ def save_results_as_csv(analysis_results: Dict, json_file: str, csv_file: str):
 
         # Write account-level summary rows (without transcript details)
         for account_id, data in results.items():
+            # Calculate Diio Sentiment Result (majority sentiment)
+            distribution = data.get('sentiment_distribution', {})
+            max_sentiment = max(distribution, key=distribution.get)
+            total_transcripts = sum(distribution.values())
+
+            if total_transcripts > 0:
+                diio_sentiment_result = max_sentiment.title()
+            else:
+                diio_sentiment_result = 'No Data'
+
+            # Calculate Diio Sentiment Conclusion
+            avg_sentiment = data.get('average_sentiment', 0)
+            churn_risk = data.get('churn_risk', '')
+
+            if total_transcripts == 0:
+                diio_sentiment_conclusion = 'No transcripts available for analysis'
+            elif churn_risk == 'critical':
+                diio_sentiment_conclusion = 'Critical risk - immediate intervention required'
+            elif churn_risk == 'high':
+                diio_sentiment_conclusion = 'High risk - monitor closely and consider intervention'
+            elif avg_sentiment > 0.1:
+                diio_sentiment_conclusion = 'Generally positive sentiment in communications'
+            elif avg_sentiment < -0.1:
+                diio_sentiment_conclusion = 'Generally negative sentiment - requires attention'
+            else:
+                diio_sentiment_conclusion = 'Neutral sentiment in communications'
+
             summary_row = {
                 'account_id': account_id,
                 'account_name': data.get('account_name', ''),
@@ -253,6 +289,8 @@ def save_results_as_csv(analysis_results: Dict, json_file: str, csv_file: str):
                 'sentiment_positive': data.get('sentiment_distribution', {}).get('positive', 0),
                 'sentiment_neutral': data.get('sentiment_distribution', {}).get('neutral', 0),
                 'sentiment_negative': data.get('sentiment_distribution', {}).get('negative', 0),
+                'Diio Sentiment Result': diio_sentiment_result,
+                'Diio Sentiment Conclusion': diio_sentiment_conclusion,
             }
             writer.writerow(summary_row)
 
@@ -269,11 +307,13 @@ def save_results_as_csv(analysis_results: Dict, json_file: str, csv_file: str):
                     'confidence': round(transcript.get('sentiment', {}).get('confidence', 0), 4),
                     'churn_risk_individual': transcript.get('sentiment', {}).get('churn_risk', ''),
                     'customer_satisfaction': transcript.get('sentiment', {}).get('customer_satisfaction', ''),
-                    'cached': transcript.get('cached', False)
+                    'cached': transcript.get('cached', False),
+                    'Diio Sentiment Result': diio_sentiment_result,
+                    'Diio Sentiment Conclusion': diio_sentiment_conclusion,
                 }
                 writer.writerow(transcript_row)
 
-    print(f"📊 CSV results saved to: {csv_file}")
+    print(f"CSV results saved to: {csv_file}")
 
 def save_high_risk_report(analysis_results: Dict, report_file: str):
     """Save a focused report on high-risk accounts"""
@@ -337,8 +377,8 @@ def save_high_risk_report(analysis_results: Dict, report_file: str):
             })
 
     if high_risk_accounts:
-        print(f"🚨 High-risk accounts report saved to: {report_file}")
-        print(f"   📊 {len(high_risk_accounts)} high-risk accounts identified")
+        print(f"High-risk accounts report saved to: {report_file}")
+        print(f"   {len(high_risk_accounts)} high-risk accounts identified")
 
 def analyze_account_sentiments(analyzer: LocalSentimentAnalyzer, account_data: Dict[str, List[Dict]]) -> Dict[str, Any]:
     """Analyze sentiments for all accounts"""
@@ -347,19 +387,19 @@ def analyze_account_sentiments(analyzer: LocalSentimentAnalyzer, account_data: D
     total_cached = 0
 
     for account_id, transcripts in account_data.items():
-        print(f"\n🏢 Analyzing account: {account_id}")
-        print(f"   📝 Transcripts: {len(transcripts)}")
+        print(f"\nAnalyzing account: {account_id}")
+        print(f"   Transcripts: {len(transcripts)}")
 
         account_results = []
         sentiment_scores = []
 
         for transcript in transcripts:
             transcript_id = transcript['id']
-            print(f"   📞 Analyzing: {transcript.get('source_name', 'Unknown')}")
+            print(f"   Analyzing: {transcript.get('source_name', 'Unknown')}")
 
             # Check if we already have cached AI analysis
             if transcript.get('ai_analysis'):
-                print(f"      ⚡ Using cached analysis")
+                print(f"      Using cached analysis")
                 cached_sentiment = transcript['ai_analysis']
 
                 sentiment = {
@@ -454,16 +494,16 @@ def analyze_account_sentiments(analyzer: LocalSentimentAnalyzer, account_data: D
     }
 
 def main():
-    print("🤖 Local Sentiment Analysis with Database Connection")
+    print("Local Sentiment Analysis with Database Connection")
     print("=" * 60)
-    print("💡 This runs completely on your machine - FREE & FAST!")
+    print("This runs completely on your machine - FREE & FAST!")
 
     # Check hardware
     if torch.cuda.is_available():
-        print("✅ CUDA available - using GPU for faster processing")
+        print("CUDA available - using GPU for faster processing")
         device = torch.device("cuda")
     else:
-        print("ℹ️ Using CPU (slower but still works)")
+        print("Using CPU (slower but still works)")
         device = torch.device("cpu")
 
     # Initialize the analyzer
@@ -479,11 +519,11 @@ def main():
     account_data = get_transcripts_from_database(target_accounts, limit_per_account=20)
 
     if not account_data:
-        print("❌ No transcript data retrieved from database")
+        print("No transcript data retrieved from database")
         return
 
     # Run sentiment analysis
-    print("\n🚀 Starting sentiment analysis...")
+    print("\nStarting sentiment analysis...")
     analysis_results = analyze_account_sentiments(analyzer, account_data)
 
     # Save results in both JSON and CSV formats
@@ -503,15 +543,15 @@ def main():
 
     # Print summary
     summary = analysis_results['summary']
-    print("\n📊 Analysis Complete!")
-    print(f"   📁 JSON results: {json_file}")
-    print(f"   📊 CSV results: {csv_file}")
-    print(f"   🚨 High-risk report: {high_risk_file}")
-    print(f"   🏢 Accounts processed: {summary['total_accounts']}")
-    print(f"   📝 Accounts with transcripts: {summary['accounts_with_transcripts']}")
-    print(f"   📄 Total transcripts: {summary['total_transcripts']}")
-    print(f"   🔄 Fresh analyses: {summary['fresh_analyses']}")
-    print(f"   ⚡ Cached analyses: {summary['cached_analyses']}")
+    print("\nAnalysis Complete!")
+    print(f"   JSON results: {json_file}")
+    print(f"   CSV results: {csv_file}")
+    print(f"   High-risk report: {high_risk_file}")
+    print(f"   Accounts processed: {summary['total_accounts']}")
+    print(f"   Accounts with transcripts: {summary['accounts_with_transcripts']}")
+    print(f"   Total transcripts: {summary['total_transcripts']}")
+    print(f"   Fresh analyses: {summary['fresh_analyses']}")
+    print(f"   Cached analyses: {summary['cached_analyses']}")
 
     # Show high-risk accounts
     results = analysis_results['results']
@@ -527,16 +567,16 @@ def main():
     ))
 
     if high_risk_accounts:
-        print(f"\n🚨 HIGH PRIORITY ACCOUNTS ({len(high_risk_accounts)}):")
+        print(f"\nHIGH PRIORITY ACCOUNTS ({len(high_risk_accounts)}):")
         for i, (account_id, data) in enumerate(high_risk_accounts[:10], 1):  # Show top 10
-            print(f"   {i}. ⚠️ {account_id} ({data['account_name']})")
+            print(f"   {i}. {account_id} ({data['account_name']})")
             print(".3f")
-            print(f"      📊 Transcripts: {data['transcript_count']}")
+            print(f"      Transcripts: {data['transcript_count']}")
 
-    print("\n✅ Local sentiment analysis completed!")
-    print("💰 This method is COMPLETELY FREE and runs on your machine!")
-    print("⚡ Much faster than API calls - no rate limits!")
-    print("\n📈 Open the CSV files in Excel/Google Sheets for easy analysis!")
+    print("\nLocal sentiment analysis completed!")
+    print("This method is COMPLETELY FREE and runs on your machine!")
+    print("Much faster than API calls - no rate limits!")
+    print("\nOpen the CSV files in Excel/Google Sheets for easy analysis!")
 
 if __name__ == '__main__':
     main()
