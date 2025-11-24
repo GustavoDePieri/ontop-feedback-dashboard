@@ -29,20 +29,6 @@
               <span class="text-sm text-white/80">DIIO Connected</span>
             </div>
 
-            <button
-              @click="generateChurnedAccountsReport"
-              :disabled="generatingReport"
-              class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              <svg v-if="!generatingReport" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              {{ generatingReport ? 'Generating...' : '⚠️ Churned Report' }}
-            </button>
 
             <button
               @click="syncTranscripts"
@@ -59,20 +45,6 @@
               {{ syncing ? 'Syncing...' : 'Sync New Transcripts' }}
             </button>
 
-            <button
-              @click="testSentimentAnalysis"
-              :disabled="testingSentiment"
-              class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              <svg v-if="!testingSentiment" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              {{ testingSentiment ? 'Testing...' : '🧪 Test Sentiment Analysis' }}
-            </button>
           </div>
         </div>
       </div>
@@ -805,183 +777,6 @@
         </div>
       </div>
 
-      <!-- Churned Accounts Report Modal -->
-      <div
-        v-if="showChurnedReportModal"
-        class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-        @click.self="showChurnedReportModal = false"
-      >
-        <div class="bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
-          <div class="flex justify-between items-start mb-6">
-            <div>
-              <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                <svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Churned Accounts Report
-              </h2>
-              <p class="text-gray-400 text-sm mt-1">
-                Generated on {{ churnedReportData ? new Date(churnedReportData.generatedAt).toLocaleString() : 'Unknown' }}
-              </p>
-            </div>
-            <button
-              @click="showChurnedReportModal = false"
-              class="text-gray-400 hover:text-white text-2xl transition-colors duration-200"
-            >
-              ×
-            </button>
-          </div>
-
-          <div v-if="churnedReportData" class="space-y-6">
-            <!-- Executive Summary -->
-            <div class="bg-gradient-to-r from-red-900/30 to-orange-900/30 rounded-lg p-6 border border-red-500/30">
-              <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-                Executive Summary
-              </h3>
-
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div class="bg-gray-900/50 rounded-lg p-4 text-center">
-                  <div class="text-2xl font-bold text-red-400">{{ churnedReportData.totalChurnedAccounts }}</div>
-                  <div class="text-xs text-gray-400">Churned Accounts</div>
-                </div>
-                <div class="bg-gray-900/50 rounded-lg p-4 text-center">
-                  <div class="text-2xl font-bold text-blue-400">{{ churnedReportData.totalTranscripts }}</div>
-                  <div class="text-xs text-gray-400">Total Transcripts</div>
-                </div>
-                <div class="bg-gray-900/50 rounded-lg p-4 text-center">
-                  <div class="text-2xl font-bold text-green-400">{{ churnedReportData.accountsWithTranscripts }}</div>
-                  <div class="text-xs text-gray-400">Accounts with Data</div>
-                </div>
-                <div class="bg-gray-900/50 rounded-lg p-4 text-center">
-                  <div class="text-2xl font-bold text-gray-400">{{ churnedReportData.accountsWithoutTranscripts }}</div>
-                  <div class="text-xs text-gray-400">Accounts without Data</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Distribution Chart -->
-            <div class="bg-gray-900/50 rounded-lg p-6 border border-gray-700">
-              <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Transcript Distribution
-              </h3>
-
-              <div class="space-y-3">
-                <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
-                  <span class="text-gray-300">1 transcript</span>
-                  <span class="text-blue-400 font-bold">{{ churnedReportData.transcriptDistribution.accountsWith1Transcript }}</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
-                  <span class="text-gray-300">2-5 transcripts</span>
-                  <span class="text-blue-400 font-bold">{{ churnedReportData.transcriptDistribution.accountsWith2To5Transcripts }}</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
-                  <span class="text-gray-300">6-10 transcripts</span>
-                  <span class="text-blue-400 font-bold">{{ churnedReportData.transcriptDistribution.accountsWith6To10Transcripts }}</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-gray-800 rounded">
-                  <span class="text-gray-300">10+ transcripts</span>
-                  <span class="text-red-400 font-bold">{{ churnedReportData.transcriptDistribution.accountsWith10PlusTranscripts }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Top Accounts -->
-            <div class="bg-gray-900/50 rounded-lg p-6 border border-gray-700">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                  <svg class="w-5 h-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
-                  Top Accounts by Transcripts
-                </h3>
-                <button
-                  @click="copyReportToClipboard()"
-                  class="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                  Copy Report
-                </button>
-              </div>
-
-              <div class="space-y-2">
-                <div
-                  v-for="(account, index) in churnedReportData.topAccountsByTranscripts.slice(0, 20)"
-                  :key="account.clientPlatformId"
-                  class="flex items-center justify-between p-3 bg-gray-800 rounded hover:bg-gray-700 transition-colors"
-                >
-                  <div class="flex items-center gap-3">
-                    <span class="text-lg font-bold text-yellow-400 min-w-[30px]">#{{ index + 1 }}</span>
-                    <div>
-                      <div class="text-white font-medium">{{ account.accountName }}</div>
-                      <div class="text-gray-400 text-sm">{{ account.clientPlatformId }}</div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <div class="text-right">
-                      <div class="text-blue-400 font-bold">{{ account.transcriptCount }}</div>
-                      <div class="text-gray-500 text-xs">transcripts</div>
-                    </div>
-                    <div class="flex gap-1">
-                      <button
-                        @click="copyToClipboard(account.accountName)"
-                        class="text-gray-500 hover:text-white transition-colors p-1 rounded"
-                        title="Copy Account Name"
-                      >
-                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                      </button>
-                      <button
-                        @click="copyToClipboard(account.clientPlatformId)"
-                        class="text-gray-500 hover:text-white transition-colors p-1 rounded"
-                        title="Copy Client Platform ID"
-                      >
-                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Raw Data Section -->
-            <div class="bg-gray-900/50 rounded-lg p-6 border border-gray-700">
-              <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Raw Data
-              </h3>
-
-              <div class="bg-gray-800 rounded p-4 font-mono text-sm text-gray-300 overflow-x-auto">
-                <pre>{{ JSON.stringify(churnedReportData, null, 2) }}</pre>
-              </div>
-
-              <div class="flex justify-end mt-4">
-                <button
-                  @click="copyToClipboard(JSON.stringify(churnedReportData, null, 2))"
-                  class="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                  Copy JSON
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Sentiment Analysis Modal -->
       <div
@@ -1075,16 +870,13 @@ const { getDiioTranscripts, getDiioTranscriptStats } = useSupabase()
 const transcripts = ref<any[]>([])
 const loading = ref(false)
 const syncing = ref(false)
-const generatingReport = ref(false)
-const testingSentiment = ref(false)
+// Removed: generatingReport, testingSentiment
 const error = ref<{ title?: string; message: string } | null>(null)
 const selectedTranscript = ref<any>(null)
 const currentPage = ref(1)
 const itemsPerPage = 20
 
-// Report state
-const churnedReportData = ref<any>(null)
-const showChurnedReportModal = ref(false)
+// Removed: churnedReportData, showChurnedReportModal
 
 // Sentiment Analysis State
 const aiAnalysisResult = ref<any>(null)
@@ -1229,39 +1021,7 @@ const loadStats = async () => {
   stats.active = transcripts.value.filter(t => t.account_status === 'active').length
 }
 
-const generateChurnedAccountsReport = async () => {
-  generatingReport.value = true
-  error.value = null
-
-  try {
-    console.log('📊 Generating churned accounts report...')
-
-    const response = await fetch('/api/diio/reports/churned-accounts', {
-      method: 'GET'
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }))
-      throw new Error(errorData.message || `HTTP ${response.status}`)
-    }
-
-    const reportData = await response.json()
-    console.log('✅ Churned accounts report generated:', reportData)
-
-    // Store report data and show modal
-    churnedReportData.value = reportData
-    showChurnedReportModal.value = true
-
-  } catch (err: any) {
-    console.error('❌ Error generating churned accounts report:', err)
-    error.value = {
-      title: 'Report Generation Failed',
-      message: err.message || 'An error occurred while generating the churned accounts report.'
-    }
-  } finally {
-    generatingReport.value = false
-  }
-}
+// Removed: generateChurnedAccountsReport function
 
 const syncTranscripts = async () => {
   syncing.value = true
@@ -1322,76 +1082,7 @@ const syncTranscripts = async () => {
   }
 }
 
-const testSentimentAnalysis = async () => {
-  testingSentiment.value = true
-  error.value = null
-
-  try {
-    // Test on first 5 transcripts that haven't been analyzed yet
-    const unanalyzedTranscripts = transcripts.value
-      .filter(t => !t.ai_analysis)
-      .slice(0, 5)
-
-    if (unanalyzedTranscripts.length === 0) {
-      alert('No unanalyzed transcripts found. All transcripts have already been analyzed.')
-      return
-    }
-
-    console.log(`Testing sentiment analysis on ${unanalyzedTranscripts.length} transcripts...`)
-
-    let successCount = 0
-    let errorCount = 0
-    const results = []
-
-    for (const transcript of unanalyzedTranscripts) {
-      try {
-        const response = await $fetch('/api/diio/analyze-transcript', {
-          method: 'POST',
-          body: { transcriptId: transcript.id }
-        })
-
-        if (response.success) {
-          successCount++
-          results.push({
-            id: transcript.id,
-            sourceName: response.metadata.sourceName,
-            sentiment: response.analysis.overallSentiment,
-            score: response.analysis.sentimentScore,
-            churnRisk: response.analysis.churnRisk,
-            cached: response.metadata.cached
-          })
-        } else {
-          errorCount++
-        }
-      } catch (err) {
-        console.error(`Analysis failed for ${transcript.id}:`, err)
-        errorCount++
-      }
-    }
-
-    // Show results
-    const message = `Sentiment Analysis Test Results:\n\n` +
-      `✅ Successful: ${successCount}\n` +
-      `❌ Failed: ${errorCount}\n\n` +
-      `Results:\n${results.map(r =>
-        `${r.sourceName}: ${r.sentiment} (${r.score.toFixed(3)}) - Risk: ${r.churnRisk}${r.cached ? ' (cached)' : ''}`
-      ).join('\n')}`
-
-    alert(message)
-
-    // Refresh data to show new analysis
-    await loadTranscripts()
-    await loadStats()
-
-  } catch (err: any) {
-    error.value = {
-      title: 'Sentiment analysis test failed',
-      message: err.message || 'An error occurred during sentiment analysis testing'
-    }
-  } finally {
-    testingSentiment.value = false
-  }
-}
+// Removed: testSentimentAnalysis function
 
 const viewTranscript = (transcript: any) => {
   selectedTranscript.value = transcript
