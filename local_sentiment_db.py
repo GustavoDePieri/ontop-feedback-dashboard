@@ -2,12 +2,20 @@
 """
 Local Sentiment Analysis with Real Database Connection
 Run sentiment analysis locally using your actual transcript data
+
+Usage:
+    python local_sentiment_db.py [--force-fresh] [--debug]
+
+Options:
+    --force-fresh    Ignore cached analysis and run fresh sentiment analysis
+    --debug         Show detailed sentiment scores and debugging info
 """
 
 import os
 import json
 import csv
 import sys
+import argparse
 from pathlib import Path
 from typing import List, Dict, Any
 from dotenv import load_dotenv
@@ -67,6 +75,148 @@ class LocalSentimentAnalyzer:
 
         return " ".join(new_text)
 
+    def parse_speakers(self, text: str) -> Dict[str, str]:
+        """Parse transcript text to extract individual speakers and their dialogue"""
+        speakers = {}
+
+        if not text or not isinstance(text, str):
+            return speakers
+
+        # Split by newlines and process each line
+        lines = text.split('\n')
+
+        current_speaker = None
+        current_text = []
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            # Check if line starts with a speaker pattern (Name: dialogue)
+            if ':' in line and len(line.split(':')[0].strip()) > 0:
+                # If we had a previous speaker, save their text
+                if current_speaker and current_text:
+                    speakers[current_speaker] = ' '.join(current_text)
+
+                # Extract new speaker
+                parts = line.split(':', 1)
+                speaker_name = parts[0].strip()
+
+                # Clean up speaker name (remove numbers, extra spaces)
+                speaker_name = ' '.join(word for word in speaker_name.split() if not word.isdigit())
+
+                current_speaker = speaker_name
+                current_text = [parts[1].strip()] if len(parts) > 1 else []
+            else:
+                # Continuation of current speaker's dialogue
+                if current_speaker:
+                    current_text.append(line)
+
+        # Save the last speaker
+        if current_speaker and current_text:
+            speakers[current_speaker] = ' '.join(current_text)
+
+        return speakers
+
+    def analyze_speaker_sentiments(self, text: str) -> Dict[str, Dict]:
+        """Analyze sentiment for each speaker in the transcript"""
+        speakers = self.parse_speakers(text)
+        speaker_analyses = {}
+
+        for speaker, dialogue in speakers.items():
+            if dialogue and len(dialogue.strip()) > 10:  # Minimum length check
+                sentiment_result = self.analyze_sentiment(dialogue)
+                speaker_analyses[speaker] = {
+                    'dialogue': dialogue[:200] + '...' if len(dialogue) > 200 else dialogue,
+                    'sentiment': sentiment_result['label'],
+                    'score': sentiment_result['score'],
+                    'confidence': sentiment_result['confidence'],
+                    'explanation': sentiment_result['explanation']
+                }
+
+        return speaker_analyses
+
+    def extract_key_phrases(self, text: str, sentiment: str) -> str:
+        """Extract key phrases that explain the sentiment"""
+        if not text or len(text.strip()) < 10:
+            return "Insufficient transcript content"
+
+        # Convert to lowercase for analysis
+        text_lower = text.lower()
+
+        # Define keywords for different sentiment categories
+        negative_keywords = [
+            'delay', 'delayed', 'waiting', 'waited', 'problem', 'issue', 'error', 'bug', 'failed', 'failing',
+            'difficult', 'hard', 'complicated', 'confusing', 'confusion', 'not working', 'broken',
+            'frustrated', 'frustrating', 'disappointed', 'worried', 'concerned', 'anxious',
+            'cancel', 'cancelled', 'terminate', 'stop', 'quit', 'quit using',
+            'expensive', 'cost', 'price', 'pricing', 'overpriced', 'too much',
+            'slow', 'slowly', 'taking too long', 'forever'
+        ]
+
+        positive_keywords = [
+            'great', 'excellent', 'amazing', 'awesome', 'fantastic', 'wonderful', 'perfect',
+            'love', 'loving', 'happy', 'satisfied', 'pleased', 'impressed',
+            'easy', 'simple', 'straightforward', 'smooth', 'seamless',
+            'fast', 'quick', 'rapid', 'efficient', 'productive',
+            'helpful', 'supportive', 'responsive', 'professional',
+            'recommend', 'recommended', 'suggest', 'suggested'
+        ]
+
+        business_keywords = [
+            'onboarding', 'setup', 'implementation', 'integration', 'training',
+            'meeting', 'call', 'discussion', 'demo', 'demonstration',
+            'payment', 'billing', 'invoice', 'subscription', 'plan',
+            'feature', 'functionality', 'tool', 'platform', 'system',
+            'account', 'user', 'login', 'access', 'dashboard'
+        ]
+
+        found_phrases = []
+
+        if sentiment == 'Negative':
+            # Look for negative keywords and their context
+            for keyword in negative_keywords:
+                if keyword in text_lower:
+                    # Find context around the keyword
+                    start = max(0, text_lower.find(keyword) - 30)
+                    end = min(len(text), text_lower.find(keyword) + len(keyword) + 30)
+                    context = text[start:end].strip()
+                    if context:
+                        found_phrases.append(f'"{context}"')
+
+            if found_phrases:
+                return f"Customer expressed concerns about: {', '.join(found_phrases[:2])}"
+            else:
+                return "Customer showed signs of dissatisfaction and frustration"
+
+        elif sentiment == 'Positive':
+            # Look for positive keywords and their context
+            for keyword in positive_keywords:
+                if keyword in text_lower:
+                    start = max(0, text_lower.find(keyword) - 20)
+                    end = min(len(text), text_lower.find(keyword) + len(keyword) + 20)
+                    context = text[start:end].strip()
+                    if context:
+                        found_phrases.append(f'"{context}"')
+
+            if found_phrases:
+                return f"Customer praised: {', '.join(found_phrases[:2])}"
+            else:
+                return "Customer expressed satisfaction and positive feedback"
+
+        else:  # Neutral
+            # Look for business topics discussed
+            topics_found = []
+            for keyword in business_keywords:
+                if keyword in text_lower:
+                    topics_found.append(keyword.title())
+
+            if topics_found:
+                return f"Discussed business topics: {', '.join(set(topics_found[:3]))}"
+            else:
+                return "Professional business discussion without strong emotional indicators"
+
     def analyze_sentiment(self, text: str) -> Dict[str, Any]:
         """Analyze sentiment of a single text"""
         try:
@@ -120,11 +270,20 @@ class LocalSentimentAnalyzer:
             original_label = self.config.id2label[top_label_idx]
             final_label = label_mapping.get(original_label, original_label)
 
+            # Generate explanation based on transcript content
+            explanation = self.extract_key_phrases(processed_text, final_label)
+
+            # Analyze individual speakers
+            speaker_analyses = self.analyze_speaker_sentiments(processed_text)
+
             return {
                 'label': final_label,
                 'score': top_score,
                 'confidence': confidence,
-                'original_label': original_label
+                'original_label': original_label,
+                'original_scores': {self.config.id2label[i]: float(scores[i]) for i in range(len(scores))},
+                'explanation': explanation,
+                'speaker_analyses': speaker_analyses
             }
 
         except Exception as e:
@@ -244,7 +403,7 @@ def save_results_as_csv(analysis_results: Dict, json_file: str, csv_file: str):
             'average_sentiment', 'churn_risk', 'sentiment_positive', 'sentiment_neutral', 'sentiment_negative',
             'Diio Sentiment Result', 'Diio Sentiment Conclusion',
             'transcript_id', 'source_name', 'occurred_at', 'sentiment_label', 'sentiment_score',
-            'confidence', 'churn_risk_individual', 'customer_satisfaction', 'cached'
+            'confidence', 'churn_risk_individual', 'customer_satisfaction', 'sentiment_explanation', 'speaker_analyses', 'cached'
         ]
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -262,22 +421,20 @@ def save_results_as_csv(analysis_results: Dict, json_file: str, csv_file: str):
             else:
                 diio_sentiment_result = 'No Data'
 
-            # Calculate Diio Sentiment Conclusion
+            # Calculate Diio Sentiment Conclusion - Explain what each sentiment means
             avg_sentiment = data.get('average_sentiment', 0)
             churn_risk = data.get('churn_risk', '')
 
             if total_transcripts == 0:
                 diio_sentiment_conclusion = 'No transcripts available for analysis'
-            elif churn_risk == 'critical':
-                diio_sentiment_conclusion = 'Critical risk - immediate intervention required'
-            elif churn_risk == 'high':
-                diio_sentiment_conclusion = 'High risk - monitor closely and consider intervention'
-            elif avg_sentiment > 0.1:
-                diio_sentiment_conclusion = 'Generally positive sentiment in communications'
-            elif avg_sentiment < -0.1:
-                diio_sentiment_conclusion = 'Generally negative sentiment - requires attention'
+            elif diio_sentiment_result == 'Positive':
+                diio_sentiment_conclusion = 'POSITIVE: Customer shows enthusiasm, satisfaction, and confidence. Communications reflect successful collaboration, clear understanding, and positive business outcomes. Low churn risk indicators.'
+            elif diio_sentiment_result == 'Negative':
+                diio_sentiment_conclusion = 'NEGATIVE: Customer expresses frustration, confusion, or dissatisfaction. May indicate problems with onboarding, unclear communication, technical issues, or unmet expectations. High churn risk warning.'
+            elif diio_sentiment_result == 'Neutral':
+                diio_sentiment_conclusion = 'NEUTRAL: Professional, factual communication without strong emotional indicators. Conversations are transactional and business-focused. Monitor for emerging issues, but currently stable.'
             else:
-                diio_sentiment_conclusion = 'Neutral sentiment in communications'
+                diio_sentiment_conclusion = 'Unable to determine dominant sentiment from available transcripts'
 
             summary_row = {
                 'account_id': account_id,
@@ -307,6 +464,8 @@ def save_results_as_csv(analysis_results: Dict, json_file: str, csv_file: str):
                     'confidence': round(transcript.get('sentiment', {}).get('confidence', 0), 4),
                     'churn_risk_individual': transcript.get('sentiment', {}).get('churn_risk', ''),
                     'customer_satisfaction': transcript.get('sentiment', {}).get('customer_satisfaction', ''),
+                    'sentiment_explanation': transcript.get('sentiment', {}).get('explanation', ''),
+                    'speaker_analyses': json.dumps(transcript.get('sentiment', {}).get('speaker_analyses', {})),
                     'cached': transcript.get('cached', False),
                     'Diio Sentiment Result': diio_sentiment_result,
                     'Diio Sentiment Conclusion': diio_sentiment_conclusion,
@@ -380,7 +539,7 @@ def save_high_risk_report(analysis_results: Dict, report_file: str):
         print(f"High-risk accounts report saved to: {report_file}")
         print(f"   {len(high_risk_accounts)} high-risk accounts identified")
 
-def analyze_account_sentiments(analyzer: LocalSentimentAnalyzer, account_data: Dict[str, List[Dict]]) -> Dict[str, Any]:
+def analyze_account_sentiments(analyzer: LocalSentimentAnalyzer, account_data: Dict[str, List[Dict]], force_fresh: bool = False, debug: bool = False) -> Dict[str, Any]:
     """Analyze sentiments for all accounts"""
     results = {}
     total_analyzed = 0
@@ -398,24 +557,67 @@ def analyze_account_sentiments(analyzer: LocalSentimentAnalyzer, account_data: D
             print(f"   Analyzing: {transcript.get('source_name', 'Unknown')}")
 
             # Check if we already have cached AI analysis
-            if transcript.get('ai_analysis'):
+            if transcript.get('ai_analysis') and not force_fresh:
                 print(f"      Using cached analysis")
                 cached_sentiment = transcript['ai_analysis']
 
+                # Handle both string and dict formats for ai_analysis
+                if isinstance(cached_sentiment, str):
+                    try:
+                        cached_sentiment = json.loads(cached_sentiment)
+                    except json.JSONDecodeError:
+                        print(f"      Error parsing cached sentiment, falling back to fresh analysis")
+                        # Fall back to fresh analysis
+                        sentiment_result = analyzer.analyze_sentiment(transcript.get('transcript_text', ''))
+                        sentiment = {
+                            'label': sentiment_result['label'],
+                            'score': sentiment_result['score'],
+                            'confidence': sentiment_result['confidence'],
+                            'cached': False
+                        }
+                        total_analyzed += 1
+                        total_cached -= 1  # Correct the count
+                        continue
+
+                # For cached results, provide a basic explanation since we don't have transcript text
+                label = cached_sentiment.get('overallSentiment', 'neutral').title()
+                if label == 'Negative':
+                    explanation = "Previously identified as showing customer dissatisfaction (cached analysis)"
+                elif label == 'Positive':
+                    explanation = "Previously identified as showing customer satisfaction (cached analysis)"
+                else:
+                    explanation = "Previously identified as neutral business communication (cached analysis)"
+
                 sentiment = {
-                    'label': cached_sentiment.get('overallSentiment', 'neutral').title(),
+                    'label': label,
                     'score': cached_sentiment.get('sentimentScore', 0),
                     'confidence': 0.9,  # Assume high confidence for cached results
+                    'explanation': explanation,
+                    'speaker_analyses': {},  # No speaker analysis for cached results
                     'cached': True
                 }
                 total_cached += 1
             else:
                 # Run fresh analysis
+                print(f"      Running fresh sentiment analysis")
                 sentiment_result = analyzer.analyze_sentiment(transcript.get('transcript_text', ''))
+
+                if debug:
+                    print(f"         Raw scores: {sentiment_result.get('original_scores', 'N/A')}")
+                    print(f"         Label: {sentiment_result['label']} (score: {sentiment_result['score']:.4f}, conf: {sentiment_result['confidence']:.4f})")
+                    print(f"         Explanation: {sentiment_result.get('explanation', 'N/A')}")
+                    speaker_analyses = sentiment_result.get('speaker_analyses', {})
+                    if speaker_analyses:
+                        print(f"         Speaker Analysis:")
+                        for speaker, analysis in speaker_analyses.items():
+                            print(f"           {speaker}: {analysis['sentiment']} ({analysis['score']:.3f}) - {analysis['explanation']}")
+
                 sentiment = {
                     'label': sentiment_result['label'],
                     'score': sentiment_result['score'],
                     'confidence': sentiment_result['confidence'],
+                    'explanation': sentiment_result.get('explanation', 'Analysis completed'),
+                    'speaker_analyses': sentiment_result.get('speaker_analyses', {}),
                     'cached': False
                 }
                 total_analyzed += 1
@@ -432,7 +634,9 @@ def analyze_account_sentiments(analyzer: LocalSentimentAnalyzer, account_data: D
                     'score': sentiment['score'],
                     'confidence': sentiment['confidence'],
                     'churn_risk': churn_risk,
-                    'customer_satisfaction': get_customer_satisfaction(sentiment['label'], sentiment['score'])
+                    'customer_satisfaction': get_customer_satisfaction(sentiment['label'], sentiment['score']),
+                    'explanation': sentiment.get('explanation', 'Analysis completed'),
+                    'speaker_analyses': sentiment.get('speaker_analyses', {})
                 },
                 'cached': sentiment.get('cached', False)
             }
@@ -494,9 +698,22 @@ def analyze_account_sentiments(analyzer: LocalSentimentAnalyzer, account_data: D
     }
 
 def main():
+    parser = argparse.ArgumentParser(description='Run local sentiment analysis on transcript data')
+    parser.add_argument('--force-fresh', action='store_true',
+                       help='Ignore cached analysis and run fresh sentiment analysis')
+    parser.add_argument('--debug', action='store_true',
+                       help='Show detailed sentiment scores and debugging info')
+
+    args = parser.parse_args()
+
     print("Local Sentiment Analysis with Database Connection")
     print("=" * 60)
     print("This runs completely on your machine - FREE & FAST!")
+
+    if args.force_fresh:
+        print("🔄 FORCE FRESH MODE: Ignoring cached results, running fresh analysis")
+    if args.debug:
+        print("🐛 DEBUG MODE: Showing detailed sentiment scores")
 
     # Check hardware
     if torch.cuda.is_available():
@@ -524,7 +741,7 @@ def main():
 
     # Run sentiment analysis
     print("\nStarting sentiment analysis...")
-    analysis_results = analyze_account_sentiments(analyzer, account_data)
+    analysis_results = analyze_account_sentiments(analyzer, account_data, force_fresh=args.force_fresh, debug=args.debug)
 
     # Save results in both JSON and CSV formats
     json_file = 'local_sentiment_analysis_results.json'
@@ -566,17 +783,35 @@ def main():
         x[1]['average_sentiment']
     ))
 
+    # Show sentiment distribution summary
+    all_sentiments = []
+    for account_id, data in results.items():
+        for transcript in data.get('transcripts', []):
+            sentiment = transcript.get('sentiment', {}).get('overall', '')
+            if sentiment:
+                all_sentiments.append(sentiment)
+
+    if all_sentiments:
+        from collections import Counter
+        sentiment_counts = Counter(all_sentiments)
+        total = len(all_sentiments)
+        print("\n📊 SENTIMENT DISTRIBUTION:")
+        print(f"   Total transcripts analyzed: {total}")
+        for sentiment, count in sorted(sentiment_counts.items()):
+            percentage = (count / total) * 100
+            print(".1f")
+
     if high_risk_accounts:
-        print(f"\nHIGH PRIORITY ACCOUNTS ({len(high_risk_accounts)}):")
+        print(f"\n🚨 HIGH PRIORITY ACCOUNTS ({len(high_risk_accounts)}):")
         for i, (account_id, data) in enumerate(high_risk_accounts[:10], 1):  # Show top 10
             print(f"   {i}. {account_id} ({data['account_name']})")
             print(".3f")
             print(f"      Transcripts: {data['transcript_count']}")
 
-    print("\nLocal sentiment analysis completed!")
+    print("\n✅ Local sentiment analysis completed!")
     print("This method is COMPLETELY FREE and runs on your machine!")
     print("Much faster than API calls - no rate limits!")
-    print("\nOpen the CSV files in Excel/Google Sheets for easy analysis!")
+    print("\n📊 Open the CSV files in Excel/Google Sheets for easy analysis!")
 
 if __name__ == '__main__':
     main()
