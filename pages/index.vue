@@ -3580,98 +3580,6 @@ const downloadReport = (html: string, filename: string) => {
   document.body.removeChild(a)
   window.URL.revokeObjectURL(url)
 }
-            <div style="margin-top: 20px;">
-              <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 12px;">📈 Emerging Patterns</h3>
-              ${aiRecommendations.value.emergingPatterns.map(pattern => `
-                <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; padding: 12px; margin-bottom: 8px; border-radius: 6px; backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.2);">
-                  <p style="color: #86efac; font-size: 13px; margin: 0;">${pattern}</p>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
-          
-          ${aiRecommendations.value.criticalRisks.length > 0 ? `
-            <div style="margin-top: 20px;">
-              <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 12px;">⚠️ Critical Risks</h3>
-              ${aiRecommendations.value.criticalRisks.map(risk => `
-                <div style="background: rgba(220, 38, 38, 0.1); border-left: 4px solid #dc2626; padding: 12px; margin-bottom: 8px; border-radius: 6px; backdrop-filter: blur(10px); border: 1px solid rgba(220, 38, 38, 0.2);">
-                  <p style="color: #fca5a5; font-size: 13px; margin: 0;">${risk}</p>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
-          
-          ${aiRecommendations.value.quickWins.length > 0 ? `
-            <div style="margin-top: 20px;">
-              <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 12px;">⚡ Quick Wins</h3>
-              ${aiRecommendations.value.quickWins.map(win => `
-                <div style="background: rgba(168, 85, 247, 0.1); border-left: 4px solid #a855f7; padding: 12px; margin-bottom: 8px; border-radius: 6px; backdrop-filter: blur(10px); border: 1px solid rgba(168, 85, 247, 0.2);">
-                  <p style="color: #e9d5ff; font-size: 13px; margin: 0;">${win}</p>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
-          
-          <!-- Consolidated Action Items Section -->
-          <div style="margin-top: 30px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%); border: 2px solid rgba(139, 92, 246, 0.5); border-radius: 12px; padding: 20px;">
-            <h3 style="font-size: 18px; font-weight: 800; color: #ffffff; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 24px;">✅</span>
-              <span>Executive Action Items</span>
-            </h3>
-            <p style="color: rgba(255, 255, 255, 0.8); font-size: 13px; margin-bottom: 16px;">
-              Clear, prioritized actions for leadership to address the most critical client needs
-            </p>
-            
-            ${aiRecommendations.value.topRecurringRequests.slice(0, 5).map((request, index) => `
-              <div style="background: rgba(0, 0, 0, 0.2); border-left: 4px solid ${request.priority === 'high' ? '#ef4444' : request.priority === 'medium' ? '#f59e0b' : '#10b981'}; padding: 14px; margin-bottom: 12px; border-radius: 8px;">
-                <div style="display: flex; align-items: start; gap: 12px;">
-                  <div style="flex-shrink: 0; width: 28px; height: 28px; background: ${request.priority === 'high' ? '#dc2626' : request.priority === 'medium' ? '#d97706' : '#059669'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 14px;">
-                    ${index + 1}
-                  </div>
-                  <div style="flex: 1;">
-                    <div style="font-size: 14px; font-weight: 700; color: #ffffff; margin-bottom: 6px;">
-                      ${request.request}
-                    </div>
-                    <div style="font-size: 13px; color: #a855f7; font-weight: 600; margin-bottom: 8px;">
-                      🎯 Action: ${request.recommendedAction}
-                    </div>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: rgba(255, 255, 255, 0.7);">
-                      <span style="background: rgba(139, 92, 246, 0.3); padding: 4px 8px; border-radius: 4px;">
-                        <strong>Owner:</strong> ${request.crossFunctionalOwner}
-                      </span>
-                      <span style="background: rgba(236, 72, 153, 0.3); padding: 4px 8px; border-radius: 4px;">
-                        <strong>Priority:</strong> ${request.priority.toUpperCase()}
-                      </span>
-                      <span style="background: rgba(59, 130, 246, 0.3); padding: 4px 8px; border-radius: 4px;">
-                        <strong>Impact:</strong> ${request.revenueImpact}
-                      </span>
-                      ${request.quickWinPotential.toLowerCase().includes('yes') ? `
-                        <span style="background: rgba(16, 185, 129, 0.3); padding: 4px 8px; border-radius: 4px;">
-                          ⚡ Quick Win
-                        </span>
-                      ` : ''}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `).join('')}
-            
-            <div style="margin-top: 16px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.3);">
-              <p style="color: #93c5fd; font-size: 12px; margin: 0; line-height: 1.5;">
-                <strong>💡 Next Steps:</strong> Assign owners, set deadlines, and track progress on these action items. Focus on high-priority items and quick wins first for maximum impact.
-              </p>
-            </div>
-          </div>
-        </div>
-      `
-      
-  } catch (error) {
-    console.error('❌ Error generating AI report:', error)
-    alert(`Failed to generate AI report: ${error.message || 'Unknown error'}. Please try again.`)
-  } finally {
-    generatingAIReport.value = false
-  }
-}
 
 const getDatePeriodLabel = (period) => {
   const labels = {
@@ -3974,18 +3882,6 @@ End of Report
   return report
 }
 
-// Download report as file
-const downloadReport = (content, filename) => {
-  const blob = new Blob([content], { type: 'text/plain' })
-  const url = window.URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  window.URL.revokeObjectURL(url)
-}
 
 // Format date for filename
 const formatDateForFilename = (date) => {
