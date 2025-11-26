@@ -2164,13 +2164,13 @@ const calendarDate = ref(new Date())
 const selectedDate = ref(null)
 
 // AI Recommendations
-const { 
-  loading: aiLoading, 
-  error: aiError, 
-  recommendations: aiRecommendations, 
+const {
+  loading: aiLoading,
+  error: aiError,
+  aiReport,
   metadata: aiMetadata,
   generateRecommendations,
-  clearRecommendations: clearAIRecommendations
+  clearReport: clearAIRecommendations
 } = useAIRecommendations()
 
 // Report Generation Composables
@@ -3289,142 +3289,297 @@ const getAIFilteredData = () => {
 
 const generateAIReport = async () => {
   generatingAIReport.value = true
-  
+
   try {
-    // Get filtered data
-    const filteredData = getAIFilteredData()
-    
-    if (filteredData.length === 0) {
-      alert('No feedback found with the selected filters. Please adjust or clear your filters and try again.')
+    console.log('🔄 Starting AI Report Generation with Transcript Analysis...')
+
+    // Step 1: Fetch transcripts for analysis
+    console.log('🎙️ Step 1: Fetching call transcripts...')
+    let transcripts = []
+    try {
+      const { getDiioTranscripts } = useSupabase()
+      const transcriptResult = await getDiioTranscripts(50) // Get up to 50 recent transcripts
+
+      if (transcriptResult.data) {
+        transcripts = transcriptResult.data
+        console.log(`✅ Fetched ${transcripts.length} transcripts for analysis`)
+      }
+    } catch (error) {
+      console.error('⚠️ Failed to fetch transcripts:', error)
+      alert('Unable to fetch transcripts for analysis. Please check your connection and try again.')
       generatingAIReport.value = false
       return
     }
-    
-        console.log(`🔄 Step 1: Generating AI report for ${filteredData.length} feedback items...`)
-        
-        // Fetch transcripts if includeTranscripts is enabled
-        let transcriptFeedback = []
-        if (aiFilters.includeTranscripts) {
-          console.log('🎙️ Step 1.5: Fetching call transcripts...')
-          try {
-            const transcriptData = await $fetch('/api/diio/feedback-transcripts', {
-              params: {
-                days: 30,
-                limit: 50
-              }
-            })
-            
-            if (transcriptData.success && transcriptData.calls) {
-              transcriptFeedback = transcriptData.calls
-              console.log(`✅ Fetched ${transcriptFeedback.length} calls with feedback (${transcriptData.summary.totalFeedbackSegments} segments)`)
-            }
-          } catch (error) {
-            console.error('⚠️ Failed to fetch transcripts:', error)
-            // Continue with written feedback only
-          }
-        }
-        
-        // Generate AI insights
-        console.log('🤖 Step 2: Calling AI recommendations API...')
-        await generateRecommendations(filteredData, {
-          segmentType: 'all',
-          focusArea: 'recurring patterns and actionable insights for leadership',
-          includeTranscripts: aiFilters.includeTranscripts,
-          transcriptFeedback
-        })
-        console.log('✅ Step 3: AI recommendations received:', aiRecommendations.value ? 'Yes' : 'No')
-        
-        // Generate report data (skip week filtering since we already applied custom filters)
-        console.log('📊 Step 4: Generating report structure...')
-        const reportData = generateWeeklyReport(filteredData, 0, true)
-        console.log('✅ Step 5: Report data generated:', reportData ? 'Yes' : 'No')
-    
-    // Build filter description
-    let filterDesc = []
-    if (aiFilters.accountManager) filterDesc.push(`Manager: ${aiFilters.accountManager}`)
-    if (aiFilters.datePeriod) filterDesc.push(`Period: ${getDatePeriodLabel(aiFilters.datePeriod)}`)
-    if (aiFilters.feedbackDirectedTo) filterDesc.push(`Team: ${aiFilters.feedbackDirectedTo}`)
-    if (aiFilters.category) filterDesc.push(`Category: ${aiFilters.category}`)
-    if (aiFilters.platformClientId) filterDesc.push(`Client: ${aiFilters.platformClientId}`)
-    
-    reportData.title = filterDesc.length > 0 
-      ? `AI Intelligence Report - ${filterDesc.join(' | ')}`
-      : 'AI Intelligence Report - All Feedback'
-    
-    // Update period to reflect actual data range when using custom filters
-    if (filteredData.length > 0) {
-      const dates = filteredData.map(item => new Date(item.createdDate)).sort((a, b) => a.getTime() - b.getTime())
-      reportData.period.start = dates[0]
-      reportData.period.end = dates[dates.length - 1]
+
+    if (transcripts.length === 0) {
+      alert('No transcripts available for analysis. Please ensure transcripts are synced from DIIO first.')
+      generatingAIReport.value = false
+      return
     }
-    
-    // Generate HTML with AI insights embedded
-    console.log('🎨 Step 6: Generating HTML report...')
-    let html = generateExecutiveHTML(reportData)
-    console.log('✅ Step 7: HTML generated, length:', html.length)
-    
-    // Add AI insights section if available
-    console.log('🔍 Step 8: Checking AI insights...')
-    if (aiRecommendations.value) {
-      console.log('✅ Step 9: AI insights found, adding to report...')
-      
-      // ⚠️ IMPORTANT: This HTML gets injected into the report template from useReportTemplates.ts
-      // The styles here MUST match the dark theme defined in useReportTemplates.ts
-      // If you change styles here, make sure they're consistent with the main template!
-      const metadataText = aiFilters.includeTranscripts && transcriptFeedback.length > 0
-        ? `AI-analyzed recurring patterns and recommendations based on ${filteredData.length} written feedback items + ${transcriptFeedback.length} call transcripts (${transcriptFeedback.reduce((sum, t) => sum + (t.stats?.total || 0), 0)} feedback segments from calls)`
-        : `AI-analyzed recurring patterns and recommendations based on ${filteredData.length} feedback items`
-      
-      const aiSection = `
-        <div class="section">
-          <h2 class="section-title">🤖 AI-Powered Insights</h2>
-          <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: 20px; font-size: 14px;">
-            ${metadataText}
-          </p>
-          ${aiFilters.includeTranscripts && transcriptFeedback.length > 0 ? `
-            <div style="background: rgba(236, 72, 153, 0.1); border-left: 4px solid #ec4899; padding: 12px; margin-bottom: 16px; border-radius: 6px;">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                <span style="font-size: 20px;">🎙️</span>
-                <span style="color: #f9a8d4; font-weight: 600; font-size: 14px;">Call Transcript Analysis Included</span>
-              </div>
-              <p style="color: rgba(255, 255, 255, 0.7); font-size: 12px; margin: 0;">
-                This report combines written feedback with verbal feedback from ${transcriptFeedback.length} recent client calls. Insights marked with source badges show data from both channels.
-              </p>
+
+    // Step 2: Generate AI recommendations using transcripts
+    console.log('🤖 Step 2: Generating AI recommendations from transcripts...')
+    await generateRecommendations(transcripts, {
+      maxTranscripts: 20 // Limit to 20 transcripts for API efficiency
+    })
+
+    console.log('✅ Step 3: AI recommendations generated:', aiReport.value ? 'Yes' : 'No')
+
+    if (!aiReport.value) {
+      alert('Failed to generate AI recommendations. Please try again.')
+      generatingAIReport.value = false
+      return
+    }
+
+    // Step 3: Generate HTML report with new AI insights
+    console.log('🎨 Step 4: Generating HTML report...')
+
+    const html = generateTranscriptReportHTML(aiReport.value, transcripts)
+    console.log('✅ Step 5: HTML report generated, length:', html.length)
+
+    // Step 4: Show report in modal
+    console.log('📋 Step 6: Displaying report...')
+    showAIReportModal(html)
+
+    console.log('🎉 AI Report generation completed successfully!')
+
+  } catch (error: any) {
+    console.error('❌ AI Report generation failed:', error)
+    alert(`AI Report generation failed: ${error.message}`)
+  } finally {
+    generatingAIReport.value = false
+  }
+}
+
+// Helper function to generate HTML report from transcript-based AI analysis
+const generateTranscriptReportHTML = (aiReport: any, transcripts: any[]) => {
+  const actionsByArea = aiReport.companyActions.reduce((acc: any, action: any) => {
+    if (!acc[action.area]) acc[action.area] = []
+    acc[action.area].push(action)
+    return acc
+  }, {})
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Company Actions Report</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #ffffff;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a0d2e 0%, #0f0819 50%, #2a1b3d 100%);
+        }
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 3px solid #7c3aed;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        .header .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 10px 0 0 0;
+            font-size: 16px;
+        }
+        .summary {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border-left: 4px solid #7c3aed;
+        }
+        .area-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .area-title {
+            color: #7c3aed;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .action-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid #ec4899;
+        }
+        .action-title {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .action-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        .priority-badge, .timeline-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .priority-high { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .priority-medium { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .priority-low { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .timeline-immediate { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .timeline-short-term { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .timeline-long-term { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .rationale {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+        .impact {
+            color: #fbbf24;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .evidence {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .evidence-title {
+            font-weight: 600;
+            color: #fbbf24;
+            margin-bottom: 8px;
+        }
+        .footer {
+            text-align: center;
+            padding: 32px 0;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 AI Company Actions Report</h1>
+        <div class="subtitle">
+            Generated from ${transcripts.length} call transcripts • ${new Date().toLocaleDateString()}
+        </div>
+    </div>
+
+    <div class="summary">
+        <h2 style="color: #7c3aed; margin-bottom: 16px;">📋 Executive Summary</h2>
+        <p>${aiReport.summary}</p>
+        <p style="margin-top: 12px; font-size: 14px; color: rgba(255, 255, 255, 0.7);">
+            This report contains ${aiReport.companyActions.length} specific actions across ${Object.keys(actionsByArea).length} company areas,
+            derived from detailed analysis of customer call transcripts.
+        </p>
+    </div>
+
+    ${Object.entries(actionsByArea).map(([areaName, actions]: [string, any[]]) => `
+        <div class="area-section">
+            <div class="area-title">
+                <span>${getAreaIcon(areaName)}</span>
+                ${areaName}
+                <span style="margin-left: auto; font-size: 16px; color: rgba(255, 255, 255, 0.6);">
+                    ${actions.length} action${actions.length !== 1 ? 's' : ''}
+                </span>
             </div>
-          ` : ''}
-          
-          ${aiRecommendations.value.topRecurringRequests.slice(0, 5).map((request, index) => `
-            <div class="priority-issue ${request.priority}">
-              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                <div>
-                  <span style="font-size: 18px; font-weight: 700; color: #ffffff; margin-right: 10px;">#${index + 1}</span>
-                  <span class="priority-badge ${request.priority}">${request.priority}</span>
-                  ${request.sources ? `
-                    <span style="display: inline-flex; gap: 6px; margin-left: 10px; font-size: 11px;">
-                      ${request.sources.written > 0 ? `<span style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(139, 92, 246, 0.4);">📝 ${request.sources.written}</span>` : ''}
-                      ${request.sources.calls > 0 ? `<span style="background: rgba(236, 72, 153, 0.2); color: #f9a8d4; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(236, 72, 153, 0.4);">🎙️ ${request.sources.calls}</span>` : ''}
-                    </span>
-                  ` : ''}
+
+            ${actions.map((action, index) => `
+                <div class="action-card">
+                    <div class="action-title">${action.action}</div>
+
+                    <div class="action-meta">
+                        <span class="priority-badge priority-${action.priority}">${action.priority.toUpperCase()}</span>
+                        <span class="timeline-badge timeline-${action.timeline.replace('-', '-')}">${action.timeline.replace('-', ' ').toUpperCase()}</span>
+                    </div>
+
+                    <div class="rationale">${action.rationale}</div>
+                    <div class="impact">💡 Expected Impact: ${action.expectedImpact}</div>
+
+                    <div class="evidence">
+                        <div class="evidence-title">📝 Supporting Evidence:</div>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            ${action.supportingEvidence.map((evidence: string) =>
+                                `<li style="margin-bottom: 4px;">${evidence}</li>`
+                            ).join('')}
+                        </ul>
+                    </div>
                 </div>
-                <div style="text-align: right;">
-                  <div style="font-size: 24px; font-weight: 800; color: #8b5cf6;">${request.frequency}</div>
-                  <div style="font-size: 11px; color: rgba(255, 255, 255, 0.7);">mentions</div>
-                </div>
-              </div>
-              <div style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">${request.request}</div>
-              <div style="font-size: 13px; color: rgba(255, 255, 255, 0.8); margin-bottom: 8px;"><strong>Evidence:</strong> ${request.evidence}</div>
-              <div style="font-size: 13px; color: rgba(255, 255, 255, 0.8); margin-bottom: 8px;"><strong>Recommended Action:</strong> ${request.recommendedAction}</div>
-              <div style="display: flex; gap: 15px; font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-top: 8px; flex-wrap: wrap;">
-                <span><strong>Revenue Impact:</strong> ${request.revenueImpact}</span>
-                <span><strong>Urgency:</strong> ${request.urgency || 'Medium'}</span>
-                <span><strong>Client Tone:</strong> ${request.sentiment}</span>
-                <span><strong>Owner:</strong> ${request.crossFunctionalOwner}</span>
-                <span><strong>Quick Win:</strong> ${request.quickWinPotential}</span>
-              </div>
-            </div>
-          `).join('')}
-          
-          ${aiRecommendations.value.emergingPatterns.length > 0 ? `
+            `).join('')}
+        </div>
+    `).join('')}
+
+    <div class="footer">
+        <p>Report generated by AI analysis of customer call transcripts</p>
+        <p style="margin-top: 8px; font-size: 12px;">
+            Powered by Google Gemini AI • ${aiReport.metadata.modelUsed} • ${aiReport.metadata.generatedAt}
+        </p>
+    </div>
+</body>
+</html>`
+}
+
+// Helper function to get area icons
+const getAreaIcon = (areaName: string) => {
+  const icons: Record<string, string> = {
+    'Customer Success': '🎯',
+    'Product': '🚀',
+    'Sales': '💼',
+    'Operations': '⚙️',
+    'Support': '🛠️',
+    'Leadership': '👑'
+  }
+  return icons[areaName] || '📋'
+}
+
+// Helper function to show the AI report modal
+const showAIReportModal = (html: string) => {
+  // Create modal content
+  const modalContent = {
+    title: 'AI Company Actions Report',
+    content: html,
+    type: 'html'
+  }
+
+  // Trigger modal display (you'll need to implement this based on your modal system)
+  console.log('Report HTML ready:', html.substring(0, 200) + '...')
+  // For now, just download the report
+  downloadReport(html, 'ai-company-actions-report.html')
+}
+
+// Helper function to download the report
+const downloadReport = (html: string, filename: string) => {
+  const blob = new Blob([html], { type: 'text/html' })
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  window.URL.revokeObjectURL(url)
+}
             <div style="margin-top: 20px;">
               <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 12px;">📈 Emerging Patterns</h3>
               ${aiRecommendations.value.emergingPatterns.map(pattern => `
@@ -3510,24 +3665,6 @@ const generateAIReport = async () => {
         </div>
       `
       
-      // Insert AI section after the Key Insights section
-      html = html.replace('<!-- AI Insights Placeholder -->', aiSection)
-      console.log('✅ Step 10: AI section inserted into HTML')
-    } else {
-      console.log('⚠️ Step 9: No AI insights available, skipping AI section')
-    }
-    
-    console.log('📝 Step 11: Setting report HTML (length:', html.length, ')')
-    currentAIReportHTML.value = html
-    
-    // Wait a moment for Vue to process, then show modal
-    console.log('⏳ Step 12: Waiting for Vue to process...')
-    await nextTick()
-    console.log('🎉 Step 13: Opening modal...')
-    showAIReportDisplay.value = true
-    
-    console.log('✅ Report generation complete! Modal should be visible now.')
-    
   } catch (error) {
     console.error('❌ Error generating AI report:', error)
     alert(`Failed to generate AI report: ${error.message || 'Unknown error'}. Please try again.`)

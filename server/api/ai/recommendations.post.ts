@@ -1,326 +1,215 @@
-import { HfInference } from '@huggingface/inference'
-import type { FeedbackItem } from '~/types/feedback'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
-interface TranscriptFeedback {
+interface TranscriptData {
   id: string
-  source: 'diio_call'
-  type: 'phone_call' | 'meeting'
-  date: string
-  accountName: string
-  callName: string
-  participants: string[]
-  feedbackText: string
-  stats: any
+  transcript_text: string
+  source_name?: string
+  occurred_at?: string
+  attendees?: any
+  account_name?: string
+  client_platform_id?: string
+  ai_analysis?: any
 }
 
-interface RecommendationRequest {
-  feedbackItems: FeedbackItem[]
-  segmentType?: 'all' | 'year' | 'sentiment' | 'category' | 'account_manager'
-  segmentValue?: string
-  focusArea?: string
-  includeTranscripts?: boolean
-  transcriptFeedback?: TranscriptFeedback[]
+interface CompanyArea {
+  name: string
+  description: string
+  responsibleTeam: string
 }
 
-interface SentimentAnalysis {
-  label: 'Positive' | 'Neutral' | 'Negative'
-  score: number
-  confidence: number
-}
-
-interface FeedbackSentiment {
-  id: string
-  text: string
-  sentiment: SentimentAnalysis
-  accountName: string
-  mrr?: number
-  tpv?: number
-  source: 'written' | 'transcript'
-}
-
-interface RecurringRequest {
-  request: string
-  frequency: number
+interface CompanyAction {
+  area: string
+  action: string
+  rationale: string
   priority: 'high' | 'medium' | 'low'
-  evidence: string
-  revenueImpact: string
-  sentiment: string
-  urgency: string
-  recommendedAction: string
-  quickWinPotential: string
-  crossFunctionalOwner: string
-  sources?: {
-    written: number
-    calls: number
-    total: number
-  }
-  feedbackIds?: string[]
-  relatedFeedback?: Array<{
-    id: string
-    accountName: string
-    feedback: string
-    source?: 'written' | 'call'
-  }>
+  timeline: 'immediate' | 'short-term' | 'long-term'
+  expectedImpact: string
+  supportingEvidence: string[]
 }
 
-interface AIRecommendation {
+interface AIReport {
   summary: string
-  topRecurringRequests: RecurringRequest[]
-  emergingPatterns: string[]
-  criticalRisks: string[]
-  quickWins: string[]
+  companyActions: CompanyAction[]
+  metadata: {
+    transcriptsAnalyzed: number
+    generatedAt: string
+    modelUsed: string
+  }
 }
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  
-  try {
-    const body = await readBody<RecommendationRequest>(event)
-    const { 
-      feedbackItems, 
-      segmentType = 'all', 
-      segmentValue, 
-      focusArea,
-      includeTranscripts = false,
-      transcriptFeedback = []
-    } = body
 
-    if (!feedbackItems || feedbackItems.length === 0) {
-      throw new Error('No feedback items provided')
+  try {
+    const body = await readBody<{ transcripts: TranscriptData[] }>(event)
+    const { transcripts } = body
+
+    if (!transcripts || transcripts.length === 0) {
+      throw new Error('No transcripts provided')
     }
 
-    // Initialize HuggingFace client
-    const hf = new HfInference(config.huggingfaceApiKey)
+    // Initialize Gemini AI
+    const genAI = new GoogleGenerativeAI(process.env.NUXT_GEMINI_API_KEY!)
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' })
 
-    // Perform sentiment analysis on all feedback items
-    const sentimentResults = await analyzeSentimentBatch(hf, feedbackItems, transcriptFeedback)
-
-    // Generate simplified report based on sentiment analysis
-    const recommendations = generateSentimentReport(sentimentResults, feedbackItems, transcriptFeedback)
+    // Generate AI report using transcriptions
+    const report = await generateTranscriptReport(model, transcripts)
 
     return {
       success: true,
-      data: recommendations,
+      data: report,
       metadata: {
-        itemsAnalyzed: feedbackItems.length,
-        transcriptsAnalyzed: transcriptFeedback.length,
-        segmentType,
-        segmentValue,
-        focusArea,
-        modelUsed: 'cardiffnlp/twitter-xlm-roberta-base-sentiment',
-        generatedAt: new Date().toISOString()
+        transcriptsAnalyzed: transcripts.length,
+        generatedAt: new Date().toISOString(),
+        modelUsed: 'gemini-2.0-flash-exp'
       }
     }
   } catch (error: any) {
-    console.error('AI Recommendations Error:', error)
+    console.error('AI Report Generation Error:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: `Failed to analyze sentiment: ${error.message}`
+      statusMessage: `Failed to generate AI report: ${error.message}`
     })
   }
 })
 
-// Sentiment analysis functions
-async function analyzeSentimentBatch(
-  hf: HfInference,
-  feedbackItems: FeedbackItem[],
-  transcriptFeedback: TranscriptFeedback[] = []
-): Promise<FeedbackSentiment[]> {
-  const results: FeedbackSentiment[] = []
-
-  // Analyze written feedback
-  for (const item of feedbackItems.slice(0, 50)) { // Limit to 50 for API limits
-    try {
-      const sentiment = await hf.textClassification({
-        model: 'cardiffnlp/twitter-xlm-roberta-base-sentiment',
-        inputs: item.feedback
-      })
-
-      // The model returns an array of sentiment results
-      const topSentiment = Array.isArray(sentiment) ? sentiment[0] : sentiment
-
-      results.push({
-        id: item.id,
-        text: item.feedback,
-        sentiment: {
-          label: topSentiment.label as 'Positive' | 'Neutral' | 'Negative',
-          score: topSentiment.score,
-          confidence: topSentiment.score
-        },
-        accountName: item.accountName || 'Unknown',
-        mrr: item.realMrrLastMonth,
-        tpv: item.lastInvoicedTpv,
-        source: 'written'
-      })
-    } catch (error) {
-      console.warn(`Failed to analyze sentiment for feedback ${item.id}:`, error)
-      // Add default neutral sentiment
-      results.push({
-        id: item.id,
-        text: item.feedback,
-        sentiment: {
-          label: 'Neutral',
-          score: 0.5,
-          confidence: 0.5
-        },
-        accountName: item.accountName || 'Unknown',
-        mrr: item.realMrrLastMonth,
-        tpv: item.lastInvoicedTpv,
-        source: 'written'
-      })
-    }
+// Define company areas that need actions
+const COMPANY_AREAS: CompanyArea[] = [
+  {
+    name: 'Customer Success',
+    description: 'Customer onboarding, retention, relationship management, and churn prevention',
+    responsibleTeam: 'Customer Success Team'
+  },
+  {
+    name: 'Product',
+    description: 'Product features, functionality, user experience, and technical capabilities',
+    responsibleTeam: 'Product & Engineering'
+  },
+  {
+    name: 'Sales',
+    description: 'Sales process, pricing, contracts, and initial customer acquisition',
+    responsibleTeam: 'Sales Team'
+  },
+  {
+    name: 'Operations',
+    description: 'Internal processes, efficiency, workflow optimization, and scalability',
+    responsibleTeam: 'Operations Team'
+  },
+  {
+    name: 'Support',
+    description: 'Technical support, bug fixes, help desk, and customer assistance',
+    responsibleTeam: 'Support Team'
+  },
+  {
+    name: 'Leadership',
+    description: 'Strategic decisions, company direction, and high-level initiatives',
+    responsibleTeam: 'Executive Team'
   }
+]
 
-  // Analyze transcript feedback if included
-  for (const transcript of transcriptFeedback.slice(0, 20)) { // Limit transcripts too
-    try {
-      const sentiment = await hf.textClassification({
-        model: 'cardiffnlp/twitter-xlm-roberta-base-sentiment',
-        inputs: transcript.feedbackText
-      })
+async function generateTranscriptReport(
+  model: any,
+  transcripts: TranscriptData[]
+): Promise<AIReport> {
+  // Prepare transcript content for AI analysis
+  const transcriptContent = transcripts.map(t => ({
+    id: t.id,
+    account: t.account_name || 'Unknown Account',
+    callName: t.source_name || 'Call',
+    date: t.occurred_at || 'Unknown Date',
+    transcript: t.transcript_text,
+    attendees: t.attendees
+  }))
 
-      const topSentiment = Array.isArray(sentiment) ? sentiment[0] : sentiment
+  // Create comprehensive prompt for Gemini AI
+  const prompt = `
+You are an expert business analyst analyzing customer call transcripts to generate actionable insights for a SaaS company.
 
-      results.push({
-        id: transcript.id,
-        text: transcript.feedbackText,
-        sentiment: {
-          label: topSentiment.label as 'Positive' | 'Neutral' | 'Negative',
-          score: topSentiment.score,
-          confidence: topSentiment.score
-        },
-        accountName: transcript.accountName,
-        source: 'transcript'
-      })
-    } catch (error) {
-      console.warn(`Failed to analyze sentiment for transcript ${transcript.id}:`, error)
-      results.push({
-        id: transcript.id,
-        text: transcript.feedbackText,
-        sentiment: {
-          label: 'Neutral',
-          score: 0.5,
-          confidence: 0.5
-        },
-        accountName: transcript.accountName,
-        source: 'transcript'
-      })
-    }
-  }
+ANALYZE THESE ${transcriptContent.length} CUSTOMER CALL TRANSCRIPTS and generate exactly 2 specific, actionable recommendations for EACH of the following company areas:
 
-  return results
+COMPANY AREAS TO ANALYZE:
+${COMPANY_AREAS.map(area => `- ${area.name}: ${area.description}`).join('\n')}
+
+TRANSCRIPTS TO ANALYZE:
+${transcriptContent.map((t, i) => `
+TRANSCRIPT ${i + 1}:
+Account: ${t.account}
+Call: ${t.callName}
+Date: ${t.date}
+Content: ${t.transcript.substring(0, 2000)}${t.transcript.length > 2000 ? '...' : ''}
+`).join('\n')}
+
+REQUIREMENTS:
+1. Generate EXACTLY 2 actions per company area (12 total actions)
+2. Each action must be SPECIFIC and ACTIONABLE
+3. Include supporting evidence from the transcripts
+4. Set appropriate priority (high/medium/low) and timeline (immediate/short-term/long-term)
+5. Explain the rationale and expected impact
+
+OUTPUT FORMAT:
+Return a JSON object with this exact structure:
+{
+  "summary": "Brief executive summary of key findings from transcripts",
+  "companyActions": [
+    {
+      "area": "Customer Success",
+      "action": "Specific actionable recommendation",
+      "rationale": "Why this action is needed based on transcript evidence",
+      "priority": "high|medium|low",
+      "timeline": "immediate|short-term|long-term",
+      "expectedImpact": "Expected business impact",
+      "supportingEvidence": ["Quote or evidence from transcript 1", "Quote or evidence from transcript 2"]
+    },
+    // ... exactly 2 more for Customer Success, then 2 each for other areas
+  ]
 }
 
-function generateSentimentReport(
-  sentimentResults: FeedbackSentiment[],
-  feedbackItems: FeedbackItem[],
-  transcriptFeedback: TranscriptFeedback[]
-): AIRecommendation {
-  // Calculate sentiment statistics
-  const totalItems = sentimentResults.length
-  const positiveCount = sentimentResults.filter(r => r.sentiment.label === 'Positive').length
-  const neutralCount = sentimentResults.filter(r => r.sentiment.label === 'Neutral').length
-  const negativeCount = sentimentResults.filter(r => r.sentiment.label === 'Negative').length
+Focus on insights that will drive business growth and customer satisfaction. Be specific and actionable.
+`
 
-  const positivePercent = Math.round((positiveCount / totalItems) * 100)
-  const neutralPercent = Math.round((neutralCount / totalItems) * 100)
-  const negativePercent = Math.round((negativeCount / totalItems) * 100)
+  try {
+    const result = await model.generateContent(prompt)
+    const response = await result.response
+    const text = response.text()
 
-  // Calculate average sentiment score (-1 to 1 scale)
-  const avgSentimentScore = sentimentResults.reduce((sum, r) => {
-    const score = r.sentiment.label === 'Positive' ? r.sentiment.score :
-                  r.sentiment.label === 'Negative' ? -r.sentiment.score : 0
-    return sum + score
-  }, 0) / totalItems
-
-  // Find high-value accounts with negative sentiment
-  const highValueNegative = sentimentResults.filter(r =>
-    r.sentiment.label === 'Negative' &&
-    (r.mrr && r.mrr > 5000) || (r.tpv && r.tpv > 10000)
-  )
-
-  // Generate summary
-  const summary = `Sentiment analysis of ${totalItems} feedback items shows ${positivePercent}% positive, ${neutralPercent}% neutral, and ${negativePercent}% negative sentiment. ${
-    highValueNegative.length > 0
-      ? `${highValueNegative.length} high-value accounts expressed negative sentiment requiring attention.`
-      : 'Overall sentiment is stable with no critical high-value account concerns.'
-  }`
-
-  // Generate top recurring requests (simplified based on sentiment patterns)
-  const topRecurringRequests: RecurringRequest[] = []
-
-  if (negativeCount > totalItems * 0.3) { // If >30% negative
-    topRecurringRequests.push({
-      request: 'Address customer dissatisfaction',
-      frequency: negativeCount,
-      priority: negativeCount > totalItems * 0.5 ? 'high' : 'medium',
-      evidence: `${negativeCount} negative feedback items (${negativePercent}%) indicate significant dissatisfaction`,
-      revenueImpact: highValueNegative.length > 0 ? `Affects ${highValueNegative.length} high-value accounts` : 'Unknown',
-      sentiment: 'Negative',
-      urgency: negativePercent > 50 ? 'Critical' : 'High',
-      recommendedAction: 'Review negative feedback and identify common themes for immediate improvement',
-      quickWinPotential: 'Review top negative feedback items for quick fixes',
-      crossFunctionalOwner: 'Customer Success',
-      sources: {
-        written: sentimentResults.filter(r => r.source === 'written' && r.sentiment.label === 'Negative').length,
-        calls: sentimentResults.filter(r => r.source === 'transcript' && r.sentiment.label === 'Negative').length,
-        total: negativeCount
-      }
-    })
-  }
-
-  // Generate insights based on sentiment patterns
-  const emergingPatterns: string[] = []
-  const criticalRisks: string[] = []
-  const quickWins: string[] = []
-
-  // Emerging patterns
-  if (avgSentimentScore < -0.2) {
-    emergingPatterns.push('Overall sentiment trending negative - monitor closely for emerging issues')
-  }
-  if (highValueNegative.length > 0) {
-    emergingPatterns.push(`${highValueNegative.length} high-value accounts showing dissatisfaction - investigate specific concerns`)
-  }
-  if (transcriptFeedback.length > 0 && sentimentResults.filter(r => r.source === 'transcript').length > 0) {
-    const transcriptSentiment = sentimentResults.filter(r => r.source === 'transcript')
-    const transcriptNegative = transcriptSentiment.filter(r => r.sentiment.label === 'Negative').length
-    if (transcriptNegative > transcriptSentiment.length * 0.4) {
-      emergingPatterns.push('Call transcripts show higher dissatisfaction than written feedback - verbal concerns may be under-addressed')
+    // Clean the response to extract JSON
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      throw new Error('Failed to parse AI response as JSON')
     }
-  }
 
-  // Critical risks
-  if (negativePercent > 60) {
-    criticalRisks.push('Critical: Over 60% negative sentiment - immediate intervention required')
-  }
-  if (highValueNegative.length >= 3) {
-    criticalRisks.push(`Critical: ${highValueNegative.length} high-value accounts at risk - schedule urgent follow-up calls`)
-  }
+    const parsedResponse = JSON.parse(jsonMatch[0])
 
-  // Quick wins
-  if (positivePercent > 50) {
-    quickWins.push('Continue successful practices - analyze positive feedback for scalable improvements')
-  }
-  if (neutralCount > positiveCount && neutralCount > negativeCount) {
-    quickWins.push('Convert neutral feedback to positive - focus on feature requests from neutral items')
-  }
+    // Validate the response structure
+    if (!parsedResponse.companyActions || parsedResponse.companyActions.length !== 12) {
+      throw new Error(`Expected 12 actions, got ${parsedResponse.companyActions?.length || 0}`)
+    }
 
-  // Ensure minimum 2 items per category
-  while (emergingPatterns.length < 2) {
-    emergingPatterns.push('Monitor sentiment trends weekly to identify emerging patterns early')
-  }
-  while (criticalRisks.length < 2) {
-    criticalRisks.push('Regular sentiment analysis helps identify risks before they escalate')
-  }
-  while (quickWins.length < 2) {
-    quickWins.push('Implement customer feedback loops to continuously improve satisfaction')
+    // Validate that we have exactly 2 actions per area
+    const actionsByArea = parsedResponse.companyActions.reduce((acc: any, action: CompanyAction) => {
+      if (!acc[action.area]) acc[action.area] = []
+      acc[action.area].push(action)
+      return acc
+    }, {})
+
+    for (const area of COMPANY_AREAS) {
+      if (!actionsByArea[area.name] || actionsByArea[area.name].length !== 2) {
+        throw new Error(`Expected 2 actions for ${area.name}, got ${actionsByArea[area.name]?.length || 0}`)
+      }
     }
 
     return {
-    summary,
-      topRecurringRequests,
-      emergingPatterns,
-      criticalRisks,
-      quickWins
+      summary: parsedResponse.summary || 'Analysis completed based on customer call transcripts.',
+      companyActions: parsedResponse.companyActions,
+      metadata: {
+        transcriptsAnalyzed: transcripts.length,
+        generatedAt: new Date().toISOString(),
+        modelUsed: 'gemini-2.0-flash-exp'
+      }
     }
+
+  } catch (error) {
+    console.error('Error generating AI report:', error)
+    throw error
+  }
 }
