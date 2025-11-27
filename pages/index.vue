@@ -357,18 +357,23 @@ onMounted(async () => {
   try {
     loading.value = true
     
-    // Fetch feedback data
-    const feedbackResponse = await fetch('/api/sheets/data')
-    const feedbackData = await feedbackResponse.json()
+    // Fetch stats from our dedicated stats API
+    const response = await fetch('/api/stats')
+    const data = await response.json()
     
-    // Fetch transcripts count from Supabase
-    const transcriptsResponse = await fetch('/api/diio/test-transcripts')
-    const transcriptsData = await transcriptsResponse.json()
-    
-    stats.value = {
-      totalFeedback: feedbackData.itemsCount?.toLocaleString() || '0',
-      totalTranscripts: transcriptsData.count?.toLocaleString() || '0',
-      reportsGenerated: '0' // This can be tracked if you store reports in DB
+    if (data.success) {
+      stats.value = {
+        totalFeedback: data.feedbackCount?.toLocaleString() || '0',
+        totalTranscripts: data.transcriptCount?.toLocaleString() || '0',
+        reportsGenerated: data.reportsCount?.toLocaleString() || '0'
+      }
+    } else {
+      // Show zeros if API fails
+      stats.value = {
+        totalFeedback: '0',
+        totalTranscripts: '0',
+        reportsGenerated: '0'
+      }
     }
   } catch (error) {
     console.error('Error fetching stats:', error)
@@ -387,22 +392,20 @@ onMounted(async () => {
 const refreshAllData = async () => {
   refreshing.value = true
   try {
-    // Refresh feedback data
-    const feedbackResponse = await fetch('/api/sheets/data')
-    const feedbackData = await feedbackResponse.json()
+    // Fetch fresh stats
+    const response = await fetch('/api/stats')
+    const data = await response.json()
     
-    // Refresh transcripts count
-    const transcriptsResponse = await fetch('/api/diio/test-transcripts')
-    const transcriptsData = await transcriptsResponse.json()
-    
-    stats.value = {
-      totalFeedback: feedbackData.itemsCount?.toLocaleString() || '0',
-      totalTranscripts: transcriptsData.count?.toLocaleString() || '0',
-      reportsGenerated: '0'
+    if (data.success) {
+      stats.value = {
+        totalFeedback: data.feedbackCount?.toLocaleString() || '0',
+        totalTranscripts: data.transcriptCount?.toLocaleString() || '0',
+        reportsGenerated: data.reportsCount?.toLocaleString() || '0'
+      }
+      console.log('✅ Data refreshed successfully!')
+    } else {
+      console.error('Failed to refresh data:', data.error)
     }
-    
-    // Show success feedback (optional)
-    console.log('Data refreshed successfully!')
   } catch (error) {
     console.error('Error refreshing data:', error)
   } finally {

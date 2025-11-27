@@ -55,11 +55,16 @@
             </div>
           </div>
           <div class="text-sm font-medium text-white/70 mb-2">Avg Sentiment Score</div>
-          <div class="flex items-baseline">
-            <div class="text-3xl font-bold text-white">7.2</div>
-            <div class="ml-2 text-sm font-medium text-white/50">/10</div>
+          <div v-if="loading" class="flex items-center h-10">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
           </div>
-          <div class="mt-2 text-xs text-green-400">↑ 0.3 from last period</div>
+          <template v-else>
+            <div class="flex items-baseline">
+              <div class="text-3xl font-bold text-white">{{ metrics.avgSentimentScore }}</div>
+              <div class="ml-2 text-sm font-medium text-white/50">/10</div>
+            </div>
+            <div class="mt-2 text-xs text-white/50">Based on sentiment analysis</div>
+          </template>
         </div>
 
         <!-- Response Rate -->
@@ -71,11 +76,16 @@
               </svg>
             </div>
           </div>
-          <div class="text-sm font-medium text-white/70 mb-2">Response Rate</div>
-          <div class="flex items-baseline">
-            <div class="text-3xl font-bold text-white">84%</div>
+          <div class="text-sm font-medium text-white/70 mb-2">Feedback Items</div>
+          <div v-if="loading" class="flex items-center h-10">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
           </div>
-          <div class="mt-2 text-xs text-green-400">↑ +2.1% from last period</div>
+          <template v-else>
+            <div class="flex items-baseline">
+              <div class="text-3xl font-bold text-white">{{ sentimentStats.totalCount }}</div>
+            </div>
+            <div class="mt-2 text-xs text-white/50">Total feedback collected</div>
+          </template>
         </div>
 
         <!-- Account Satisfaction -->
@@ -88,10 +98,15 @@
             </div>
           </div>
           <div class="text-sm font-medium text-white/70 mb-2">Account Satisfaction</div>
-          <div class="flex items-baseline">
-            <div class="text-3xl font-bold text-white">92%</div>
+          <div v-if="loading" class="flex items-center h-10">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
           </div>
-          <div class="mt-2 text-xs text-green-400">↑ +5.2% from last period</div>
+          <template v-else>
+            <div class="flex items-baseline">
+              <div class="text-3xl font-bold text-white">{{ metrics.accountSatisfaction }}%</div>
+            </div>
+            <div class="mt-2 text-xs text-white/50">Positive + neutral feedback</div>
+          </template>
         </div>
 
         <!-- At-Risk Accounts -->
@@ -104,10 +119,15 @@
             </div>
           </div>
           <div class="text-sm font-medium text-white/70 mb-2">At-Risk Accounts</div>
-          <div class="flex items-baseline">
-            <div class="text-3xl font-bold text-white">3</div>
+          <div v-if="loading" class="flex items-center h-10">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
           </div>
-          <div class="mt-2 text-xs text-red-400">↑ +1 new this period</div>
+          <template v-else>
+            <div class="flex items-baseline">
+              <div class="text-3xl font-bold text-white">{{ metrics.atRiskAccounts }}</div>
+            </div>
+            <div class="mt-2 text-xs text-red-400">Accounts with negative feedback</div>
+          </template>
         </div>
       </div>
 
@@ -117,10 +137,14 @@
         <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-semibold text-white">Top Performing Accounts</h3>
-            <span class="text-xs text-white/50">Last 30 days</span>
+            <span class="text-xs text-white/50">Based on sentiment</span>
           </div>
           
-          <div class="space-y-4">
+          <div v-if="loading" class="flex items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+          
+          <div v-else-if="topAccounts.length > 0" class="space-y-4">
             <div v-for="(account, index) in topAccounts" :key="index" class="flex items-center justify-between p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-all duration-200">
               <div class="flex items-center space-x-4">
                 <div class="w-10 h-10 rounded-full bg-gradient-ontop-hero flex items-center justify-center text-white font-bold text-sm">
@@ -133,9 +157,13 @@
               </div>
               <div class="text-right">
                 <div class="text-white font-semibold">{{ account.score }}%</div>
-                <div class="text-xs text-green-400">↑ {{ account.change }}%</div>
+                <div class="text-xs text-white/50">Positive</div>
               </div>
             </div>
+          </div>
+          
+          <div v-else class="text-center py-8 text-white/50">
+            No account data available
           </div>
         </div>
 
@@ -146,34 +174,44 @@
             <span class="text-xs text-white/50">Last 30 days</span>
           </div>
           
-          <div class="space-y-4">
+          <div v-if="loading" class="flex items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+          
+          <div v-else class="space-y-4">
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-white/70">Positive Feedback</span>
-                <span class="text-green-400 font-medium">98 (65%)</span>
+                <span class="text-green-400 font-medium">
+                  {{ sentimentStats.positive }} ({{ sentimentStats.totalCount > 0 ? Math.round((sentimentStats.positive / sentimentStats.totalCount) * 100) : 0 }}%)
+                </span>
               </div>
               <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-green-500 to-emerald-500" style="width: 65%"></div>
+                <div class="h-full bg-gradient-to-r from-green-500 to-emerald-500" :style="`width: ${sentimentStats.totalCount > 0 ? Math.round((sentimentStats.positive / sentimentStats.totalCount) * 100) : 0}%`"></div>
               </div>
             </div>
             
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-white/70">Neutral Feedback</span>
-                <span class="text-yellow-400 font-medium">38 (25%)</span>
+                <span class="text-yellow-400 font-medium">
+                  {{ sentimentStats.neutral }} ({{ sentimentStats.totalCount > 0 ? Math.round((sentimentStats.neutral / sentimentStats.totalCount) * 100) : 0 }}%)
+                </span>
               </div>
               <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-yellow-500 to-amber-500" style="width: 25%"></div>
+                <div class="h-full bg-gradient-to-r from-yellow-500 to-amber-500" :style="`width: ${sentimentStats.totalCount > 0 ? Math.round((sentimentStats.neutral / sentimentStats.totalCount) * 100) : 0}%`"></div>
               </div>
             </div>
             
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-white/70">Negative Feedback</span>
-                <span class="text-red-400 font-medium">15 (10%)</span>
+                <span class="text-red-400 font-medium">
+                  {{ sentimentStats.negative }} ({{ sentimentStats.totalCount > 0 ? Math.round((sentimentStats.negative / sentimentStats.totalCount) * 100) : 0 }}%)
+                </span>
               </div>
               <div class="h-2 bg-white/10 rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-red-500 to-rose-500" style="width: 10%"></div>
+                <div class="h-full bg-gradient-to-r from-red-500 to-rose-500" :style="`width: ${sentimentStats.totalCount > 0 ? Math.round((sentimentStats.negative / sentimentStats.totalCount) * 100) : 0}%`"></div>
               </div>
             </div>
           </div>
@@ -194,10 +232,14 @@
       <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-lg font-semibold text-white">Account Manager Performance</h3>
-          <button class="text-sm text-ontop-purple-400 hover:text-ontop-purple-300 transition-colors">View All →</button>
+          <NuxtLink to="/feedback" class="text-sm text-ontop-purple-400 hover:text-ontop-purple-300 transition-colors">View Details →</NuxtLink>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div v-if="loading" class="flex items-center justify-center py-8">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
+        
+        <div v-else-if="managers.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div v-for="(manager, index) in managers" :key="index" class="p-5 bg-white/5 rounded-lg hover:bg-white/10 transition-all duration-200 border border-white/10 hover:border-ontop-purple-500/50">
             <div class="flex items-center space-x-3 mb-4">
               <div class="w-12 h-12 rounded-full bg-gradient-ontop-hero flex items-center justify-center text-white font-bold">
@@ -211,21 +253,19 @@
             
             <div class="space-y-3">
               <div class="flex justify-between items-center">
-                <span class="text-sm text-white/70">Satisfaction</span>
+                <span class="text-sm text-white/70">Positive Rate</span>
                 <span class="text-white font-semibold">{{ manager.satisfaction }}%</span>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-sm text-white/70">Response Time</span>
-                <span class="text-white font-semibold">{{ manager.responseTime }}h</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-white/70">Feedback</span>
-                <span :class="manager.feedbackTrend > 0 ? 'text-green-400' : 'text-red-400'" class="font-semibold">
-                  {{ manager.feedbackTrend > 0 ? '↑' : '↓' }} {{ Math.abs(manager.feedbackTrend) }}%
-                </span>
+                <span class="text-sm text-white/70">Total Feedback</span>
+                <span class="text-white font-semibold">{{ manager.accounts }}</span>
               </div>
             </div>
           </div>
+        </div>
+        
+        <div v-else class="text-center py-8 text-white/50">
+          No manager data available
         </div>
       </div>
 
@@ -238,11 +278,12 @@
             </svg>
           </div>
           <div class="flex-1">
-            <h4 class="text-white font-semibold mb-1">📊 Advanced Analytics</h4>
+            <h4 class="text-white font-semibold mb-1">📊 Real-Time Analytics</h4>
             <p class="text-white/60 text-sm">
-              This page shows aggregated insights from your feedback data. 
-              Go to <NuxtLink to="/feedback" class="text-ontop-purple-400 hover:text-ontop-purple-300 underline">Feedback Analytics</NuxtLink> 
-              to see detailed real-time data and generate AI-powered reports. The visualizations above show sample data patterns for demonstration purposes.
+              This page shows live aggregated insights from your Google Sheets feedback data. 
+              All metrics, sentiment analysis, and performance stats are calculated in real-time. 
+              Visit <NuxtLink to="/feedback" class="text-ontop-purple-400 hover:text-ontop-purple-300 underline">Feedback Analytics</NuxtLink> 
+              for detailed individual feedback items and AI-powered reports.
             </p>
           </div>
         </div>
@@ -260,16 +301,132 @@ useHead({
   ]
 })
 
-// Sample data
-const topAccounts = ref([
-  { name: 'Acme Corporation', manager: 'Nicholas Taylor', initials: 'AC', score: 98, change: 12 },
-  { name: 'TechStart Inc', manager: 'Taylor Green', initials: 'TS', score: 95, change: 8 },
-  { name: 'Global Systems', manager: 'Green Martin', initials: 'GS', score: 92, change: -5 },
-])
+// Real data
+const loading = ref(true)
+const feedbackData = ref<any[]>([])
+const topAccounts = ref<any[]>([])
+const managers = ref<any[]>([])
+const sentimentStats = ref({
+  positive: 0,
+  neutral: 0,
+  negative: 0,
+  totalCount: 0
+})
 
-const managers = ref([
-  { name: 'Nicholas Taylor', initials: 'NT', accounts: 15, satisfaction: 98, responseTime: 2.3, feedbackTrend: 12 },
-  { name: 'Taylor Green', initials: 'TG', accounts: 12, satisfaction: 95, responseTime: 3.1, feedbackTrend: 8 },
-  { name: 'Green Martin', initials: 'GM', accounts: 18, satisfaction: 92, responseTime: 2.8, feedbackTrend: -5 },
-])
+const metrics = ref({
+  avgSentimentScore: 0,
+  responseRate: 0,
+  accountSatisfaction: 0,
+  atRiskAccounts: 0
+})
+
+// Fetch real data
+const fetchAnalyticsData = async () => {
+  try {
+    loading.value = true
+    
+    const response = await fetch('/api/sheets/data')
+    const data = await response.json()
+    
+    if (data.success && data.data) {
+      feedbackData.value = data.data
+      
+      // Calculate sentiment stats
+      const positive = data.data.filter((item: any) => item.sentiment === 'Positive').length
+      const neutral = data.data.filter((item: any) => item.sentiment === 'Neutral').length
+      const negative = data.data.filter((item: any) => item.sentiment === 'Negative').length
+      const total = data.data.length
+      
+      sentimentStats.value = {
+        positive,
+        neutral,
+        negative,
+        totalCount: total
+      }
+      
+      // Calculate metrics
+      const avgScore = total > 0 ? ((positive * 10 + neutral * 5 + negative * 0) / total).toFixed(1) : 0
+      const satisfactionRate = total > 0 ? Math.round(((positive + neutral * 0.5) / total) * 100) : 0
+      const negativeAccounts = new Set(
+        data.data.filter((item: any) => item.sentiment === 'Negative').map((item: any) => item.accountName)
+      ).size
+      
+      metrics.value = {
+        avgSentimentScore: Number(avgScore),
+        responseRate: total > 0 ? 100 : 0, // We have all the feedback responses
+        accountSatisfaction: satisfactionRate,
+        atRiskAccounts: negativeAccounts
+      }
+      
+      // Calculate top performing accounts (by positive sentiment %)
+      const accountMap = new Map()
+      data.data.forEach((item: any) => {
+        const accountName = item.accountName || 'Unknown'
+        if (!accountMap.has(accountName)) {
+          accountMap.set(accountName, {
+            name: accountName,
+            manager: item.accountOwner || 'Unknown',
+            positive: 0,
+            total: 0
+          })
+        }
+        const account = accountMap.get(accountName)
+        account.total++
+        if (item.sentiment === 'Positive') account.positive++
+      })
+      
+      // Convert to array and calculate scores
+      topAccounts.value = Array.from(accountMap.values())
+        .filter(account => account.total >= 2) // At least 2 feedback items
+        .map(account => ({
+          name: account.name,
+          manager: account.manager,
+          initials: account.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
+          score: Math.round((account.positive / account.total) * 100),
+          change: 0 // Can't calculate change without historical data
+        }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3)
+      
+      // Calculate manager performance
+      const managerMap = new Map()
+      data.data.forEach((item: any) => {
+        const managerName = item.accountOwner || 'Unknown'
+        if (!managerMap.has(managerName)) {
+          managerMap.set(managerName, {
+            name: managerName,
+            accounts: new Set(),
+            positive: 0,
+            total: 0
+          })
+        }
+        const manager = managerMap.get(managerName)
+        manager.accounts.add(item.accountName)
+        manager.total++
+        if (item.sentiment === 'Positive') manager.positive++
+      })
+      
+      // Convert to array
+      managers.value = Array.from(managerMap.values())
+        .map(manager => ({
+          name: manager.name,
+          initials: manager.name.split(' ').map((n: string) => n[0]).join('').toUpperCase(),
+          accounts: manager.accounts.size,
+          satisfaction: Math.round((manager.positive / manager.total) * 100),
+          responseTime: 2.5, // This would need real data from somewhere else
+          feedbackTrend: 0 // Can't calculate without historical data
+        }))
+        .sort((a, b) => b.satisfaction - a.satisfaction)
+        .slice(0, 3)
+    }
+  } catch (error) {
+    console.error('Error fetching analytics data:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchAnalyticsData()
+})
 </script>
