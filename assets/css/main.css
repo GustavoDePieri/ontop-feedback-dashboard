@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  select {
+    @apply bg-ontop-navy-dark/80 text-white border border-white/20;
+  }
+  
+  select option {
+    @apply bg-ontop-navy-dark text-white;
+  }
+  
+  select option:checked {
+    @apply bg-ontop-pink-500 text-white;
+  }
+  
+  select:focus {
+    @apply ring-2 ring-ontop-pink-400 border-ontop-pink-400;
+  }
+}

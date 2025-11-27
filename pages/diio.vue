@@ -204,11 +204,11 @@
             <label class="block text-sm text-gray-400 mb-2">Type</label>
             <select
               v-model="filters.type"
-              class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
+              class="w-full px-4 py-2 bg-ontop-navy-dark/80 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-ontop-pink-400 focus:border-ontop-pink-400 backdrop-blur-sm"
             >
-              <option value="" class="text-gray-900 bg-white">All Types</option>
-              <option value="meeting" class="text-gray-900 bg-white">Meetings</option>
-              <option value="phone_call" class="text-gray-900 bg-white">Phone Calls</option>
+              <option value="">All Types</option>
+              <option value="meeting">Meetings</option>
+              <option value="phone_call">Phone Calls</option>
             </select>
           </div>
 
@@ -217,11 +217,11 @@
             <label class="block text-sm text-gray-400 mb-2">AI Analysis</label>
             <select
               v-model="filters.aiAnalysis"
-              class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
+              class="w-full px-4 py-2 bg-ontop-navy-dark/80 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-ontop-pink-400 focus:border-ontop-pink-400 backdrop-blur-sm"
             >
-              <option value="" class="text-gray-900 bg-white">All Transcripts</option>
-              <option value="analyzed" class="text-gray-900 bg-white">Analyzed</option>
-              <option value="not_analyzed" class="text-gray-900 bg-white">Not Analyzed</option>
+              <option value="">All Transcripts</option>
+              <option value="analyzed">Analyzed</option>
+              <option value="not_analyzed">Not Analyzed</option>
             </select>
           </div>
 
@@ -230,11 +230,11 @@
             <label class="block text-sm text-gray-400 mb-2">Account Status</label>
             <select
               v-model="filters.churnedStatus"
-              class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
+              class="w-full px-4 py-2 bg-ontop-navy-dark/80 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-ontop-pink-400 focus:border-ontop-pink-400 backdrop-blur-sm"
             >
-              <option value="" class="text-gray-900 bg-white">All Accounts</option>
-              <option value="churned" class="text-gray-900 bg-white">Churned Accounts</option>
-              <option value="active" class="text-gray-900 bg-white">Active Accounts</option>
+              <option value="">All Accounts</option>
+              <option value="active">Active Only</option>
+              <option value="churned">Churned Only</option>
             </select>
           </div>
 
@@ -251,11 +251,15 @@
           <!-- Date To -->
           <div>
             <label class="block text-sm text-gray-400 mb-2">To Date</label>
-            <input
-              v-model="filters.dateTo"
-              type="date"
-              class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-emerald-500 transition-colors"
-            />
+            <select
+              v-model="filters.dateRange"
+              class="w-full px-4 py-2 bg-ontop-navy-dark/80 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-ontop-pink-400 focus:border-ontop-pink-400 backdrop-blur-sm"
+            >
+              <option value="all">All Time</option>
+              <option value="30">Last 30 Days</option>
+              <option value="90">Last 90 Days</option>
+              <option value="365">Last Year</option>
+            </select>
           </div>
         </div>
 
@@ -894,12 +898,13 @@ const filters = reactive({
   aiAnalysis: '',
   churnedStatus: '',
   dateFrom: '',
-  dateTo: ''
+  dateTo: '',
+  dateRange: 'all' // Added for date range filter
 })
 
 // Computed
 const hasActiveFilters = computed(() => {
-  return !!(filters.search || filters.type || filters.aiAnalysis || filters.churnedStatus || filters.dateFrom || filters.dateTo)
+  return !!(filters.search || filters.type || filters.aiAnalysis || filters.churnedStatus || filters.dateFrom || filters.dateTo || filters.dateRange !== 'all')
 })
 
 const filteredTranscripts = computed(() => {
@@ -935,6 +940,29 @@ const filteredTranscripts = computed(() => {
   }
 
   // Date filters
+  if (filters.dateRange === '30') {
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+    filtered = filtered.filter(t => {
+      const date = new Date(t.occurred_at || t.created_at)
+      return date >= thirtyDaysAgo
+    })
+  } else if (filters.dateRange === '90') {
+    const ninetyDaysAgo = new Date()
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90)
+    filtered = filtered.filter(t => {
+      const date = new Date(t.occurred_at || t.created_at)
+      return date >= ninetyDaysAgo
+    })
+  } else if (filters.dateRange === '365') {
+    const oneYearAgo = new Date()
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+    filtered = filtered.filter(t => {
+      const date = new Date(t.occurred_at || t.created_at)
+      return date >= oneYearAgo
+    })
+  }
+  
   if (filters.dateFrom) {
     const fromDate = new Date(filters.dateFrom)
     filtered = filtered.filter(t => {
@@ -1165,6 +1193,7 @@ const clearFilters = () => {
   filters.churnedStatus = ''
   filters.dateFrom = ''
   filters.dateTo = ''
+  filters.dateRange = 'all' // Reset date range filter
   currentPage.value = 1
 }
 
@@ -1312,7 +1341,7 @@ const formatTranscriptText = (text: any): string => {
 }
 
 // Watch for filter changes to reset pagination
-watch([filters.search, filters.type, filters.aiAnalysis, filters.churnedStatus, filters.dateFrom, filters.dateTo], () => {
+watch([filters.search, filters.type, filters.aiAnalysis, filters.churnedStatus, filters.dateFrom, filters.dateTo, filters.dateRange], () => {
   currentPage.value = 1
 })
 

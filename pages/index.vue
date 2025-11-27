@@ -13,9 +13,7 @@
         <div class="text-center">
           <!-- Logo -->
           <div class="flex justify-center mb-6">
-            <div class="bg-gradient-ontop-hero rounded-2xl p-6 shadow-glow-pink">
-              <AppLogo size="xl" :show-text="false" />
-            </div>
+            <AppLogo size="xl" :show-text="false" :shadow="true" />
           </div>
           
           <h1 class="text-5xl sm:text-6xl font-bold text-white mb-4">
@@ -27,17 +25,32 @@
 
           <!-- Quick Stats -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mt-8">
-            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div class="text-3xl font-bold text-white">{{ stats.totalFeedback }}</div>
-              <div class="text-sm text-white/60">Total Feedback</div>
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+              <div v-if="loading" class="flex items-center justify-center h-12">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              </div>
+              <template v-else>
+                <div class="text-3xl font-bold text-white">{{ stats.totalFeedback }}</div>
+                <div class="text-sm text-white/60">Total Feedback</div>
+              </template>
             </div>
-            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div class="text-3xl font-bold text-white">{{ stats.totalTranscripts }}</div>
-              <div class="text-sm text-white/60">Call Transcripts</div>
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+              <div v-if="loading" class="flex items-center justify-center h-12">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              </div>
+              <template v-else>
+                <div class="text-3xl font-bold text-white">{{ stats.totalTranscripts }}</div>
+                <div class="text-sm text-white/60">Call Transcripts</div>
+              </template>
             </div>
-            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-              <div class="text-3xl font-bold text-white">{{ stats.reportsGenerated }}</div>
-              <div class="text-sm text-white/60">Reports Generated</div>
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+              <div v-if="loading" class="flex items-center justify-center h-12">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              </div>
+              <template v-else>
+                <div class="text-3xl font-bold text-white">{{ stats.reportsGenerated }}</div>
+                <div class="text-sm text-white/60">Reports Generated</div>
+              </template>
             </div>
           </div>
         </div>
@@ -332,24 +345,41 @@ useHead({
 
 // State
 const refreshing = ref(false)
+const loading = ref(true)
 const stats = ref({
   totalFeedback: '---',
   totalTranscripts: '---',
   reportsGenerated: '---'
 })
 
-// Fetch quick stats on mount
+// Fetch real stats on mount
 onMounted(async () => {
   try {
-    // You can fetch real stats here from your APIs
-    // For now, showing placeholder
+    loading.value = true
+    
+    // Fetch feedback data
+    const feedbackResponse = await fetch('/api/sheets/data')
+    const feedbackData = await feedbackResponse.json()
+    
+    // Fetch transcripts count from Supabase
+    const transcriptsResponse = await fetch('/api/diio/test-transcripts')
+    const transcriptsData = await transcriptsResponse.json()
+    
     stats.value = {
-      totalFeedback: '1,234',
-      totalTranscripts: '567',
-      reportsGenerated: '89'
+      totalFeedback: feedbackData.itemsCount?.toLocaleString() || '0',
+      totalTranscripts: transcriptsData.count?.toLocaleString() || '0',
+      reportsGenerated: '0' // This can be tracked if you store reports in DB
     }
   } catch (error) {
     console.error('Error fetching stats:', error)
+    // Show zeros instead of placeholder on error
+    stats.value = {
+      totalFeedback: '0',
+      totalTranscripts: '0',
+      reportsGenerated: '0'
+    }
+  } finally {
+    loading.value = false
   }
 })
 
@@ -357,9 +387,22 @@ onMounted(async () => {
 const refreshAllData = async () => {
   refreshing.value = true
   try {
-    // Add refresh logic here
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    // Show success message
+    // Refresh feedback data
+    const feedbackResponse = await fetch('/api/sheets/data')
+    const feedbackData = await feedbackResponse.json()
+    
+    // Refresh transcripts count
+    const transcriptsResponse = await fetch('/api/diio/test-transcripts')
+    const transcriptsData = await transcriptsResponse.json()
+    
+    stats.value = {
+      totalFeedback: feedbackData.itemsCount?.toLocaleString() || '0',
+      totalTranscripts: transcriptsData.count?.toLocaleString() || '0',
+      reportsGenerated: '0'
+    }
+    
+    // Show success feedback (optional)
+    console.log('Data refreshed successfully!')
   } catch (error) {
     console.error('Error refreshing data:', error)
   } finally {

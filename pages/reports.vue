@@ -234,19 +234,14 @@
                 Time Period
               </label>
               <select 
-                v-model="reportConfig.period"
-                @change="updateDateRange"
-                class="w-full border border-white/20 bg-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500"
+                v-model="selectedPeriod"
+                class="bg-ontop-navy-dark/80 text-white border border-white/20 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ontop-pink-400 focus:border-ontop-pink-400 backdrop-blur-sm w-48"
+                @change="generateReport"
               >
-                <option value="today">Today</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="this-week">This Week</option>
-                <option value="last-week">Last Week</option>
-                <option value="this-month">This Month</option>
-                <option value="last-month">Last Month</option>
-                <option value="last-30-days">Last 30 Days</option>
-                <option value="last-90-days">Last 90 Days</option>
-                <option value="custom">Custom Range</option>
+                <option value="weekly">Weekly Summary</option>
+                <option value="monthly">Monthly Report</option>
+                <option value="quarterly">Quarterly Analysis</option>
+                <option value="custom">Custom Date Range</option>
               </select>
                 </div>
 

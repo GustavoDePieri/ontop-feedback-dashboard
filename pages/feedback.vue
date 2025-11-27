@@ -142,14 +142,13 @@
           <!-- Account Manager Filter -->
           <div>
             <label class="block text-sm font-medium text-white/80 mb-2">Account Manager</label>
-            <select 
-              v-model="filters.accountManager"
-              class="w-full border border-white/10 bg-ontop-navy-dark text-white rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-ontop-coral-500 focus:border-ontop-coral-500 transition-all"
+            <select
+              v-model="selectedManager"
+              @change="filterData"
+              class="bg-ontop-navy-dark/80 text-white border border-white/20 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ontop-pink-400 focus:border-ontop-pink-400 backdrop-blur-sm"
             >
               <option value="">All Managers</option>
-              <option v-for="manager in uniqueAccountManagers" :key="manager.name" :value="manager.name">
-                {{ manager.name }} ({{ manager.count }} feedback{{ manager.count !== 1 ? 's' : '' }})
-              </option>
+              <option v-for="manager in uniqueManagers" :key="manager" :value="manager">{{ manager }}</option>
             </select>
           </div>
 
@@ -4184,6 +4183,12 @@ onMounted(() => {
   // Load dashboard data
   refreshData()
 })
+
+const selectedManager = ref('')
+const filterData = () => {
+  // Add any additional filtering logic you want to execute when selectedManager changes
+  console.log('Selected Manager:', selectedManager.value)
+}
 </script>
 
 <style scoped>

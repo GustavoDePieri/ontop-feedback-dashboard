@@ -28,7 +28,7 @@
           </div>
           
           <div class="flex space-x-3">
-            <select class="bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ontop-pink-400 backdrop-blur-sm">
+            <select class="bg-ontop-navy-dark/80 text-white border border-white/20 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ontop-pink-400 focus:border-ontop-pink-400 backdrop-blur-sm">
               <option>Last 30 days</option>
               <option>Last 90 days</option>
               <option>Last 6 months</option>
@@ -240,9 +240,9 @@
           <div class="flex-1">
             <h4 class="text-white font-semibold mb-1">📊 Advanced Analytics</h4>
             <p class="text-white/60 text-sm">
-              This page shows aggregated insights from your feedback data. Connect to <strong class="text-white">Google Sheets</strong> 
-              in the <NuxtLink to="/feedback" class="text-ontop-purple-400 hover:text-ontop-purple-300 underline">Feedback Analytics</NuxtLink> 
-              page to see live data here. The metrics above are sample data for demonstration.
+              This page shows aggregated insights from your feedback data. 
+              Go to <NuxtLink to="/feedback" class="text-ontop-purple-400 hover:text-ontop-purple-300 underline">Feedback Analytics</NuxtLink> 
+              to see detailed real-time data and generate AI-powered reports. The visualizations above show sample data patterns for demonstration purposes.
             </p>
           </div>
         </div>
