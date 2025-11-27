@@ -1,0 +1,43 @@
+name: Transcript Sentiment Pipeline
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # every six hours
+  workflow_dispatch:
+
+jobs:
+  run-transcript-sentiment:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Pre-download Hugging Face model
+        run: |
+          python - <<'PY'
+          from transformers import AutoTokenizer, AutoModelForSequenceClassification
+          model_name = "cardiffnlp/twitter-xlm-roberta-base-sentiment"
+          AutoTokenizer.from_pretrained(model_name, use_fast=False)
+          AutoModelForSequenceClassification.from_pretrained(model_name)
+          PY
+
+      - name: Analyze transcripts
+        run: python transcript_sentiment_analyzer.py --limit 50
+
+      - name: Aggregate client sentiment
+        run: python transcript_sentiment_aggregator.py --filter-target
+

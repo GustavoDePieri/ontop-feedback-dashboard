@@ -361,6 +361,41 @@ feedbackAnalysis/
 - ✅ **No generic advice** - Every recommendation tied to specific feedback data
 - ✅ **Clear ownership** - Assigns team/person responsible for each action
 
+### Transcript Sentiment CLI
+
+- **Stage 1 (`transcript_sentiment_analyzer.py`)** — Processes pending DIIO transcripts (or re-runs them when `--re-analyze` is set), breaks the text into 400-character chunks, runs `cardiffnlp/twitter-xlm-roberta-base-sentiment`, applies the Ontop-specific issue/aspect extraction rules, and caches the chunk-level sentiment + adjusted score in `diio_transcripts.ai_analysis`.
+- **Stage 2 (`transcript_sentiment_aggregator.py`)** — Reads all transcripts that already have cached analysis (optionally filtered by `target_accounts.json`), gives negative transcripts 2.5× weight, neutral 0.5×, and positive 1.0×, boosts recent transcripts (2.0× for ≤7 days, 1.5× for ≤30 days, 1.0× for ≤90 days, 0.5× older), calculates a client score from -1.0 to +1.0, classifies it (positive if >0.2, neutral if between -0.2 and 0.2, negative if < -0.2), and upserts the summary into `client_sentiment_summary`.
+
+#### Scoring Summary
+
+| Score Range | Meaning |
+| ----------- | ------- |
+| -1.0 to -0.2 | Negative sentiment |
+| -0.2 to +0.2 | Neutral sentiment |
+| +0.2 to +1.0 | Positive sentiment |
+
+**Quick explanation:**
+
+1. Each transcript chunk returns Positive/Neutral/Negative + confidence. Give each chunk a value (+1/0/-1) weighted by confidence and average across the transcript.
+2. Apply business rules: billing/refund keywords force negative, polite technical requests pull scores toward neutral.
+3. Aggregate per client: negative transcripts count 2.5×, neutral 0.5×, positive 1.0×; recent transcripts are boosted according to age tiers.
+4. The final client score (>0.2 → positive, between -0.2 and 0.2 → neutral, < -0.2 → negative) is saved with aspect summaries and recommendations.
+
+#### CLI Examples
+
+- `python transcript_sentiment_analyzer.py --limit 30`
+- `python transcript_sentiment_analyzer.py --client CL005639 --chunk-size 500`
+- `python transcript_sentiment_aggregator.py --filter-target --period-days 30`
+- `python transcript_sentiment_aggregator.py --client CL005639`
+
+#### Dependencies
+
+Ensure `transformers`, `torch`, and `scipy` are installed (they are now listed in `requirements.txt`) before running the transcript analyzer.
+
+#### GitHub Action
+
+- A scheduled workflow (`.github/workflows/transcript-sentiment.yml`) runs every six hours to execute the analyzer and aggregator back-to-back. It requires `SUPABASE_URL`, `SUPABASE_KEY`, and `HUGGINGFACE_API_KEY` to be stored in the repository secrets.
+
 **API Endpoint:** `POST /api/ai/recommendations`
 
 ---
