@@ -15,40 +15,36 @@
       
       <nav class="mt-8">
         <div class="px-4 space-y-2">
+          <!-- Home -->
           <NuxtLink
             to="/"
             class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group"
             :class="$route.path === '/' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
           >
             <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
-            Dashboard
+            Home
           </NuxtLink>
+
+          <!-- Divider -->
+          <div class="py-2">
+            <div class="border-t border-white/10"></div>
+          </div>
           
+          <!-- Feedback Analytics -->
           <NuxtLink
-            to="/analytics"
+            to="/feedback"
             class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group"
-            :class="$route.path === '/analytics' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
+            :class="$route.path === '/feedback' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
           >
             <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
-            Advanced Analytics
+            Feedback Analytics
           </NuxtLink>
           
-          <NuxtLink
-            to="/reports"
-            class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group"
-            :class="$route.path.startsWith('/reports') ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
-          >
-            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Reports
-          </NuxtLink>
-          
+          <!-- Call Transcripts -->
           <NuxtLink
             to="/diio"
             class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group"
@@ -60,6 +56,36 @@
             Call Transcripts
           </NuxtLink>
           
+          <!-- Reports -->
+          <NuxtLink
+            to="/reports"
+            class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group"
+            :class="$route.path.startsWith('/reports') ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
+          >
+            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Reports
+          </NuxtLink>
+
+          <!-- Divider -->
+          <div class="py-2">
+            <div class="border-t border-white/10"></div>
+          </div>
+          
+          <!-- Advanced Analytics -->
+          <NuxtLink
+            to="/analytics"
+            class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group"
+            :class="$route.path === '/analytics' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
+          >
+            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Advanced Analytics
+          </NuxtLink>
+          
+          <!-- Debug -->
           <NuxtLink
             to="/test"
             class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 group"

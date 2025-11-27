@@ -3,6 +3,11 @@
     <!-- Header -->
     <header class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <div class="pt-4 pb-2">
+          <AppBreadcrumb :items="[{ label: 'Reports' }]" />
+        </div>
+        
         <div class="flex justify-between items-center py-8">
           <div>
             <h1 class="text-3xl font-bold text-white drop-shadow-lg">

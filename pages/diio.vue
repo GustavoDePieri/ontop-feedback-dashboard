@@ -1,26 +1,19 @@
 <template>
   <div class="min-h-screen bg-gradient-dark p-4 sm:p-6 lg:p-8">
     <div class="max-w-7xl mx-auto">
+      <!-- Breadcrumb -->
+      <div class="mb-4">
+        <AppBreadcrumb :items="[{ label: 'Call Transcripts' }]" />
+      </div>
+      
       <!-- Header -->
       <div class="mb-8">
         <div class="flex items-center justify-between flex-wrap gap-4">
-          <div class="flex items-center gap-4">
-            <NuxtLink
-              to="/"
-              class="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-200 group"
-            >
-              <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              <span class="text-sm text-gray-400 group-hover:text-white transition-colors">Home</span>
-            </NuxtLink>
-
-            <div>
-              <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">
-                Call Transcripts
-              </h1>
-              <p class="text-gray-400">Access and analyze meeting and call transcripts from DIIO</p>
-            </div>
+          <div>
+            <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">
+              Call Transcripts
+            </h1>
+            <p class="text-gray-400">Access and analyze meeting and call transcripts from DIIO</p>
           </div>
           
           <div class="flex items-center gap-2">

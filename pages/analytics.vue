@@ -3,6 +3,11 @@
     <!-- Header -->
     <header class="bg-white/5 backdrop-blur-xl border-b border-white/10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <div class="pt-4 pb-2">
+          <AppBreadcrumb :items="[{ label: 'Advanced Analytics' }]" />
+        </div>
+        
         <div class="flex justify-between items-center py-6">
           <div>
             <h1 class="text-3xl font-bold text-white">
