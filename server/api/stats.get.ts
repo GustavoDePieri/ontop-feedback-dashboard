@@ -9,10 +9,16 @@ export default defineEventHandler(async (event) => {
     const stats = {
       feedbackCount: 0,
       transcriptCount: 0,
-      reportsCount: 0, // Can be tracked later if we store reports
+      reportsCount: 0,
       success: true,
       lastUpdated: new Date().toISOString()
     }
+
+    // Prepare Supabase client once
+    const supabase = createClient(
+      config.supabaseUrl!,
+      config.supabaseAnonKey!
+    )
 
     // Get feedback count from Google Sheets
     try {
@@ -49,11 +55,6 @@ export default defineEventHandler(async (event) => {
 
     // Get transcript count from Supabase
     try {
-      const supabase = createClient(
-        config.supabaseUrl!,
-        config.supabaseAnonKey!
-      )
-
       const { count, error } = await supabase
         .from('diio_transcripts')
         .select('id', { count: 'exact', head: true })
@@ -63,6 +64,20 @@ export default defineEventHandler(async (event) => {
       }
     } catch (error) {
       console.error('Error fetching transcript count:', error)
+      // Continue with 0 if error
+    }
+
+    // Get saved reports count from Supabase
+    try {
+      const { count, error } = await supabase
+        .from('saved_reports')
+        .select('id', { count: 'exact', head: true })
+
+      if (!error && count !== null) {
+        stats.reportsCount = count
+      }
+    } catch (error) {
+      console.error('Error fetching reports count:', error)
       // Continue with 0 if error
     }
 

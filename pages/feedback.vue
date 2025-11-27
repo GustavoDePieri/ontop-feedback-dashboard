@@ -2417,13 +2417,18 @@ const sentimentSummary = computed(() => {
 })
 
 const sentimentPercentages = computed(() => {
-  const total = feedbackData.value.length
+  const data = hasActiveFilters.value ? filteredFeedbackData.value : feedbackData.value
+  const total = data.length
   if (total === 0) return { positive: 0, neutral: 0, negative: 0 }
   
+  const positive = data.filter(item => item.sentiment === 'Positive').length
+  const neutral = data.filter(item => item.sentiment === 'Neutral').length
+  const negative = data.filter(item => item.sentiment === 'Negative').length
+
   return {
-    positive: Math.round((sentimentSummary.value.positive / total) * 100),
-    neutral: Math.round((sentimentSummary.value.neutral / total) * 100),
-    negative: Math.round((sentimentSummary.value.negative / total) * 100)
+    positive: Math.round((positive / total) * 100),
+    neutral: Math.round((neutral / total) * 100),
+    negative: Math.round((negative / total) * 100)
   }
 })
 

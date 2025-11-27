@@ -70,20 +70,6 @@
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-gray-400 text-sm mb-1">Total Transcripts</p>
-              <p class="text-3xl font-bold text-white">{{ stats.total }}</p>
-            </div>
-            <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
               <p class="text-gray-400 text-sm mb-1">AI Analyzed</p>
               <p class="text-3xl font-bold text-white">{{ stats.aiAnalyzed }}</p>
               <p class="text-xs text-gray-500 mt-1">{{ stats.total > 0 ? Math.round((stats.aiAnalyzed / stats.total) * 100) : 0 }}% complete</p>
