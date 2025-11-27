@@ -2,10 +2,8 @@
   <div class="min-h-screen bg-gradient-dark flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
       <div>
-        <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-xl bg-gradient-ontop-hero">
-          <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+        <div class="mx-auto w-24 h-24 flex items-center justify-center rounded-2xl bg-gradient-ontop-hero p-4 shadow-glow-pink">
+          <img src="/ontop-logo-ai.jpg" alt="Ontop Logo" class="w-full h-full object-contain rounded-xl" />
         </div>
         <h2 class="mt-6 text-center text-3xl font-extrabold text-white">
           Ontop Feedback Analytics

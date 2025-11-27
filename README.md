@@ -367,6 +367,59 @@ feedbackAnalysis/
 
 ## 🎨 UI/UX Design System
 
+### Logo & Branding
+
+**Ontop Logo:**
+- **File Location:** `/public/ontop-logo-ai.jpg`
+- **Alt Logo:** `/public/onto-logo.jpg` (alternative version)
+- **Usage:** Import via `<img src="/ontop-logo-ai.jpg" alt="Ontop Logo" />`
+- **Logo Component:** Use `<AppLogo />` for consistent branding across pages
+
+**Logo Component (`components/ui/AppLogo.vue`):**
+
+The `AppLogo` component provides flexible, reusable branding across the application.
+
+**Props:**
+```typescript
+interface Props {
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'  // Logo size (default: 'md')
+  showText?: boolean                        // Show text next to logo (default: true)
+  title?: string                            // Title text (default: 'Ontop')
+  subtitle?: string                         // Subtitle text (default: 'Analytics AI')
+  logoSrc?: string                          // Logo image path (default: '/ontop-logo-ai.jpg')
+  altText?: string                          // Alt text (default: 'Ontop Logo')
+  shadow?: boolean                          // Add shadow effect (default: true)
+}
+```
+
+**Usage Examples:**
+```vue
+<!-- Full logo with text (sidebar) -->
+<AppLogo size="md" :show-text="true" />
+
+<!-- Logo only (compact header) -->
+<AppLogo size="sm" :show-text="false" />
+
+<!-- Custom title (mobile header) -->
+<AppLogo size="sm" :show-text="true" title="Ontop Analytics" :subtitle="null" />
+
+<!-- Large logo (login page) -->
+<AppLogo size="xl" :show-text="true" />
+```
+
+**Logo Characteristics:**
+- **Design:** Purple-pink gradient "A" shape with "AI" badge on dark navy background
+- **Colors:** Matches Ontop brand gradient (purple #8b5cf6 → pink #ec4899 → coral #fb7185)
+- **Style:** Modern, professional, AI-focused branding
+- **Responsive:** Scales beautifully from xs (24px) to xl (80px)
+
+**Where the Logo Appears:**
+- ✅ Sidebar header (desktop navigation)
+- ✅ Mobile top bar (mobile navigation)
+- ✅ Login page (large centered logo)
+- ✅ Dashboard header (with analytics icon wrapper)
+- ✅ Can be added to any page using `<AppLogo />`
+
 ### Color System (Dark Mode)
 
 **Primary Colors:**

@@ -2,8 +2,15 @@
   <div class="min-h-screen bg-gradient-dark transition-colors duration-300">
     <!-- Sidebar -->
     <div class="fixed inset-y-0 left-0 z-50 w-64 bg-ontop-navy-dark/95 backdrop-blur-xl border-r border-white/5 transform transition-all duration-300 ease-in-out lg:translate-x-0" :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
-      <div class="flex items-center justify-center h-16 px-4 bg-gradient-ontop-hero">
-        <h1 class="text-lg font-bold text-white">Ontop Analytics</h1>
+      <div class="flex items-center justify-center h-20 px-4 bg-gradient-ontop-hero relative overflow-hidden">
+        <!-- Subtle animated background -->
+        <div class="absolute inset-0 opacity-20">
+          <div class="absolute top-0 left-0 w-32 h-32 bg-white rounded-full mix-blend-overlay filter blur-xl animate-pulse-slow"></div>
+        </div>
+        <!-- Logo -->
+        <div class="relative z-10">
+          <AppLogo size="md" :show-text="true" />
+        </div>
       </div>
       
       <nav class="mt-8">
@@ -132,7 +139,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <h1 class="text-lg font-semibold text-white transition-colors duration-200">✨ Ontop Analytics</h1>
+          <AppLogo size="sm" :show-text="true" title="Ontop Analytics" :subtitle="null" />
           <div class="flex items-center space-x-2">
             <!-- Mobile Dark Mode Toggle -->
             <button @click="toggleDarkMode" class="text-gray-300 hover:text-white p-1 transition-colors duration-200">
