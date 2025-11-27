@@ -55,7 +55,7 @@ except ImportError:
 
 # Configuration
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_ANON_KEY")
 MODEL_NAME = "cardiffnlp/twitter-xlm-roberta-base-sentiment"
 TARGET_ACCOUNTS_FILE = "target_accounts.json"
 

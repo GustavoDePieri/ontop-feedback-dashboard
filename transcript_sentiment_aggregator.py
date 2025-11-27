@@ -10,6 +10,7 @@ Usage:
     python transcript_sentiment_aggregator.py --recalculate      # Force recalculation
 """
 
+import os
 import sys
 import json
 import argparse
@@ -31,7 +32,7 @@ load_dotenv()
 
 # Configuration
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_ANON_KEY")
 TARGET_ACCOUNTS_FILE = "target_accounts.json"
 
 # Logging
@@ -125,10 +126,13 @@ def calculate_recency_weight(created_at: Optional[str], reference: Optional[date
 
     try:
         ticket_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
-    except ValueError:
+        # Make both datetimes timezone-naive for comparison
+        if ticket_date.tzinfo is not None:
+            ticket_date = ticket_date.replace(tzinfo=None)
+        reference_naive = reference.replace(tzinfo=None)
+        days_ago = (reference_naive - ticket_date).days
+    except (ValueError, AttributeError):
         return 1.0
-
-    days_ago = (reference - ticket_date).days
 
     if days_ago <= 7:
         return 2.0
@@ -159,7 +163,16 @@ def calculate_weighted_client_score(transcripts: List[Dict]) -> Tuple[float, Dic
     reference = datetime.utcnow()
 
     for transcript in transcripts:
-        analysis = transcript.get('ai_analysis') or {}
+        analysis_raw = transcript.get('ai_analysis') or {}
+        # Parse JSON string if needed
+        if isinstance(analysis_raw, str):
+            try:
+                analysis = json.loads(analysis_raw)
+            except json.JSONDecodeError:
+                analysis = {}
+        else:
+            analysis = analysis_raw
+
         score = float(analysis.get('sentimentScore', 0.0)) if analysis.get('sentimentScore') is not None else 0.0
         label = analysis.get('overallSentiment', 'neutral') or 'neutral'
 
@@ -199,7 +212,16 @@ def calculate_aspect_sentiment_summary(transcripts: List[Dict]) -> Dict[str, flo
     counts: Dict[str, int] = {}
 
     for transcript in transcripts:
-        analysis = transcript.get('ai_analysis', {})
+        analysis_raw = transcript.get('ai_analysis', {})
+        # Parse JSON string if needed
+        if isinstance(analysis_raw, str):
+            try:
+                analysis = json.loads(analysis_raw)
+            except json.JSONDecodeError:
+                analysis = {}
+        else:
+            analysis = analysis_raw
+
         aspects = analysis.get('aspectSentiment', {}) or {}
         if isinstance(aspects, dict):
             for aspect, value in aspects.items():
@@ -212,7 +234,16 @@ def generate_negative_aspects_summary(transcripts: List[Dict]) -> Optional[str]:
     """Collect aspect names that consistently show negative sentiment."""
     negative_aspects = set()
     for transcript in transcripts:
-        analysis = transcript.get('ai_analysis', {})
+        analysis_raw = transcript.get('ai_analysis', {})
+        # Parse JSON string if needed
+        if isinstance(analysis_raw, str):
+            try:
+                analysis = json.loads(analysis_raw)
+            except json.JSONDecodeError:
+                analysis = {}
+        else:
+            analysis = analysis_raw
+
         aspects = analysis.get('aspectSentiment', {}) or {}
         if isinstance(aspects, dict):
             for aspect, score in aspects.items():
