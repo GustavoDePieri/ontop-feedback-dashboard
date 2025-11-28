@@ -379,68 +379,12 @@ export const useSupabase = () => {
     }
   }
 
-  // Get stored DIIO transcripts
-  const getDiioTranscripts = async (limit = 50, offset = 0) => {
+  // Get stored DIIO transcripts (lightweight version without transcript_text for list views)
+  const getDiioTranscripts = async (limit = 50, offset = 0, includeText = false) => {
     try {
-      // If limit is very large, fetch all in chunks (Supabase has limits)
-      if (limit > 10000) {
-        let allData: any[] = []
-        let currentOffset = offset
-        const chunkSize = 1000 // Fetch in chunks of 1000
-        let hasMore = true
-        
-        while (hasMore) {
-          const { data, error } = await supabase
-            .from('diio_transcripts')
-            .select(`
-              id,
-              diio_transcript_id,
-              transcript_text,
-              transcript_type,
-              source_id,
-              source_name,
-              occurred_at,
-              duration,
-              attendees,
-              ai_analysis,
-              ai_analysis_date,
-              analyzed_status,
-              client_platform_id,
-              account_name,
-              account_status,
-              created_at,
-              updated_at
-            `)
-            .order('created_at', { ascending: false })
-            .range(currentOffset, currentOffset + chunkSize - 1)
-          
-          if (error) throw error
-          
-          if (data && data.length > 0) {
-            allData.push(...data)
-            currentOffset += chunkSize
-            
-            // Stop if we got fewer results than requested (end of data)
-            hasMore = data.length === chunkSize
-          } else {
-            hasMore = false
-          }
-          
-          // Safety limit
-          if (currentOffset > 100000) {
-            console.warn('⚠️ Reached safety limit of 100,000 transcripts')
-            break
-          }
-        }
-        
-        console.log(`✅ Loaded ${allData.length} transcripts in chunks`)
-        return { data: allData, error: null }
-      }
-      
-      // Normal fetch for smaller limits
-      const { data, error } = await supabase
-        .from('diio_transcripts')
-        .select(`
+      // Build select clause - exclude transcript_text by default for performance
+      const selectFields = includeText
+        ? `
           id,
           diio_transcript_id,
           transcript_text,
@@ -456,22 +400,96 @@ export const useSupabase = () => {
           client_platform_id,
           account_name,
           account_status,
+          feedback_extracted,
           created_at,
           updated_at
-        `)
-        .order('created_at', { ascending: false })
+        `
+        : `
+          id,
+          diio_transcript_id,
+          transcript_type,
+          source_id,
+          source_name,
+          occurred_at,
+          duration,
+          attendees,
+          ai_analysis,
+          ai_analysis_date,
+          analyzed_status,
+          client_platform_id,
+          account_name,
+          account_status,
+          feedback_extracted,
+          created_at,
+          updated_at
+        `
+
+      // For very large limits, use count and reasonable limit instead
+      if (limit > 5000) {
+        console.log('⚠️ Large limit requested, fetching in optimized batches...')
+        let allData: any[] = []
+        let currentOffset = offset
+        const chunkSize = 1000
+        let hasMore = true
+        let totalFetched = 0
+        const maxToFetch = Math.min(limit, 10000) // Cap at 10k for safety
+        
+        while (hasMore && totalFetched < maxToFetch) {
+          const { data, error } = await supabase
+            .from('diio_transcripts')
+            .select(selectFields)
+            .order('occurred_at', { ascending: false })
+            .range(currentOffset, currentOffset + chunkSize - 1)
+          
+          if (error) throw error
+          
+          if (data && data.length > 0) {
+            allData.push(...data)
+            totalFetched += data.length
+            currentOffset += chunkSize
+            
+            // Stop if we got fewer results than requested (end of data)
+            hasMore = data.length === chunkSize
+          } else {
+            hasMore = false
+          }
+        }
+        
+        console.log(`✅ Loaded ${allData.length} transcripts in ${Math.ceil(allData.length / chunkSize)} chunks`)
+        return { data: allData, error: null }
+      }
+      
+      // Normal fetch for reasonable limits
+      const { data, error } = await supabase
+        .from('diio_transcripts')
+        .select(selectFields)
+        .order('occurred_at', { ascending: false })
         .range(offset, offset + limit - 1)
 
       if (error) throw error
       
-      // Log first transcript for debugging
-      if (data && data.length > 0) {
-        console.log('✅ Loaded transcript with text length:', data[0].transcript_text?.length || 0)
-      }
+      console.log(`✅ Loaded ${data?.length || 0} transcripts`)
       
       return { data, error: null }
     } catch (error) {
       console.error('Error fetching DIIO transcripts:', error)
+      return { data: null, error }
+    }
+  }
+
+  // Get a single transcript with full text (for viewing)
+  const getDiioTranscript = async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('diio_transcripts')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (error) throw error
+      return { data, error: null }
+    } catch (error) {
+      console.error('Error fetching DIIO transcript:', error)
       return { data: null, error }
     }
   }
@@ -619,6 +637,7 @@ export const useSupabase = () => {
     saveDiioPhoneCalls,
     saveDiioTranscript,
     getDiioTranscripts,
+    getDiioTranscript,
     getDiioTranscriptStats,
     transcriptExists,
     // DIIO Transcript Feedback Functions

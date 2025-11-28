@@ -1109,8 +1109,9 @@ const loadTranscripts = async () => {
   error.value = null
   
   try {
-    // Fetch all transcripts (increase limit if needed)
-    const { data, error: dbError } = await getDiioTranscripts(50000, 0)
+    // Fetch transcripts without full text for better performance (10k max)
+    // Text will be loaded on-demand when viewing individual transcripts
+    const { data, error: dbError } = await getDiioTranscripts(10000, 0, false)
     
     if (dbError) throw dbError
     
@@ -1208,7 +1209,25 @@ const syncTranscripts = async () => {
 
 // Removed: testSentimentAnalysis function
 
-const viewTranscript = (transcript: any) => {
+const viewTranscript = async (transcript: any) => {
+  // If transcript doesn't have full text, fetch it
+  if (!transcript.transcript_text && transcript.id) {
+    try {
+      const { getDiioTranscript } = useSupabase()
+      const { data, error: fetchError } = await getDiioTranscript(transcript.id)
+      
+      if (fetchError) throw fetchError
+      
+      if (data) {
+        // Merge the full data with the existing transcript
+        selectedTranscript.value = { ...transcript, ...data }
+        return
+      }
+    } catch (err) {
+      console.error('Error loading full transcript:', err)
+    }
+  }
+  
   selectedTranscript.value = transcript
 }
 
