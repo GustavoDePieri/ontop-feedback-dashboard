@@ -776,7 +776,7 @@
         class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50"
         @click.self="aiAnalysisResult = null"
       >
-        <div class="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
+        <div class="bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
           <div class="flex justify-between items-start mb-4">
             <div>
               <div class="flex items-center gap-3">
@@ -810,8 +810,8 @@
             <p class="text-white text-sm leading-relaxed">{{ aiAnalysisResult.analysis.summary }}</p>
           </div>
 
-          <!-- Key Metrics -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <!-- Key Metrics Grid (4 columns) -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
               <p class="text-gray-400 text-xs mb-1">Overall Sentiment</p>
               <p class="text-lg font-bold" :class="{
@@ -819,7 +819,7 @@
                 'text-yellow-400': aiAnalysisResult.analysis.overallSentiment === 'neutral',
                 'text-red-400': aiAnalysisResult.analysis.overallSentiment === 'negative'
               }">
-                {{ aiAnalysisResult.analysis.overallSentiment.toUpperCase() }}
+                {{ aiAnalysisResult.analysis.overallSentiment?.toUpperCase() || 'UNKNOWN' }}
               </p>
             </div>
 
@@ -835,14 +835,129 @@
             </div>
 
             <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
-              <p class="text-gray-400 text-xs mb-1">Confidence</p>
-              <p class="text-lg font-bold" :class="{
-                'text-green-400': aiAnalysisResult.analysis.confidence > 0.15,
-                'text-yellow-400': aiAnalysisResult.analysis.confidence >= 0.05 && aiAnalysisResult.analysis.confidence <= 0.15,
-                'text-red-400': aiAnalysisResult.analysis.confidence < 0.05
+              <p class="text-gray-400 text-xs mb-1">Customer Satisfaction</p>
+              <p class="text-sm font-bold" :class="{
+                'text-green-400': aiAnalysisResult.analysis.customerSatisfaction === 'satisfied',
+                'text-yellow-400': aiAnalysisResult.analysis.customerSatisfaction === 'neutral',
+                'text-orange-400': aiAnalysisResult.analysis.customerSatisfaction === 'frustrated',
+                'text-red-400': aiAnalysisResult.analysis.customerSatisfaction === 'at_risk'
               }">
-                {{ (aiAnalysisResult.analysis.confidence * 100).toFixed(1) }}%
+                {{ aiAnalysisResult.analysis.customerSatisfaction?.toUpperCase().replace('_', ' ') || 'UNKNOWN' }}
               </p>
+            </div>
+
+            <div class="bg-gray-900 rounded-lg p-4 border border-gray-700">
+              <p class="text-gray-400 text-xs mb-1">Churn Risk</p>
+              <p class="text-lg font-bold" :class="{
+                'text-green-400': aiAnalysisResult.analysis.churnRisk === 'low',
+                'text-yellow-400': aiAnalysisResult.analysis.churnRisk === 'medium',
+                'text-orange-400': aiAnalysisResult.analysis.churnRisk === 'high',
+                'text-red-400': aiAnalysisResult.analysis.churnRisk === 'critical'
+              }">
+                {{ aiAnalysisResult.analysis.churnRisk?.toUpperCase() || 'UNKNOWN' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Churn Signals (if any) -->
+          <div v-if="aiAnalysisResult.analysis.churnSignals && aiAnalysisResult.analysis.churnSignals.length > 0" class="mb-6 bg-red-900/20 rounded-lg p-4 border border-red-500/30">
+            <h3 class="text-red-400 font-semibold mb-3 flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Churn Signals Detected
+            </h3>
+            <div class="space-y-2">
+              <div v-for="(signal, idx) in aiAnalysisResult.analysis.churnSignals" :key="idx" class="flex items-start gap-2 text-red-300 text-sm">
+                <span class="text-red-400 mt-0.5">•</span>
+                <span>{{ signal }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Themes -->
+          <div v-if="aiAnalysisResult.analysis.keyThemes && aiAnalysisResult.analysis.keyThemes.length > 0" class="mb-6">
+            <h3 class="text-white font-semibold mb-3">Key Themes</h3>
+            <div class="space-y-2">
+              <div v-for="(theme, idx) in aiAnalysisResult.analysis.keyThemes" :key="idx" 
+                class="bg-gray-900 rounded-lg p-3 border border-gray-700">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <p class="text-white font-medium">{{ theme.theme }}</p>
+                    <div class="flex items-center gap-3 mt-1">
+                      <span class="px-2 py-0.5 text-xs rounded" :class="{
+                        'bg-green-500/20 text-green-300': theme.sentiment === 'positive',
+                        'bg-yellow-500/20 text-yellow-300': theme.sentiment === 'neutral',
+                        'bg-red-500/20 text-red-300': theme.sentiment === 'negative'
+                      }">
+                        {{ theme.sentiment }}
+                      </span>
+                      <span class="text-xs text-gray-400">{{ theme.mentions }} mention(s)</span>
+                      <span v-if="theme.urgency" class="px-2 py-0.5 text-xs rounded" :class="{
+                        'bg-red-500/20 text-red-300': theme.urgency === 'critical',
+                        'bg-orange-500/20 text-orange-300': theme.urgency === 'high',
+                        'bg-yellow-500/20 text-yellow-300': theme.urgency === 'medium',
+                        'bg-gray-500/20 text-gray-300': theme.urgency === 'low'
+                      }">
+                        {{ theme.urgency }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pain Points -->
+          <div v-if="aiAnalysisResult.analysis.painPoints && aiAnalysisResult.analysis.painPoints.length > 0" class="mb-6">
+            <h3 class="text-red-400 font-semibold mb-3">Pain Points</h3>
+            <div class="space-y-2">
+              <div v-for="(point, idx) in aiAnalysisResult.analysis.painPoints" :key="idx" 
+                class="flex items-start gap-2 bg-red-900/20 rounded-lg p-3 border border-red-500/30">
+                <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-red-300 text-sm">{{ point }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Positive Highlights -->
+          <div v-if="aiAnalysisResult.analysis.positiveHighlights && aiAnalysisResult.analysis.positiveHighlights.length > 0" class="mb-6">
+            <h3 class="text-green-400 font-semibold mb-3">Positive Highlights</h3>
+            <div class="space-y-2">
+              <div v-for="(highlight, idx) in aiAnalysisResult.analysis.positiveHighlights" :key="idx" 
+                class="flex items-start gap-2 bg-green-900/20 rounded-lg p-3 border border-green-500/30">
+                <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-green-300 text-sm">{{ highlight }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actionable Insights -->
+          <div v-if="aiAnalysisResult.analysis.actionableInsights && aiAnalysisResult.analysis.actionableInsights.length > 0" class="mb-2">
+            <h3 class="text-blue-400 font-semibold mb-3">Actionable Insights</h3>
+            <div class="space-y-3">
+              <div v-for="(insight, idx) in aiAnalysisResult.analysis.actionableInsights" :key="idx" 
+                class="bg-blue-900/20 rounded-lg p-4 border border-blue-500/30">
+                <div class="flex items-start justify-between mb-2">
+                  <p class="text-white font-medium flex-1">{{ insight.insight }}</p>
+                  <span class="px-2 py-1 text-xs rounded ml-3" :class="{
+                    'bg-red-500/20 text-red-300': insight.priority === 'critical',
+                    'bg-orange-500/20 text-orange-300': insight.priority === 'high',
+                    'bg-yellow-500/20 text-yellow-300': insight.priority === 'medium',
+                    'bg-gray-500/20 text-gray-300': insight.priority === 'low'
+                  }">
+                    {{ insight.priority }}
+                  </span>
+                </div>
+                <div class="flex items-center gap-4 text-xs text-gray-400">
+                  <span>👤 {{ insight.owner }}</span>
+                  <span>💡 {{ insight.estimatedImpact }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1114,23 +1229,32 @@ const showSentimentAnalysis = (transcript: any) => {
     return
   }
 
+  console.log('📊 Raw sentiment data from database:', sentimentData)
+
   // Format for display in the modal
+  // The actual structure has: overallSentiment, sentimentScore, customerSatisfaction, churnRisk, etc.
   aiAnalysisResult.value = {
     analysis: {
-      overallSentiment: sentimentData.sentiment || 'neutral',
-      sentimentScore: sentimentData.score || 0.5,
-      confidence: sentimentData.confidence || 0,
-      churnSignals: [], // Not available in basic sentiment analysis
-      summary: `Sentiment analysis shows ${sentimentData.sentiment || 'neutral'} sentiment with ${(sentimentData.confidence * 100 || 0).toFixed(1)}% confidence.`
+      overallSentiment: sentimentData.overallSentiment || 'neutral',
+      sentimentScore: sentimentData.sentimentScore || 0,
+      confidence: Math.abs(sentimentData.sentimentScore || 0), // Use sentiment score as confidence proxy
+      customerSatisfaction: sentimentData.customerSatisfaction || 'Unknown',
+      churnRisk: sentimentData.churnRisk || 'Unknown',
+      churnSignals: sentimentData.churnSignals || [],
+      keyThemes: sentimentData.keyThemes || [],
+      painPoints: sentimentData.painPoints || [],
+      positiveHighlights: sentimentData.positiveHighlights || [],
+      actionableInsights: sentimentData.actionableInsights || [],
+      summary: sentimentData.summary || `Sentiment analysis shows ${sentimentData.overallSentiment || 'neutral'} sentiment.`
     },
     metadata: {
       sourceName: transcript.source_name || 'Unknown',
-      analyzedAt: sentimentData.analyzed_at || new Date().toISOString(),
-      cached: false // This is stored data
+      analyzedAt: transcript.ai_analysis_date || new Date().toISOString(),
+      cached: true // This is stored data
     }
   }
 
-  console.log('📊 Showing stored sentiment analysis:', sentimentData)
+  console.log('📊 Formatted sentiment analysis for display:', aiAnalysisResult.value)
 }
 
 // Removed: analyzeTranscriptWithAI function - now using stored sentiment data
