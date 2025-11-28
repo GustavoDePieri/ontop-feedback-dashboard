@@ -2,11 +2,18 @@
  * POST /api/diio/bulk-sentiment-analysis
  *
  * Bulk sentiment analysis for transcripts from specific accounts
+ * NOW WITH BART SUMMARIZATION (FREE!)
  * Supports the 117 target accounts and churn risk correlation
  */
 
 import { HfInference } from '@huggingface/inference'
 import { createClient } from '@supabase/supabase-js'
+import { 
+  generateBARTSummary, 
+  generateSentimentExplanation, 
+  extractKeyQuotes, 
+  extractKeywords 
+} from '~/server/utils/bartSummarizer'
 
 interface BulkAnalysisRequest {
   accountIds?: string[]  // Array of client_platform_id values (your 117 accounts)
@@ -165,11 +172,12 @@ export default defineEventHandler(async (event): Promise<BulkAnalysisResult> => 
               })
 
               const topSentiment = Array.isArray(sentiment) ? sentiment[0] : sentiment
-              analysisResult = generateSentimentAnalysis(
+              analysisResult = await generateSentimentAnalysis(
                 topSentiment,
                 transcript.transcript_text,
                 transcript.source_name,
-                transcript.transcript_type
+                transcript.transcript_type,
+                config.huggingfaceApiKey // Pass API key for BART
               )
 
               // Cache the result
@@ -294,14 +302,16 @@ export default defineEventHandler(async (event): Promise<BulkAnalysisResult> => 
 })
 
 /**
- * Generate simplified sentiment analysis from HuggingFace results
+ * Generate enhanced sentiment analysis from HuggingFace results
+ * NOW WITH BART SUMMARIES & EXPLANATIONS (FREE!)
  */
-function generateSentimentAnalysis(
+async function generateSentimentAnalysis(
   sentiment: { label: string; score: number },
   transcriptText: string,
   sourceName: string,
-  transcriptType: string
-): any {
+  transcriptType: string,
+  huggingfaceApiKey: string
+): Promise<any> {
   const { label, score } = sentiment
 
   // Map HuggingFace labels to our format
@@ -345,48 +355,73 @@ function generateSentimentAnalysis(
     }
   }
 
-  // Generate basic themes
-  const keyThemes = [
-    {
-      theme: overallSentiment === 'positive' ? 'General satisfaction' : 'General concerns',
-      sentiment: overallSentiment,
-      mentions: 1,
-      urgency: overallSentiment === 'negative' ? (churnRisk === 'critical' ? 'critical' : 'medium') : 'low'
-    }
-  ]
-
-  // Basic pain points and highlights
-  const painPoints: string[] = []
-  const positiveHighlights: string[] = []
-
-  if (overallSentiment === 'negative') {
-    painPoints.push('Customer expressed dissatisfaction during the conversation')
-  } else if (overallSentiment === 'positive') {
-    positiveHighlights.push('Customer showed positive sentiment during the conversation')
+  // ==========================================
+  // NEW: BART-POWERED SUMMARIES & EXPLANATIONS
+  // ==========================================
+  
+  let meetingSummary = ''
+  let sentimentExplanation = ''
+  let keyQuotes = { positive: [] as string[], negative: [] as string[], neutral: [] as string[] }
+  let keywords: string[] = []
+  
+  try {
+    // 1. Generate meeting summary using BART (FREE!)
+    console.log('🤖 Generating BART summary...')
+    meetingSummary = await generateBARTSummary(
+      transcriptText, 
+      huggingfaceApiKey,
+      { maxLength: 150, minLength: 50 }
+    )
+    
+    // 2. Generate sentiment explanation using BART (FREE!)
+    console.log('🤖 Generating sentiment explanation...')
+    sentimentExplanation = await generateSentimentExplanation(
+      transcriptText,
+      overallSentiment,
+      sentimentScore,
+      huggingfaceApiKey
+    )
+    
+    // 3. Extract key quotes that support the sentiment
+    console.log('📝 Extracting key quotes...')
+    keyQuotes = extractKeyQuotes(transcriptText, overallSentiment, 3)
+    
+    // 4. Extract keywords from transcript
+    console.log('🔑 Extracting keywords...')
+    keywords = extractKeywords(transcriptText, 10)
+    
+  } catch (error: any) {
+    console.error('⚠️ Error generating enhanced analysis:', error.message)
+    // Fallback to basic summary
+    meetingSummary = `This ${transcriptType} with ${sourceName} showed ${overallSentiment} sentiment.`
+    sentimentExplanation = `The meeting was classified as ${overallSentiment} based on the overall tone and content of the conversation.`
+    keyQuotes = extractKeyQuotes(transcriptText, overallSentiment, 3)
+    keywords = extractKeywords(transcriptText, 10)
   }
 
-  // Basic actionable insights
-  const actionableInsights = []
-  if (churnRisk === 'high' || churnRisk === 'critical') {
-    actionableInsights.push({
-      insight: 'Schedule follow-up call to address concerns and prevent potential churn',
-      priority: churnRisk === 'critical' ? 'critical' : 'high',
-      owner: 'Customer Success',
-      estimatedImpact: 'Improve customer satisfaction and reduce churn risk'
-    })
-  } else if (overallSentiment === 'positive') {
-    actionableInsights.push({
-      insight: 'Continue providing excellent service to maintain customer satisfaction',
-      priority: 'low',
-      owner: 'Account Management',
-      estimatedImpact: 'Maintain strong customer relationship'
-    })
-  }
+  // Generate enhanced themes based on keywords
+  const keyThemes = generateThemesFromKeywords(keywords, overallSentiment, churnRisk)
 
-  // Generate summary
-  const summary = `This ${transcriptType} showed ${overallSentiment} sentiment with a ${customerSatisfaction} customer satisfaction level. ${
-    churnRisk !== 'low' ? `Churn risk is ${churnRisk} - follow-up recommended.` : 'Customer appears satisfied with current service.'
-  }`
+  // Enhanced pain points and highlights from quotes
+  const painPoints: string[] = keyQuotes.negative.length > 0 
+    ? keyQuotes.negative 
+    : overallSentiment === 'negative' 
+      ? ['Customer expressed concerns during the conversation']
+      : []
+      
+  const positiveHighlights: string[] = keyQuotes.positive.length > 0
+    ? keyQuotes.positive
+    : overallSentiment === 'positive'
+      ? ['Customer showed positive sentiment during the conversation']
+      : []
+
+  // Enhanced actionable insights
+  const actionableInsights = generateActionableInsights(
+    overallSentiment,
+    churnRisk,
+    painPoints,
+    positiveHighlights
+  )
 
   return {
     overallSentiment,
@@ -398,6 +433,145 @@ function generateSentimentAnalysis(
     painPoints,
     positiveHighlights,
     actionableInsights,
-    summary
+    summary: meetingSummary, // BART-generated summary!
+    sentimentExplanation,    // NEW: Why this sentiment?
+    keyQuotes,               // NEW: Supporting quotes
+    keywords,                // NEW: Extracted keywords
+    enhancedWithAI: true,    // Flag to indicate AI enhancement
+    generatedAt: new Date().toISOString()
   }
+}
+
+/**
+ * Generate themes from extracted keywords
+ */
+function generateThemesFromKeywords(
+  keywords: string[],
+  sentiment: string,
+  churnRisk: string
+): Array<{ theme: string; sentiment: string; mentions: number; urgency: string }> {
+  const themes: Array<{ theme: string; sentiment: string; mentions: number; urgency: string }> = []
+  
+  // Categorize keywords into themes
+  const serviceKeywords = ['support', 'service', 'help', 'team', 'response']
+  const productKeywords = ['feature', 'product', 'platform', 'system', 'tool']
+  const pricingKeywords = ['price', 'cost', 'billing', 'payment', 'plan']
+  const performanceKeywords = ['performance', 'speed', 'slow', 'fast', 'downtime', 'outage']
+  
+  const hasServiceMention = keywords.some(kw => serviceKeywords.includes(kw))
+  const hasProductMention = keywords.some(kw => productKeywords.includes(kw))
+  const hasPricingMention = keywords.some(kw => pricingKeywords.includes(kw))
+  const hasPerformanceMention = keywords.some(kw => performanceKeywords.includes(kw))
+  
+  if (hasServiceMention) {
+    themes.push({
+      theme: 'Customer Support',
+      sentiment: sentiment,
+      mentions: keywords.filter(kw => serviceKeywords.includes(kw)).length,
+      urgency: churnRisk === 'critical' || churnRisk === 'high' ? 'high' : 'medium'
+    })
+  }
+  
+  if (hasProductMention) {
+    themes.push({
+      theme: 'Product & Features',
+      sentiment: sentiment,
+      mentions: keywords.filter(kw => productKeywords.includes(kw)).length,
+      urgency: 'medium'
+    })
+  }
+  
+  if (hasPricingMention) {
+    themes.push({
+      theme: 'Pricing & Billing',
+      sentiment: sentiment,
+      mentions: keywords.filter(kw => pricingKeywords.includes(kw)).length,
+      urgency: churnRisk === 'critical' ? 'high' : 'medium'
+    })
+  }
+  
+  if (hasPerformanceMention) {
+    themes.push({
+      theme: 'Performance & Reliability',
+      sentiment: sentiment,
+      mentions: keywords.filter(kw => performanceKeywords.includes(kw)).length,
+      urgency: churnRisk === 'critical' || churnRisk === 'high' ? 'critical' : 'high'
+    })
+  }
+  
+  // Default theme if no specific categories found
+  if (themes.length === 0) {
+    themes.push({
+      theme: sentiment === 'positive' ? 'General Satisfaction' : 'General Discussion',
+      sentiment: sentiment,
+      mentions: 1,
+      urgency: churnRisk === 'critical' || churnRisk === 'high' ? 'high' : 'low'
+    })
+  }
+  
+  return themes
+}
+
+/**
+ * Generate actionable insights based on sentiment and quotes
+ */
+function generateActionableInsights(
+  sentiment: string,
+  churnRisk: string,
+  painPoints: string[],
+  positiveHighlights: string[]
+): Array<{ insight: string; priority: string; owner: string; estimatedImpact: string }> {
+  const insights: Array<{ insight: string; priority: string; owner: string; estimatedImpact: string }> = []
+  
+  if (churnRisk === 'critical') {
+    insights.push({
+      insight: 'URGENT: Schedule immediate follow-up call within 24 hours to address critical concerns',
+      priority: 'critical',
+      owner: 'Customer Success Manager',
+      estimatedImpact: 'Prevent potential churn and rebuild customer confidence'
+    })
+  } else if (churnRisk === 'high') {
+    insights.push({
+      insight: 'Schedule follow-up call within 48 hours to address customer concerns and prevent escalation',
+      priority: 'high',
+      owner: 'Customer Success',
+      estimatedImpact: 'Reduce churn risk and improve customer satisfaction'
+    })
+  }
+  
+  if (painPoints.length > 0 && sentiment === 'negative') {
+    insights.push({
+      insight: `Address specific pain points mentioned: ${painPoints.length} key concerns identified`,
+      priority: churnRisk === 'critical' || churnRisk === 'high' ? 'high' : 'medium',
+      owner: 'Account Management',
+      estimatedImpact: 'Resolve customer issues and improve satisfaction'
+    })
+  }
+  
+  if (sentiment === 'positive' && positiveHighlights.length > 0) {
+    insights.push({
+      insight: 'Leverage positive feedback for testimonial or case study opportunity',
+      priority: 'low',
+      owner: 'Marketing',
+      estimatedImpact: 'Build brand advocacy and attract new customers'
+    })
+    
+    insights.push({
+      insight: 'Continue providing excellent service to maintain high satisfaction levels',
+      priority: 'low',
+      owner: 'Account Management',
+      estimatedImpact: 'Maintain strong customer relationship and prevent churn'
+    })
+  }
+  
+  if (sentiment === 'neutral') {
+    insights.push({
+      insight: 'Proactively engage to identify upsell opportunities or hidden concerns',
+      priority: 'medium',
+      owner: 'Account Management',
+      estimatedImpact: 'Deepen relationship and uncover growth opportunities'
+    })
+  }
+  
+  return insights
 }
