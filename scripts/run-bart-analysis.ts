@@ -15,8 +15,18 @@
  * Run with: npx tsx scripts/run-bart-analysis.ts
  */
 
+import { config } from 'dotenv'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
 import { createClient } from '@supabase/supabase-js'
 import { HfInference } from '@huggingface/inference'
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+// Load environment variables
+config({ path: resolve(__dirname, '../.env') })
 
 // Configuration
 const BATCH_SIZE = 10 // Process 10 transcripts at a time
@@ -48,6 +58,13 @@ async function main() {
   console.log('🚀 Starting BART Analysis Script')
   console.log('=' .repeat(60))
   
+  // Debug: Show what env vars are loaded
+  console.log('📝 Debug: Environment variables check...')
+  console.log(`SUPABASE_URL exists: ${!!process.env.SUPABASE_URL}`)
+  console.log(`NUXT_PUBLIC_SUPABASE_URL exists: ${!!process.env.NUXT_PUBLIC_SUPABASE_URL}`)
+  console.log(`HUGGINGFACE_API_KEY exists: ${!!process.env.HUGGINGFACE_API_KEY}`)
+  console.log('')
+  
   // Load environment variables
   const supabaseUrl = process.env.NUXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseKey = process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
@@ -56,6 +73,8 @@ async function main() {
   if (!supabaseUrl || !supabaseKey) {
     console.error('❌ Error: Supabase credentials not found in environment')
     console.error('Required: NUXT_PUBLIC_SUPABASE_URL and NUXT_PUBLIC_SUPABASE_ANON_KEY')
+    console.error(`Got supabaseUrl: ${supabaseUrl ? 'YES' : 'NO'}`)
+    console.error(`Got supabaseKey: ${supabaseKey ? 'YES' : 'NO'}`)
     process.exit(1)
   }
   
