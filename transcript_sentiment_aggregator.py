@@ -126,11 +126,10 @@ def calculate_recency_weight(created_at: Optional[str], reference: Optional[date
 
     try:
         ticket_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
-        # Make both datetimes timezone-naive for comparison
-        if ticket_date.tzinfo is not None:
-            ticket_date = ticket_date.replace(tzinfo=None)
+        # Strip any timezone info so we are always comparing naive datetimes
+        ticket_date_naive = ticket_date.replace(tzinfo=None)
         reference_naive = reference.replace(tzinfo=None)
-        days_ago = (reference_naive - ticket_date).days
+        days_ago = (reference_naive - ticket_date_naive).days
     except (ValueError, AttributeError):
         return 1.0
 
