@@ -77,9 +77,11 @@ export default defineEventHandler(async (event): Promise<ExtractionResult> => {
       transcriptsQuery = transcriptsQuery.eq('diio_transcript_id', specificTranscriptId)
     } else {
       // Only fetch transcripts that haven't been processed yet (unless force=true)
-      if (!force) {
-        transcriptsQuery = transcriptsQuery.eq('feedback_extracted', false)
-      }
+      // NOTE: Commented out feedback_extracted filter - add column to database if needed
+      // See: database/fix_missing_feedback_extracted_column.sql
+      // if (!force) {
+      //   transcriptsQuery = transcriptsQuery.eq('feedback_extracted', false)
+      // }
       transcriptsQuery = transcriptsQuery.limit(limit)
     }
     
@@ -101,12 +103,14 @@ export default defineEventHandler(async (event): Promise<ExtractionResult> => {
     for (const transcript of transcripts) {
       try {
         // Check if already extracted (unless force)
-        if (!force && transcript.feedback_extracted) {
-          console.log(`⏭️  Skipping transcript ${transcript.diio_transcript_id} (already extracted)`)
-          result.summary.transcriptsSkipped++
-          result.details.skippedTranscriptIds.push(transcript.diio_transcript_id)
-          continue
-        }
+        // NOTE: Commented out feedback_extracted check - add column to database if needed
+        // See: database/fix_missing_feedback_extracted_column.sql
+        // if (!force && transcript.feedback_extracted) {
+        //   console.log(`⏭️  Skipping transcript ${transcript.diio_transcript_id} (already extracted)`)
+        //   result.summary.transcriptsSkipped++
+        //   result.details.skippedTranscriptIds.push(transcript.diio_transcript_id)
+        //   continue
+        // }
         
         // Skip if transcript text is empty
         if (!transcript.transcript_text || transcript.transcript_text.trim().length === 0) {
@@ -210,14 +214,16 @@ export default defineEventHandler(async (event): Promise<ExtractionResult> => {
         if (parsed.feedbackSegments.length === 0) {
           console.log(`⚠️ No feedback segments found in transcript ${transcript.diio_transcript_id}`)
           // Still mark as extracted even if no feedback found
-          await supabase
-            .from('diio_transcripts')
-            .update({
-              feedback_extracted: true,
-              feedback_extraction_date: new Date().toISOString(),
-              feedback_segments_count: 0
-            })
-            .eq('id', transcript.id)
+          // NOTE: Commented out feedback_extracted update - add column to database if needed
+          // See: database/fix_missing_feedback_extracted_column.sql
+          // await supabase
+          //   .from('diio_transcripts')
+          //   .update({
+          //     feedback_extracted: true,
+          //     feedback_extraction_date: new Date().toISOString(),
+          //     feedback_segments_count: 0
+          //   })
+          //   .eq('id', transcript.id)
           
           result.summary.transcriptsProcessed++
           result.details.processedTranscriptIds.push(transcript.diio_transcript_id)
@@ -322,14 +328,16 @@ export default defineEventHandler(async (event): Promise<ExtractionResult> => {
         }
         
         // Update transcript record
-        await supabase
-          .from('diio_transcripts')
-          .update({
-            feedback_extracted: true,
-            feedback_extraction_date: new Date().toISOString(),
-            feedback_segments_count: parsed.feedbackSegments.length
-          })
-          .eq('id', transcript.id)
+        // NOTE: Commented out feedback_extracted update - add column to database if needed
+        // See: database/fix_missing_feedback_extracted_column.sql
+        // await supabase
+        //   .from('diio_transcripts')
+        //   .update({
+        //     feedback_extracted: true,
+        //     feedback_extraction_date: new Date().toISOString(),
+        //     feedback_segments_count: parsed.feedbackSegments.length
+        //   })
+        //   .eq('id', transcript.id)
         
         result.summary.transcriptsProcessed++
         result.summary.feedbackSegmentsExtracted += parsed.feedbackSegments.length
