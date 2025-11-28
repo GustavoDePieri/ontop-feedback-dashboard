@@ -1,7 +1,6 @@
 # Exclude unnecessary files to reduce deployment size
 *.md
 *.txt
-!requirements.txt
 !runtime.txt
 .git/
 .gitignore
@@ -19,3 +18,7 @@ pip-delete-this-directory.txt
 Thumbs.db
 .streamlit/secrets.toml
 ENVIRONMENT_SETUP.md
+
+# Exclude Python scripts and dependencies - not needed for Vercel Node.js deployment
+*.py
+requirements.txt
