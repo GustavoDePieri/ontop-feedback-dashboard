@@ -344,14 +344,11 @@
                     ⚠️ Churned
                   </span>
 
-                  <!-- Debug: Show account_status for all transcripts -->
-                  <span class="text-xs text-gray-500 ml-2">[{{ transcript.account_status || 'NULL' }}]</span>
-
                   <!-- Active Account Badge -->
                   <span
                     v-if="transcript.account_status === 'active'"
                     class="px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 border border-green-500/30"
-                    :title="`Active Account: ${transcript.account_name} (${transcript.client_platform_id})`"
+                    :title="`Active Account: ${transcript.account_name || 'N/A'} (${transcript.client_platform_id})`"
                   >
                     ✅ Active
                   </span>
@@ -404,6 +401,42 @@
                       <button
                         @click.stop="copyToClipboard(transcript.client_platform_id)"
                         class="text-red-400 hover:text-red-200 transition-colors p-1 rounded"
+                        title="Copy Client Platform ID"
+                      >
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Account Info Section (for active accounts) -->
+                <div v-if="transcript.client_platform_id && transcript.account_status === 'active'" class="mb-3 p-2 bg-green-900/20 rounded border border-green-500/30">
+                  <p class="text-xs text-green-400 font-semibold mb-1">✅ Active Account:</p>
+                  <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1">
+                      <span class="px-2 py-1 text-xs rounded bg-green-500/20 text-green-300 border border-green-500/30">
+                        {{ transcript.account_name || 'N/A' }}
+                      </span>
+                      <button
+                        v-if="transcript.account_name"
+                        @click.stop="copyToClipboard(transcript.account_name)"
+                        class="text-green-400 hover:text-green-200 transition-colors p-1 rounded"
+                        title="Copy Account Name"
+                      >
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <span class="px-2 py-1 text-xs rounded bg-green-500/20 text-green-300 border border-green-500/30">
+                        ID: {{ transcript.client_platform_id }}
+                      </span>
+                      <button
+                        @click.stop="copyToClipboard(transcript.client_platform_id)"
+                        class="text-green-400 hover:text-green-200 transition-colors p-1 rounded"
                         title="Copy Client Platform ID"
                       >
                         <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
