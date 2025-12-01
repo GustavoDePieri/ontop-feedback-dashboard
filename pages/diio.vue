@@ -375,7 +375,19 @@
                 
                 <h3 class="text-white font-medium mb-2">{{ transcript.source_name || 'Untitled' }}</h3>
                 
-                <p class="text-gray-300 text-sm mb-3 line-clamp-2">
+                <!-- Summary Section -->
+                <div v-if="transcript.summary" class="mb-3 p-3 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-lg border border-blue-500/20">
+                  <div class="flex items-center gap-2 mb-1">
+                    <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="text-xs font-semibold text-blue-300">AI Summary</span>
+                  </div>
+                  <p class="text-gray-200 text-sm line-clamp-3">{{ transcript.summary }}</p>
+                </div>
+                
+                <!-- Transcript Preview (only show if no summary) -->
+                <p v-else class="text-gray-300 text-sm mb-3 line-clamp-2">
                   {{ getTranscriptPreview(transcript.transcript_text) }}
                 </p>
                 
@@ -621,7 +633,21 @@
             </button>
           </div>
           
+          <!-- Summary Section in Modal -->
+          <div v-if="selectedTranscript.summary" class="mb-4 p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-lg border border-blue-500/20">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <h3 class="text-lg font-semibold text-blue-300">AI Summary</h3>
+            </div>
+            <p class="text-gray-200 text-sm leading-relaxed">{{ selectedTranscript.summary }}</p>
+          </div>
+          
           <div class="bg-gray-900 rounded-lg p-4 text-gray-300 whitespace-pre-wrap border border-gray-700 max-h-[50vh] overflow-auto">
+            <div v-if="selectedTranscript.summary" class="mb-3 pb-3 border-b border-gray-700">
+              <p class="text-xs text-gray-500 mb-2">Full Transcript:</p>
+            </div>
             {{ formatTranscriptText(selectedTranscript.transcript_text) }}
           </div>
         </div>

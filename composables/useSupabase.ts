@@ -408,6 +408,9 @@ export const useSupabase = () => {
               client_platform_id,
               account_name,
               account_status,
+              summary,
+              sentiment,
+              sentiment_score,
               created_at,
               updated_at
             `)
@@ -456,6 +459,9 @@ export const useSupabase = () => {
           client_platform_id,
           account_name,
           account_status,
+          summary,
+          sentiment,
+          sentiment_score,
           created_at,
           updated_at
         `)
