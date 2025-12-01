@@ -70,7 +70,7 @@ export default defineEventHandler(async (event): Promise<ExtractionResult> => {
     // Fetch transcripts to process
     let transcriptsQuery = supabase
       .from('diio_transcripts')
-      .select('*')
+      .select('id, diio_transcript_id, transcript_text, transcript_type, source_id, source_name, occurred_at, duration, attendees, ai_analysis, ai_analysis_date, analyzed_status, client_platform_id, account_name, account_status, sentiment, sentiment_score, created_at, updated_at')
       .order('occurred_at', { ascending: false })
     
     if (specificTranscriptId) {
@@ -122,81 +122,23 @@ export default defineEventHandler(async (event): Promise<ExtractionResult> => {
         
         console.log(`📝 Processing transcript ${transcript.diio_transcript_id}...`)
         
-        // Get source meeting/call data for metadata
-        let sourceData: any = null
+        // Extract participant emails from transcript attendees (tables diio_meetings and diio_phone_calls were removed)
         let sellerEmails: string[] = []
         let customerEmails: string[] = []
         let participantEmails: string[] = []
         
-        if (transcript.transcript_type === 'meeting') {
-          const { data: meeting } = await supabase
-            .from('diio_meetings')
-            .select('*')
-            .eq('diio_meeting_id', transcript.source_id)
-            .single()
-          
-          if (meeting) {
-            sourceData = meeting
-            // Extract seller and customer emails
-            if (meeting.attendees) {
-              if (meeting.attendees.sellers) {
-                sellerEmails = meeting.attendees.sellers.map((s: any) => s.email).filter((e: string) => e)
-              }
-              if (meeting.attendees.customers) {
-                customerEmails = meeting.attendees.customers.map((c: any) => c.email).filter((e: string) => e)
-              }
-            }
-            participantEmails = meeting.participant_emails || []
-            
-            // If participant_emails is empty/null, extract from attendees
-            if (!participantEmails || participantEmails.length === 0) {
-              const emails: string[] = []
-              if (meeting.attendees) {
-                if (meeting.attendees.sellers) {
-                  emails.push(...meeting.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
-                }
-                if (meeting.attendees.customers) {
-                  emails.push(...meeting.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
-                }
-              }
-              participantEmails = [...new Set(emails)] // Remove duplicates
-            }
+        // Extract emails directly from transcript attendees field
+        if (transcript.attendees) {
+          if (transcript.attendees.sellers) {
+            sellerEmails = transcript.attendees.sellers.map((s: any) => s.email).filter((e: string) => e)
           }
-        } else if (transcript.transcript_type === 'phone_call') {
-          const { data: call } = await supabase
-            .from('diio_phone_calls')
-            .select('*')
-            .eq('diio_call_id', transcript.source_id)
-            .single()
-          
-          if (call) {
-            sourceData = call
-            // Extract seller and customer emails
-            if (call.attendees) {
-              if (call.attendees.sellers) {
-                sellerEmails = call.attendees.sellers.map((s: any) => s.email).filter((e: string) => e)
-              }
-              if (call.attendees.customers) {
-                customerEmails = call.attendees.customers.map((c: any) => c.email).filter((e: string) => e)
-              }
-            }
-            participantEmails = call.participant_emails || []
-            
-            // If participant_emails is empty/null, extract from attendees
-            if (!participantEmails || participantEmails.length === 0) {
-              const emails: string[] = []
-              if (call.attendees) {
-                if (call.attendees.sellers) {
-                  emails.push(...call.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
-                }
-                if (call.attendees.customers) {
-                  emails.push(...call.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
-                }
-              }
-              participantEmails = [...new Set(emails)] // Remove duplicates
-            }
+          if (transcript.attendees.customers) {
+            customerEmails = transcript.attendees.customers.map((c: any) => c.email).filter((e: string) => e)
           }
+          // Combine all participant emails
+          participantEmails = [...new Set([...sellerEmails, ...customerEmails])] // Remove duplicates
         }
+        
         
         // Prepare metadata for parser
         const metadata: TranscriptMetadata = {

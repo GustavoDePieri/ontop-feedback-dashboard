@@ -110,7 +110,7 @@ export default defineEventHandler(async (event): Promise<BulkAnalysisResult> => 
         // Get transcripts for this account
         let query = supabase
           .from('diio_transcripts')
-          .select('id, diio_transcript_id, transcript_text, source_name, occurred_at, attendees, client_platform_id, account_name, ai_analysis, ai_analysis_date, account_status')
+          .select('id, diio_transcript_id, transcript_text, transcript_type, source_name, occurred_at, attendees, client_platform_id, account_name, account_status, ai_analysis, ai_analysis_date, sentiment, sentiment_score')
           .eq('client_platform_id', accountId)
 
         if (skipAnalyzed && !forceReanalysis) {

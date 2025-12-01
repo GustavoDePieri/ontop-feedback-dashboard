@@ -75,7 +75,7 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
     // Fetch transcript from database
     const { data: transcript, error: fetchError } = await supabase
       .from('diio_transcripts')
-      .select('*')
+      .select('id, diio_transcript_id, transcript_text, transcript_type, source_id, source_name, occurred_at, duration, attendees, ai_analysis, ai_analysis_date, analyzed_status, client_platform_id, account_name, account_status, sentiment, sentiment_score, created_at, updated_at')
       .eq('id', transcriptId)
       .single()
 

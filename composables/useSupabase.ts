@@ -37,6 +37,15 @@ export interface DiioTranscriptRecord {
   ai_analysis_date?: string
   analyzed_status?: 'pending' | 'finished' | 'error'
   error_cause?: string
+  client_platform_id?: string
+  account_name?: string
+  account_status?: string
+  sentiment?: 'positive' | 'neutral' | 'negative' | 'mixed' | null
+  sentiment_score?: number | null
+  positive_meetings?: number
+  neutral_meetings?: number
+  negative_meetings?: number
+  avg_sentiment_meetings?: number | null
   created_at?: string
   updated_at?: string
 }
@@ -217,7 +226,8 @@ export const useSupabase = () => {
     }
   }
 
-  // Save or update DIIO meetings (optimized for large batches)
+  // ⚠️ DEPRECATED: diio_meetings table was removed in database cleanup
+  // This function will fail if called. Use transcript.attendees field instead.
   const saveDiioMeetings = async (meetings: DiioMeeting[]) => {
     try {
       console.log(`💾 Preparing to store ${meetings.length} meetings...`)
@@ -281,7 +291,8 @@ export const useSupabase = () => {
     }
   }
 
-  // Save or update DIIO phone calls (optimized for large batches)
+  // ⚠️ DEPRECATED: diio_phone_calls table was removed in database cleanup
+  // This function will fail if called. Use transcript.attendees field instead.
   const saveDiioPhoneCalls = async (phoneCalls: DiioPhoneCall[]) => {
     try {
       console.log(`💾 Preparing to store ${phoneCalls.length} phone calls...`)
