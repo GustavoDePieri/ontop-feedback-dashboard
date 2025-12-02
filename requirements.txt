@@ -3,4 +3,9 @@ python-dotenv>=1.0.0
 chardet>=5.0.0
 transformers>=4.30.0
 torch>=2.0.0
+<<<<<<< HEAD
 scipy>=1.10.0
+=======
+sentencepiece>=0.1.99
+requests>=2.28.0
+>>>>>>> 7dabb87ae1421bfaa43550f52419f9a11c80d24c
