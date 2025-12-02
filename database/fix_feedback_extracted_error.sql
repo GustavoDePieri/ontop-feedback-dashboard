@@ -70,3 +70,6 @@ AND column_name = 'feedback_extracted';
 -- Should return 0 (column doesn't exist)
 
 
+
+
+
