@@ -10,47 +10,60 @@
       </div>
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
-        <div class="text-center">
-          <!-- Logo -->
-          <div class="flex justify-center mb-6">
-            <AppLogo size="xl" :show-text="false" :shadow="true" />
-          </div>
-          
-          <h1 class="text-5xl sm:text-6xl font-bold text-white mb-4">
-            Welcome to <span class="bg-gradient-ontop bg-clip-text text-transparent">Ontop Analytics</span>
-          </h1>
-          <p class="text-xl text-white/70 max-w-2xl mx-auto mb-8">
-            AI-powered customer intelligence platform. Choose a module below to get started.
-          </p>
+        <!-- Left side: Logo and Text -->
+        <div class="flex flex-col lg:flex-row items-center lg:items-start lg:justify-between gap-12">
+          <!-- Left Column -->
+          <div class="lg:w-1/2 text-center lg:text-left">
+            <!-- Ontop Logo Image -->
+            <div class="flex justify-center lg:justify-start mb-8">
+              <img 
+                src="/ontop-logo-ai.jpg" 
+                alt="Ontop Logo" 
+                class="w-32 h-32 rounded-2xl shadow-2xl ring-4 ring-white/10 hover:ring-white/20 transition-all duration-300"
+              />
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">
+              Welcome to <span class="bg-gradient-ontop bg-clip-text text-transparent">Ontop Analytics</span>
+            </h1>
+            <p class="text-lg sm:text-xl text-white/70 mb-8 max-w-xl">
+              AI-powered customer intelligence platform. Choose a module to get started.
+            </p>
 
-          <!-- Quick Stats -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto mt-8">
-            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
-              <div v-if="loading" class="flex items-center justify-center h-12">
-                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
+              <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+                <div v-if="loading" class="flex items-center justify-center h-12">
+                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                </div>
+                <template v-else>
+                  <div class="text-3xl font-bold text-white">{{ stats.totalFeedback }}</div>
+                  <div class="text-sm text-white/60">Total Feedback</div>
+                </template>
               </div>
-              <template v-else>
-                <div class="text-3xl font-bold text-white">{{ stats.totalFeedback }}</div>
-                <div class="text-sm text-white/60">Total Feedback</div>
-              </template>
-            </div>
-            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
-              <div v-if="loading" class="flex items-center justify-center h-12">
-                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+                <div v-if="loading" class="flex items-center justify-center h-12">
+                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                </div>
+                <template v-else>
+                  <div class="text-3xl font-bold text-white">{{ stats.totalTranscripts }}</div>
+                  <div class="text-sm text-white/60">Call Transcripts</div>
+                </template>
               </div>
-              <template v-else>
-                <div class="text-3xl font-bold text-white">{{ stats.totalTranscripts }}</div>
-                <div class="text-sm text-white/60">Call Transcripts</div>
-              </template>
             </div>
           </div>
+
+          <!-- Right Column - placeholder for alignment on larger screens -->
+          <div class="hidden lg:block lg:w-1/2"></div>
         </div>
       </div>
     </div>
 
     <!-- Navigation Cards Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Cards wrapper with right alignment on large screens -->
+      <div class="lg:flex lg:justify-end">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:max-w-5xl">
         
         <!-- Feedback Analytics Card -->
         <NuxtLink 
@@ -298,7 +311,7 @@
             </div>
           </div>
         </div>
-
+        </div>
       </div>
     </div>
 
