@@ -43,15 +43,6 @@
                 <div class="text-sm text-white/60">Call Transcripts</div>
               </template>
             </div>
-            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
-              <div v-if="loading" class="flex items-center justify-center h-12">
-                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-              </div>
-              <template v-else>
-                <div class="text-3xl font-bold text-white">{{ stats.reportsGenerated }}</div>
-                <div class="text-sm text-white/60">Reports Generated</div>
-              </template>
-            </div>
           </div>
         </div>
       </div>
@@ -93,7 +84,6 @@
               <div class="flex items-center space-x-4 text-sm text-white/50">
                 <span>📊 Metrics</span>
                 <span>🎯 Sentiment</span>
-                <span>🤖 AI Reports</span>
               </div>
             </div>
           </div>
@@ -137,9 +127,9 @@
           </div>
         </NuxtLink>
 
-        <!-- Reports Card -->
+        <!-- Zendesk Tickets Card -->
         <NuxtLink 
-          to="/reports"
+          to="/zendesk"
           class="group relative bg-gradient-to-br from-ontop-coral-600/20 to-ontop-coral-800/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-ontop-coral-500/50 transition-all duration-300 hover:shadow-glow-pink hover:scale-105"
         >
           <div class="absolute inset-0 bg-gradient-cta opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"></div>
@@ -147,19 +137,19 @@
           <div class="relative z-10">
             <div class="bg-gradient-to-r from-ontop-coral-500 to-ontop-pink-500 rounded-xl p-4 w-16 h-16 flex items-center justify-center mb-4 shadow-lg">
               <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
               </svg>
             </div>
             
             <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-ontop-coral-300 transition-colors">
-              Reports
+              Zendesk Tickets
             </h3>
             <p class="text-white/60 mb-4">
-              Generate comprehensive intelligence reports with AI insights and export capabilities
+              Browse and analyze support tickets grouped by client with sentiment insights
             </p>
             
             <div class="flex items-center text-ontop-coral-400 font-medium">
-              <span>Generate Reports</span>
+              <span>View Tickets</span>
               <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -167,9 +157,9 @@
 
             <div class="mt-4 pt-4 border-t border-white/10">
               <div class="flex items-center space-x-4 text-sm text-white/50">
-                <span>📄 PDF</span>
-                <span>📊 Analytics</span>
-                <span>📧 Export</span>
+                <span>🎫 Tickets</span>
+                <span>🏢 Clients</span>
+                <span>🤖 Sentiment</span>
               </div>
             </div>
           </div>
@@ -325,7 +315,7 @@
             <h4 class="text-white font-semibold mb-1">💡 Getting Started</h4>
             <p class="text-white/60 text-sm">
               Choose any module above to begin. <strong>Feedback Analytics</strong> provides real-time customer insights, 
-              <strong>Call Transcripts</strong> analyzes recorded conversations, and <strong>Reports</strong> generates comprehensive intelligence documents.
+              <strong>Call Transcripts</strong> analyzes recorded conversations, and <strong>Zendesk Tickets</strong> lets you explore support interactions.
             </p>
           </div>
         </div>
@@ -348,8 +338,7 @@ const refreshing = ref(false)
 const loading = ref(true)
 const stats = ref({
   totalFeedback: '---',
-  totalTranscripts: '---',
-  reportsGenerated: '---'
+  totalTranscripts: '---'
 })
 
 // Fetch real stats on mount
@@ -364,15 +353,13 @@ onMounted(async () => {
     if (data.success) {
       stats.value = {
         totalFeedback: data.feedbackCount?.toLocaleString() || '0',
-        totalTranscripts: data.transcriptCount?.toLocaleString() || '0',
-        reportsGenerated: data.reportsCount?.toLocaleString() || '0'
+        totalTranscripts: data.transcriptCount?.toLocaleString() || '0'
       }
     } else {
       // Show zeros if API fails
       stats.value = {
         totalFeedback: '0',
-        totalTranscripts: '0',
-        reportsGenerated: '0'
+        totalTranscripts: '0'
       }
     }
   } catch (error) {
@@ -380,8 +367,7 @@ onMounted(async () => {
     // Show zeros instead of placeholder on error
     stats.value = {
       totalFeedback: '0',
-      totalTranscripts: '0',
-      reportsGenerated: '0'
+      totalTranscripts: '0'
     }
   } finally {
     loading.value = false
@@ -399,8 +385,7 @@ const refreshAllData = async () => {
     if (data.success) {
       stats.value = {
         totalFeedback: data.feedbackCount?.toLocaleString() || '0',
-        totalTranscripts: data.transcriptCount?.toLocaleString() || '0',
-        reportsGenerated: data.reportsCount?.toLocaleString() || '0'
+        totalTranscripts: data.transcriptCount?.toLocaleString() || '0'
       }
       console.log('✅ Data refreshed successfully!')
     } else {

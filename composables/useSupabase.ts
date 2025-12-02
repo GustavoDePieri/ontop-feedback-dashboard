@@ -620,6 +620,31 @@ export const useSupabase = () => {
     }
   }
 
+  // Get Zendesk tickets
+  const getZendeskTickets = async (limit = 50, offset = 0) => {
+    try {
+      // First get the count
+      const { count, error: countError } = await supabase
+        .from('zendesk_conversations')
+        .select('*', { count: 'exact', head: true })
+      
+      if (countError) throw countError
+
+      // Then get the data
+      const { data, error } = await supabase
+        .from('zendesk_conversations')
+        .select('*')
+        .order('ticket_id', { ascending: false })
+        .range(offset, offset + limit - 1)
+
+      if (error) throw error
+      return { data, count, error: null }
+    } catch (error) {
+      console.error('Error fetching Zendesk tickets:', error)
+      return { data: null, count: 0, error }
+    }
+  }
+
   return {
     supabase,
     // Saved Reports
@@ -640,6 +665,7 @@ export const useSupabase = () => {
     saveTranscriptFeedback,
     getTranscriptFeedback,
     getAllTranscriptFeedback,
-    getTranscriptFeedbackStats
+    getTranscriptFeedbackStats,
+    getZendeskTickets
   }
 }
