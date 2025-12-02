@@ -586,7 +586,7 @@
 </template>
 
 <script setup lang="ts">
-const { getSupabaseClient } = useSupabase()
+const { supabase } = useSupabase()
 
 // State
 const loading = ref(false)
@@ -695,7 +695,6 @@ const loadTickets = async () => {
   error.value = null
 
   try {
-    const supabase = getSupabaseClient()
     const { data, error: fetchError } = await supabase
       .from('zendesk_conversations')
       .select('*')
