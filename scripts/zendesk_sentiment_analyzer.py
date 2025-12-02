@@ -1,16 +1,19 @@
 """
-Sentiment Analysis for Zendesk Conversations - Using HuggingFace API
+Sentiment Analysis for Zendesk Conversations - Using Local HuggingFace Model
 
-This script processes conversations from Supabase and analyzes sentiment using the 
-Hugging Face API (twitter-xlm-roberta-base-sentiment model).
+This script processes conversations from Supabase and analyzes sentiment using a 
+locally installed HuggingFace model (twitter-xlm-roberta-base-sentiment).
 
-Modified to use HuggingFace Inference API instead of loading model locally.
+The model is loaded once and kept in memory for fast inference.
 
 Usage:
     python zendesk_sentiment_analyzer.py                    # Process 50 tickets
     python zendesk_sentiment_analyzer.py --batch-size 100   # Process 100 tickets
     python zendesk_sentiment_analyzer.py --all-clients       # Process all external tickets
     python zendesk_sentiment_analyzer.py --external-only    # Only external tickets
+
+Requirements:
+    pip install transformers torch sentencepiece
 """
 
 import os
@@ -18,11 +21,18 @@ import sys
 import json
 import argparse
 import logging
-import requests
 from datetime import datetime
 from typing import List, Dict, Optional
 from pathlib import Path
 from dotenv import load_dotenv
+
+# Import transformers for local model
+try:
+    from transformers import pipeline
+    TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    TRANSFORMERS_AVAILABLE = False
+    print("⚠️  transformers not installed. Install with: pip install transformers torch sentencepiece")
 
 # Import issue category extractor
 try:
@@ -62,10 +72,10 @@ load_dotenv()
 # Configuration
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_ANON_KEY")  # Support both variable names
-HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 MODEL_NAME = "cardiffnlp/twitter-xlm-roberta-base-sentiment"
-# Use the inference API endpoint (router endpoint may require different format)
-HUGGINGFACE_API_URL = f"https://router.huggingface.co/models/{MODEL_NAME}"
+
+# Global model pipeline (loaded lazily)
+_sentiment_pipeline = None
 
 # Logging setup
 logging.basicConfig(
@@ -75,12 +85,43 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ============================================================
-# HUGGINGFACE API INTEGRATION
+# LOCAL HUGGINGFACE MODEL INTEGRATION
 # ============================================================
 
-def analyze_sentiment_with_api(text: str) -> Optional[Dict]:
+def load_sentiment_model():
     """
-    Analyze sentiment using HuggingFace Inference API.
+    Load the HuggingFace sentiment analysis model.
+    Model is loaded once and cached in memory.
+    
+    Returns:
+        Pipeline object or None if error
+    """
+    global _sentiment_pipeline
+    
+    if _sentiment_pipeline is not None:
+        return _sentiment_pipeline
+    
+    if not TRANSFORMERS_AVAILABLE:
+        logger.error("transformers library not available. Install with: pip install transformers torch sentencepiece")
+        return None
+    
+    try:
+        logger.info(f"Loading sentiment model: {MODEL_NAME}...")
+        _sentiment_pipeline = pipeline(
+            "sentiment-analysis",
+            model=MODEL_NAME,
+            return_all_scores=True,
+            device=-1  # Use CPU (-1) or GPU (0, 1, ...) if available
+        )
+        logger.info("✅ Sentiment model loaded successfully")
+        return _sentiment_pipeline
+    except Exception as e:
+        logger.error(f"Error loading sentiment model: {e}")
+        return None
+
+def analyze_sentiment_with_model(text: str) -> Optional[Dict]:
+    """
+    Analyze sentiment using locally installed HuggingFace model.
     
     Args:
         text: Text to analyze
@@ -91,59 +132,50 @@ def analyze_sentiment_with_api(text: str) -> Optional[Dict]:
     if not text or len(text.strip()) == 0:
         return None
     
-    if not HUGGINGFACE_API_KEY:
-        logger.error("HUGGINGFACE_API_KEY not set in environment")
+    # Load model if not already loaded
+    pipeline = load_sentiment_model()
+    if pipeline is None:
         return None
     
     try:
-        # Preprocess text (truncate to 512 tokens max for API)
+        # Preprocess text
         cleaned_text = preprocess_text(text)
         if not cleaned_text or len(cleaned_text.strip()) == 0:
             return None
         
-        # Truncate to reasonable length (API has limits)
-        max_length = 1000  # Characters, not tokens
+        # Truncate to model's max length (512 tokens, ~4000 chars for safety)
+        max_length = 4000  # Characters
         if len(cleaned_text) > max_length:
             cleaned_text = cleaned_text[:max_length]
+            logger.debug(f"Text truncated to {max_length} characters")
         
-        # Call HuggingFace Inference API
-        headers = {
-            "Authorization": f"Bearer {HUGGINGFACE_API_KEY}",
-            "Content-Type": "application/json"
-        }
+        # Run inference
+        results = pipeline(cleaned_text)
         
-        payload = {
-            "inputs": cleaned_text
-        }
-        
-        response = requests.post(
-            HUGGINGFACE_API_URL,
-            headers=headers,
-            json=payload,
-            timeout=30
-        )
-        
-        if response.status_code != 200:
-            logger.warning(f"HuggingFace API error: {response.status_code} - {response.text}")
-            return None
-        
-        result = response.json()
-        
-        # Handle API response format
-        # API returns: [{"label": "POSITIVE", "score": 0.99}, ...]
-        if isinstance(result, list) and len(result) > 0:
-            top_result = result[0]
-        elif isinstance(result, dict):
-            top_result = result
+        # Handle pipeline response format
+        # Pipeline returns: [{"label": "POSITIVE", "score": 0.99}, {"label": "NEGATIVE", "score": 0.01}, ...]
+        if isinstance(results, list) and len(results) > 0:
+            # Get all scores
+            if isinstance(results[0], list):
+                # Nested list format
+                scores = results[0]
+            else:
+                # Direct list format
+                scores = results
+            
+            # Find the highest score
+            top_result = max(scores, key=lambda x: x.get('score', 0))
+        elif isinstance(results, dict):
+            top_result = results
         else:
-            logger.warning(f"Unexpected API response format: {result}")
+            logger.warning(f"Unexpected model response format: {results}")
             return None
         
         # Map labels to our format
         label = top_result.get('label', '').upper()
         score = float(top_result.get('score', 0.0))
         
-        # Normalize label
+        # Normalize label (model uses LABEL_0, LABEL_1, LABEL_2 or POSITIVE/NEGATIVE/NEUTRAL)
         if 'POSITIVE' in label or 'LABEL_2' in label:
             mapped_label = 'Positive'
         elif 'NEGATIVE' in label or 'LABEL_0' in label:
@@ -157,11 +189,8 @@ def analyze_sentiment_with_api(text: str) -> Optional[Dict]:
             'original_label': label
         }
         
-    except requests.exceptions.Timeout:
-        logger.warning(f"Timeout analyzing text (truncated): {text[:100]}...")
-        return None
     except Exception as e:
-        logger.warning(f"Error analyzing sentiment with API: {e}")
+        logger.warning(f"Error analyzing sentiment with model: {e}")
         return None
 
 def preprocess_text(text: str) -> str:
@@ -214,7 +243,7 @@ def initialize_supabase():
 
 def analyze_message(message_text: str) -> Optional[Dict]:
     """
-    Analyze sentiment of a single message using HuggingFace API.
+    Analyze sentiment of a single message using local HuggingFace model.
     
     Args:
         message_text: Message text to analyze
@@ -222,7 +251,7 @@ def analyze_message(message_text: str) -> Optional[Dict]:
     Returns:
         Dict with sentiment analysis result or None
     """
-    return analyze_sentiment_with_api(message_text)
+    return analyze_sentiment_with_model(message_text)
 
 def analyze_conversation(conversation: List[Dict], analyze_all: bool = False) -> List[Dict]:
     """
@@ -599,8 +628,8 @@ def main():
         logger.error(f"❌ Failed to initialize: {e}")
         sys.exit(1)
     
-    if not HUGGINGFACE_API_KEY:
-        logger.error("❌ HUGGINGFACE_API_KEY not set in environment")
+    if not TRANSFORMERS_AVAILABLE:
+        logger.error("❌ transformers library not available. Install with: pip install transformers torch sentencepiece")
         sys.exit(1)
     
     logger.info("🚀 Starting sentiment analysis...")
