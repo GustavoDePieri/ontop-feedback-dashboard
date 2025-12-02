@@ -249,6 +249,7 @@
         <div v-if="loading" class="text-center py-12">
           <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
           <p class="text-gray-400 mt-2">Loading tickets...</p>
+          <p v-if="tickets.length > 0" class="text-gray-500 text-sm mt-1">Loaded {{ tickets.length }} tickets so far...</p>
         </div>
 
         <!-- Empty State -->
@@ -693,16 +694,46 @@ const hasActiveFilters = computed(() => {
 const loadTickets = async () => {
   loading.value = true
   error.value = null
+  tickets.value = [] // Clear existing tickets
 
   try {
-    const { data, error: fetchError } = await supabase
-      .from('zendesk_conversations')
-      .select('*')
-      .order('created_at', { ascending: false })
+    // Fetch ALL tickets (Supabase default limit is 1000, so we need to fetch in chunks)
+    let offset = 0
+    const chunkSize = 1000
+    let hasMore = true
 
-    if (fetchError) throw fetchError
+    while (hasMore) {
+      const { data, error: fetchError } = await supabase
+        .from('zendesk_conversations')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(offset, offset + chunkSize - 1)
 
-    tickets.value = data || []
+      if (fetchError) throw fetchError
+
+      if (data && data.length > 0) {
+        // Update tickets reactively so UI shows progress
+        tickets.value = [...tickets.value, ...data]
+        offset += chunkSize
+        hasMore = data.length === chunkSize
+        
+        // Log progress
+        console.log(`Loaded ${tickets.value.length} tickets so far...`)
+        
+        // Small delay to allow UI to update
+        await new Promise(resolve => setTimeout(resolve, 10))
+      } else {
+        hasMore = false
+      }
+
+      // Safety limit to prevent infinite loops
+      if (offset > 100000) {
+        console.warn('⚠️ Reached safety limit of 100,000 tickets')
+        break
+      }
+    }
+
+    console.log(`✅ Loaded ${tickets.value.length} total tickets`)
   } catch (err: any) {
     console.error('Error loading tickets:', err)
     error.value = {
