@@ -26,3 +26,16 @@ logs
 
 # Prevent duplicate app.vue files
 app/app.vue
+
+# Test files and temporary scripts
+**/test*.py
+**/test*.ts
+**/test*.vue
+**/*TEST*.md
+**/PIPELINE_TEST*.md
+**/SETUP_SUMMARY.md
+**/AGGREGATOR_UPDATE_SUMMARY.md
+**/verify_integration.py
+**/migrate_client_sentiment_table.py
+etl_state.json
+scripts/etl_state.json
