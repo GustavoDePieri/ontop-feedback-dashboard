@@ -31,7 +31,7 @@
             </p>
 
             <!-- Quick Stats -->
-            <div class="grid grid-cols-2 gap-4 max-w-md mx-auto lg:mx-0">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-2xl mx-auto lg:mx-0">
               <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
                 <div v-if="loading" class="flex items-center justify-center h-12">
                   <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
@@ -48,6 +48,15 @@
                 <template v-else>
                   <div class="text-3xl font-bold text-white">{{ stats.totalTranscripts }}</div>
                   <div class="text-sm text-white/60">Call Transcripts</div>
+                </template>
+              </div>
+              <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+                <div v-if="loading" class="flex items-center justify-center h-12">
+                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                </div>
+                <template v-else>
+                  <div class="text-3xl font-bold text-white">{{ stats.totalTickets }}</div>
+                  <div class="text-sm text-white/60">Zendesk Tickets</div>
                 </template>
               </div>
             </div>
@@ -351,7 +360,8 @@ const refreshing = ref(false)
 const loading = ref(true)
 const stats = ref({
   totalFeedback: '---',
-  totalTranscripts: '---'
+  totalTranscripts: '---',
+  totalTickets: '---'
 })
 
 // Fetch real stats on mount
@@ -366,13 +376,15 @@ onMounted(async () => {
     if (data.success) {
       stats.value = {
         totalFeedback: data.feedbackCount?.toLocaleString() || '0',
-        totalTranscripts: data.transcriptCount?.toLocaleString() || '0'
+        totalTranscripts: data.transcriptCount?.toLocaleString() || '0',
+        totalTickets: data.ticketsCount?.toLocaleString() || '0'
       }
     } else {
       // Show zeros if API fails
       stats.value = {
         totalFeedback: '0',
-        totalTranscripts: '0'
+        totalTranscripts: '0',
+        totalTickets: '0'
       }
     }
   } catch (error) {
@@ -380,7 +392,8 @@ onMounted(async () => {
     // Show zeros instead of placeholder on error
     stats.value = {
       totalFeedback: '0',
-      totalTranscripts: '0'
+      totalTranscripts: '0',
+      totalTickets: '0'
     }
   } finally {
     loading.value = false
@@ -398,7 +411,8 @@ const refreshAllData = async () => {
     if (data.success) {
       stats.value = {
         totalFeedback: data.feedbackCount?.toLocaleString() || '0',
-        totalTranscripts: data.transcriptCount?.toLocaleString() || '0'
+        totalTranscripts: data.transcriptCount?.toLocaleString() || '0',
+        totalTickets: data.ticketsCount?.toLocaleString() || '0'
       }
       console.log('✅ Data refreshed successfully!')
     } else {

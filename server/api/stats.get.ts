@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
     const stats = {
       feedbackCount: 0,
       transcriptCount: 0,
+      ticketsCount: 0,
       reportsCount: 0, // Can be tracked later if we store reports
       success: true,
       lastUpdated: new Date().toISOString()
@@ -66,12 +67,32 @@ export default defineEventHandler(async (event) => {
       // Continue with 0 if error
     }
 
+    // Get Zendesk tickets count from Supabase
+    try {
+      const supabase = createClient(
+        config.supabaseUrl!,
+        config.supabaseAnonKey!
+      )
+
+      const { count, error } = await supabase
+        .from('zendesk_conversations')
+        .select('ticket_id', { count: 'exact', head: true })
+
+      if (!error && count !== null) {
+        stats.ticketsCount = count
+      }
+    } catch (error) {
+      console.error('Error fetching Zendesk tickets count:', error)
+      // Continue with 0 if error
+    }
+
     return stats
   } catch (error: any) {
     console.error('Stats API Error:', error)
     return {
       feedbackCount: 0,
       transcriptCount: 0,
+      ticketsCount: 0,
       reportsCount: 0,
       success: false,
       error: error.message,
