@@ -84,7 +84,7 @@ export default defineEventHandler(async (event) => {
         'Authorization': `Bearer ${openaiApiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -149,7 +149,7 @@ Provide comprehensive analysis in JSON format.`
       overall_sentiment: analysis.overall_sentiment,
       sentiment_score: analysis.sentiment_score,
       enriched_at: new Date().toISOString(),
-      enriched_by: 'openai-gpt4',
+      enriched_by: 'openai-gpt4o-mini',
       enrichment_status: 'completed',
       updated_at: new Date().toISOString()
     }

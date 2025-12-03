@@ -44,7 +44,7 @@ OPENAI_API_KEY=sk-your-openai-api-key-here
 
 **Get your API key from:** https://platform.openai.com/api-keys
 
-**Recommended:** Use GPT-4 Turbo for best results (automatically configured)
+**Model Used:** GPT-4o-mini (cost-effective and fast)
 
 ### 3. Restart Your Development Server
 
@@ -228,9 +228,9 @@ Triggers AI enrichment for a client (uses OpenAI GPT-4)
 - **Caching** - Results are stored permanently until manually refreshed
 
 ### Cost Considerations:
-- **OpenAI API costs** - ~$0.01-0.05 per enrichment (depending on data size)
+- **OpenAI API costs** - ~$0.001-0.005 per enrichment with GPT-4o-mini (very affordable!)
 - **One-time cost** - Enrichment runs once and caches results
-- **Recommended** - Enrich your top 100-200 clients first
+- **Recommended** - Enrich all clients, it's cost-effective with GPT-4o-mini
 
 ---
 
