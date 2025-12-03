@@ -371,10 +371,12 @@
               class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
             >
               <div class="flex items-start justify-between mb-2">
-                <span class="font-semibold text-emerald-400">{{ message.author || 'Unknown' }}</span>
-                <span class="text-xs text-gray-500">{{ formatDate(message.created_at) }}</span>
+                <span class="font-semibold text-emerald-400">
+                  {{ getMessageAuthor(message) }}
+                </span>
+                <span class="text-xs text-gray-500">{{ getMessageDate(message) }}</span>
               </div>
-              <p class="text-gray-300 whitespace-pre-wrap">{{ message.body || message.value || 'No content' }}</p>
+              <p class="text-gray-300 whitespace-pre-wrap">{{ getMessageContent(message) }}</p>
             </div>
           </div>
           <div v-else class="text-center py-8 text-gray-500">
@@ -581,6 +583,38 @@ const selectTicket = (ticket: any) => {
 
 const selectTranscript = (transcript: any) => {
   selectedTranscript.value = transcript
+}
+
+// Helper functions to extract message data
+const getMessageAuthor = (message: any) => {
+  if (!message) return 'Unknown'
+  return message.author || message.author_name || message.from || message.sender || message.user || 'Unknown'
+}
+
+const getMessageContent = (message: any) => {
+  if (!message) return 'No content'
+  
+  // Try different possible field names for message content
+  const content = message.body || 
+                  message.value || 
+                  message.content || 
+                  message.text || 
+                  message.message || 
+                  message.plain_body ||
+                  message.html_body
+  
+  // If content is an object, try to extract text from it
+  if (typeof content === 'object' && content !== null) {
+    return content.text || content.body || content.value || JSON.stringify(content, null, 2)
+  }
+  
+  return content || 'No content'
+}
+
+const getMessageDate = (message: any) => {
+  if (!message) return ''
+  const dateField = message.created_at || message.timestamp || message.date || message.sent_at
+  return dateField ? formatDate(dateField) : ''
 }
 
 // Load details on mount

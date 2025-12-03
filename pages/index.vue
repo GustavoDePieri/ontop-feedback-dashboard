@@ -74,29 +74,29 @@
       <div class="lg:flex lg:justify-end">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:max-w-5xl">
         
-        <!-- Feedback Analytics Card -->
+        <!-- Unified Clients Card - FIRST -->
         <NuxtLink 
-          to="/feedback"
-          class="group relative bg-gradient-to-br from-ontop-purple-600/20 to-ontop-purple-800/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-ontop-purple-500/50 transition-all duration-300 hover:shadow-glow hover:scale-105"
+          to="/clients"
+          class="group relative bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:shadow-glow-purple hover:scale-105"
         >
-          <div class="absolute inset-0 bg-gradient-ontop opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"></div>
           
           <div class="relative z-10">
-            <div class="bg-gradient-ontop-hero rounded-xl p-4 w-16 h-16 flex items-center justify-center mb-4 shadow-lg">
+            <div class="bg-gradient-ontop rounded-xl p-4 w-16 h-16 flex items-center justify-center mb-4 shadow-lg">
               <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
             
-            <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-ontop-purple-300 transition-colors">
-              Feedback Analytics
+            <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+              Clients (Tickets + Transcripts)
             </h3>
             <p class="text-white/60 mb-4">
-              Real-time customer feedback analysis with AI-powered insights and sentiment tracking
+              Complete client view with AI-powered insights, pain points, and churn risk analysis
             </p>
             
-            <div class="flex items-center text-ontop-purple-400 font-medium">
-              <span>Open Dashboard</span>
+            <div class="flex items-center text-purple-400 font-medium">
+              <span>View Clients</span>
               <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -104,14 +104,15 @@
 
             <div class="mt-4 pt-4 border-t border-white/10">
               <div class="flex items-center space-x-4 text-sm text-white/50">
-                <span>📊 Metrics</span>
-                <span>🎯 Sentiment</span>
+                <span>🤖 AI Insights</span>
+                <span>⚠️ Churn Risk</span>
+                <span>📊 Complete View</span>
               </div>
             </div>
           </div>
         </NuxtLink>
 
-        <!-- DIIO Transcripts Card -->
+        <!-- DIIO Transcripts Card - SECOND -->
         <NuxtLink 
           to="/diio"
           class="group relative bg-gradient-to-br from-ontop-pink-600/20 to-ontop-pink-800/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-ontop-pink-500/50 transition-all duration-300 hover:shadow-glow-pink hover:scale-105"
@@ -149,7 +150,7 @@
           </div>
         </NuxtLink>
 
-        <!-- Zendesk Tickets Card -->
+        <!-- Zendesk Tickets Card - THIRD -->
         <NuxtLink 
           to="/zendesk"
           class="group relative bg-gradient-to-br from-ontop-coral-600/20 to-ontop-coral-800/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-ontop-coral-500/50 transition-all duration-300 hover:shadow-glow-pink hover:scale-105"
@@ -187,29 +188,29 @@
           </div>
         </NuxtLink>
 
-        <!-- Unified Clients Card -->
+        <!-- Feedback Analytics Card -->
         <NuxtLink 
-          to="/clients"
-          class="group relative bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:shadow-glow-purple hover:scale-105"
+          to="/feedback"
+          class="group relative bg-gradient-to-br from-ontop-purple-600/20 to-ontop-purple-800/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-ontop-purple-500/50 transition-all duration-300 hover:shadow-glow hover:scale-105"
         >
-          <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"></div>
+          <div class="absolute inset-0 bg-gradient-ontop opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"></div>
           
           <div class="relative z-10">
-            <div class="bg-gradient-ontop rounded-xl p-4 w-16 h-16 flex items-center justify-center mb-4 shadow-lg">
+            <div class="bg-gradient-ontop-hero rounded-xl p-4 w-16 h-16 flex items-center justify-center mb-4 shadow-lg">
               <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
             
-            <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
-              Unified Clients
+            <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-ontop-purple-300 transition-colors">
+              Feedback Analytics
             </h3>
             <p class="text-white/60 mb-4">
-              Complete client view with AI-powered insights, pain points, and churn risk analysis
+              Real-time customer feedback analysis with AI-powered insights and sentiment tracking
             </p>
             
-            <div class="flex items-center text-purple-400 font-medium">
-              <span>View Clients</span>
+            <div class="flex items-center text-ontop-purple-400 font-medium">
+              <span>Open Dashboard</span>
               <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -217,9 +218,8 @@
 
             <div class="mt-4 pt-4 border-t border-white/10">
               <div class="flex items-center space-x-4 text-sm text-white/50">
-                <span>🤖 AI Insights</span>
-                <span>⚠️ Churn Risk</span>
-                <span>📊 Complete View</span>
+                <span>📊 Metrics</span>
+                <span>🎯 Sentiment</span>
               </div>
             </div>
           </div>
