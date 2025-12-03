@@ -364,7 +364,15 @@
 
         <!-- Conversation -->
         <div class="overflow-y-auto max-h-[calc(80vh-180px)] p-6">
-          <div v-if="selectedTicket.conversation && selectedTicket.conversation.length > 0" class="space-y-4">
+          <!-- Debug Info -->
+          <div v-if="selectedTicket.conversation" class="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-gray-400">
+            <p>Conversation type: {{ typeof selectedTicket.conversation }}</p>
+            <p>Is Array: {{ Array.isArray(selectedTicket.conversation) }}</p>
+            <p>Length: {{ selectedTicket.conversation?.length || 'N/A' }}</p>
+          </div>
+
+          <!-- If conversation is an array -->
+          <div v-if="selectedTicket.conversation && Array.isArray(selectedTicket.conversation) && selectedTicket.conversation.length > 0" class="space-y-4">
             <div
               v-for="(message, index) in selectedTicket.conversation"
               :key="index"
@@ -379,8 +387,17 @@
               <p class="text-gray-300 whitespace-pre-wrap">{{ getMessageContent(message) }}</p>
             </div>
           </div>
+
+          <!-- If conversation is an object (not array) -->
+          <div v-else-if="selectedTicket.conversation && typeof selectedTicket.conversation === 'object'" class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+            <h4 class="text-sm font-semibold text-yellow-300 mb-2">Raw Conversation Data:</h4>
+            <pre class="text-xs text-gray-300 whitespace-pre-wrap overflow-auto">{{ JSON.stringify(selectedTicket.conversation, null, 2) }}</pre>
+          </div>
+
+          <!-- No conversation -->
           <div v-else class="text-center py-8 text-gray-500">
-            No conversation messages available
+            <p>No conversation messages available</p>
+            <p class="text-xs mt-2">Conversation data: {{ selectedTicket.conversation ? 'exists but empty' : 'null' }}</p>
           </div>
         </div>
 
@@ -579,6 +596,14 @@ const formatDate = (dateString: string) => {
 
 const selectTicket = (ticket: any) => {
   selectedTicket.value = ticket
+  // Debug: Log the conversation structure
+  console.log('Selected Ticket:', ticket)
+  console.log('Conversation:', ticket.conversation)
+  console.log('Conversation type:', typeof ticket.conversation)
+  console.log('Conversation is Array:', Array.isArray(ticket.conversation))
+  if (ticket.conversation && ticket.conversation.length > 0) {
+    console.log('First message:', ticket.conversation[0])
+  }
 }
 
 const selectTranscript = (transcript: any) => {
