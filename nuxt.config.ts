@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     huggingfaceApiKey: process.env.HUGGINGFACE_API_KEY,
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    openaiApiKey: process.env.OPENAI_API_KEY, // OpenAI API for client enrichment
     // DIIO API Configuration
     diioClientId: process.env.DIIO_CLIENT_ID,
     diioClientSecret: process.env.DIIO_CLIENT_SECRET,
