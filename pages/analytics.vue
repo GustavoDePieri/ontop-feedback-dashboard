@@ -3,12 +3,11 @@
     <!-- Header -->
     <header class="bg-ontop-navy-dark border-b border-white/10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Breadcrumb & Home Button -->
-        <div class="pt-4 pb-2 flex items-center justify-between">
-          <AppBreadcrumb :items="[{ label: 'Advanced Analytics' }]" />
+        <!-- Home Button (Top Left) -->
+        <div class="pt-6 pb-4">
           <NuxtLink 
             to="/"
-            class="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 group"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 group"
           >
             <svg class="w-4 h-4 text-white/70 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />

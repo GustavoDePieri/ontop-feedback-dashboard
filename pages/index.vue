@@ -350,7 +350,7 @@
                 <div class="flex items-center justify-between">
                   <div class="flex items-center">
                     <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-3"></div>
-                    <span class="text-white font-medium">Gemini AI</span>
+                    <span class="text-white font-medium">OpenAI</span>
                   </div>
                   <span class="text-xs text-green-400">Ready</span>
                 </div>
