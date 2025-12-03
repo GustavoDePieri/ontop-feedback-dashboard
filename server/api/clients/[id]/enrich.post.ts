@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
       .from('client_enrichment')
       .select('*')
       .eq('client_id', clientId)
-      .single()
+      .maybeSingle()
 
     if (existing && existing.enrichment_status === 'completed') {
       return {

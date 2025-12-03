@@ -82,7 +82,7 @@ export default defineEventHandler(async (event) => {
           .from('client_enrichment')
           .select('enrichment_status, enriched_at, overall_sentiment, sentiment_score')
           .eq('client_id', client.client_id)
-          .single()
+          .maybeSingle()
 
         return {
           ...client,

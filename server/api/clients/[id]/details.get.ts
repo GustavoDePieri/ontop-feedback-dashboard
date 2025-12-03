@@ -35,12 +35,12 @@ export default defineEventHandler(async (event) => {
 
     if (transcriptsError) throw transcriptsError
 
-    // Get enrichment data
+    // Get enrichment data (maybeSingle returns null if no row found instead of error)
     const { data: enrichment, error: enrichmentError } = await supabase
       .from('client_enrichment')
       .select('*')
       .eq('client_id', clientId)
-      .single()
+      .maybeSingle()
 
     // enrichmentError is ok if no enrichment exists yet
 
