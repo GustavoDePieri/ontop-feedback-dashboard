@@ -241,7 +241,8 @@
             <div
               v-for="ticket in details?.tickets"
               :key="ticket.ticket_id"
-              class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 hover:border-emerald-500/50 transition-colors"
+              class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 hover:border-emerald-500/50 transition-colors cursor-pointer"
+              @click="selectTicket(ticket)"
             >
               <div class="flex items-start justify-between mb-2">
                 <div>
@@ -258,6 +259,15 @@
               </div>
               <p class="text-sm text-gray-400 mb-2">{{ ticket.conversation?.length || 0 }} messages</p>
               <p v-if="ticket.issue_category" class="text-sm text-gray-500">Category: {{ ticket.issue_category }}</p>
+              
+              <!-- Click to view indicator -->
+              <div class="mt-3 pt-3 border-t border-white/10 flex items-center justify-center text-xs text-emerald-400">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Click to view full conversation
+              </div>
             </div>
             <div v-if="!details?.tickets || details.tickets.length === 0" class="text-center py-8 text-gray-500">
               No tickets found for this client
@@ -269,7 +279,8 @@
             <div
               v-for="transcript in details?.transcripts"
               :key="transcript.id"
-              class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 hover:border-emerald-500/50 transition-colors"
+              class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 hover:border-emerald-500/50 transition-colors cursor-pointer"
+              @click="selectTranscript(transcript)"
             >
               <div class="flex items-start justify-between mb-2">
                 <div>
@@ -286,6 +297,15 @@
               <p class="text-sm text-gray-400">
                 {{ transcript.transcript_text?.substring(0, 200) }}{{ transcript.transcript_text?.length > 200 ? '...' : '' }}
               </p>
+              
+              <!-- Click to view indicator -->
+              <div class="mt-3 pt-3 border-t border-white/10 flex items-center justify-center text-xs text-emerald-400">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Click to view full transcript
+              </div>
             </div>
             <div v-if="!details?.transcripts || details.transcripts.length === 0" class="text-center py-8 text-gray-500">
               No transcripts found for this client
@@ -302,6 +322,157 @@
         >
           Close
         </button>
+      </div>
+    </div>
+
+    <!-- Ticket Detail Modal (nested) -->
+    <div
+      v-if="selectedTicket"
+      class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-fade-in"
+      @click.self="selectedTicket = null"
+    >
+      <div class="bg-gradient-to-br from-ontop-navy-dark to-ontop-navy rounded-2xl max-w-4xl w-full max-h-[80vh] overflow-hidden border border-white/10 shadow-2xl animate-slide-up">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-emerald-600/20 to-teal-600/20 border-b border-white/10 p-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-2xl font-bold text-white mb-2">Ticket #{{ selectedTicket.ticket_id }}</h3>
+              <div class="flex items-center gap-3">
+                <span
+                  v-if="selectedTicket.overall_sentiment"
+                  class="px-3 py-1 text-sm font-medium rounded-full"
+                  :class="getSentimentClass(selectedTicket.overall_sentiment)"
+                >
+                  {{ getSentimentIcon(selectedTicket.overall_sentiment) }} {{ selectedTicket.overall_sentiment }}
+                </span>
+                <span class="text-sm text-gray-400">{{ formatDate(selectedTicket.created_at) }}</span>
+                <span v-if="selectedTicket.issue_category" class="px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-300">
+                  {{ selectedTicket.issue_category }}
+                </span>
+              </div>
+            </div>
+            <button
+              @click="selectedTicket = null"
+              class="text-gray-400 hover:text-white transition-colors"
+            >
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Conversation -->
+        <div class="overflow-y-auto max-h-[calc(80vh-180px)] p-6">
+          <div v-if="selectedTicket.conversation && selectedTicket.conversation.length > 0" class="space-y-4">
+            <div
+              v-for="(message, index) in selectedTicket.conversation"
+              :key="index"
+              class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <span class="font-semibold text-emerald-400">{{ message.author || 'Unknown' }}</span>
+                <span class="text-xs text-gray-500">{{ formatDate(message.created_at) }}</span>
+              </div>
+              <p class="text-gray-300 whitespace-pre-wrap">{{ message.body || message.value || 'No content' }}</p>
+            </div>
+          </div>
+          <div v-else class="text-center py-8 text-gray-500">
+            No conversation messages available
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-ontop-navy-light/50 border-t border-white/10 p-4 flex justify-end">
+          <button
+            @click="selectedTicket = null"
+            class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transcript Detail Modal (nested) -->
+    <div
+      v-if="selectedTranscript"
+      class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[60] p-4 animate-fade-in"
+      @click.self="selectedTranscript = null"
+    >
+      <div class="bg-gradient-to-br from-ontop-navy-dark to-ontop-navy rounded-2xl max-w-4xl w-full max-h-[80vh] overflow-hidden border border-white/10 shadow-2xl animate-slide-up">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-b border-white/10 p-6">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-2xl font-bold text-white mb-2">{{ selectedTranscript.source_name || 'Transcript' }}</h3>
+              <div class="flex items-center gap-3">
+                <span
+                  class="px-3 py-1 text-sm font-medium rounded-full"
+                  :class="selectedTranscript.transcript_type === 'meeting' ? 'bg-blue-900/30 text-blue-300' : 'bg-green-900/30 text-green-300'"
+                >
+                  {{ selectedTranscript.transcript_type === 'meeting' ? '📅 Meeting' : '📞 Call' }}
+                </span>
+                <span class="text-sm text-gray-400">{{ formatDate(selectedTranscript.occurred_at) }}</span>
+                <span v-if="selectedTranscript.sentiment" class="px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-300">
+                  {{ selectedTranscript.sentiment }}
+                </span>
+              </div>
+            </div>
+            <button
+              @click="selectedTranscript = null"
+              class="text-gray-400 hover:text-white transition-colors"
+            >
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Transcript Content -->
+        <div class="overflow-y-auto max-h-[calc(80vh-180px)] p-6">
+          <!-- AI Analysis (if available) -->
+          <div v-if="selectedTranscript.ai_analysis" class="mb-6 bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+            <h4 class="text-sm font-semibold text-purple-300 mb-2 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              AI Analysis
+            </h4>
+            <p class="text-gray-300 text-sm whitespace-pre-wrap">{{ selectedTranscript.ai_analysis }}</p>
+          </div>
+
+          <!-- Full Transcript -->
+          <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
+            <h4 class="text-sm font-semibold text-gray-400 mb-4">Full Transcript</h4>
+            <div class="prose prose-invert max-w-none">
+              <p class="text-gray-300 whitespace-pre-wrap leading-relaxed">{{ selectedTranscript.transcript_text || 'No transcript text available' }}</p>
+            </div>
+          </div>
+
+          <!-- Metadata -->
+          <div v-if="selectedTranscript.duration_seconds || selectedTranscript.participant_count" class="mt-4 grid grid-cols-2 gap-4">
+            <div v-if="selectedTranscript.duration_seconds" class="bg-white/5 rounded-lg p-3 border border-white/10">
+              <p class="text-xs text-gray-500 mb-1">Duration</p>
+              <p class="text-white font-semibold">{{ Math.floor(selectedTranscript.duration_seconds / 60) }} min {{ selectedTranscript.duration_seconds % 60 }} sec</p>
+            </div>
+            <div v-if="selectedTranscript.participant_count" class="bg-white/5 rounded-lg p-3 border border-white/10">
+              <p class="text-xs text-gray-500 mb-1">Participants</p>
+              <p class="text-white font-semibold">{{ selectedTranscript.participant_count }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-ontop-navy-light/50 border-t border-white/10 p-4 flex justify-end">
+          <button
+            @click="selectedTranscript = null"
+            class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -323,6 +494,8 @@ const enriching = ref(false)
 const details = ref<any>(null)
 const enrichment = ref<any>(null)
 const activeTab = ref('tickets')
+const selectedTicket = ref<any>(null)
+const selectedTranscript = ref<any>(null)
 
 // Methods
 const loadDetails = async () => {
@@ -400,6 +573,14 @@ const formatDate = (dateString: string) => {
     month: 'short',
     day: 'numeric'
   })
+}
+
+const selectTicket = (ticket: any) => {
+  selectedTicket.value = ticket
+}
+
+const selectTranscript = (transcript: any) => {
+  selectedTranscript.value = transcript
 }
 
 // Load details on mount
