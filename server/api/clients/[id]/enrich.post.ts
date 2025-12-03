@@ -40,6 +40,8 @@ export default defineEventHandler(async (event) => {
         client_id: clientId,
         enrichment_status: 'processing',
         updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'client_id'
       })
 
     if (updateError) throw updateError
@@ -156,7 +158,9 @@ Provide comprehensive analysis in JSON format.`
 
     const { data: savedEnrichment, error: saveError } = await supabase
       .from('client_enrichment')
-      .upsert(enrichmentData)
+      .upsert(enrichmentData, {
+        onConflict: 'client_id'
+      })
       .select()
       .single()
 
@@ -185,6 +189,8 @@ Provide comprehensive analysis in JSON format.`
         enrichment_status: 'error',
         enrichment_error: error.message,
         updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'client_id'
       })
 
     throw createError({
