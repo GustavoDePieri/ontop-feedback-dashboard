@@ -847,308 +847,6 @@ const loadingTranscriptDetails = ref(false)
 const hasMoreTranscripts = ref(true)
 const currentOffset = ref(0)
 const syncing = ref(false)
-const error = ref<{ title?: string; message: string } | null>(null)
-const selectedTranscript = ref<any>(null)
-const currentPage = ref(1)
-const itemsPerPage = 20
-
-// Stats
-const stats = reactive({
-  total: 0,
-  aiAnalyzed: 0,
-  churned: 0,
-  active: 0
-})
-
-const lastSyncTime = ref<string | null>(null)
-
-// Sync progress
-const syncProgress = reactive({
-  show: false,
-  current: 0,
-  total: 1,
-  message: ''
-})
-
-// Sentiment Analysis State
-const aiAnalysisResult = ref<any>(null)
-
-const selectedFeedbackTranscript = ref<any>(null)
-const feedbackSegments = ref<any[]>([])
-const loadingFeedback = ref(false)
-
-// Filters
-const filters = reactive({
-  search: '',
-  type: '',
-  aiAnalysis: '',
-  churnedStatus: '',
-  dateFrom: '',
-  dateTo: '',
-  dateRange: 'all'
-})
-
-// Computed
-const hasActiveFilters = computed(() => {
-  return !!(filters.search || filters.type || filters.aiAnalysis || filters.churnedStatus || filters.dateFrom || filters.dateTo || filters.dateRange !== 'all')
-})
-
-const filteredTranscripts = computed(() => {
-  let filtered = [...transcripts.value]
-  
-  // Search filter
-  if (filters.search) {
-    const searchLower = filters.search.toLowerCase()
-    filtered = filtered.filter(t => 
-      t.source_name?.toLowerCase().includes(searchLower) ||
-      t.diio_transcript_id?.toLowerCase().includes(searchLower) ||
-      t.client_platform_id?.toLowerCase().includes(searchLower) ||
-      t.account_name?.toLowerCase().includes(searchLower)
-    )
-  }
-  
-  // Type filter
-  if (filters.type) {
-    filtered = filtered.filter(t => t.transcript_type === filters.type)
-  }
-  
-  // AI Analysis filter
-  if (filters.aiAnalysis) {
-    filtered = filtered.filter(t => t.analyzed_status === filters.aiAnalysis)
-  }
-  
-  // Churned Status filter
-  if (filters.churnedStatus) {
-    filtered = filtered.filter(t => t.account_status === filters.churnedStatus)
-  }
-  
-  // Date range filtering
-  if (filters.dateRange && filters.dateRange !== 'all') {
-    const now = new Date()
-    let startDate: Date | null = null
-    
-    switch (filters.dateRange) {
-      case 'today':
-        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-        break
-      case 'week':
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-        break
-      case 'month':
-        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-        break
-      case 'quarter':
-        startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
-        break
-    }
-    
-    if (startDate) {
-      filtered = filtered.filter(t => {
-        const occurredDate = t.occurred_at ? new Date(t.occurred_at) : null
-        return occurredDate && occurredDate >= startDate
-      })
-    }
-  }
-  
-  // Custom date range filtering
-  if (filters.dateFrom || filters.dateTo) {
-    filtered = filtered.filter(t => {
-      const occurredDate = t.occurred_at ? new Date(t.occurred_at) : null
-      if (!occurredDate) return false
-      
-      if (filters.dateFrom) {
-        const fromDate = new Date(filters.dateFrom)
-        if (occurredDate < fromDate) return false
-      }
-      
-      if (filters.dateTo) {
-        const toDate = new Date(filters.dateTo)
-        toDate.setHours(23, 59, 59, 999) // Include the entire day
-        if (occurredDate > toDate) return false
-      }
-      
-      return true
-    })
-  }
-  
-  return filtered
-})
-
-const totalPages = computed(() => Math.ceil(filteredTranscripts.value.length / itemsPerPage))
-
-const paginatedTranscripts = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return filteredTranscripts.value.slice(start, end)
-})
-
-// Methods
-const loadTranscripts = async () => {
-  loading.value = true
-  error.value = null
-  currentOffset.value = 0
-  hasMoreTranscripts.value = true
-  
-  try {
-    // Fetch first batch of transcripts (more efficient than loading all at once)
-    const pageSize = 500 // Load 500 at a time for faster initial load
-    const { data, error: dbError } = await getDiioTranscripts(pageSize, 0)
-    
-    if (dbError) throw dbError
-    
-    transcripts.value = data || []
-    currentOffset.value = data?.length || 0
-    hasMoreTranscripts.value = (data?.length || 0) >= pageSize
-    
-    console.log(`✅ Loaded ${transcripts.value.length} transcripts from database`)
-    await loadStats()
-  } catch (err: any) {
-    console.error('Error fetching DIIO transcripts:', err)
-    error.value = {
-      title: 'Failed to load transcripts',
-      message: err.message || 'An error occurred while loading transcripts'
-    }
-  } finally {
-    loading.value = false
-  }
-}
-
-const loadMoreTranscripts = async () => {
-  if (!hasMoreTranscripts.value || loadingMore.value) return
-  
-  loadingMore.value = true
-  
-  try {
-    const pageSize = 500
-    const { data, error: dbError } = await getDiioTranscripts(pageSize, currentOffset.value)
-    
-    if (dbError) throw dbError
-    
-    if (data && data.length > 0) {
-      transcripts.value.push(...data)
-      currentOffset.value += data.length
-      hasMoreTranscripts.value = data.length >= pageSize
-      console.log(`✅ Loaded ${data.length} more transcripts. Total: ${transcripts.value.length}`)
-    } else {
-      hasMoreTranscripts.value = false
-    }
-  } catch (err: any) {
-    console.error('Error loading more transcripts:', err)
-    error.value = {
-      title: 'Failed to load more transcripts',
-      message: err.message || 'An error occurred while loading more transcripts'
-    }
-  } finally {
-    loadingMore.value = false
-  }
-}
-
-const loadStats = async () => {
-  try {
-    const { data } = await getDiioTranscriptStats()
-    if (data) {
-      stats.total = data.total_transcripts || 0
-      stats.aiAnalyzed = data.finished_analysis || 0
-      stats.active = data.active_accounts || 0
-      stats.churned = data.churned_accounts || 0
-      console.log('📊 Stats loaded from database:', {
-        total: stats.total,
-        aiAnalyzed: stats.aiAnalyzed,
-        active: stats.active,
-        churned: stats.churned
-      })
-    }
-  } catch (err) {
-    console.error('Error loading stats:', err)
-  }
-}
-
-// Removed: generateChurnedAccountsReport function
-
-const syncTranscripts = async () => {
-  syncing.value = true
-  error.value = null
-  syncProgress.show = true
-  syncProgress.current = 0
-  syncProgress.total = 1
-  syncProgress.message = 'Starting sync...'
-  
-  try {
-    const response = await $fetch('/api/diio/sync', {
-      method: 'POST'
-    })
-    
-    if (response && response.success) {
-      // Update progress with detailed message
-      syncProgress.message = response.message || 'Sync completed successfully!'
-      syncProgress.total = response.summary.newTranscriptsFound || 1
-      syncProgress.current = response.summary.transcriptsStored || 0
-      
-      // Update last sync time
-      lastSyncTime.value = new Date().toLocaleString()
-      
-      // Reload transcripts after sync
-      await loadTranscripts()
-      
-      // Show success message with stats
-      const statsMessage = `Sync completed. Stored ${response.summary.transcriptsStored || 0} new transcripts.`
-      syncProgress.message = statsMessage
-      
-      // Show success message longer
-      setTimeout(() => {
-        syncProgress.show = false
-      }, 5000)
-    } else {
-      error.value = {
-        title: 'Sync Failed',
-        message: response.message || 'Sync failed. Please check the error details and try again.'
-      }
-      syncProgress.show = false
-    }
-  } catch (err: any) {
-    error.value = {
-      title: 'Sync Failed',
-      message: err.message || 'An unexpected error occurred during sync'
-    }
-    syncProgress.show = false
-  } finally {
-    syncing.value = false
-  }
-}
-
-const clearError = () => {
-  error.value = null
-}
-
-const viewTranscript = async (transcript: any) => {
-  // Open modal immediately with basic info
-  selectedTranscript.value = transcript
-  loadingTranscriptDetails.value = true
-  
-  try {
-    // Fetch full transcript details including transcript_text and ai_analysis
-    const { data, error } = await getDiioTranscriptById(transcript.id)
-    
-    if (error) throw error
-    
-    if (data) {
-      // Update with full details
-      selectedTranscript.value = data
-    }
-  } catch (err) {
-    console.error('Error loading transcript details:', err)
-    // Keep showing basic info even if full load fails
-  } finally {
-    loadingTranscriptDetails.value = false
-  }
-}
-
-const showSentimentAnalysis = (transcript: any) => {
-const loadingMore = ref(false)
-const loadingTranscriptDetails = ref(false)
-const hasMoreTranscripts = ref(true)
-const currentOffset = ref(0)
-const syncing = ref(false)
 // Removed: generatingReport, testingSentiment
 const error = ref<{ title?: string; message: string } | null>(null)
 const selectedTranscript = ref<any>(null)
@@ -1169,28 +867,22 @@ const lastSyncTime = ref<string | null>(null)
 
 // Sync progress
 const syncProgress = reactive({
-  show: false,
-  current: 0,
-  total: 1,
-  message: ''
-})
+              <p class="text-gray-500 text-xs mt-1">
+                Analyzed: {{ new Date(aiAnalysisResult.metadata.analyzedAt).toLocaleString() }}
+              </p>
+            </div>
+            <button
+              @click="aiAnalysisResult = null"
+              class="text-gray-400 hover:text-white text-2xl transition-colors duration-200"
+            >
+              ×
+            </button>
+          </div>
 
-// Sentiment Analysis State
-const aiAnalysisResult = ref<any>(null)
-
-// Filters
-const filters = reactive({
-  search: '',
-  type: '',
-  aiAnalysis: '',
-  churnedStatus: '',
-  dateFrom: '',
-  dateTo: '',
-  dateRange: 'all' // Added for date range filter
-})
-
-// Computed
-const hasActiveFilters = computed(() => {
+          <!-- Meeting Summary (BART-Generated) -->
+          <div class="mb-6 p-4 bg-gradient-to-r from-blue-900/30 to-cyan-900/30 rounded-lg border border-blue-500/30">
+            <h3 class="text-blue-300 font-semibold mb-2 flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               Meeting Summary
@@ -1601,19 +1293,17 @@ const loadStats = async () => {
     const { data } = await getDiioTranscriptStats()
     if (data) {
       stats.total = data.total_transcripts || 0
-      stats.aiAnalyzed = data.finished_analysis || 0
-      stats.active = data.active_accounts || 0
-      stats.churned = data.churned_accounts || 0
-      console.log('📊 Stats loaded from database:', {
-        total: stats.total,
-        aiAnalyzed: stats.aiAnalyzed,
-        active: stats.active,
-        churned: stats.churned
-      })
     }
   } catch (err) {
     console.error('Error loading stats:', err)
   }
+  
+  // Count AI analyzed transcripts from loaded data
+  stats.aiAnalyzed = transcripts.value.filter(t => t.analyzed_status === 'finished').length
+
+  // Count account status transcripts from loaded data
+  stats.churned = transcripts.value.filter(t => t.account_status === 'churned').length
+  stats.active = transcripts.value.filter(t => t.account_status === 'active').length
 }
 
 // Removed: generateChurnedAccountsReport function

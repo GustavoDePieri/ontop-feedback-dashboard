@@ -18,9 +18,9 @@
       <div class="mb-8">
         <div class="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">
-              Zendesk Tickets
-            </h1>
+        <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">
+          Zendesk Tickets
+        </h1>
             <p class="text-gray-400">Browse and analyze support tickets grouped by client</p>
           </div>
           
@@ -276,7 +276,7 @@
                   </span>
                   
                   <!-- Sentiment Badge -->
-                  <span
+                  <span 
                     v-if="ticket.overall_sentiment"
                     class="px-2 py-1 text-xs font-medium rounded-full"
                     :class="getSentimentClass(ticket.overall_sentiment)"
@@ -313,7 +313,7 @@
                     {{ formatDate(ticket.created_at) }}
                   </span>
                 </div>
-
+                
                 <div v-if="ticket.sentiment_score !== null && ticket.sentiment_score !== undefined" class="flex items-center gap-2 text-sm">
                   <span class="text-gray-400">Score:</span>
                   <div class="flex-1 max-w-xs">
@@ -326,7 +326,7 @@
                     </div>
                   </div>
                   <span class="text-gray-300 font-medium">{{ (ticket.sentiment_score * 100).toFixed(0) }}%</span>
-                </div>
+              </div>
               </div>
 
               <svg class="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -429,17 +429,17 @@
                 </div>
               </div>
             </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
     <!-- Ticket Detail Modal -->
-    <div
-      v-if="selectedTicket"
+      <div
+        v-if="selectedTicket"
       class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      @click.self="selectedTicket = null"
-    >
+        @click.self="selectedTicket = null"
+      >
       <div class="bg-gray-900 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-gray-700 shadow-2xl">
         <!-- Modal Header -->
         <div class="bg-gradient-to-r from-ontop-coral-600/20 to-ontop-pink-600/20 border-b border-gray-700 p-6">
@@ -450,8 +450,8 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                 </svg>
               </div>
-              <div>
-                <h2 class="text-2xl font-bold text-white">Ticket #{{ selectedTicket.ticket_id }}</h2>
+            <div>
+              <h2 class="text-2xl font-bold text-white">Ticket #{{ selectedTicket.ticket_id }}</h2>
                 <p class="text-gray-400 text-sm">Client: {{ selectedTicket.client_id || 'N/A' }}</p>
               </div>
             </div>
@@ -563,11 +563,11 @@
                     :class="getSentimentClass(score.sentiment.label)"
                   >
                     {{ score.sentiment.label }}
-                  </span>
-                </div>
-                <p class="text-xs text-gray-500 mt-1 truncate">{{ score.message_text }}</p>
+                </span>
               </div>
+                <p class="text-xs text-gray-500 mt-1 truncate">{{ score.message_text }}</p>
             </div>
+          </div>
           </div>
         </div>
 

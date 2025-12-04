@@ -21,39 +21,39 @@
                 alt="Ontop Logo" 
                 class="w-32 h-32 rounded-2xl shadow-2xl ring-4 ring-white/10 hover:ring-white/20 transition-all duration-300"
               />
-            </div>
-            
+          </div>
+          
             <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">
-              Welcome to <span class="bg-gradient-ontop bg-clip-text text-transparent">Ontop Analytics</span>
-            </h1>
+            Welcome to <span class="bg-gradient-ontop bg-clip-text text-transparent">Ontop Analytics</span>
+          </h1>
             <p class="text-lg sm:text-xl text-white/70 mb-8 max-w-xl">
               AI-powered customer intelligence platform. Choose a module to get started.
-            </p>
+          </p>
 
-            <!-- Quick Stats -->
+          <!-- Quick Stats -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-2xl mx-auto lg:mx-0">
-              <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
-                <div v-if="loading" class="flex items-center justify-center h-12">
-                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                </div>
-                <template v-else>
-                  <div class="text-3xl font-bold text-white">{{ stats.totalFeedback }}</div>
-                  <div class="text-sm text-white/60">Total Feedback</div>
-                </template>
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+              <div v-if="loading" class="flex items-center justify-center h-12">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
               </div>
-              <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
-                <div v-if="loading" class="flex items-center justify-center h-12">
-                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                </div>
-                <template v-else>
-                  <div class="text-3xl font-bold text-white">{{ stats.totalTranscripts }}</div>
-                  <div class="text-sm text-white/60">Call Transcripts</div>
-                </template>
+              <template v-else>
+                <div class="text-3xl font-bold text-white">{{ stats.totalFeedback }}</div>
+                <div class="text-sm text-white/60">Total Feedback</div>
+              </template>
+            </div>
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+              <div v-if="loading" class="flex items-center justify-center h-12">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
               </div>
+              <template v-else>
+                <div class="text-3xl font-bold text-white">{{ stats.totalTranscripts }}</div>
+                <div class="text-sm text-white/60">Call Transcripts</div>
+              </template>
+            </div>
               <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
                 <div v-if="loading" class="flex items-center justify-center h-12">
                   <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                </div>
+          </div>
                 <template v-else>
                   <div class="text-3xl font-bold text-white">{{ stats.totalTickets }}</div>
                   <div class="text-sm text-white/60">Zendesk Tickets</div>
