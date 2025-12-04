@@ -380,10 +380,6 @@
                 
                 <h3 class="text-white font-medium mb-2">{{ transcript.source_name || 'Untitled' }}</h3>
                 
-                <p class="text-gray-300 text-sm mb-3 line-clamp-2">
-                  {{ getTranscriptPreview(transcript.transcript_text) }}
-                </p>
-                
                 <!-- Account Info Section (for churned accounts) -->
                 <div v-if="transcript.client_platform_id && transcript.account_status === 'churned'" class="mb-3 p-2 bg-red-900/20 rounded border border-red-500/30">
                   <p class="text-xs text-red-400 font-semibold mb-1">⚠️ Churned Account:</p>
@@ -539,19 +535,6 @@
                     Feedback
                   </button> -->
                 </div>
-                
-                <!-- AI Sentiment Analysis Button -->
-                <button
-                  @click.stop="showSentimentAnalysis(transcript)"
-                  :disabled="transcript.analyzed_status !== 'finished'"
-                  class="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xs rounded-lg hover:from-blue-700 hover:to-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-1"
-                  :title="transcript.analyzed_status !== 'finished' ? 'No sentiment analysis available' : 'View sentiment analysis'"
-                >
-                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                  Sentiment
-                </button>
               </div>
             </div>
           </div>
@@ -845,31 +828,45 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</template>
 
+<script setup lang="ts">
+definePageMeta({
+  layout: 'default'
+})
 
-      <!-- Sentiment Analysis Modal -->
-      <div
-        v-if="aiAnalysisResult"
-        class="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-        @click.self="aiAnalysisResult = null"
-      >
-        <div class="bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-auto border border-gray-700 shadow-2xl">
-          <div class="flex justify-between items-start mb-4">
-            <div>
-              <div class="flex items-center gap-3">
-                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                  <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                  Sentiment Analysis
-                </h2>
-                <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  🤖 AI Generated
-                </span>
-              </div>
-              <p class="text-gray-400 text-sm mt-1">
-                {{ aiAnalysisResult.metadata.sourceName }}
-              </p>
+const { getDiioTranscripts, getDiioTranscriptById, getDiioTranscriptStats } = useSupabase()
+
+// State
+const transcripts = ref<any[]>([])
+const loading = ref(false)
+const loadingMore = ref(false)
+const loadingTranscriptDetails = ref(false)
+const hasMoreTranscripts = ref(true)
+const currentOffset = ref(0)
+const syncing = ref(false)
+// Removed: generatingReport, testingSentiment
+const error = ref<{ title?: string; message: string } | null>(null)
+const selectedTranscript = ref<any>(null)
+const currentPage = ref(1)
+const itemsPerPage = 20
+
+// Removed: churnedReportData, showChurnedReportModal
+
+// Stats
+const stats = reactive({
+  total: 0,
+  aiAnalyzed: 0,
+  churned: 0,
+  active: 0
+})
+
+const lastSyncTime = ref<string | null>(null)
+
+// Sync progress
+const syncProgress = reactive({
               <p class="text-gray-500 text-xs mt-1">
                 Analyzed: {{ new Date(aiAnalysisResult.metadata.analyzedAt).toLocaleString() }}
               </p>
@@ -1296,17 +1293,19 @@ const loadStats = async () => {
     const { data } = await getDiioTranscriptStats()
     if (data) {
       stats.total = data.total_transcripts || 0
+      stats.aiAnalyzed = data.finished_analysis || 0
+      stats.active = data.active_accounts || 0
+      stats.churned = data.churned_accounts || 0
+      console.log('📊 Stats loaded from database:', {
+        total: stats.total,
+        aiAnalyzed: stats.aiAnalyzed,
+        active: stats.active,
+        churned: stats.churned
+      })
     }
   } catch (err) {
     console.error('Error loading stats:', err)
   }
-  
-  // Count AI analyzed transcripts from loaded data
-  stats.aiAnalyzed = transcripts.value.filter(t => t.analyzed_status === 'finished').length
-
-  // Count account status transcripts from loaded data
-  stats.churned = transcripts.value.filter(t => t.account_status === 'churned').length
-  stats.active = transcripts.value.filter(t => t.account_status === 'active').length
 }
 
 // Removed: generateChurnedAccountsReport function
