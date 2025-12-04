@@ -391,7 +391,7 @@ export const useSupabase = () => {
   }
 
   // Get stored DIIO transcripts
-  const getDiioTranscripts = async (limit = 50, offset = 0) => {
+  const getDiioTranscripts = async (limit = 50, offset = 0, timeout = 30000) => {
     try {
       // If limit is very large, fetch all in chunks (Supabase has limits)
       if (limit > 10000) {

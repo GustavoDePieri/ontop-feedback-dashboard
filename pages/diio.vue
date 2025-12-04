@@ -168,7 +168,16 @@
         <div class="flex items-start justify-between">
           <div class="flex-1">
             <h3 class="text-red-400 font-semibold mb-1">{{ error.title || 'Error' }}</h3>
-            <p class="text-red-300 text-sm">{{ error.message }}</p>
+            <p class="text-red-300 text-sm mb-2">{{ error.message }}</p>
+            <div class="flex items-center gap-2 mt-3">
+              <button
+                @click="loadTranscripts"
+                class="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded text-sm transition-colors"
+              >
+                Try Again
+              </button>
+              <span class="text-red-400 text-xs">This error is often caused by network timeout. Click "Try Again" to retry.</span>
+            </div>
           </div>
           <button
             @click="clearError"
@@ -550,7 +559,7 @@
           <!-- Pagination -->
           <div v-if="totalPages > 1" class="pt-6 border-t border-white/10 mt-6 flex items-center justify-between">
             <div class="text-gray-400 text-sm">
-              Page {{ currentPage }} of {{ totalPages }}
+              Page {{ currentPage }} of {{ totalPages }} ({{ transcripts.length }} transcripts loaded)
             </div>
             <div class="flex items-center gap-2">
               <button
@@ -568,6 +577,27 @@
                 Next
               </button>
             </div>
+          </div>
+
+          <!-- Load More Button -->
+          <div v-if="hasMoreTranscripts" class="pt-4 text-center">
+            <button
+              @click="loadMoreTranscripts"
+              :disabled="loadingMore"
+              class="px-6 py-3 bg-gradient-cta text-white rounded-lg hover:bg-gradient-cta-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2"
+            >
+              <svg v-if="!loadingMore" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+              <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ loadingMore ? 'Loading...' : 'Load More Transcripts' }}
+            </button>
+            <p class="text-gray-400 text-xs mt-2">
+              Showing {{ transcripts.length }} of {{ stats.total }} total transcripts
+            </p>
           </div>
         </div>
       </div>
@@ -1051,6 +1081,9 @@ const { getDiioTranscripts, getDiioTranscriptStats } = useSupabase()
 // State
 const transcripts = ref<any[]>([])
 const loading = ref(false)
+const loadingMore = ref(false)
+const hasMoreTranscripts = ref(true)
+const currentOffset = ref(0)
 const syncing = ref(false)
 // Removed: generatingReport, testingSentiment
 const error = ref<{ title?: string; message: string } | null>(null)
@@ -1185,23 +1218,60 @@ const paginatedTranscripts = computed(() => {
 const loadTranscripts = async () => {
   loading.value = true
   error.value = null
+  currentOffset.value = 0
+  hasMoreTranscripts.value = true
   
   try {
-    // Fetch all transcripts (increase limit if needed)
-    const { data, error: dbError } = await getDiioTranscripts(50000, 0)
+    // Fetch first batch of transcripts (more efficient than loading all at once)
+    const pageSize = 1000 // Load 1000 at a time
+    const { data, error: dbError } = await getDiioTranscripts(pageSize, 0)
     
     if (dbError) throw dbError
     
     transcripts.value = data || []
+    currentOffset.value = data?.length || 0
+    hasMoreTranscripts.value = (data?.length || 0) >= pageSize
+    
     console.log(`✅ Loaded ${transcripts.value.length} transcripts from database`)
     await loadStats()
   } catch (err: any) {
+    console.error('Error fetching DIIO transcripts:', err)
     error.value = {
       title: 'Failed to load transcripts',
       message: err.message || 'An error occurred while loading transcripts'
     }
   } finally {
     loading.value = false
+  }
+}
+
+const loadMoreTranscripts = async () => {
+  if (!hasMoreTranscripts.value || loadingMore.value) return
+  
+  loadingMore.value = true
+  
+  try {
+    const pageSize = 1000
+    const { data, error: dbError } = await getDiioTranscripts(pageSize, currentOffset.value)
+    
+    if (dbError) throw dbError
+    
+    if (data && data.length > 0) {
+      transcripts.value.push(...data)
+      currentOffset.value += data.length
+      hasMoreTranscripts.value = data.length >= pageSize
+      console.log(`✅ Loaded ${data.length} more transcripts. Total: ${transcripts.value.length}`)
+    } else {
+      hasMoreTranscripts.value = false
+    }
+  } catch (err: any) {
+    console.error('Error loading more transcripts:', err)
+    error.value = {
+      title: 'Failed to load more transcripts',
+      message: err.message || 'An error occurred while loading more transcripts'
+    }
+  } finally {
+    loadingMore.value = false
   }
 }
 
