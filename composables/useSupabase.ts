@@ -406,14 +406,12 @@ export const useSupabase = () => {
             .select(`
               id,
               diio_transcript_id,
-              transcript_text,
               transcript_type,
               source_id,
               source_name,
               occurred_at,
               duration,
               attendees,
-              ai_analysis,
               ai_analysis_date,
               analyzed_status,
               client_platform_id,
@@ -424,7 +422,7 @@ export const useSupabase = () => {
               created_at,
               updated_at
             `)
-            .order('created_at', { ascending: false })
+            .order('occurred_at', { ascending: false })
             .range(currentOffset, currentOffset + chunkSize - 1)
           
           if (error) throw error
@@ -451,19 +449,19 @@ export const useSupabase = () => {
       }
       
       // Normal fetch for smaller limits
+      // Note: We exclude transcript_text from list view to improve performance
+      // It will be loaded separately when viewing a specific transcript
       const { data, error } = await supabase
         .from('diio_transcripts')
         .select(`
           id,
           diio_transcript_id,
-          transcript_text,
           transcript_type,
           source_id,
           source_name,
           occurred_at,
           duration,
           attendees,
-          ai_analysis,
           ai_analysis_date,
           analyzed_status,
           client_platform_id,
@@ -474,7 +472,7 @@ export const useSupabase = () => {
           created_at,
           updated_at
         `)
-        .order('created_at', { ascending: false })
+        .order('occurred_at', { ascending: false })
         .range(offset, offset + limit - 1)
 
       if (error) throw error
@@ -487,6 +485,23 @@ export const useSupabase = () => {
       return { data, error: null }
     } catch (error) {
       console.error('Error fetching DIIO transcripts:', error)
+      return { data: null, error }
+    }
+  }
+
+  // Get a single transcript with full details (including transcript_text and ai_analysis)
+  const getDiioTranscriptById = async (id: number) => {
+    try {
+      const { data, error } = await supabase
+        .from('diio_transcripts')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (error) throw error
+      return { data, error: null }
+    } catch (error) {
+      console.error('Error fetching DIIO transcript by ID:', error)
       return { data: null, error }
     }
   }
@@ -659,6 +674,7 @@ export const useSupabase = () => {
     saveDiioPhoneCalls,
     saveDiioTranscript,
     getDiioTranscripts,
+    getDiioTranscriptById,
     getDiioTranscriptStats,
     transcriptExists,
     // DIIO Transcript Feedback Functions

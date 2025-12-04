@@ -683,8 +683,23 @@
             </button>
           </div>
           
-          <div class="bg-gray-900 rounded-lg p-4 text-gray-300 whitespace-pre-wrap border border-gray-700 max-h-[50vh] overflow-auto">
-            {{ formatTranscriptText(selectedTranscript.transcript_text) }}
+          <!-- Transcript Content -->
+          <div class="bg-gray-900 rounded-lg p-4 border border-gray-700 max-h-[50vh] overflow-auto">
+            <!-- Loading state -->
+            <div v-if="loadingTranscriptDetails" class="flex items-center justify-center py-12">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
+              <p class="text-gray-400 ml-3">Loading full transcript...</p>
+            </div>
+            
+            <!-- Transcript text -->
+            <div v-else-if="selectedTranscript.transcript_text" class="text-gray-300 whitespace-pre-wrap">
+              {{ formatTranscriptText(selectedTranscript.transcript_text) }}
+            </div>
+            
+            <!-- No transcript text -->
+            <div v-else class="text-center py-8 text-gray-500">
+              <p>Transcript content not available</p>
+            </div>
           </div>
         </div>
       </div>
@@ -1076,12 +1091,13 @@ definePageMeta({
   layout: 'default'
 })
 
-const { getDiioTranscripts, getDiioTranscriptStats } = useSupabase()
+const { getDiioTranscripts, getDiioTranscriptById, getDiioTranscriptStats } = useSupabase()
 
 // State
 const transcripts = ref<any[]>([])
 const loading = ref(false)
 const loadingMore = ref(false)
+const loadingTranscriptDetails = ref(false)
 const hasMoreTranscripts = ref(true)
 const currentOffset = ref(0)
 const syncing = ref(false)
@@ -1223,7 +1239,7 @@ const loadTranscripts = async () => {
   
   try {
     // Fetch first batch of transcripts (more efficient than loading all at once)
-    const pageSize = 1000 // Load 1000 at a time
+    const pageSize = 500 // Load 500 at a time for faster initial load
     const { data, error: dbError } = await getDiioTranscripts(pageSize, 0)
     
     if (dbError) throw dbError
@@ -1251,7 +1267,7 @@ const loadMoreTranscripts = async () => {
   loadingMore.value = true
   
   try {
-    const pageSize = 1000
+    const pageSize = 500
     const { data, error: dbError } = await getDiioTranscripts(pageSize, currentOffset.value)
     
     if (dbError) throw dbError
@@ -1356,8 +1372,27 @@ const syncTranscripts = async () => {
 
 // Removed: testSentimentAnalysis function
 
-const viewTranscript = (transcript: any) => {
+const viewTranscript = async (transcript: any) => {
+  // Open modal immediately with basic info
   selectedTranscript.value = transcript
+  loadingTranscriptDetails.value = true
+  
+  try {
+    // Fetch full transcript details including transcript_text and ai_analysis
+    const { data, error } = await getDiioTranscriptById(transcript.id)
+    
+    if (error) throw error
+    
+    if (data) {
+      // Update with full details
+      selectedTranscript.value = data
+    }
+  } catch (err) {
+    console.error('Error loading transcript details:', err)
+    // Keep showing basic info even if full load fails
+  } finally {
+    loadingTranscriptDetails.value = false
+  }
 }
 
 const showSentimentAnalysis = (transcript: any) => {
