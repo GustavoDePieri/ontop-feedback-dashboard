@@ -390,9 +390,9 @@ def apply_business_aware_sentiment(
     # If it's a polite technical support request, don't make it highly negative
     if is_technical_issue and has_polite_language and has_technical_keyword:
         # It's a polite request for help, not a complaint
-        if adjusted_sentiment == 'negative' and adjusted_score < -0.5:
+        if adjusted_sentiment == 'Negative' and adjusted_score < -0.5:
             # Adjust to neutral or slightly negative
-            adjusted_sentiment = 'neutral'
+            adjusted_sentiment = 'Neutral'
             adjusted_score = max(adjusted_score, -0.2)  # Cap at -0.2 (slightly negative)
         elif adjusted_score < -0.7:
             # Very negative scores for polite tech support should be less negative
@@ -401,18 +401,18 @@ def apply_business_aware_sentiment(
     # Apply adjustments for billing issues
     if has_negative_indicator or (payments_issue and is_problem_category):
         # Force negative sentiment for billing issues
-        if adjusted_sentiment == 'positive':
-            adjusted_sentiment = 'negative'
+        if adjusted_sentiment == 'Positive':
+            adjusted_sentiment = 'Negative'
             adjusted_score = min(adjusted_score, -0.3)  # Cap at -0.3 minimum
-        elif adjusted_sentiment == 'neutral':
-            adjusted_sentiment = 'negative'
+        elif adjusted_sentiment == 'Neutral':
+            adjusted_sentiment = 'Negative'
             adjusted_score = -0.2
     
     if card_wallet_issue and adjusted_score > 0:
         # Card/wallet issues are typically negative
         adjusted_score = max(adjusted_score - 0.2, -0.5)
         if adjusted_score < 0:
-            adjusted_sentiment = 'negative'
+            adjusted_sentiment = 'Negative'
     
     return adjusted_sentiment, round(adjusted_score, 4)
 
@@ -996,8 +996,6 @@ def run_sentiment_analysis_for_clients(
     
     if not tickets:
         logger.info("✅ No tickets found matching the criteria")
-        return
-        logger.info("✅ No tickets found for these clients")
         return
     
     logger.info(f"✅ Found {len(tickets)} tickets to process\n")

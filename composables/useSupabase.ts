@@ -227,135 +227,21 @@ export const useSupabase = () => {
   }
 
   // ⚠️ DEPRECATED: diio_meetings table was removed in database cleanup
-  // This function will fail if called. Use transcript.attendees field instead.
+  // This function is kept for backward compatibility but throws an error if called
+  // Use transcript.attendees field instead
   const saveDiioMeetings = async (meetings: DiioMeeting[]) => {
-    try {
-      console.log(`💾 Preparing to store ${meetings.length} meetings...`)
-      
-      const meetingRecords: DiioMeetingRecord[] = meetings.map(meeting => {
-        // Extract participant emails from attendees
-        const participantEmails: string[] = []
-        if (meeting.attendees) {
-          if (meeting.attendees.sellers) {
-            participantEmails.push(...meeting.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
-          }
-          if (meeting.attendees.customers) {
-            participantEmails.push(...meeting.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
-          }
-        }
-        
-        return {
-          diio_meeting_id: meeting.id,
-          name: meeting.name,
-          scheduled_at: meeting.scheduled_at,
-          attendees: meeting.attendees,
-          participant_emails: participantEmails.length > 0 ? participantEmails : undefined,
-          analyzed_status: meeting.analyzed_status || 'pending',
-          error_cause: meeting.error_cause,
-          last_transcript_id: meeting.last_transcript_id
-        }
-      })
-
-      // Process in batches of 1000 to avoid database limits
-      const batchSize = 1000
-      const batches = []
-      
-      for (let i = 0; i < meetingRecords.length; i += batchSize) {
-        batches.push(meetingRecords.slice(i, i + batchSize))
-      }
-
-      console.log(`📦 Processing ${batches.length} batches of meetings...`)
-      
-      let totalStored = 0
-      for (let i = 0; i < batches.length; i++) {
-        const batch = batches[i]
-        console.log(`📦 Storing batch ${i + 1}/${batches.length} (${batch.length} meetings)...`)
-        
-        const { data, error } = await supabase
-          .from('diio_meetings')
-          .upsert(batch, { 
-            onConflict: 'diio_meeting_id',
-            ignoreDuplicates: false 
-          })
-          .select()
-
-        if (error) throw error
-        totalStored += batch.length
-      }
-
-      console.log(`✅ Successfully stored ${totalStored} meetings in ${batches.length} batches`)
-      return { data: { count: totalStored }, error: null }
-    } catch (error) {
-      console.error('Error saving DIIO meetings:', error)
-      return { data: null, error }
-    }
+    console.error('❌ saveDiioMeetings is deprecated. The diio_meetings table was removed.')
+    console.error('   Use the attendees field in diio_transcripts table instead.')
+    throw new Error('saveDiioMeetings is deprecated. The diio_meetings table was removed in database cleanup.')
   }
 
   // ⚠️ DEPRECATED: diio_phone_calls table was removed in database cleanup
-  // This function will fail if called. Use transcript.attendees field instead.
+  // This function is kept for backward compatibility but throws an error if called
+  // Use transcript.attendees field instead
   const saveDiioPhoneCalls = async (phoneCalls: DiioPhoneCall[]) => {
-    try {
-      console.log(`💾 Preparing to store ${phoneCalls.length} phone calls...`)
-      
-      const callRecords: DiioPhoneCallRecord[] = phoneCalls.map(call => {
-        // Extract participant emails from attendees
-        const participantEmails: string[] = []
-        if (call.attendees) {
-          if (call.attendees.sellers) {
-            participantEmails.push(...call.attendees.sellers.map((s: any) => s.email).filter((e: string) => e))
-          }
-          if (call.attendees.customers) {
-            participantEmails.push(...call.attendees.customers.map((c: any) => c.email).filter((e: string) => e))
-          }
-        }
-        
-        return {
-          diio_call_id: call.id,
-          name: call.name,
-          occurred_at: call.occurred_at,
-          duration: call.duration,
-          call_from_number: call.call_from_number,
-          attendees: call.attendees,
-          participant_emails: participantEmails.length > 0 ? participantEmails : undefined,
-          analyzed_status: call.analyzed_status || 'pending',
-          error_cause: call.error_cause,
-          last_transcript_id: call.last_transcript_id
-        }
-      })
-
-      // Process in batches of 1000 to avoid database limits
-      const batchSize = 1000
-      const batches = []
-      
-      for (let i = 0; i < callRecords.length; i += batchSize) {
-        batches.push(callRecords.slice(i, i + batchSize))
-      }
-
-      console.log(`📦 Processing ${batches.length} batches of phone calls...`)
-      
-      let totalStored = 0
-      for (let i = 0; i < batches.length; i++) {
-        const batch = batches[i]
-        console.log(`📦 Storing batch ${i + 1}/${batches.length} (${batch.length} calls)...`)
-        
-        const { data, error } = await supabase
-          .from('diio_phone_calls')
-          .upsert(batch, { 
-            onConflict: 'diio_call_id',
-            ignoreDuplicates: false 
-          })
-          .select()
-
-        if (error) throw error
-        totalStored += batch.length
-      }
-
-      console.log(`✅ Successfully stored ${totalStored} phone calls in ${batches.length} batches`)
-      return { data: { count: totalStored }, error: null }
-    } catch (error) {
-      console.error('Error saving DIIO phone calls:', error)
-      return { data: null, error }
-    }
+    console.error('❌ saveDiioPhoneCalls is deprecated. The diio_phone_calls table was removed.')
+    console.error('   Use the attendees field in diio_transcripts table instead.')
+    throw new Error('saveDiioPhoneCalls is deprecated. The diio_phone_calls table was removed in database cleanup.')
   }
 
   // Save DIIO transcript
@@ -476,11 +362,6 @@ export const useSupabase = () => {
         .range(offset, offset + limit - 1)
 
       if (error) throw error
-      
-      // Log first transcript for debugging
-      if (data && data.length > 0) {
-        console.log('✅ Loaded transcript with text length:', data[0].transcript_text?.length || 0)
-      }
       
       return { data, error: null }
     } catch (error) {

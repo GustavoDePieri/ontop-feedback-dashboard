@@ -258,11 +258,6 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
           // Fetch transcript
           const transcriptData = await diioRequest(`/v1/transcripts/${transcriptId}`)
 
-          // DEBUG: Log raw transcript structure for first transcript
-          if (batchIndex === 0 && i === 0) {
-            console.log(`[DEBUG] Raw DIIO transcript response for ${transcriptId}:`, JSON.stringify(transcriptData, null, 2))
-          }
-
           // Extract transcript text (handle different response structures)
           let transcriptText = ''
           
@@ -307,9 +302,6 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
             
             // Final check: if still empty, try the whole response
             if (!transcriptText && transcriptData) {
-              // Log the structure for debugging
-              console.log(`[DEBUG] Transcript structure for ${transcriptId}:`, Object.keys(transcriptData))
-              
               // Try to find any text-like fields
               for (const key of Object.keys(transcriptData)) {
                 const value = transcriptData[key]
@@ -421,12 +413,35 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
           result.message += ` | Extracted ${extractionResult.summary.feedbackSegmentsExtracted} feedback segments from ${extractionResult.summary.transcriptsProcessed} transcripts.`
         } else {
           console.warn(`⚠️ Feedback extraction completed with warnings: ${extractionResult.message}`)
-          result.message += ` | Extraction: ${extractionResult.message}`
+          result.message += ` | Extraction warning: ${extractionResult.message}`
+          // Track this as a warning that may need attention
+          if (!result.details.errors) {
+            result.details.errors = []
+          }
+          result.details.errors.push({
+            transcriptId: 'feedback_extraction',
+            error: `Extraction completed with warnings: ${extractionResult.message}`
+          })
         }
       } catch (extractionError: any) {
-        console.error('⚠️ Feedback extraction failed (non-blocking):', extractionError)
-        // Don't fail the sync if extraction fails - it's non-blocking
-        result.message += ` | Extraction failed (can be run manually)`
+        const errorMessage = extractionError?.message || extractionError?.data?.message || 'Unknown extraction error'
+        console.error('⚠️ Feedback extraction failed (non-blocking):', errorMessage)
+        console.error('   Full error:', extractionError)
+        
+        // Track extraction failure in errors array
+        if (!result.details.errors) {
+          result.details.errors = []
+        }
+        result.details.errors.push({
+          transcriptId: 'feedback_extraction',
+          error: `Automatic feedback extraction failed: ${errorMessage}. Run extraction manually via /api/diio/extract-feedback`
+        })
+        
+        // Add to summary error count
+        result.summary.errors++
+        
+        // Add detailed message for user
+        result.message += ` | ⚠️ Feedback extraction failed: ${errorMessage} (can be run manually)`
       }
     }
 

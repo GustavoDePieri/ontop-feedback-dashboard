@@ -48,15 +48,12 @@ SUPABASE_URL = os.getenv("NUXT_PUBLIC_SUPABASE_URL") or os.getenv("SUPABASE_URL"
 SUPABASE_KEY = os.getenv("NUXT_PUBLIC_SUPABASE_ANON_KEY") or os.getenv("SUPABASE_ANON_KEY")
 MODEL_NAME = "cardiffnlp/twitter-xlm-roberta-base-sentiment"
 
-    # Logging setup
+# Logging setup
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-# Enable debug logging for first few transcripts to see label mapping
-DEBUG_LABELS = False  # Set to True to see raw model labels
 
 # ============================================================
 # MODEL INITIALIZATION
@@ -243,10 +240,6 @@ def analyze_transcript(transcript_text: str) -> Optional[Dict]:
             # - LABEL_2 = Positive
             original_label = result['label']
             label_lower = str(original_label).lower()
-            
-            # Debug: log the original label to see what we're getting
-            if DEBUG_LABELS:
-                logger.info(f"   Model returned label: {original_label} (type: {type(original_label)}), score: {result['score']}")
             
             if 'label_0' in label_lower or 'negative' in label_lower:
                 mapped_label = 'Negative'
@@ -484,10 +477,6 @@ def process_transcript_sentiment(transcript_id: str, transcript_text: str) -> Di
     
     # Get confidence score from model result (this is the raw model confidence 0.0-1.0)
     confidence_score = sentiment_result['score']
-    
-    # Debug: Log the values to verify they're different
-    if DEBUG_LABELS or sentiment_label != 'neutral':
-        logger.info(f"   📊 Label: {sentiment_label}, Sentiment Score: {sentiment_score:.4f}, Confidence: {confidence_score:.4f}")
     
     # Update database
     success = update_transcript_sentiment(transcript_id, sentiment_label, sentiment_score, confidence_score)
