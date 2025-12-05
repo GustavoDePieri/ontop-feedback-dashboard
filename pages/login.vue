@@ -99,33 +99,36 @@ const handleLogin = async () => {
   error.value = ''
 
   try {
-    // Simulate a small delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    if (password.value === 'Ontop#2025') {
-      // Set authentication in localStorage and cookie
-      if (process.client) {
-        localStorage.setItem('ontop_authenticated', 'true')
-        localStorage.setItem('ontop_auth_timestamp', Date.now().toString())
+    // Call the JWT authentication API
+    const response = await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: {
+        password: password.value
       }
-      
-      // Set cookie for server-side validation
-      const authCookie = useCookie('ontop_auth', {
-        default: () => false,
-        maxAge: 60 * 60 * 24 * 7, // 7 days
-        secure: true,
-        sameSite: 'strict'
-      })
-      authCookie.value = true
+    })
 
+    if (response.success && response.token) {
+      // Store JWT token in localStorage for client-side checks
+      if (process.client) {
+        localStorage.setItem('auth_token', response.token)
+        localStorage.setItem('user_email', response.user.email)
+      }
+
+      // Cookie is already set by the server (httpOnly)
       // Redirect to dashboard
       await navigateTo('/')
     } else {
       error.value = 'Invalid password. Please try again.'
       password.value = ''
     }
-  } catch (err) {
-    error.value = 'An error occurred. Please try again.'
+  } catch (err: any) {
+    console.error('Login error:', err)
+    if (err.statusCode === 401 || err.data?.statusCode === 401) {
+      error.value = 'Invalid password. Please try again.'
+    } else {
+      error.value = err.message || 'An error occurred. Please try again.'
+    }
+    password.value = ''
   } finally {
     loading.value = false
   }

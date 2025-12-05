@@ -97,3 +97,4 @@ export function getOptionalAuth(event: H3Event): TokenPayload | null {
   return verifyAuthToken(token)
 }
 
+

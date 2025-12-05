@@ -12,9 +12,11 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { password } = body
 
-  // TODO: Replace with proper user management
-  // For now, check against environment variable
+  // Check against environment variable (or use default)
+  // Set ADMIN_PASSWORD in Vercel to use your own password
   const validPassword = process.env.ADMIN_PASSWORD || 'ontop2024'
+  
+  console.log('Login attempt - Password check:', password === validPassword ? 'SUCCESS' : 'FAILED')
 
   if (password !== validPassword) {
     throw createError({
@@ -46,4 +48,5 @@ export default defineEventHandler(async (event) => {
     }
   }
 })
+
 
