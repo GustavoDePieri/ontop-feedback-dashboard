@@ -27,6 +27,20 @@
               Clients (Tickets + Transcripts)
             </h1>
             <p class="text-gray-400">Comprehensive client analysis with AI-powered insights</p>
+            <div class="mt-2 flex items-center gap-2 text-sm">
+              <span class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full border border-blue-500/30 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                Internal Tickets Only
+              </span>
+              <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Last 3 Months
+              </span>
+            </div>
           </div>
           
           <button
@@ -52,7 +66,8 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-gray-400 text-sm mb-1">Total Clients</p>
-              <p class="text-3xl font-bold text-white">{{ clients.length }}</p>
+              <p class="text-3xl font-bold text-white">{{ totalClients || clients.length }}</p>
+              <p class="text-xs text-gray-500 mt-1" v-if="totalClients > clients.length">Showing {{ clients.length }}</p>
             </div>
             <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
               <svg class="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -241,6 +256,29 @@
         </div>
       </div>
 
+      <!-- Load More Button -->
+      <div v-if="!loading && filteredClients.length > 0 && hasMore" class="mt-8 text-center">
+        <button
+          @click="loadMoreClients"
+          :disabled="loadingMore"
+          class="px-8 py-3 bg-gradient-cta text-white rounded-lg hover:bg-gradient-cta-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-3"
+        >
+          <svg v-if="!loadingMore" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+          <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ loadingMore ? 'Loading...' : `Load More (${totalClients - clients.length} remaining)` }}
+        </button>
+      </div>
+
+      <!-- End of Results Message -->
+      <div v-if="!loading && !hasMore && filteredClients.length > 0" class="mt-8 text-center">
+        <p class="text-gray-400">✓ All clients loaded ({{ clients.length }} total)</p>
+      </div>
+
       <!-- Client Detail Modal -->
       <ClientDetailModal
         v-if="selectedClient"
@@ -255,13 +293,23 @@
 <script setup lang="ts">
 import ClientDetailModal from '~/components/ClientDetailModal.vue'
 
+// Disable SSR for this page to improve build performance
+definePageMeta({
+  ssr: false
+})
+
 // State
 const loading = ref(false)
+const loadingMore = ref(false)
 const clients = ref<any[]>([])
 const selectedClient = ref<any>(null)
 const searchQuery = ref('')
 const filterEnrichment = ref('all')
 const sortBy = ref('interactions')
+const hasMore = ref(true)
+const currentOffset = ref(0)
+const totalClients = ref(0)
+const limit = 50
 
 // Computed
 const filteredClients = computed(() => {
@@ -320,14 +368,37 @@ const avgInteractions = computed(() => {
 })
 
 // Methods
-const loadClients = async () => {
-  loading.value = true
+const loadClients = async (reset = true) => {
+  if (reset) {
+    loading.value = true
+    currentOffset.value = 0
+    clients.value = []
+  } else {
+    loadingMore.value = true
+  }
+  
   try {
-    const response = await fetch('/api/clients/list')
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      offset: currentOffset.value.toString(),
+      search: searchQuery.value
+    })
+    
+    const response = await fetch(`/api/clients/list?${params}`)
     const data = await response.json()
     
     if (data.success) {
-      clients.value = data.clients
+      if (reset) {
+        clients.value = data.clients
+      } else {
+        clients.value = [...clients.value, ...data.clients]
+      }
+      
+      hasMore.value = data.hasMore
+      totalClients.value = data.total
+      currentOffset.value = currentOffset.value + data.returned
+      
+      console.log(`Loaded ${data.returned} clients. Total: ${clients.value.length}/${data.total}`)
     } else {
       console.error('Failed to load clients:', data.error)
     }
@@ -335,8 +406,22 @@ const loadClients = async () => {
     console.error('Error loading clients:', error)
   } finally {
     loading.value = false
+    loadingMore.value = false
   }
 }
+
+const loadMoreClients = () => {
+  loadClients(false)
+}
+
+// Debounced search
+let searchTimeout: NodeJS.Timeout
+watch(searchQuery, () => {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    loadClients(true)
+  }, 500) // Wait 500ms after user stops typing
+})
 
 const selectClient = (client: any) => {
   selectedClient.value = client
@@ -387,3 +472,4 @@ onMounted(() => {
   loadClients()
 })
 </script>
+

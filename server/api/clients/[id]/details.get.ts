@@ -17,20 +17,28 @@ export default defineEventHandler(async (event) => {
       config.supabaseAnonKey!
     )
 
-    // Get all tickets for this client
+    // Calculate date 3 months ago
+    const threeMonthsAgo = new Date()
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+    const threeMonthsAgoISO = threeMonthsAgo.toISOString()
+
+    // Get all tickets for this client (is_external = false, last 3 months)
     const { data: tickets, error: ticketsError } = await supabase
       .from('zendesk_conversations')
       .select('*')
       .eq('client_id', clientId)
+      .eq('is_external', false)
+      .gte('created_at', threeMonthsAgoISO)
       .order('created_at', { ascending: false })
 
     if (ticketsError) throw ticketsError
 
-    // Get all transcripts for this client
+    // Get all transcripts for this client (last 3 months)
     const { data: transcripts, error: transcriptsError } = await supabase
       .from('diio_transcripts')
       .select('*')
       .eq('client_platform_id', clientId)
+      .gte('occurred_at', threeMonthsAgoISO)
       .order('occurred_at', { ascending: false })
 
     if (transcriptsError) throw transcriptsError
