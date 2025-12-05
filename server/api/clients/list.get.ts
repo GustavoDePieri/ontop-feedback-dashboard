@@ -33,19 +33,19 @@ export default defineEventHandler(async (event) => {
     if (diioError) throw diioError
 
     // Get all unique clients from Zendesk conversations 
-    // Filter: is_external = FALSE and last 3 months only
+    // Filter: is_external = TRUE and last 3 months only
     const { data: zendeskClients, error: zendeskError } = await supabase
       .from('zendesk_conversations')
       .select('client_id')
       .not('client_id', 'is', null)
-      .eq('is_external', false)
+      .eq('is_external', true)
       .gte('created_at', threeMonthsAgoISO)
       .order('client_id')
 
     if (zendeskError) throw zendeskError
 
     console.log('Found DIIO clients:', diioClients?.length || 0)
-    console.log('Found Zendesk internal clients:', zendeskClients?.length || 0)
+    console.log('Found Zendesk external clients:', zendeskClients?.length || 0)
 
     // Merge and deduplicate clients
     const clientMap = new Map()
@@ -81,6 +81,8 @@ export default defineEventHandler(async (event) => {
 
     // Convert to array
     let clients = Array.from(clientMap.values())
+    
+    console.log(`📊 List API: DIIO: ${diioClients?.length || 0} records, Zendesk: ${zendeskClients?.length || 0} records, Unique clients after merge: ${clients.length}`)
 
     // Apply search filter if provided
     if (searchQuery) {
@@ -107,7 +109,7 @@ export default defineEventHandler(async (event) => {
       .from('zendesk_conversations')
       .select('client_id')
       .in('client_id', clientIds)
-      .eq('is_external', false)
+      .eq('is_external', true)
       .gte('created_at', threeMonthsAgoISO)
 
     const ticketCounts = ticketData?.reduce((acc: any, row: any) => {

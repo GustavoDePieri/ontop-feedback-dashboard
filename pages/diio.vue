@@ -51,21 +51,7 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
-        <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Total Transcripts</p>
-              <p class="text-3xl font-bold text-white">{{ stats.total }}</p>
-            </div>
-            <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
         <div class="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10">
           <div class="flex items-center justify-between">
             <div>
@@ -271,9 +257,43 @@
           </div>
         </div>
 
+        <!-- Active Filters Display -->
+        <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap gap-2">
+          <span v-if="filters.search" class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm border border-emerald-500/30">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Search: "{{ filters.search }}"
+          </span>
+          <span v-if="filters.type" class="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm border border-blue-500/30">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            Type: {{ filters.type === 'meeting' ? 'Meeting' : 'Phone Call' }}
+          </span>
+          <span v-if="filters.aiAnalysis" class="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm border border-purple-500/30">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            AI: {{ filters.aiAnalysis }}
+          </span>
+          <span v-if="filters.churnedStatus" class="inline-flex items-center gap-1 px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-sm border border-yellow-500/30">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            Status: {{ filters.churnedStatus }}
+          </span>
+          <span v-if="filters.dateRange !== 'all'" class="inline-flex items-center gap-1 px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full text-sm border border-orange-500/30">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Last {{ filters.dateRange }} days
+          </span>
+        </div>
+
         <div class="flex items-center justify-between mt-4">
           <div class="text-sm text-gray-400">
-            Showing {{ filteredTranscripts.length }} of {{ transcripts.length }} transcripts
+            Showing {{ filteredTranscripts.length }} of {{ transcripts.length }} loaded transcripts ({{ stats.total }} total)
           </div>
           <button
             v-if="hasActiveFilters"
@@ -368,6 +388,24 @@
                     title="AI Analysis completed"
                   >
                     🤖 AI Analyzed
+                  </span>
+
+                  <!-- Sentiment Badge -->
+                  <span
+                    v-if="transcript.sentiment"
+                    class="px-2 py-1 text-xs font-medium rounded-full"
+                    :class="{
+                      'bg-green-900/30 text-green-300 border border-green-500/30': transcript.sentiment === 'Positive' || transcript.sentiment === 'positive',
+                      'bg-red-900/30 text-red-300 border border-red-500/30': transcript.sentiment === 'Negative' || transcript.sentiment === 'negative',
+                      'bg-yellow-900/30 text-yellow-300 border border-yellow-500/30': transcript.sentiment === 'Neutral' || transcript.sentiment === 'neutral',
+                      'bg-purple-900/30 text-purple-300 border border-purple-500/30': transcript.sentiment === 'Mixed' || transcript.sentiment === 'mixed'
+                    }"
+                    :title="`Sentiment Score: ${transcript.sentiment_score !== null && transcript.sentiment_score !== undefined ? transcript.sentiment_score.toFixed(2) : 'N/A'}`"
+                  >
+                    {{ transcript.sentiment === 'Positive' || transcript.sentiment === 'positive' ? '😊' : 
+                       transcript.sentiment === 'Negative' || transcript.sentiment === 'negative' ? '😞' : 
+                       transcript.sentiment === 'Neutral' || transcript.sentiment === 'neutral' ? '😐' : '🤔' }}
+                    {{ transcript.sentiment }}
                   </span>
                   
                   <span class="text-xs text-gray-400">
@@ -834,10 +872,11 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'default'
+  layout: 'default',
+  ssr: false // Disable SSR to prevent slow builds and allow client-side data fetching
 })
 
-const { getDiioTranscripts, getDiioTranscriptById, getDiioTranscriptStats } = useSupabase()
+const { supabase, getDiioTranscripts, getDiioTranscriptById, getDiioTranscriptStats } = useSupabase()
 
 // State
 const transcripts = ref<any[]>([])
@@ -847,13 +886,10 @@ const loadingTranscriptDetails = ref(false)
 const hasMoreTranscripts = ref(true)
 const currentOffset = ref(0)
 const syncing = ref(false)
-// Removed: generatingReport, testingSentiment
 const error = ref<{ title?: string; message: string } | null>(null)
 const selectedTranscript = ref<any>(null)
 const currentPage = ref(1)
 const itemsPerPage = 20
-
-// Removed: churnedReportData, showChurnedReportModal
 
 // Sentiment Analysis State
 const aiAnalysisResult = ref<any>(null)
@@ -985,7 +1021,7 @@ const loadTranscripts = async () => {
   
   try {
     // Fetch first batch of transcripts (more efficient than loading all at once)
-    const pageSize = 500 // Load 500 at a time for faster initial load
+    const pageSize = 50 // Load 50 at a time for faster initial load
     const { data, error: dbError } = await getDiioTranscripts(pageSize, 0)
     
     if (dbError) throw dbError
@@ -1013,7 +1049,7 @@ const loadMoreTranscripts = async () => {
   loadingMore.value = true
   
   try {
-    const pageSize = 500
+    const pageSize = 50
     const { data, error: dbError } = await getDiioTranscripts(pageSize, currentOffset.value)
     
     if (dbError) throw dbError
@@ -1039,23 +1075,44 @@ const loadMoreTranscripts = async () => {
 
 const loadStats = async () => {
   try {
+    // Get main stats from the database function
     const { data } = await getDiioTranscriptStats()
     if (data) {
       stats.total = data.total_transcripts || 0
+      stats.aiAnalyzed = data.finished_analysis || data.with_ai_analysis || 0
     }
+    
+    // Get account status counts directly from the database
+    // Count churned accounts
+    const { count: churnedCount, error: churnedError } = await supabase
+      .from('diio_transcripts')
+      .select('*', { count: 'exact', head: true })
+      .eq('account_status', 'churned')
+    
+    if (churnedError) {
+      console.error('Error counting churned accounts:', churnedError)
+    } else {
+      stats.churned = churnedCount || 0
+      console.log(`📊 Churned accounts: ${stats.churned}`)
+    }
+    
+    // Count active accounts
+    const { count: activeCount, error: activeError } = await supabase
+      .from('diio_transcripts')
+      .select('*', { count: 'exact', head: true })
+      .eq('account_status', 'active')
+    
+    if (activeError) {
+      console.error('Error counting active accounts:', activeError)
+    } else {
+      stats.active = activeCount || 0
+      console.log(`📊 Active accounts: ${stats.active}`)
+    }
+    
   } catch (err) {
     console.error('Error loading stats:', err)
   }
-  
-  // Count AI analyzed transcripts from loaded data
-  stats.aiAnalyzed = transcripts.value.filter(t => t.analyzed_status === 'finished').length
-
-  // Count account status transcripts from loaded data
-  stats.churned = transcripts.value.filter(t => t.account_status === 'churned').length
-  stats.active = transcripts.value.filter(t => t.account_status === 'active').length
 }
-
-// Removed: generateChurnedAccountsReport function
 
 const syncTranscripts = async () => {
   syncing.value = true
@@ -1115,8 +1172,6 @@ const syncTranscripts = async () => {
     syncing.value = false
   }
 }
-
-// Removed: testSentimentAnalysis function
 
 const viewTranscript = async (transcript: any) => {
   // Open modal immediately with basic info
@@ -1188,8 +1243,6 @@ const showSentimentAnalysis = (transcript: any) => {
   console.log('📊 Formatted sentiment analysis for display:', aiAnalysisResult.value)
 }
 
-// Removed: analyzeTranscriptWithAI function - now using stored sentiment data
-
 const selectedFeedbackTranscript = ref<any>(null)
 const feedbackSegments = ref<any[]>([])
 const loadingFeedback = ref(false)
@@ -1254,7 +1307,6 @@ const clearFilters = () => {
 
 const clearError = () => {
   error.value = null
-  hasQuotaError.value = false
 }
 
 const formatDate = (dateString: string) => {
@@ -1326,38 +1378,6 @@ const copyToClipboard = async (text: string) => {
   }
 }
 
-const copyReportToClipboard = async () => {
-  if (!churnedReportData.value) return
-
-  const report = churnedReportData.value
-  const formattedReport = `
-CHURNED ACCOUNTS REPORT
-Generated: ${new Date(report.generatedAt).toLocaleString()}
-
-EXECUTIVE SUMMARY
-================
-Total Churned Accounts: ${report.totalChurnedAccounts}
-Total Transcripts: ${report.totalTranscripts}
-Accounts with Data: ${report.accountsWithTranscripts}
-Accounts without Data: ${report.accountsWithoutTranscripts}
-
-TRANSCRIPT DISTRIBUTION
-======================
-1 transcript: ${report.transcriptDistribution.accountsWith1Transcript} accounts
-2-5 transcripts: ${report.transcriptDistribution.accountsWith2To5Transcripts} accounts
-6-10 transcripts: ${report.transcriptDistribution.accountsWith6To10Transcripts} accounts
-10+ transcripts: ${report.transcriptDistribution.accountsWith10PlusTranscripts} accounts
-
-TOP ACCOUNTS BY TRANSCRIPTS
-===========================
-${report.topAccountsByTranscripts.slice(0, 10).map((account: any, index: number) =>
-  `${index + 1}. ${account.accountName} (${account.clientPlatformId}): ${account.transcriptCount} transcripts`
-).join('\n')}
-  `.trim()
-
-  await copyToClipboard(formattedReport)
-}
-
 const formatTranscriptText = (text: any): string => {
   if (!text) return 'No transcript text available'
   
@@ -1403,7 +1423,6 @@ watch([filters.search, filters.type, filters.aiAnalysis, filters.churnedStatus, 
 // Load on mount
 onMounted(async () => {
   await loadTranscripts()
-  await loadStats()
 })
 </script>
 

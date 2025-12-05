@@ -22,6 +22,26 @@
           Zendesk Tickets
         </h1>
             <p class="text-gray-400">Browse and analyze support tickets grouped by client</p>
+            <div class="mt-2 flex items-center gap-2 text-sm flex-wrap">
+              <span class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full border border-blue-500/30 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                External Tickets Only
+              </span>
+              <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Last 3 Months
+              </span>
+              <span class="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Has Client ID
+              </span>
+            </div>
           </div>
           
           <div class="flex items-center gap-2">
@@ -218,7 +238,7 @@
 
         <div class="flex items-center justify-between mt-4">
           <div class="text-sm text-gray-400">
-            Showing {{ filteredTickets.length }} of {{ tickets.length }} tickets
+            Showing {{ filteredTickets.length }} of {{ tickets.length }} loaded tickets ({{ totalTickets }} total)
           </div>
           <button
             v-if="hasActiveFilters"
@@ -356,6 +376,24 @@
                 Next
               </button>
             </div>
+          </div>
+
+          <!-- Load More Button -->
+          <div v-if="hasMoreTickets && !hasActiveFilters" class="flex flex-col items-center gap-3 mt-6 pt-6 border-t border-gray-700">
+            <div class="text-sm text-gray-400">
+              Loaded {{ tickets.length }} of {{ totalTickets }} total tickets
+            </div>
+            <button
+              @click="loadMoreTickets"
+              :disabled="loadingMore"
+              class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
+            >
+              <svg v-if="loadingMore" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>{{ loadingMore ? 'Loading...' : 'Load More Tickets' }}</span>
+            </button>
           </div>
         </div>
 
@@ -559,11 +597,15 @@
                 <div class="flex items-center justify-between">
                   <span class="text-sm text-gray-400">{{ score.author_name || 'Unknown' }}</span>
                   <span
+                    v-if="score.sentiment && score.sentiment.label"
                     class="px-2 py-1 text-xs font-medium rounded-full"
                     :class="getSentimentClass(score.sentiment.label)"
                   >
                     {{ score.sentiment.label }}
-                </span>
+                  </span>
+                  <span v-else class="px-2 py-1 text-xs font-medium rounded-full bg-gray-700 text-gray-400">
+                    N/A
+                  </span>
               </div>
                 <p class="text-xs text-gray-500 mt-1 truncate">{{ score.message_text }}</p>
             </div>
@@ -586,16 +628,30 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  ssr: false // Disable SSR to prevent slow builds and allow client-side data fetching
+})
+
 const { supabase } = useSupabase()
 
 // State
 const loading = ref(false)
+const loadingMore = ref(false)
 const error = ref<{ title: string; message: string } | null>(null)
 const tickets = ref<any[]>([])
 const selectedTicket = ref<any>(null)
 const currentPage = ref(1)
 const itemsPerPage = 20
 const groupBy = ref('none') // 'none', 'client', 'sentiment'
+const currentOffset = ref(0)
+const hasMoreTickets = ref(true)
+const totalTickets = ref(0)
+const statsData = ref({
+  uniqueClients: 0,
+  positive: 0,
+  neutral: 0,
+  negative: 0
+})
 
 // Filters
 const filters = ref({
@@ -607,11 +663,11 @@ const filters = ref({
 
 // Computed
 const stats = computed(() => {
-  const total = tickets.value.length
-  const uniqueClients = new Set(tickets.value.map(t => t.client_id).filter(Boolean)).size
-  const positive = tickets.value.filter(t => t.overall_sentiment === 'positive').length
-  const neutral = tickets.value.filter(t => t.overall_sentiment === 'neutral').length
-  const negative = tickets.value.filter(t => t.overall_sentiment === 'negative').length
+  const total = totalTickets.value // Use database total
+  const uniqueClients = statsData.value.uniqueClients // Use database count
+  const positive = statsData.value.positive // Use database count
+  const neutral = statsData.value.neutral // Use database count
+  const negative = statsData.value.negative // Use database count
 
   return { total, uniqueClients, positive, neutral, negative }
 })
@@ -693,46 +749,36 @@ const hasActiveFilters = computed(() => {
 const loadTickets = async () => {
   loading.value = true
   error.value = null
-  tickets.value = [] // Clear existing tickets
+  currentOffset.value = 0
+  hasMoreTickets.value = true
 
   try {
-    // Fetch ALL tickets (Supabase default limit is 1000, so we need to fetch in chunks)
-    let offset = 0
-    const chunkSize = 1000
-    let hasMore = true
+    // Calculate date 3 months ago
+    const threeMonthsAgo = new Date()
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+    
+    // Fetch first batch of tickets (50 at a time for faster initial load)
+    // Filters: External only (is_external = true), last 3 months, with client_id
+    const pageSize = 50
+    const { data, error: fetchError } = await supabase
+      .from('zendesk_conversations')
+      .select('*')
+      .eq('is_external', true)
+      .not('client_id', 'is', null)
+      .gte('created_at', threeMonthsAgo.toISOString())
+      .order('created_at', { ascending: false })
+      .range(0, pageSize - 1)
 
-    while (hasMore) {
-      const { data, error: fetchError } = await supabase
-        .from('zendesk_conversations')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .range(offset, offset + chunkSize - 1)
+    if (fetchError) throw fetchError
 
-      if (fetchError) throw fetchError
+    tickets.value = data || []
+    currentOffset.value = data?.length || 0
+    hasMoreTickets.value = (data?.length || 0) >= pageSize
 
-      if (data && data.length > 0) {
-        // Update tickets reactively so UI shows progress
-        tickets.value = [...tickets.value, ...data]
-        offset += chunkSize
-        hasMore = data.length === chunkSize
-        
-        // Log progress
-        console.log(`Loaded ${tickets.value.length} tickets so far...`)
-        
-        // Small delay to allow UI to update
-        await new Promise(resolve => setTimeout(resolve, 10))
-      } else {
-        hasMore = false
-      }
-
-      // Safety limit to prevent infinite loops
-      if (offset > 100000) {
-        console.warn('⚠️ Reached safety limit of 100,000 tickets')
-        break
-      }
-    }
-
-    console.log(`✅ Loaded ${tickets.value.length} total tickets`)
+    console.log(`✅ Loaded ${tickets.value.length} tickets from database (external, last 3 months, with client_id)`)
+    
+    // Load total count for stats
+    await loadTotalCount()
   } catch (err: any) {
     console.error('Error loading tickets:', err)
     error.value = {
@@ -741,6 +787,100 @@ const loadTickets = async () => {
     }
   } finally {
     loading.value = false
+  }
+}
+
+const loadMoreTickets = async () => {
+  if (!hasMoreTickets.value || loadingMore.value) return
+  
+  loadingMore.value = true
+  
+  try {
+    // Calculate date 3 months ago
+    const threeMonthsAgo = new Date()
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+    
+    const pageSize = 50
+    const { data, error: fetchError } = await supabase
+      .from('zendesk_conversations')
+      .select('*')
+      .eq('is_external', true)
+      .not('client_id', 'is', null)
+      .gte('created_at', threeMonthsAgo.toISOString())
+      .order('created_at', { ascending: false })
+      .range(currentOffset.value, currentOffset.value + pageSize - 1)
+
+    if (fetchError) throw fetchError
+
+    if (data && data.length > 0) {
+      tickets.value.push(...data)
+      currentOffset.value += data.length
+      hasMoreTickets.value = data.length >= pageSize
+      console.log(`✅ Loaded ${data.length} more tickets. Total: ${tickets.value.length}`)
+    } else {
+      hasMoreTickets.value = false
+    }
+  } catch (err: any) {
+    console.error('Error loading more tickets:', err)
+    error.value = {
+      title: 'Failed to load more tickets',
+      message: err.message || 'An unknown error occurred'
+    }
+  } finally {
+    loadingMore.value = false
+  }
+}
+
+const loadTotalCount = async () => {
+  try {
+    // Calculate date 3 months ago
+    const threeMonthsAgo = new Date()
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+    
+    // Get total count
+    const { count, error: countError } = await supabase
+      .from('zendesk_conversations')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_external', true)
+      .not('client_id', 'is', null)
+      .gte('created_at', threeMonthsAgo.toISOString())
+
+    if (countError) throw countError
+    totalTickets.value = count || 0
+    
+    // Get all tickets with sentiment data for stats (we need client_id and sentiment)
+    const { data: allTickets, error: statsError } = await supabase
+      .from('zendesk_conversations')
+      .select('client_id, overall_sentiment')
+      .eq('is_external', true)
+      .not('client_id', 'is', null)
+      .gte('created_at', threeMonthsAgo.toISOString())
+
+    if (statsError) throw statsError
+    
+    // Calculate stats from all tickets
+    const uniqueClients = new Set(allTickets?.map(t => t.client_id).filter(Boolean)).size
+    const positive = allTickets?.filter(t => t.overall_sentiment === 'positive').length || 0
+    const neutral = allTickets?.filter(t => t.overall_sentiment === 'neutral').length || 0
+    const negative = allTickets?.filter(t => t.overall_sentiment === 'negative').length || 0
+    
+    statsData.value = {
+      uniqueClients,
+      positive,
+      neutral,
+      negative
+    }
+    
+    console.log(`✅ Zendesk Stats loaded:`, {
+      totalTickets: totalTickets.value,
+      uniqueClients,
+      positive,
+      neutral,
+      negative,
+      allTicketsCount: allTickets?.length || 0
+    })
+  } catch (err) {
+    console.error('Error loading total count:', err)
   }
 }
 

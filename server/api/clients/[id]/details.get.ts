@@ -22,12 +22,12 @@ export default defineEventHandler(async (event) => {
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
     const threeMonthsAgoISO = threeMonthsAgo.toISOString()
 
-    // Get all tickets for this client (is_external = false, last 3 months)
+    // Get all tickets for this client (is_external = true, last 3 months)
     const { data: tickets, error: ticketsError } = await supabase
       .from('zendesk_conversations')
       .select('*')
       .eq('client_id', clientId)
-      .eq('is_external', false)
+      .eq('is_external', true)
       .gte('created_at', threeMonthsAgoISO)
       .order('created_at', { ascending: false })
 

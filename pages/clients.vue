@@ -30,15 +30,21 @@
             <div class="mt-2 flex items-center gap-2 text-sm">
               <span class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full border border-blue-500/30 flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Internal Tickets Only
+                External Tickets Only
               </span>
               <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30 flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 Last 3 Months
+              </span>
+              <span class="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Has Client ID
               </span>
             </div>
           </div>
@@ -155,6 +161,42 @@
             <option value="recent">Recently Enriched</option>
           </select>
         </div>
+
+        <!-- Active Filters Display -->
+        <div v-if="searchQuery || filterEnrichment !== 'all' || sortBy !== 'interactions'" class="mt-4 flex flex-wrap gap-2 items-center">
+          <span class="text-sm text-gray-400">Active filters:</span>
+          
+          <span v-if="searchQuery" class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm border border-emerald-500/30">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Search: "{{ searchQuery }}"
+          </span>
+
+          <span v-if="filterEnrichment !== 'all'" class="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm border border-blue-500/30">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            {{ filterEnrichment === 'completed' ? 'Enriched' : 'Pending Enrichment' }}
+          </span>
+
+          <span v-if="sortBy !== 'interactions'" class="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm border border-purple-500/30">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+            </svg>
+            Sort: {{ sortBy === 'name' ? 'Name' : 'Recently Enriched' }}
+          </span>
+
+          <button
+            @click="clearAllFilters"
+            class="inline-flex items-center gap-1 px-3 py-1 bg-red-500/20 text-red-300 rounded-full text-sm border border-red-500/30 hover:bg-red-500/30 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Clear All
+          </button>
+        </div>
       </div>
 
       <!-- Clients Grid -->
@@ -214,15 +256,59 @@
             </div>
           </div>
 
+          <!-- Data Source Badges -->
+          <div class="flex flex-wrap gap-2 mb-3">
+            <span
+              v-if="client.ticket_count > 0"
+              class="px-2 py-1 text-xs font-medium rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center gap-1"
+              :title="`${client.ticket_count} Zendesk tickets`"
+            >
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+              </svg>
+              {{ client.ticket_count }} {{ client.ticket_count === 1 ? 'Ticket' : 'Tickets' }}
+            </span>
+            <span
+              v-if="client.transcript_count > 0"
+              class="px-2 py-1 text-xs font-medium rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1"
+              :title="`${client.transcript_count} DIIO transcripts`"
+            >
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+              {{ client.transcript_count }} {{ client.transcript_count === 1 ? 'Transcript' : 'Transcripts' }}
+            </span>
+            <span
+              v-if="client.ticket_count > 0 && client.transcript_count > 0"
+              class="px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1"
+              title="Complete data from multiple sources"
+            >
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Multi-Source
+            </span>
+          </div>
+
           <!-- Stats -->
           <div class="grid grid-cols-2 gap-3 mb-4">
             <div class="bg-white/5 rounded-lg p-3 border border-white/10">
-              <p class="text-xs text-gray-400 mb-1">Tickets</p>
-              <p class="text-2xl font-bold text-white">{{ client.ticket_count }}</p>
+              <div class="flex items-center justify-between">
+                <p class="text-xs text-gray-400 mb-1">Total Items</p>
+                <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <p class="text-2xl font-bold text-white">{{ client.ticket_count + client.transcript_count }}</p>
             </div>
             <div class="bg-white/5 rounded-lg p-3 border border-white/10">
-              <p class="text-xs text-gray-400 mb-1">Transcripts</p>
-              <p class="text-2xl font-bold text-white">{{ client.transcript_count }}</p>
+              <div class="flex items-center justify-between">
+                <p class="text-xs text-gray-400 mb-1">Data Span</p>
+                <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <p class="text-sm font-semibold text-white">3 Months</p>
             </div>
           </div>
 
@@ -310,6 +396,11 @@ const hasMore = ref(true)
 const currentOffset = ref(0)
 const totalClients = ref(0)
 const limit = 50
+const statsData = ref({
+  totalEnriched: 0,
+  totalPending: 0,
+  totalInteractions: 0
+})
 
 // Computed
 const filteredClients = computed(() => {
@@ -349,22 +440,21 @@ const filteredClients = computed(() => {
 })
 
 const enrichedCount = computed(() => {
-  return clients.value.filter(c => c.enrichment_status === 'completed').length
+  return statsData.value.totalEnriched // Use database total
 })
 
 const pendingCount = computed(() => {
-  return clients.value.filter(c => c.enrichment_status === 'pending').length
+  return statsData.value.totalPending // Use database total
 })
 
 const enrichmentPercentage = computed(() => {
-  if (clients.value.length === 0) return 0
-  return Math.round((enrichedCount.value / clients.value.length) * 100)
+  if (totalClients.value === 0) return 0
+  return Math.round((enrichedCount.value / totalClients.value) * 100)
 })
 
 const avgInteractions = computed(() => {
-  if (clients.value.length === 0) return 0
-  const total = clients.value.reduce((sum, c) => sum + c.ticket_count + c.transcript_count, 0)
-  return Math.round(total / clients.value.length)
+  if (totalClients.value === 0) return 0
+  return Math.round(statsData.value.totalInteractions / totalClients.value)
 })
 
 // Methods
@@ -395,10 +485,15 @@ const loadClients = async (reset = true) => {
       }
       
       hasMore.value = data.hasMore
-      totalClients.value = data.total
+      // Don't update totalClients here - it comes from loadStats() which has the accurate database total
       currentOffset.value = currentOffset.value + data.returned
       
-      console.log(`Loaded ${data.returned} clients. Total: ${clients.value.length}/${data.total}`)
+      console.log(`Loaded ${data.returned} clients. Currently loaded: ${clients.value.length}, Database total: ${totalClients.value}`)
+      
+      // Load stats on first load
+      if (reset) {
+        await loadStats()
+      }
     } else {
       console.error('Failed to load clients:', data.error)
     }
@@ -407,6 +502,39 @@ const loadClients = async (reset = true) => {
   } finally {
     loading.value = false
     loadingMore.value = false
+  }
+}
+
+const loadStats = async () => {
+  try {
+    console.log('🔄 Loading client stats from API...')
+    // Fetch stats directly from API
+    const response = await fetch('/api/clients/stats')
+    const data = await response.json()
+    
+    console.log('📊 API Response:', data)
+    
+    if (data.success) {
+      // Update totalClients with the database value
+      totalClients.value = data.stats.totalClients
+      
+      statsData.value = {
+        totalEnriched: data.stats.enriched,
+        totalPending: data.stats.pending,
+        totalInteractions: data.stats.totalInteractions
+      }
+      console.log(`✅ Stats loaded successfully:`, {
+        totalClients: data.stats.totalClients,
+        enriched: data.stats.enriched,
+        pending: data.stats.pending,
+        totalInteractions: data.stats.totalInteractions,
+        avgInteractions: Math.round(data.stats.totalInteractions / data.stats.totalClients)
+      })
+    } else {
+      console.error('❌ Stats API returned error:', data.error)
+    }
+  } catch (error) {
+    console.error('❌ Error loading stats:', error)
   }
 }
 
@@ -430,6 +558,12 @@ const selectClient = (client: any) => {
 const handleEnriched = () => {
   // Reload clients to get updated enrichment status
   loadClients()
+}
+
+const clearAllFilters = () => {
+  searchQuery.value = ''
+  filterEnrichment.value = 'all'
+  sortBy.value = 'interactions'
 }
 
 const getInitials = (name: string) => {
