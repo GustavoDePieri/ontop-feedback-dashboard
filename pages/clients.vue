@@ -52,12 +52,13 @@
           <button
             @click="loadClients"
             :disabled="loading"
-            class="flex items-center gap-2 px-4 py-2 bg-gradient-cta text-white rounded-lg hover:bg-gradient-cta-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            class="flex items-center gap-2 px-4 py-2 bg-gradient-cta text-white rounded-lg hover:bg-gradient-cta-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
+            aria-label="Refresh client list"
           >
-            <svg v-if="!loading" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg v-if="!loading" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+            <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -66,86 +67,112 @@
         </div>
       </div>
 
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-gradient-to-br from-purple-500/10 to-purple-700/10 backdrop-blur-sm rounded-xl p-6 border border-purple-500/20">
+      <!-- Stats Cards - Compact -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-gradient-to-br from-purple-500/10 to-purple-700/10 backdrop-blur-sm rounded-lg p-4 border border-purple-500/20">
           <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Total Clients</p>
-              <p class="text-3xl font-bold text-white">{{ totalClients || clients.length }}</p>
-              <p class="text-xs text-gray-500 mt-1" v-if="totalClients > clients.length">Showing {{ clients.length }}</p>
+            <div class="flex-1">
+              <p class="text-gray-400 text-xs mb-1 font-medium">Total Clients</p>
+              <p class="text-2xl font-bold text-white">{{ formatNumber(totalClients || clients.length) }}</p>
+              <p class="text-xs text-gray-500 mt-1" v-if="totalClients > clients.length">Showing {{ formatNumber(clients.length) }}</p>
             </div>
-            <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-label="Total clients icon">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
           </div>
         </div>
 
-        <div class="bg-gradient-to-br from-green-500/10 to-green-700/10 backdrop-blur-sm rounded-xl p-6 border border-green-500/20">
+        <div class="bg-gradient-to-br from-green-500/10 to-green-700/10 backdrop-blur-sm rounded-lg p-4 border border-green-500/20">
           <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">AI Enriched</p>
-              <p class="text-3xl font-bold text-white">{{ enrichedCount }}</p>
+            <div class="flex-1">
+              <p class="text-gray-400 text-xs mb-1 font-medium">AI Enriched</p>
+              <p class="text-2xl font-bold text-white">{{ formatNumber(enrichedCount) }}</p>
               <p class="text-xs text-gray-500 mt-1">{{ enrichmentPercentage }}% complete</p>
             </div>
-            <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-label="AI enriched icon">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
           </div>
         </div>
 
-        <div class="bg-gradient-to-br from-orange-500/10 to-orange-700/10 backdrop-blur-sm rounded-xl p-6 border border-orange-500/20">
+        <div class="bg-gradient-to-br from-orange-500/10 to-orange-700/10 backdrop-blur-sm rounded-lg p-4 border border-orange-500/20">
           <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Pending Enrichment</p>
-              <p class="text-3xl font-bold text-white">{{ pendingCount }}</p>
+            <div class="flex-1">
+              <p class="text-gray-400 text-xs mb-1 font-medium">Pending Enrichment</p>
+              <p class="text-2xl font-bold text-white">{{ formatNumber(pendingCount) }}</p>
             </div>
-            <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-orange-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-label="Pending enrichment icon">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
           </div>
         </div>
 
-        <div class="bg-gradient-to-br from-blue-500/10 to-blue-700/10 backdrop-blur-sm rounded-xl p-6 border border-blue-500/20">
+        <div class="bg-gradient-to-br from-blue-500/10 to-blue-700/10 backdrop-blur-sm rounded-lg p-4 border border-blue-500/20">
           <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm mb-1">Avg Interactions</p>
-              <p class="text-3xl font-bold text-white">{{ avgInteractions }}</p>
+            <div class="flex-1">
+              <p class="text-gray-400 text-xs mb-1 font-medium">Avg Interactions</p>
+              <p class="text-2xl font-bold text-white">{{ formatNumber(avgInteractions) }}</p>
               <p class="text-xs text-gray-500 mt-1">per client</p>
             </div>
-            <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-              <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-label="Average interactions icon">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Sentiment Scale Legend - Compact -->
+      <div class="mb-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm rounded-lg p-3 border border-blue-500/20">
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 text-blue-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div class="flex-1 flex items-center gap-4 text-xs">
+            <span class="text-white font-semibold">Scale:</span>
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 bg-red-500 rounded"></div>
+              <span class="text-gray-300">-1 to -0.3 = <span class="font-semibold text-red-300">Negative</span></span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 bg-yellow-500 rounded"></div>
+              <span class="text-gray-300">-0.3 to +0.3 = <span class="font-semibold text-yellow-300">Neutral</span></span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-2 h-2 bg-green-500 rounded"></div>
+              <span class="text-gray-300">+0.3 to +1 = <span class="font-semibold text-green-300">Positive</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Search and Filter -->
-      <div class="mb-6 bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+      <div class="mb-4 bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="relative">
             <input
               v-model="searchQuery"
               type="text"
               placeholder="Search clients..."
-              class="w-full px-4 py-2 pl-10 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition-colors"
+              class="w-full px-3 py-2 pl-9 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 transition-all"
+              aria-label="Search clients by name or ID"
             />
-            <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
 
           <select
             v-model="filterEnrichment"
-            class="px-4 py-2 bg-ontop-navy-dark/80 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-ontop-pink-400"
+            class="px-3 py-2 bg-ontop-navy-dark/80 border border-white/20 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-ontop-pink-400/50 transition-all cursor-pointer"
+            aria-label="Filter by enrichment status"
           >
             <option value="all">All Clients</option>
             <option value="completed">Enriched</option>
@@ -154,215 +181,284 @@
 
           <select
             v-model="sortBy"
-            class="px-4 py-2 bg-ontop-navy-dark/80 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-ontop-pink-400"
+            class="px-3 py-2 bg-ontop-navy-dark/80 border border-white/20 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-ontop-pink-400/50 transition-all cursor-pointer"
+            aria-label="Sort clients by"
           >
             <option value="interactions">Most Interactions</option>
+            <option value="sentiment-desc">Sentiment: Positive First</option>
+            <option value="sentiment-asc">Sentiment: Negative First</option>
             <option value="name">Client Name</option>
             <option value="recent">Recently Enriched</option>
           </select>
         </div>
 
-        <!-- Active Filters Display -->
-        <div v-if="searchQuery || filterEnrichment !== 'all' || sortBy !== 'interactions'" class="mt-4 flex flex-wrap gap-2 items-center">
-          <span class="text-sm text-gray-400">Active filters:</span>
-          
-          <span v-if="searchQuery" class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm border border-emerald-500/30">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            Search: "{{ searchQuery }}"
-          </span>
+        <!-- Active Filters Display - Compact -->
+        <div v-if="searchQuery || filterEnrichment !== 'all' || sortBy !== 'interactions'" class="mt-3 p-3 bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-lg border border-emerald-500/20">
+          <div class="flex flex-wrap gap-2 items-center text-sm">
+            <span class="text-xs font-semibold text-white flex items-center gap-1">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              Active:
+            </span>
+            
+            <button
+              v-if="searchQuery"
+              @click="searchQuery = ''"
+              class="inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-500/30 text-emerald-200 rounded text-xs border border-emerald-400/40 hover:bg-emerald-500/40 transition-all"
+              aria-label="Remove search filter"
+            >
+              <span>Search: "{{ searchQuery }}"</span>
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
-          <span v-if="filterEnrichment !== 'all'" class="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm border border-blue-500/30">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            {{ filterEnrichment === 'completed' ? 'Enriched' : 'Pending Enrichment' }}
-          </span>
+            <button
+              v-if="filterEnrichment !== 'all'"
+              @click="filterEnrichment = 'all'"
+              class="inline-flex items-center gap-1.5 px-2 py-1 bg-blue-500/30 text-blue-200 rounded text-xs border border-blue-400/40 hover:bg-blue-500/40 transition-all"
+              aria-label="Remove enrichment filter"
+            >
+              <span>{{ filterEnrichment === 'completed' ? 'Enriched Only' : 'Pending Only' }}</span>
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
-          <span v-if="sortBy !== 'interactions'" class="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm border border-purple-500/30">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-            </svg>
-            Sort: {{ sortBy === 'name' ? 'Name' : 'Recently Enriched' }}
-          </span>
+            <button
+              v-if="sortBy !== 'interactions'"
+              @click="sortBy = 'interactions'"
+              class="inline-flex items-center gap-1.5 px-2 py-1 bg-purple-500/30 text-purple-200 rounded text-xs border border-purple-400/40 hover:bg-purple-500/40 transition-all"
+              aria-label="Remove sort filter"
+            >
+              <span>{{ getSortLabel(sortBy) }}</span>
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
+            <button
+              @click="clearAllFilters"
+              class="inline-flex items-center gap-1.5 px-2 py-1 bg-red-500/30 text-red-200 rounded text-xs border border-red-400/40 hover:bg-red-500/40 transition-all ml-auto"
+              aria-label="Clear all filters"
+            >
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              <span>Clear All</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="loading" class="text-center py-20">
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-emerald-400 border-t-transparent"></div>
+        <p class="text-white font-medium mt-6 text-lg">Loading clients...</p>
+        <p class="text-gray-400 mt-2 text-sm">Fetching data from database</p>
+      </div>
+
+      <!-- Empty State - No Clients Found -->
+      <div v-else-if="filteredClients.length === 0 && !loading" class="text-center py-20">
+        <div class="max-w-md mx-auto bg-white/5 backdrop-blur-sm rounded-2xl p-12 border border-white/10">
+          <div class="w-24 h-24 bg-gray-700/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-12 h-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <h3 class="text-white text-xl font-bold mb-3">No Clients Found</h3>
+          <p class="text-gray-400 mb-6">
+            <span v-if="searchQuery || filterEnrichment !== 'all'">
+              No clients match your current filters. Try adjusting your search or filters.
+            </span>
+            <span v-else>
+              There are no clients in the system yet. Clients will appear here once data is synced.
+            </span>
+          </p>
           <button
+            v-if="searchQuery || filterEnrichment !== 'all'"
             @click="clearAllFilters"
-            class="inline-flex items-center gap-1 px-3 py-1 bg-red-500/20 text-red-300 rounded-full text-sm border border-red-500/30 hover:bg-red-500/30 transition-colors"
+            class="px-6 py-3 bg-gradient-cta text-white rounded-lg hover:bg-gradient-cta-hover transition-all duration-200 font-medium min-h-[44px]"
           >
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Clear All
+            Clear All Filters
           </button>
         </div>
       </div>
 
-      <!-- Clients Grid -->
-      <div v-if="loading" class="text-center py-12">
-        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400"></div>
-        <p class="text-gray-400 mt-4">Loading clients...</p>
-      </div>
-
-      <div v-else-if="filteredClients.length === 0" class="text-center py-12">
-        <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-        <p class="text-gray-400">No clients found</p>
-      </div>
-
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <button
           v-for="client in filteredClients"
           :key="client.client_id"
           @click="selectClient(client)"
-          class="group relative bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-emerald-500/50 transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-2xl"
+          class="group relative bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/10 hover:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 transition-all duration-200 cursor-pointer hover:scale-[1.01] hover:shadow-xl text-left w-full"
+          :aria-label="`View details for ${client.client_name}`"
         >
-          <!-- Enrichment Status Badge -->
-          <div class="absolute top-4 right-4">
+          <!-- Status Badge (Top Right) - Compact -->
+          <div class="absolute top-2 right-2">
             <span
               v-if="client.enrichment_status === 'completed'"
-              class="px-2 py-1 text-xs font-medium rounded-full bg-green-500/20 text-green-300 border border-green-500/30"
+              class="px-2 py-0.5 text-xs font-medium rounded-md bg-green-500/20 text-green-300 border border-green-500/30"
             >
-              ✓ Enriched
+              ✓
             </span>
             <span
               v-else-if="client.enrichment_status === 'processing'"
-              class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 flex items-center gap-1"
+              class="px-2 py-0.5 text-xs font-medium rounded-md bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 flex items-center gap-1"
             >
-              <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+              <svg class="w-2 h-2 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Processing
-            </span>
-            <span
-              v-else
-              class="px-2 py-1 text-xs font-medium rounded-full bg-gray-700 text-gray-300"
-            >
-              Pending
             </span>
           </div>
 
-          <!-- Client Icon -->
-          <div class="flex items-start gap-4 mb-4">
-            <div class="w-16 h-16 bg-gradient-ontop rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-              <span class="text-2xl font-bold text-white">{{ getInitials(client.client_name) }}</span>
+          <!-- Client Header - Compact -->
+          <div class="mb-3">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-10 h-10 bg-gradient-ontop rounded-lg flex items-center justify-center shadow-lg flex-shrink-0 group-hover:scale-105 transition-transform">
+                <span class="text-sm font-bold text-white">{{ getInitials(client.client_name) }}</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-bold text-white truncate group-hover:text-emerald-300 transition-colors">
+                  {{ client.client_name }}
+                </h3>
+                <p class="text-xs text-gray-500 font-mono truncate">{{ client.client_id }}</p>
+              </div>
             </div>
-            <div class="flex-1 min-w-0">
-              <h3 class="text-xl font-bold text-white mb-1 truncate">{{ client.client_name }}</h3>
-              <p class="text-sm text-gray-400">{{ client.client_id }}</p>
+            
+            <!-- Real Sentiment Tag - Compact (from client_sentiment_summary) -->
+            <div v-if="client.real_sentiment_category" class="mb-2">
+              <span
+                class="px-2 py-1 text-xs font-bold rounded-lg shadow flex items-center gap-1.5 w-full justify-center"
+                :class="getRealSentimentClass(client.real_sentiment_category)"
+                :title="`Sentiment score: ${client.real_sentiment_score?.toFixed(2) || 'N/A'} | Based on ${formatNumber(client.sentiment_stats?.total_analyzed || 0)} analyzed interactions`"
+              >
+                <span class="text-sm">{{ getSentimentIcon(client.real_sentiment_category) }}</span>
+                <span>{{ client.real_sentiment_category }}</span>
+                <span class="text-xs opacity-75">({{ client.real_sentiment_score?.toFixed(2) }})</span>
+              </span>
+            </div>
+            <div v-else class="mb-2">
+              <span class="px-2 py-1 text-xs font-medium rounded-lg bg-gray-700/50 text-gray-400 border border-gray-600/30 inline-flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                No data
+              </span>
             </div>
           </div>
 
-          <!-- Data Source Badges -->
-          <div class="flex flex-wrap gap-2 mb-3">
+          <!-- Data Source Badges - Compact -->
+          <div class="flex flex-wrap gap-1.5 mb-2 text-xs">
             <span
               v-if="client.ticket_count > 0"
-              class="px-2 py-1 text-xs font-medium rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center gap-1"
-              :title="`${client.ticket_count} Zendesk tickets`"
+              class="px-2 py-1 font-medium rounded bg-blue-500/20 text-blue-300 border border-blue-500/40 flex items-center gap-1"
+              :title="`${formatNumber(client.ticket_count)} Zendesk support tickets from last 3 months`"
             >
-              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-label="Zendesk tickets icon">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
               </svg>
-              {{ client.ticket_count }} {{ client.ticket_count === 1 ? 'Ticket' : 'Tickets' }}
+              <span>{{ formatNumber(client.ticket_count) }}</span>
             </span>
             <span
               v-if="client.transcript_count > 0"
-              class="px-2 py-1 text-xs font-medium rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1"
-              :title="`${client.transcript_count} DIIO transcripts`"
+              class="px-2 py-1 font-medium rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 flex items-center gap-1"
+              :title="`${formatNumber(client.transcript_count)} DIIO call transcripts from last 3 months`"
             >
-              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-label="DIIO transcripts icon">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
               </svg>
-              {{ client.transcript_count }} {{ client.transcript_count === 1 ? 'Transcript' : 'Transcripts' }}
+              <span>{{ formatNumber(client.transcript_count) }}</span>
             </span>
             <span
               v-if="client.ticket_count > 0 && client.transcript_count > 0"
-              class="px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1"
-              title="Complete data from multiple sources"
+              class="px-2 py-1 font-medium rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1"
+              title="This client has both support tickets and call transcripts - complete data coverage"
             >
-              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-label="Multi-source data icon">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Multi-Source
             </span>
           </div>
 
-          <!-- Stats -->
-          <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="bg-white/5 rounded-lg p-3 border border-white/10">
-              <div class="flex items-center justify-between">
-                <p class="text-xs text-gray-400 mb-1">Total Items</p>
-                <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <p class="text-2xl font-bold text-white">{{ client.ticket_count + client.transcript_count }}</p>
+          <!-- Stats - Compact -->
+          <div class="grid grid-cols-2 gap-2 mb-2 text-xs">
+            <div class="bg-white/5 rounded-lg p-2 border border-white/10">
+              <p class="text-gray-400 mb-0.5">Total</p>
+              <p class="text-xl font-bold text-white">{{ formatNumber(client.ticket_count + client.transcript_count) }}</p>
             </div>
-            <div class="bg-white/5 rounded-lg p-3 border border-white/10">
-              <div class="flex items-center justify-between">
-                <p class="text-xs text-gray-400 mb-1">Data Span</p>
-                <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <p class="text-sm font-semibold text-white">3 Months</p>
+            <div class="bg-white/5 rounded-lg p-2 border border-white/10">
+              <p class="text-gray-400 mb-0.5">Period</p>
+              <p class="text-xs font-semibold text-white">3 Months</p>
             </div>
           </div>
 
-          <!-- Sentiment Badge -->
-          <div v-if="client.overall_sentiment" class="flex items-center gap-2 mb-4">
-            <span
-              class="px-3 py-1 text-xs font-medium rounded-full"
-              :class="getSentimentClass(client.overall_sentiment)"
-            >
-              {{ getSentimentIcon(client.overall_sentiment) }} {{ client.overall_sentiment }}
-            </span>
-            <div v-if="client.sentiment_score !== null" class="flex-1">
-              <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div
-                  class="h-full transition-all duration-300"
-                  :class="getSentimentScoreColor(client.sentiment_score)"
-                  :style="{ width: `${Math.abs(client.sentiment_score) * 100}%` }"
-                ></div>
+          <!-- Sentiment Breakdown - Compact -->
+          <div v-if="client.sentiment_stats" class="mb-2">
+            <div class="grid grid-cols-3 gap-1 text-center text-xs">
+              <div>
+                <div class="font-bold text-green-300">{{ client.sentiment_stats.positive_percentage?.toFixed(0) || 0 }}%</div>
+                <div class="h-1.5 bg-gray-700 rounded overflow-hidden">
+                  <div class="h-full bg-green-500" :style="{ width: `${client.sentiment_stats.positive_percentage || 0}%` }"></div>
+                </div>
+              </div>
+              <div>
+                <div class="font-bold text-yellow-300">{{ client.sentiment_stats.neutral_percentage?.toFixed(0) || 0 }}%</div>
+                <div class="h-1.5 bg-gray-700 rounded overflow-hidden">
+                  <div class="h-full bg-yellow-500" :style="{ width: `${client.sentiment_stats.neutral_percentage || 0}%` }"></div>
+                </div>
+              </div>
+              <div>
+                <div class="font-bold text-red-300">{{ client.sentiment_stats.negative_percentage?.toFixed(0) || 0 }}%</div>
+                <div class="h-1.5 bg-gray-700 rounded overflow-hidden">
+                  <div class="h-full bg-red-500" :style="{ width: `${client.sentiment_stats.negative_percentage || 0}%` }"></div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Action Button -->
-          <button class="w-full bg-gradient-cta text-white rounded-lg px-4 py-2 font-medium hover:bg-gradient-cta-hover transition-all duration-200 flex items-center justify-center gap-2 group-hover:scale-105">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          <!-- Click Indicator -->
+          <div class="flex items-center justify-center gap-1 text-emerald-400 group-hover:text-emerald-300 transition-colors text-xs">
+            <span>View details</span>
+            <svg class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
-            View Details
-          </button>
-        </div>
-      </div>
-
-      <!-- Load More Button -->
-      <div v-if="!loading && filteredClients.length > 0 && hasMore" class="mt-8 text-center">
-        <button
-          @click="loadMoreClients"
-          :disabled="loadingMore"
-          class="px-8 py-3 bg-gradient-cta text-white rounded-lg hover:bg-gradient-cta-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-3"
-        >
-          <svg v-if="!loadingMore" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-          <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          {{ loadingMore ? 'Loading...' : `Load More (${totalClients - clients.length} remaining)` }}
+          </div>
         </button>
       </div>
 
+      <!-- Load More Button - Compact -->
+      <div v-if="!loading && filteredClients.length > 0 && hasMore" class="mt-6 text-center">
+        <button
+          @click="loadMoreClients"
+          :disabled="loadingMore"
+          class="px-6 py-2.5 bg-gradient-cta text-white rounded-lg hover:bg-gradient-cta-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 inline-flex items-center gap-2 font-medium text-sm shadow-lg hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+          :aria-label="loadingMore ? 'Loading more clients' : `Load ${formatNumber(totalClients - clients.length)} more clients`"
+        >
+          <svg v-if="!loadingMore" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+          <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span v-if="!loadingMore">Load More ({{ formatNumber(totalClients - clients.length) }})</span>
+          <span v-else>Loading...</span>
+        </button>
+        <p class="text-gray-500 mt-2 text-xs">
+          {{ formatNumber(clients.length) }} of {{ formatNumber(totalClients) }} total
+        </p>
+      </div>
+
       <!-- End of Results Message -->
-      <div v-if="!loading && !hasMore && filteredClients.length > 0" class="mt-8 text-center">
-        <p class="text-gray-400">✓ All clients loaded ({{ clients.length }} total)</p>
+      <div v-if="!loading && !hasMore && filteredClients.length > 0" class="mt-6 text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-lg border border-green-500/30">
+          <svg class="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p class="text-green-300 text-sm font-medium">All {{ formatNumber(clients.length) }} clients loaded</p>
+        </div>
       </div>
 
       <!-- Client Detail Modal -->
@@ -406,35 +502,10 @@ const statsData = ref({
 const filteredClients = computed(() => {
   let filtered = clients.value
 
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(c =>
-      c.client_name.toLowerCase().includes(query) ||
-      c.client_id.toLowerCase().includes(query)
-    )
-  }
-
-  // Enrichment filter
+  // Only apply client-side enrichment filter (search and sort now handled server-side)
   if (filterEnrichment.value !== 'all') {
     filtered = filtered.filter(c => c.enrichment_status === filterEnrichment.value)
   }
-
-  // Sort
-  filtered = [...filtered].sort((a, b) => {
-    if (sortBy.value === 'interactions') {
-      const totalA = a.ticket_count + a.transcript_count
-      const totalB = b.ticket_count + b.transcript_count
-      return totalB - totalA
-    } else if (sortBy.value === 'name') {
-      return a.client_name.localeCompare(b.client_name)
-    } else if (sortBy.value === 'recent') {
-      if (!a.enriched_at) return 1
-      if (!b.enriched_at) return -1
-      return new Date(b.enriched_at).getTime() - new Date(a.enriched_at).getTime()
-    }
-    return 0
-  })
 
   return filtered
 })
@@ -471,7 +542,8 @@ const loadClients = async (reset = true) => {
     const params = new URLSearchParams({
       limit: limit.toString(),
       offset: currentOffset.value.toString(),
-      search: searchQuery.value
+      search: searchQuery.value,
+      sortBy: sortBy.value
     })
     
     const response = await fetch(`/api/clients/list?${params}`)
@@ -551,6 +623,11 @@ watch(searchQuery, () => {
   }, 500) // Wait 500ms after user stops typing
 })
 
+// Watch for sort changes
+watch(sortBy, () => {
+  loadClients(true) // Reload with new sort order
+})
+
 const selectClient = (client: any) => {
   selectedClient.value = client
 }
@@ -575,6 +652,17 @@ const getInitials = (name: string) => {
   return name.substring(0, 2).toUpperCase()
 }
 
+const getRealSentimentClass = (sentiment: string) => {
+  switch (sentiment?.toLowerCase()) {
+    case 'positive':
+      return 'bg-gradient-to-br from-green-500/30 to-green-600/20 text-green-200 border-2 border-green-400/40 shadow-green-500/20'
+    case 'negative':
+      return 'bg-gradient-to-br from-red-500/30 to-red-600/20 text-red-200 border-2 border-red-400/40 shadow-red-500/20'
+    default:
+      return 'bg-gradient-to-br from-yellow-500/30 to-yellow-600/20 text-yellow-200 border-2 border-yellow-400/40 shadow-yellow-500/20'
+  }
+}
+
 const getSentimentClass = (sentiment: string) => {
   switch (sentiment?.toLowerCase()) {
     case 'positive':
@@ -595,10 +683,26 @@ const getSentimentIcon = (sentiment: string) => {
 }
 
 const getSentimentScoreColor = (score: number) => {
-  if (score > 0.5) return 'bg-green-500'
+  // Score ranges from -1 to +1
+  if (score > 0.3) return 'bg-green-500'
   if (score > 0) return 'bg-green-400'
-  if (score > -0.5) return 'bg-yellow-500'
+  if (score > -0.3) return 'bg-yellow-500'
   return 'bg-red-500'
+}
+
+const getSortLabel = (sort: string) => {
+  switch (sort) {
+    case 'name': return 'Name'
+    case 'recent': return 'Recently Enriched'
+    case 'sentiment-desc': return 'Positive First'
+    case 'sentiment-asc': return 'Negative First'
+    default: return sort
+  }
+}
+
+const formatNumber = (num: number) => {
+  if (num === null || num === undefined) return '0'
+  return num.toLocaleString('en-US')
 }
 
 // Load on mount

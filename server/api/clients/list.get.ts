@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
   const limit = parseInt(query.limit as string) || 50
   const offset = parseInt(query.offset as string) || 0
   const searchQuery = (query.search as string) || ''
+  const sortBy = (query.sortBy as string) || 'interactions'
   
   try {
     const supabase = createClient(
@@ -96,53 +97,128 @@ export default defineEventHandler(async (event) => {
     // Store total before pagination
     const totalClients = clients.length
 
-    // Apply pagination
-    const paginatedClients = clients.slice(offset, offset + limit)
+    console.log(`Sorting by: ${sortBy}`)
 
-    console.log(`Returning ${paginatedClients.length} clients (${offset}-${offset + limit} of ${totalClients})`)
+    // Get ALL client IDs (BEFORE pagination) so we can fetch data for all, sort, then paginate
+    const clientIds = clients.map(c => c.client_id)
+    console.log(`📊 Total unique clients to process: ${clientIds.length}`)
 
-    // Optimize: Get all counts and enrichment data in batch queries instead of per-client
-    const clientIds = paginatedClients.map(c => c.client_id)
+    // Initialize count objects
+    const ticketCounts: Record<string, number> = {}
+    const transcriptCounts: Record<string, number> = {}
 
-    // Batch query: Get ticket counts for all clients at once
-    const { data: ticketData } = await supabase
-      .from('zendesk_conversations')
-      .select('client_id')
-      .in('client_id', clientIds)
-      .eq('is_external', true)
-      .gte('created_at', threeMonthsAgoISO)
+    // Process in batches to avoid hitting Supabase limits
+    const batchSize = 50  // Reduced to ensure we don't hit 1000 row limit per query
+    for (let i = 0; i < clientIds.length; i += batchSize) {
+      const batch = clientIds.slice(i, i + batchSize)
+      
+      // Fetch ALL ticket counts for this batch (with pagination to avoid 1000 row limit)
+      let ticketOffset = 0
+      let hasMoreTickets = true
+      const pageSize = 1000
+      
+      while (hasMoreTickets) {
+        const { data: ticketData, error: ticketError } = await supabase
+          .from('zendesk_conversations')
+          .select('client_id')
+          .in('client_id', batch)
+          .eq('is_external', true)
+          .gte('created_at', threeMonthsAgoISO)
+          .range(ticketOffset, ticketOffset + pageSize - 1)
 
-    const ticketCounts = ticketData?.reduce((acc: any, row: any) => {
-      acc[row.client_id] = (acc[row.client_id] || 0) + 1
-      return acc
-    }, {}) || {}
+        if (ticketError) {
+          console.error(`❌ Error fetching ticket counts for batch ${i}-${i+batchSize}, offset ${ticketOffset}:`, ticketError)
+          break
+        }
 
-    // Batch query: Get transcript counts for all clients at once
-    const { data: transcriptData } = await supabase
-      .from('diio_transcripts')
-      .select('client_platform_id')
-      .in('client_platform_id', clientIds)
-      .gte('occurred_at', threeMonthsAgoISO)
+        // Count tickets for each client
+        ticketData?.forEach((row: any) => {
+          ticketCounts[row.client_id] = (ticketCounts[row.client_id] || 0) + 1
+        })
 
-    const transcriptCounts = transcriptData?.reduce((acc: any, row: any) => {
-      acc[row.client_platform_id] = (acc[row.client_platform_id] || 0) + 1
-      return acc
-    }, {}) || {}
+        // Check if we need to fetch more
+        hasMoreTickets = ticketData && ticketData.length === pageSize
+        ticketOffset += pageSize
+      }
 
-    // Batch query: Get enrichment data for all clients at once
-    const { data: enrichments } = await supabase
-      .from('client_enrichment')
-      .select('client_id, enrichment_status, enriched_at, overall_sentiment, sentiment_score')
-      .in('client_id', clientIds)
+      // Fetch ALL transcript counts for this batch (with pagination)
+      let transcriptOffset = 0
+      let hasMoreTranscripts = true
+      
+      while (hasMoreTranscripts) {
+        const { data: transcriptData, error: transcriptError } = await supabase
+          .from('diio_transcripts')
+          .select('client_platform_id')
+          .in('client_platform_id', batch)
+          .gte('occurred_at', threeMonthsAgoISO)
+          .range(transcriptOffset, transcriptOffset + pageSize - 1)
 
-    const enrichmentMap = enrichments?.reduce((acc: any, enrich: any) => {
-      acc[enrich.client_id] = enrich
-      return acc
-    }, {}) || {}
+        if (transcriptError) {
+          console.error(`❌ Error fetching transcript counts for batch ${i}-${i+batchSize}, offset ${transcriptOffset}:`, transcriptError)
+          break
+        }
 
-    // Combine all data
-    const enrichedClients = paginatedClients.map(client => {
+        // Count transcripts for each client
+        transcriptData?.forEach((row: any) => {
+          transcriptCounts[row.client_platform_id] = (transcriptCounts[row.client_platform_id] || 0) + 1
+        })
+
+        // Check if we need to fetch more
+        hasMoreTranscripts = transcriptData && transcriptData.length === pageSize
+        transcriptOffset += pageSize
+      }
+    }
+
+    const totalTickets = Object.values(ticketCounts).reduce((sum: number, count: number) => sum + count, 0)
+    const totalTranscripts = Object.values(transcriptCounts).reduce((sum: number, count: number) => sum + count, 0)
+    console.log(`📊 Ticket counts: ${Object.keys(ticketCounts).length} clients with ${totalTickets} total tickets`)
+    console.log(`📊 Transcript counts: ${Object.keys(transcriptCounts).length} clients with ${totalTranscripts} total transcripts`)
+
+    // Fetch enrichment and sentiment data in batches
+    const enrichmentMap: Record<string, any> = {}
+    const sentimentMap: Record<string, any> = {}
+
+    for (let i = 0; i < clientIds.length; i += batchSize) {
+      const batch = clientIds.slice(i, i + batchSize)
+      
+      // Fetch enrichment data for this batch (these tables are small, no pagination needed)
+      const { data: enrichments, error: enrichError } = await supabase
+        .from('client_enrichment')
+        .select('client_id, enrichment_status, enriched_at, overall_sentiment, sentiment_score')
+        .in('client_id', batch)
+
+      if (enrichError) {
+        console.error(`❌ Error fetching enrichment for batch ${i}-${i+batchSize}:`, enrichError)
+      }
+
+      enrichments?.forEach((enrich: any) => {
+        enrichmentMap[enrich.client_id] = enrich
+      })
+
+      // Fetch sentiment data for this batch
+      const { data: sentiments, error: sentimentError } = await supabase
+        .from('client_sentiment_summary')
+        .select('client_id, client_sentiment_category, client_final_score, total_tickets_analyzed, positive_percentage, negative_percentage, neutral_percentage')
+        .in('client_id', batch)
+        .is('period_start', null) // Get all-time summary (where period is NULL)
+
+      if (sentimentError) {
+        console.error(`❌ Error fetching sentiment for batch ${i}-${i+batchSize}:`, sentimentError)
+      }
+
+      sentiments?.forEach((sentiment: any) => {
+        sentimentMap[sentiment.client_id] = sentiment
+      })
+    }
+
+    console.log(`📊 Enrichment data for ${Object.keys(enrichmentMap).length} clients`)
+    console.log(`📊 Sentiment data for ${Object.keys(sentimentMap).length} clients`)
+
+    // Combine all data BEFORE sorting and pagination
+    // We need to enrich ALL clients first, then sort, then paginate
+    const allEnrichedClients = clients.map(client => {
       const enrichment = enrichmentMap[client.client_id]
+      const sentiment = sentimentMap[client.client_id]
       return {
         ...client,
         ticket_count: ticketCounts[client.client_id] || 0,
@@ -150,16 +226,55 @@ export default defineEventHandler(async (event) => {
         enrichment_status: enrichment?.enrichment_status || 'pending',
         enriched_at: enrichment?.enriched_at || null,
         overall_sentiment: enrichment?.overall_sentiment || null,
-        sentiment_score: enrichment?.sentiment_score || null
+        sentiment_score: enrichment?.sentiment_score || null,
+        // Real sentiment from client_sentiment_summary (calculated from actual data)
+        real_sentiment_category: sentiment?.client_sentiment_category || null,
+        real_sentiment_score: sentiment?.client_final_score || null,
+        sentiment_stats: sentiment ? {
+          total_analyzed: sentiment.total_tickets_analyzed,
+          positive_percentage: sentiment.positive_percentage,
+          negative_percentage: sentiment.negative_percentage,
+          neutral_percentage: sentiment.neutral_percentage
+        } : null
       }
     })
 
-    // Sort by total interactions (tickets + transcripts)
-    enrichedClients.sort((a, b) => {
-      const totalA = a.ticket_count + a.transcript_count
-      const totalB = b.ticket_count + b.transcript_count
-      return totalB - totalA
+    // Sort ALL clients based on sortBy parameter
+    allEnrichedClients.sort((a, b) => {
+      switch (sortBy) {
+        case 'sentiment-desc':
+          // Positive first (higher scores first)
+          const scoreDescA = a.real_sentiment_score ?? -999
+          const scoreDescB = b.real_sentiment_score ?? -999
+          return scoreDescB - scoreDescA
+        
+        case 'sentiment-asc':
+          // Negative first (lower scores first)
+          const scoreAscA = a.real_sentiment_score ?? 999
+          const scoreAscB = b.real_sentiment_score ?? 999
+          return scoreAscA - scoreAscB
+        
+        case 'name':
+          return a.client_name.localeCompare(b.client_name)
+        
+        case 'recent':
+          if (!a.enriched_at) return 1
+          if (!b.enriched_at) return -1
+          return new Date(b.enriched_at).getTime() - new Date(a.enriched_at).getTime()
+        
+        case 'interactions':
+        default:
+          // Sort by total interactions (tickets + transcripts)
+          const totalA = a.ticket_count + a.transcript_count
+          const totalB = b.ticket_count + b.transcript_count
+          return totalB - totalA
+      }
     })
+
+    // NOW apply pagination after sorting
+    const enrichedClients = allEnrichedClients.slice(offset, offset + limit)
+
+    console.log(`Returning ${enrichedClients.length} clients (${offset}-${offset + limit} of ${totalClients}) sorted by ${sortBy}`)
 
     const hasMore = (offset + limit) < totalClients
 

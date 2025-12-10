@@ -3,21 +3,20 @@
     class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in"
     @click.self="$emit('close')"
   >
-    <div class="bg-gradient-to-br from-ontop-navy-dark to-ontop-navy rounded-2xl max-w-7xl w-full max-h-[90vh] overflow-hidden border border-white/10 shadow-2xl animate-slide-up">
-      <!-- Modal Header -->
-      <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-b border-white/10 p-6">
+    <div class="bg-gradient-to-br from-ontop-navy-dark to-ontop-navy rounded-xl max-w-6xl w-full max-h-[90vh] overflow-hidden border border-white/10 shadow-2xl animate-slide-up">
+      <!-- Modal Header - Compact -->
+      <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-b border-white/10 p-4">
         <div class="flex items-start justify-between">
-          <div class="flex items-center gap-4">
-            <div class="w-16 h-16 bg-gradient-ontop rounded-xl flex items-center justify-center shadow-lg">
-              <span class="text-2xl font-bold text-white">{{ getInitials(client.client_name) }}</span>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-gradient-ontop rounded-lg flex items-center justify-center shadow-lg">
+              <span class="text-lg font-bold text-white">{{ getInitials(client.client_name) }}</span>
             </div>
             <div>
-              <h2 class="text-3xl font-bold text-white mb-1">{{ client.client_name }}</h2>
-              <p class="text-gray-400">{{ client.client_id }}</p>
-              <div class="flex items-center gap-2 mt-2">
+              <h2 class="text-xl font-bold text-white mb-0.5">{{ client.client_name }}</h2>
+              <p class="text-gray-400 text-sm">{{ client.client_id }}</p>
+              <div v-if="enrichment?.overall_sentiment" class="flex items-center gap-2 mt-1">
                 <span
-                  v-if="enrichment?.overall_sentiment"
-                  class="px-3 py-1 text-xs font-medium rounded-full"
+                  class="px-2 py-0.5 text-xs font-medium rounded"
                   :class="getSentimentClass(enrichment.overall_sentiment)"
                 >
                   {{ getSentimentIcon(enrichment.overall_sentiment) }} {{ enrichment.overall_sentiment }}
@@ -27,37 +26,37 @@
           </div>
           <button
             @click="$emit('close')"
-            class="text-gray-400 hover:text-white transition-colors"
+            class="text-gray-400 hover:text-white transition-colors p-1"
           >
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-4 gap-4 mt-6">
-          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-            <p class="text-gray-400 text-xs mb-1">Total Tickets</p>
-            <p class="text-2xl font-bold text-white">{{ details?.tickets?.length || 0 }}</p>
+        <!-- Quick Stats - Compact -->
+        <div class="grid grid-cols-4 gap-2 mt-3">
+          <div class="bg-white/10 backdrop-blur-sm rounded p-2 border border-white/20">
+            <p class="text-gray-400 text-xs mb-0.5">Tickets</p>
+            <p class="text-lg font-bold text-white">{{ details?.tickets?.length || 0 }}</p>
           </div>
-          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-            <p class="text-gray-400 text-xs mb-1">Total Transcripts</p>
-            <p class="text-2xl font-bold text-white">{{ details?.transcripts?.length || 0 }}</p>
+          <div class="bg-white/10 backdrop-blur-sm rounded p-2 border border-white/20">
+            <p class="text-gray-400 text-xs mb-0.5">Transcripts</p>
+            <p class="text-lg font-bold text-white">{{ details?.transcripts?.length || 0 }}</p>
           </div>
-          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-            <p class="text-gray-400 text-xs mb-1">Pain Points</p>
-            <p class="text-2xl font-bold text-white">{{ enrichment?.pain_points?.length || 0 }}</p>
+          <div class="bg-white/10 backdrop-blur-sm rounded p-2 border border-white/20">
+            <p class="text-gray-400 text-xs mb-0.5">Pain Points</p>
+            <p class="text-lg font-bold text-white">{{ enrichment?.pain_points?.length || 0 }}</p>
           </div>
-          <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-            <p class="text-gray-400 text-xs mb-1">Churn Signals</p>
-            <p class="text-2xl font-bold text-white">{{ enrichment?.churn_signals?.length || 0 }}</p>
+          <div class="bg-white/10 backdrop-blur-sm rounded p-2 border border-white/20">
+            <p class="text-gray-400 text-xs mb-0.5">Churn Signals</p>
+            <p class="text-lg font-bold text-white">{{ enrichment?.churn_signals?.length || 0 }}</p>
           </div>
         </div>
       </div>
 
-      <!-- Modal Body -->
-      <div class="overflow-y-auto max-h-[calc(90vh-300px)] p-6">
+      <!-- Modal Body - Compact -->
+      <div class="overflow-y-auto max-h-[calc(90vh-200px)] p-4">
         <!-- Loading State -->
         <div v-if="loading" class="text-center py-12">
           <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400"></div>
@@ -65,169 +64,169 @@
         </div>
 
         <template v-else>
-          <!-- AI Enrichment Section -->
-          <div v-if="enrichment && enrichment.enrichment_status === 'completed'" class="mb-8">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="text-2xl font-bold text-white flex items-center gap-3">
-                <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-2">
-                  <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <!-- AI Enrichment Section - Compact -->
+          <div v-if="enrichment && enrichment.enrichment_status === 'completed'" class="mb-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded p-1.5">
+                  <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
-                AI-Powered Insights
+                AI Insights
               </h3>
-              <span class="px-3 py-1 text-xs font-medium rounded-full bg-green-500/20 text-green-300 border border-green-500/30">
-                ✓ Enriched {{ formatDate(enrichment.enriched_at) }}
+              <span class="px-2 py-0.5 text-xs font-medium rounded bg-green-500/20 text-green-300 border border-green-500/30">
+                ✓ {{ formatDate(enrichment.enriched_at) }}
               </span>
             </div>
 
-            <!-- Conclusion -->
-            <div class="bg-gradient-to-br from-purple-500/10 to-purple-700/10 border border-purple-500/30 rounded-xl p-6 mb-6">
-              <h4 class="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Conclusion - Compact -->
+            <div class="bg-gradient-to-br from-purple-500/10 to-purple-700/10 border border-purple-500/30 rounded-lg p-3 mb-3">
+              <h4 class="text-sm font-semibold text-white mb-2 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Overall Analysis
               </h4>
-              <p class="text-gray-300 leading-relaxed">{{ enrichment.conclusion }}</p>
+              <p class="text-gray-300 text-sm leading-relaxed">{{ enrichment.conclusion }}</p>
             </div>
 
-            <!-- Recommended Actions -->
-            <div class="bg-gradient-to-br from-blue-500/10 to-blue-700/10 border border-blue-500/30 rounded-xl p-6 mb-6">
-              <h4 class="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Recommended Actions - Compact -->
+            <div class="bg-gradient-to-br from-blue-500/10 to-blue-700/10 border border-blue-500/30 rounded-lg p-3 mb-3">
+              <h4 class="text-sm font-semibold text-white mb-2 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 Recommended Actions
               </h4>
-              <p class="text-gray-300 leading-relaxed">{{ enrichment.recommended_action }}</p>
+              <p class="text-gray-300 text-sm leading-relaxed">{{ enrichment.recommended_action }}</p>
             </div>
 
-            <!-- Pain Points -->
-            <div v-if="enrichment.pain_points && enrichment.pain_points.length > 0" class="mb-6">
-              <h4 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Pain Points - Compact -->
+            <div v-if="enrichment.pain_points && enrichment.pain_points.length > 0" class="mb-3">
+              <h4 class="text-sm font-semibold text-white mb-2 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
                 Pain Points
               </h4>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div
                   v-for="(pain, index) in enrichment.pain_points"
                   :key="index"
-                  class="bg-gradient-to-br from-red-500/10 to-red-700/10 border border-red-500/30 rounded-lg p-4"
+                  class="bg-gradient-to-br from-red-500/10 to-red-700/10 border border-red-500/30 rounded p-2"
                 >
-                  <div class="flex items-start justify-between mb-2">
-                    <span class="px-2 py-1 text-xs font-medium rounded bg-red-500/20 text-red-300">
+                  <div class="flex items-start justify-between mb-1 gap-2">
+                    <span class="px-1.5 py-0.5 text-xs font-medium rounded bg-red-500/20 text-red-300">
                       {{ pain.category }}
                     </span>
                     <span
-                      class="px-2 py-1 text-xs font-medium rounded"
+                      class="px-1.5 py-0.5 text-xs font-medium rounded"
                       :class="{
                         'bg-red-600/30 text-red-300': pain.severity === 'high',
                         'bg-orange-600/30 text-orange-300': pain.severity === 'medium',
                         'bg-yellow-600/30 text-yellow-300': pain.severity === 'low'
                       }"
                     >
-                      {{ pain.severity }} severity
+                      {{ pain.severity }}
                     </span>
                   </div>
-                  <p class="text-gray-300 text-sm mb-2">{{ pain.description }}</p>
-                  <p class="text-xs text-gray-500">Frequency: {{ pain.frequency }} times</p>
+                  <p class="text-gray-300 text-xs mb-1">{{ pain.description }}</p>
+                  <p class="text-xs text-gray-500">×{{ pain.frequency }}</p>
                 </div>
               </div>
             </div>
 
-            <!-- Churn Signals -->
-            <div v-if="enrichment.churn_signals && enrichment.churn_signals.length > 0" class="mb-6">
-              <h4 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Churn Signals - Compact -->
+            <div v-if="enrichment.churn_signals && enrichment.churn_signals.length > 0" class="mb-3">
+              <h4 class="text-sm font-semibold text-white mb-2 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                Churn Risk Signals
+                Churn Signals
               </h4>
-              <div class="space-y-3">
+              <div class="space-y-2">
                 <div
                   v-for="(signal, index) in enrichment.churn_signals"
                   :key="index"
-                  class="bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/30 rounded-lg p-4 flex items-start gap-4"
+                  class="bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/30 rounded p-2 flex items-start gap-2"
                 >
                   <div
-                    class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                    class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
                     :class="{
                       'bg-red-600/30': signal.risk_level === 'high',
                       'bg-orange-600/30': signal.risk_level === 'medium',
                       'bg-yellow-600/30': signal.risk_level === 'low'
                     }"
                   >
-                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                   </div>
-                  <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-2">
-                      <span class="font-semibold text-white">{{ signal.signal }}</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-0.5">
+                      <span class="font-semibold text-white text-sm">{{ signal.signal }}</span>
                       <span
-                        class="px-2 py-1 text-xs font-medium rounded"
+                        class="px-1.5 py-0.5 text-xs font-medium rounded"
                         :class="{
                           'bg-red-600/30 text-red-300': signal.risk_level === 'high',
                           'bg-orange-600/30 text-orange-300': signal.risk_level === 'medium',
                           'bg-yellow-600/30 text-yellow-300': signal.risk_level === 'low'
                         }"
                       >
-                        {{ signal.risk_level }} risk
+                        {{ signal.risk_level }}
                       </span>
                     </div>
-                    <p class="text-gray-300 text-sm">{{ signal.description }}</p>
+                    <p class="text-gray-300 text-xs">{{ signal.description }}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- No Enrichment - Show Enrich Button -->
-          <div v-else-if="!enrichment || enrichment.enrichment_status === 'pending'" class="mb-8">
-            <div class="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl p-8 text-center">
-              <div class="w-20 h-20 bg-gradient-ontop rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <!-- No Enrichment - Compact -->
+          <div v-else-if="!enrichment || enrichment.enrichment_status === 'pending'" class="mb-4">
+            <div class="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-lg p-6 text-center">
+              <div class="w-12 h-12 bg-gradient-ontop rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <h3 class="text-2xl font-bold text-white mb-2">AI Enrichment Available</h3>
-              <p class="text-gray-400 mb-6">
-                Generate AI-powered insights including pain points, churn signals, and recommended actions for this client.
+              <h3 class="text-lg font-bold text-white mb-2">AI Enrichment Available</h3>
+              <p class="text-gray-400 text-sm mb-4">
+                Generate AI insights: pain points, churn signals, and recommendations.
               </p>
               <button
                 @click="enrichClient"
                 :disabled="enriching"
-                class="px-6 py-3 bg-gradient-cta text-white rounded-lg font-semibold hover:bg-gradient-cta-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 mx-auto"
+                class="px-4 py-2 bg-gradient-cta text-white rounded-lg font-medium hover:bg-gradient-cta-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2 mx-auto text-sm"
               >
-                <svg v-if="!enriching" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg v-if="!enriching" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {{ enriching ? 'Analyzing with AI...' : 'Enrich with AI' }}
+                {{ enriching ? 'Analyzing...' : 'Enrich with AI' }}
               </button>
             </div>
           </div>
 
-          <!-- Tabs -->
-          <div class="mb-6">
+          <!-- Tabs - Compact -->
+          <div class="mb-3">
             <div class="border-b border-white/10">
-              <nav class="flex gap-4">
+              <nav class="flex gap-2">
                 <button
                   @click="activeTab = 'tickets'"
-                  class="pb-3 px-4 font-medium transition-colors"
+                  class="pb-2 px-3 text-sm font-medium transition-colors"
                   :class="activeTab === 'tickets' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-gray-400 hover:text-white'"
                 >
                   Tickets ({{ details?.tickets?.length || 0 }})
                 </button>
                 <button
                   @click="activeTab = 'transcripts'"
-                  class="pb-3 px-4 font-medium transition-colors"
+                  class="pb-2 px-3 text-sm font-medium transition-colors"
                   :class="activeTab === 'transcripts' ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-gray-400 hover:text-white'"
                 >
                   Transcripts ({{ details?.transcripts?.length || 0 }})
@@ -236,17 +235,17 @@
             </div>
           </div>
 
-          <!-- Tickets Tab -->
-          <div v-if="activeTab === 'tickets'" class="space-y-4">
+          <!-- Tickets Tab - Compact -->
+          <div v-if="activeTab === 'tickets'" class="space-y-2">
             <div
               v-for="ticket in details?.tickets"
               :key="ticket.ticket_id"
-              class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 hover:border-emerald-500/50 transition-colors cursor-pointer"
+              class="bg-white/5 backdrop-blur-sm rounded-lg p-3 border border-white/10 hover:border-emerald-500/50 transition-colors cursor-pointer"
               @click="selectTicket(ticket)"
             >
-              <div class="flex items-start justify-between mb-2">
+              <div class="flex items-start justify-between mb-1.5">
                 <div>
-                  <span class="text-lg font-semibold text-white">Ticket #{{ ticket.ticket_id }}</span>
+                  <span class="text-sm font-semibold text-white">Ticket #{{ ticket.ticket_id }}</span>
                   <span
                     v-if="ticket.overall_sentiment"
                     class="ml-3 px-2 py-1 text-xs font-medium rounded-full"
