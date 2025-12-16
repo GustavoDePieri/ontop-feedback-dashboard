@@ -66,7 +66,7 @@
         <template v-else>
           <!-- AI Enrichment Section - Compact -->
           <div v-if="enrichment && enrichment.enrichment_status === 'completed'" class="mb-4">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
               <h3 class="text-lg font-bold text-white flex items-center gap-2">
                 <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded p-1.5">
                   <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,9 +75,47 @@
                 </div>
                 AI Insights
               </h3>
-              <span class="px-2 py-0.5 text-xs font-medium rounded bg-green-500/20 text-green-300 border border-green-500/30">
-                ✓ {{ formatDate(enrichment.enriched_at) }}
-              </span>
+              <div class="flex items-center gap-2">
+                <span v-if="isEnrichmentOutdated" class="px-2 py-0.5 text-xs font-medium rounded bg-orange-500/20 text-orange-300 border border-orange-500/30 flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  {{ newItemsCount }} new item{{ newItemsCount > 1 ? 's' : '' }}
+                </span>
+                <span class="px-2 py-0.5 text-xs font-medium rounded bg-green-500/20 text-green-300 border border-green-500/30">
+                  ✓ {{ formatDate(enrichment.enriched_at) }}
+                </span>
+                <button
+                  v-if="isEnrichmentOutdated"
+                  @click="reEnrichClient"
+                  :disabled="enriching"
+                  class="px-3 py-1 text-xs font-medium rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 hover:bg-purple-500/30 disabled:opacity-50 transition-all flex items-center gap-1"
+                  title="Re-analyze with new data"
+                >
+                  <svg v-if="!enriching" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <svg v-else class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {{ enriching ? 'Re-enriching...' : 'Re-enrich' }}
+                </button>
+              </div>
+            </div>
+            
+            <!-- Enrichment Data Info -->
+            <div v-if="isEnrichmentOutdated" class="mb-3 p-2 bg-orange-500/10 border border-orange-500/30 rounded text-xs text-orange-200">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div class="flex-1">
+                  <p class="font-semibold">Enrichment was based on:</p>
+                  <p>{{ enrichment.total_tickets || 0 }} tickets, {{ enrichment.total_transcripts || 0 }} transcripts</p>
+                  <p class="mt-1">Currently: {{ details?.tickets?.length || 0 }} tickets (+{{ newTickets }}), {{ details?.transcripts?.length || 0 }} transcripts (+{{ newTranscripts }})</p>
+                </div>
+              </div>
             </div>
 
             <!-- Conclusion - Compact -->
@@ -100,6 +138,68 @@
                 Recommended Actions
               </h4>
               <p class="text-gray-300 text-sm leading-relaxed">{{ enrichment.recommended_action }}</p>
+            </div>
+
+            <!-- Payment Issues Section - NEW -->
+            <div v-if="details?.payment_issues && details.payment_issues.count > 0" class="mb-3">
+              <h4 class="text-sm font-semibold text-white mb-2 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Payment Problems
+                <span class="ml-auto px-2 py-0.5 text-xs font-medium rounded bg-red-500/20 text-red-300">
+                  {{ details.payment_issues.negative_count }} negative
+                </span>
+              </h4>
+              <div class="bg-gradient-to-br from-red-500/10 to-orange-500/10 border border-red-500/30 rounded-lg p-3 mb-3">
+                <div class="grid grid-cols-3 gap-3 mb-3 text-center">
+                  <div>
+                    <p class="text-xs text-gray-400 mb-1">Total Issues</p>
+                    <p class="text-lg font-bold text-white">{{ details.payment_issues.count }}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-400 mb-1">Negative</p>
+                    <p class="text-lg font-bold text-red-300">{{ details.payment_issues.negative_count }}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-400 mb-1">Avg Sentiment</p>
+                    <p class="text-lg font-bold" :class="details.payment_issues.avg_sentiment < -0.1 ? 'text-red-300' : 'text-yellow-300'">
+                      {{ details.payment_issues.avg_sentiment.toFixed(2) }}
+                    </p>
+                  </div>
+                </div>
+                
+                <div v-if="details.payment_issues.main_complaints && details.payment_issues.main_complaints.length > 0">
+                  <p class="text-xs font-semibold text-white mb-2">Main Complaints (click to view):</p>
+                  <div class="space-y-2">
+                    <button
+                      v-for="(complaint, index) in details.payment_issues.main_complaints"
+                      :key="index"
+                      @click="scrollToItem(complaint)"
+                      class="w-full bg-white/5 border border-white/10 hover:border-emerald-500/40 hover:bg-white/10 rounded p-2 transition-all cursor-pointer text-left group"
+                    >
+                      <div class="flex items-start justify-between gap-2 mb-1">
+                        <p class="text-xs font-medium text-white flex-1 group-hover:text-emerald-300 transition-colors">{{ complaint.subject }}</p>
+                        <span
+                          class="px-1.5 py-0.5 text-xs font-bold rounded flex-shrink-0"
+                          :class="complaint.sentiment < -0.3 ? 'bg-red-500/30 text-red-300' : 'bg-yellow-500/30 text-yellow-300'"
+                        >
+                          {{ complaint.sentiment.toFixed(2) }}
+                        </span>
+                      </div>
+                      <p v-if="complaint.preview" class="text-xs text-gray-400 mb-1 line-clamp-2">{{ complaint.preview }}...</p>
+                      <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <span class="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 rounded">{{ complaint.type }}</span>
+                        <span v-if="complaint.issue_category" class="px-1.5 py-0.5 bg-purple-500/20 text-purple-300 rounded">{{ complaint.issue_category }}</span>
+                        <span class="ml-auto">{{ formatDate(complaint.date) }}</span>
+                        <svg class="w-3 h-3 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Pain Points - Compact -->
@@ -240,7 +340,8 @@
             <div
               v-for="ticket in details?.tickets"
               :key="ticket.ticket_id"
-              class="bg-white/5 backdrop-blur-sm rounded-lg p-3 border border-white/10 hover:border-emerald-500/50 transition-colors cursor-pointer"
+              :id="`ticket-${ticket.ticket_id}`"
+              class="bg-white/5 backdrop-blur-sm rounded-lg p-3 border border-white/10 hover:border-emerald-500/50 transition-all cursor-pointer"
               @click="selectTicket(ticket)"
             >
               <div class="flex items-start justify-between mb-1.5">
@@ -278,7 +379,8 @@
             <div
               v-for="transcript in details?.transcripts"
               :key="transcript.id"
-              class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 hover:border-emerald-500/50 transition-colors cursor-pointer"
+              :id="`transcript-${transcript.id}`"
+              class="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10 hover:border-emerald-500/50 transition-all cursor-pointer"
               @click="selectTranscript(transcript)"
             >
               <div class="flex items-start justify-between mb-2">
@@ -543,6 +645,56 @@ const enrichClient = async () => {
   }
 }
 
+const reEnrichClient = async () => {
+  if (!confirm('Re-enrich this client with current data? This will update the AI analysis with new tickets and transcripts.')) {
+    return
+  }
+  
+  enriching.value = true
+  try {
+    const response = await fetch(`/api/clients/${props.client.client_id}/enrich?force=true`, {
+      method: 'POST'
+    })
+    const data = await response.json()
+    
+    if (data.success) {
+      enrichment.value = data.enrichment
+      emit('enriched')
+      alert('Client re-enriched successfully!')
+    } else {
+      alert('Failed to re-enrich client: ' + data.message)
+    }
+  } catch (error: any) {
+    console.error('Error re-enriching client:', error)
+    alert('Failed to re-enrich client: ' + error.message)
+  } finally {
+    enriching.value = false
+  }
+}
+
+// Computed properties to check if enrichment is outdated
+const newTickets = computed(() => {
+  if (!enrichment.value || !details.value) return 0
+  const current = details.value.tickets?.length || 0
+  const atEnrichment = enrichment.value.total_tickets || 0
+  return Math.max(0, current - atEnrichment)
+})
+
+const newTranscripts = computed(() => {
+  if (!enrichment.value || !details.value) return 0
+  const current = details.value.transcripts?.length || 0
+  const atEnrichment = enrichment.value.total_transcripts || 0
+  return Math.max(0, current - atEnrichment)
+})
+
+const newItemsCount = computed(() => {
+  return newTickets.value + newTranscripts.value
+})
+
+const isEnrichmentOutdated = computed(() => {
+  return newItemsCount.value > 0
+})
+
 const getInitials = (name: string) => {
   if (!name) return '??'
   const words = name.split(' ')
@@ -569,6 +721,34 @@ const getSentimentIcon = (sentiment: string) => {
     case 'negative': return '😞'
     default: return '😐'
   }
+}
+
+const scrollToItem = (complaint: any) => {
+  // Switch to the appropriate tab
+  if (complaint.type === 'ticket') {
+    activeTab.value = 'tickets'
+  } else if (complaint.type === 'transcript') {
+    activeTab.value = 'transcripts'
+  }
+  
+  // Wait for tab to render, then scroll to the item
+  nextTick(() => {
+    const itemId = complaint.type === 'ticket' ? `ticket-${complaint.id}` : `transcript-${complaint.id}`
+    const element = document.getElementById(itemId)
+    
+    if (element) {
+      // Scroll into view with smooth behavior
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      
+      // Highlight the item briefly
+      element.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-500/10')
+      setTimeout(() => {
+        element.classList.remove('ring-2', 'ring-emerald-500', 'bg-emerald-500/10')
+      }, 2000)
+    } else {
+      console.warn(`Item ${itemId} not found in DOM`)
+    }
+  })
 }
 
 const formatDate = (dateString: string) => {

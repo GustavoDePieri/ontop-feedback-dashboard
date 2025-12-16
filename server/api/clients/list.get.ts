@@ -106,6 +106,7 @@ export default defineEventHandler(async (event) => {
     // Initialize count objects
     const ticketCounts: Record<string, number> = {}
     const transcriptCounts: Record<string, number> = {}
+    const paymentIssues: Record<string, { count: number; negative_count: number; total_sentiment: number }> = {}
 
     // Process in batches to avoid hitting Supabase limits
     const batchSize = 50  // Reduced to ensure we don't hit 1000 row limit per query
@@ -120,7 +121,7 @@ export default defineEventHandler(async (event) => {
       while (hasMoreTickets) {
         const { data: ticketData, error: ticketError } = await supabase
           .from('zendesk_conversations')
-          .select('client_id')
+          .select('client_id, aspect_sentiment, issue_category, subject, sentiment_score')
           .in('client_id', batch)
           .eq('is_external', true)
           .gte('created_at', threeMonthsAgoISO)
@@ -131,9 +132,30 @@ export default defineEventHandler(async (event) => {
           break
         }
 
-        // Count tickets for each client
+        // Count tickets and analyze payment issues for each client
         ticketData?.forEach((row: any) => {
           ticketCounts[row.client_id] = (ticketCounts[row.client_id] || 0) + 1
+          
+          // Track payment-related tickets
+          const hasPaymentAspect = row.aspect_sentiment?.payments !== undefined && row.aspect_sentiment?.payments !== null
+          const isPaymentCategory = row.issue_category?.toLowerCase().includes('payment')
+          const isPaymentInSubject = row.subject?.toLowerCase().match(/payment|pago|pay|billing|factura|cobro|cargo|refund|reembolso/i)
+          
+          if (hasPaymentAspect || isPaymentCategory || isPaymentInSubject) {
+            if (!paymentIssues[row.client_id]) {
+              paymentIssues[row.client_id] = {
+                count: 0,
+                negative_count: 0,
+                total_sentiment: 0
+              }
+            }
+            const sentiment = row.aspect_sentiment?.payments || row.sentiment_score || 0
+            paymentIssues[row.client_id].count++
+            paymentIssues[row.client_id].total_sentiment += sentiment
+            if (sentiment < -0.1) {
+              paymentIssues[row.client_id].negative_count++
+            }
+          }
         })
 
         // Check if we need to fetch more
@@ -148,7 +170,7 @@ export default defineEventHandler(async (event) => {
       while (hasMoreTranscripts) {
         const { data: transcriptData, error: transcriptError } = await supabase
           .from('diio_transcripts')
-          .select('client_platform_id')
+          .select('client_platform_id, aspect_sentiment, sentiment_score')
           .in('client_platform_id', batch)
           .gte('occurred_at', threeMonthsAgoISO)
           .range(transcriptOffset, transcriptOffset + pageSize - 1)
@@ -158,9 +180,28 @@ export default defineEventHandler(async (event) => {
           break
         }
 
-        // Count transcripts for each client
+        // Count transcripts and analyze payment issues for each client
         transcriptData?.forEach((row: any) => {
           transcriptCounts[row.client_platform_id] = (transcriptCounts[row.client_platform_id] || 0) + 1
+          
+          // Track payment-related transcripts
+          const hasPaymentAspect = row.aspect_sentiment?.payments !== undefined && row.aspect_sentiment?.payments !== null
+          
+          if (hasPaymentAspect) {
+            if (!paymentIssues[row.client_platform_id]) {
+              paymentIssues[row.client_platform_id] = {
+                count: 0,
+                negative_count: 0,
+                total_sentiment: 0
+              }
+            }
+            const sentiment = row.aspect_sentiment?.payments || row.sentiment_score || 0
+            paymentIssues[row.client_platform_id].count++
+            paymentIssues[row.client_platform_id].total_sentiment += sentiment
+            if (sentiment < -0.1) {
+              paymentIssues[row.client_platform_id].negative_count++
+            }
+          }
         })
 
         // Check if we need to fetch more
@@ -219,11 +260,17 @@ export default defineEventHandler(async (event) => {
     const allEnrichedClients = clients.map(client => {
       const enrichment = enrichmentMap[client.client_id]
       const sentiment = sentimentMap[client.client_id]
+      const payment = paymentIssues[client.client_id]
       return {
         ...client,
         ticket_count: ticketCounts[client.client_id] || 0,
         transcript_count: transcriptCounts[client.client_id] || 0,
         enrichment_status: enrichment?.enrichment_status || 'pending',
+        payment_issues: payment ? {
+          count: payment.count,
+          negative_count: payment.negative_count,
+          avg_sentiment: payment.count > 0 ? payment.total_sentiment / payment.count : 0
+        } : null,
         enriched_at: enrichment?.enriched_at || null,
         overall_sentiment: enrichment?.overall_sentiment || null,
         sentiment_score: enrichment?.sentiment_score || null,

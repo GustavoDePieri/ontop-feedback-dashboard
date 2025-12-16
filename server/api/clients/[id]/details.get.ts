@@ -1,5 +1,91 @@
 import { createClient } from '@supabase/supabase-js'
 
+interface PaymentIssue {
+  count: number
+  negative_count: number
+  avg_sentiment: number
+  main_complaints: Array<{
+    id: number | string
+    subject: string
+    sentiment: number
+    date: string
+    type: 'ticket' | 'transcript'
+    issue_category?: string
+    preview?: string
+  }>
+}
+
+function analyzePaymentIssues(tickets: any[], transcripts: any[]): PaymentIssue {
+  const paymentRelated: any[] = []
+
+  // Analyze tickets for payment issues
+  tickets.forEach((ticket: any) => {
+    const hasPaymentAspect = ticket.aspect_sentiment?.payments !== undefined && ticket.aspect_sentiment?.payments !== null
+    const isPaymentCategory = ticket.issue_category?.toLowerCase().includes('payment')
+    const isPaymentInSubject = ticket.subject?.toLowerCase().match(/payment|pago|pay|billing|factura|cobro|cargo|refund|reembolso/i)
+    
+    if (hasPaymentAspect || isPaymentCategory || isPaymentInSubject) {
+      // Extract first customer message as preview
+      const conversation = ticket.conversation || []
+      const firstCustomerMsg = conversation.find((msg: any) => msg.author_type === 'end-user')
+      const preview = firstCustomerMsg?.message_text?.substring(0, 150) || ''
+      
+      paymentRelated.push({
+        id: ticket.ticket_id,
+        subject: ticket.subject || 'Sin asunto',
+        sentiment: ticket.aspect_sentiment?.payments || ticket.sentiment_score || 0,
+        date: ticket.created_at,
+        type: 'ticket',
+        issue_category: ticket.issue_category,
+        preview: preview
+      })
+    }
+  })
+
+  // Analyze transcripts for payment issues
+  transcripts.forEach((transcript: any) => {
+    const hasPaymentAspect = transcript.aspect_sentiment?.payments !== undefined && transcript.aspect_sentiment?.payments !== null
+    const isPaymentInName = transcript.account_name?.toLowerCase().match(/payment|pago|pay|billing|factura/i)
+    
+    if (hasPaymentAspect || isPaymentInName) {
+      // Extract summary as preview
+      const preview = transcript.ai_summary?.substring(0, 150) || transcript.account_name || ''
+      
+      paymentRelated.push({
+        id: transcript.id,
+        subject: transcript.account_name || 'Transcript sin nombre',
+        sentiment: transcript.aspect_sentiment?.payments || transcript.sentiment_score || 0,
+        date: transcript.occurred_at,
+        type: 'transcript',
+        issue_category: 'payment',
+        preview: preview
+      })
+    }
+  })
+
+  // Sort by sentiment (most negative first) and date (most recent first)
+  paymentRelated.sort((a, b) => {
+    const sentimentDiff = a.sentiment - b.sentiment
+    if (sentimentDiff !== 0) return sentimentDiff
+    return new Date(b.date).getTime() - new Date(a.date).getTime()
+  })
+
+  // Calculate statistics
+  const count = paymentRelated.length
+  const negative_count = paymentRelated.filter(p => p.sentiment < -0.1).length
+  const avg_sentiment = count > 0 ? paymentRelated.reduce((sum, p) => sum + p.sentiment, 0) / count : 0
+  
+  // Get top 5 main complaints (most negative)
+  const main_complaints = paymentRelated.slice(0, 5)
+
+  return {
+    count,
+    negative_count,
+    avg_sentiment,
+    main_complaints
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const clientId = getRouterParam(event, 'id')
@@ -52,12 +138,16 @@ export default defineEventHandler(async (event) => {
 
     // enrichmentError is ok if no enrichment exists yet
 
+    // Analyze payment-related issues
+    const paymentIssues = analyzePaymentIssues(tickets || [], transcripts || [])
+
     return {
       success: true,
       client_id: clientId,
       tickets: tickets || [],
       transcripts: transcripts || [],
       enrichment: enrichment || null,
+      payment_issues: paymentIssues,
       summary: {
         total_tickets: tickets?.length || 0,
         total_transcripts: transcripts?.length || 0,

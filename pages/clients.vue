@@ -349,6 +349,25 @@
             </div>
           </div>
 
+          <!-- Payment Issues Warning (if negative payment sentiment) -->
+          <div v-if="client.payment_issues && client.payment_issues.negative_count > 0" class="mb-2">
+            <div class="px-2 py-1.5 bg-gradient-to-r from-red-500/20 to-orange-500/20 border-2 border-red-500/40 rounded-lg">
+              <div class="flex items-center gap-1.5 text-xs">
+                <svg class="w-4 h-4 text-red-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div class="flex-1">
+                  <p class="font-bold text-red-200">
+                    {{ client.payment_issues.negative_count }} Payment Issue{{ client.payment_issues.negative_count > 1 ? 's' : '' }}
+                  </p>
+                  <p class="text-xs text-red-300/80">
+                    Avg: {{ client.payment_issues.avg_sentiment.toFixed(2) }} | Total: {{ client.payment_issues.count }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Data Source Badges - Compact -->
           <div class="flex flex-wrap gap-1.5 mb-2 text-xs">
             <span
