@@ -17,6 +17,10 @@ export default defineEventHandler(async (event) => {
       config.supabaseAnonKey!
     )
 
+    // Check query parameter for force re-enrichment
+    const query = getQuery(event)
+    const forceReEnrich = query.force === 'true'
+
     // Check if already enriched
     const { data: existing } = await supabase
       .from('client_enrichment')
@@ -24,10 +28,10 @@ export default defineEventHandler(async (event) => {
       .eq('client_id', clientId)
       .maybeSingle()
 
-    if (existing && existing.enrichment_status === 'completed') {
+    if (existing && existing.enrichment_status === 'completed' && !forceReEnrich) {
       return {
         success: true,
-        message: 'Client already enriched',
+        message: 'Client already enriched (use force=true to re-enrich)',
         enrichment: existing,
         cached: true
       }
