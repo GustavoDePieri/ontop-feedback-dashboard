@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { logger } from '~/server/utils/logger'
 
 interface PaymentIssue {
   count: number
@@ -97,10 +98,19 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // Validate configuration
+  if (!config.supabaseUrl || !config.supabaseAnonKey) {
+    logger.error('Supabase configuration missing in client details endpoint')
+    throw createError({
+      statusCode: 500,
+      message: 'Server configuration error. Please contact support.'
+    })
+  }
+
   try {
     const supabase = createClient(
-      config.supabaseUrl!,
-      config.supabaseAnonKey!
+      config.supabaseUrl,
+      config.supabaseAnonKey
     )
 
     // Calculate date 3 months ago
@@ -117,7 +127,13 @@ export default defineEventHandler(async (event) => {
       .gte('created_at', threeMonthsAgoISO)
       .order('created_at', { ascending: false })
 
-    if (ticketsError) throw ticketsError
+    if (ticketsError) {
+      logger.error('Failed to fetch tickets for client', { clientId, error: ticketsError })
+      throw createError({
+        statusCode: 500,
+        message: 'Failed to load ticket data. Please try again later.'
+      })
+    }
 
     // Get all transcripts for this client (last 3 months)
     const { data: transcripts, error: transcriptsError } = await supabase
@@ -127,7 +143,13 @@ export default defineEventHandler(async (event) => {
       .gte('occurred_at', threeMonthsAgoISO)
       .order('occurred_at', { ascending: false })
 
-    if (transcriptsError) throw transcriptsError
+    if (transcriptsError) {
+      logger.error('Failed to fetch transcripts for client', { clientId, error: transcriptsError })
+      throw createError({
+        statusCode: 500,
+        message: 'Failed to load transcript data. Please try again later.'
+      })
+    }
 
     // Get enrichment data (maybeSingle returns null if no row found instead of error)
     const { data: enrichment, error: enrichmentError } = await supabase
@@ -136,7 +158,10 @@ export default defineEventHandler(async (event) => {
       .eq('client_id', clientId)
       .maybeSingle()
 
-    // enrichmentError is ok if no enrichment exists yet
+    // enrichmentError is ok if no enrichment exists yet, but log if it's a real error
+    if (enrichmentError && enrichmentError.code !== 'PGRST116') {
+      logger.warn('Error fetching enrichment data (non-critical)', { clientId, error: enrichmentError })
+    }
 
     // Analyze payment-related issues
     const paymentIssues = analyzePaymentIssues(tickets || [], transcripts || [])
@@ -156,10 +181,17 @@ export default defineEventHandler(async (event) => {
       }
     }
   } catch (error: any) {
-    console.error('Error fetching client details:', error)
+    logger.error('Error fetching client details', { clientId, error })
+    
+    // If it's already a createError, preserve it
+    if (error.statusCode) {
+      throw error
+    }
+    
+    // Otherwise create a proper HTTP error
     throw createError({
-      statusCode: 500,
-      message: error.message
+      statusCode: error.statusCode || 500,
+      message: error.message || 'Failed to load client details. Please try again later.'
     })
   }
 })

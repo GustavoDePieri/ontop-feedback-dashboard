@@ -10,6 +10,7 @@
 
 import { diioRequest } from '~/server/utils/diio'
 import { createClient } from '@supabase/supabase-js'
+import { logger } from '~/server/utils/logger'
 
 interface SyncResult {
   success: boolean
@@ -425,8 +426,10 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         }
       } catch (extractionError: any) {
         const errorMessage = extractionError?.message || extractionError?.data?.message || 'Unknown extraction error'
-        console.error('⚠️ Feedback extraction failed (non-blocking):', errorMessage)
-        console.error('   Full error:', extractionError)
+        logger.warn('Feedback extraction failed (non-blocking)', {
+          error: extractionError,
+          message: errorMessage
+        })
         
         // Track extraction failure in errors array
         if (!result.details.errors) {
@@ -448,7 +451,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
     return result
 
   } catch (error: any) {
-    console.error('❌ Sync failed:', error)
+    logger.error('Sync failed', { error })
     result.success = false
     result.message = `Sync failed: ${error.message || 'Unknown error'}`
     
@@ -456,11 +459,22 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
     if (error.statusCode) {
       throw createError({
         statusCode: error.statusCode,
-        message: result.message
+        message: result.message,
+        data: result
       })
     }
     
-    // Otherwise return the result with error details
+    // For critical errors, throw HTTP error
+    // For recoverable errors, return result with error details
+    if (error.message?.includes('configuration') || error.message?.includes('missing')) {
+      throw createError({
+        statusCode: 500,
+        message: result.message,
+        data: result
+      })
+    }
+    
+    // Otherwise return the result with error details (partial success)
     return result
   }
 })

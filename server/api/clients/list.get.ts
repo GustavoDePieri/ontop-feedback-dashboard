@@ -4,17 +4,26 @@ import { logger } from '~/server/utils/logger'
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   
+  // Validate configuration
+  if (!config.supabaseUrl || !config.supabaseAnonKey) {
+    logger.error('Supabase configuration missing')
+    throw createError({
+      statusCode: 500,
+      message: 'Server configuration error. Please contact support.'
+    })
+  }
+  
   // Get pagination and search params from query
   const query = getQuery(event)
-  const limit = parseInt(query.limit as string) || 50
-  const offset = parseInt(query.offset as string) || 0
+  const limit = Math.min(Math.max(parseInt(query.limit as string) || 50, 1), 200) // Clamp between 1-200
+  const offset = Math.max(parseInt(query.offset as string) || 0, 0) // Ensure non-negative
   const searchQuery = (query.search as string) || ''
   const sortBy = (query.sortBy as string) || 'interactions'
   
   try {
     const supabase = createClient(
-      config.supabaseUrl!,
-      config.supabaseAnonKey!
+      config.supabaseUrl,
+      config.supabaseAnonKey
     )
 
     // Calculate date 3 months ago
@@ -31,9 +40,15 @@ export default defineEventHandler(async (event) => {
       .is('period_start', null) // All-time summary only
       .order('client_id')
 
-    if (summaryError) throw summaryError
+    if (summaryError) {
+      logger.error('Failed to fetch clients from sentiment summary', { error: summaryError })
+      throw createError({
+        statusCode: 500,
+        message: 'Failed to load client data. Please try again later.'
+      })
+    }
 
-    console.log(`📊 List API: Found ${allClientsFromSummary?.length || 0} clients in client_sentiment_summary`)
+    logger.debug('Found clients in sentiment summary', { count: allClientsFromSummary?.length || 0 })
 
     // STEP 2: Get client names from DIIO and Zendesk (no date filter - we want all names)
     const { data: diioNames, error: diioNameError } = await supabase
@@ -42,7 +57,10 @@ export default defineEventHandler(async (event) => {
       .not('client_platform_id', 'is', null)
       .order('client_platform_id')
 
-    if (diioNameError) throw diioNameError
+    if (diioNameError) {
+      logger.error('Failed to fetch DIIO client names', { error: diioNameError })
+      // Non-critical error - continue without DIIO names
+    }
 
     const { data: zendeskNames, error: zendeskNameError } = await supabase
       .from('zendesk_conversations')
@@ -50,9 +68,12 @@ export default defineEventHandler(async (event) => {
       .not('client_id', 'is', null)
       .order('client_id')
 
-    if (zendeskNameError) throw zendeskNameError
+    if (zendeskNameError) {
+      logger.error('Failed to fetch Zendesk client names', { error: zendeskNameError })
+      // Non-critical error - continue without Zendesk names
+    }
 
-    console.log(`📊 List API: Found ${diioNames?.length || 0} DIIO names, ${zendeskNames?.length || 0} Zendesk names`)
+    logger.debug('Found client names', { diio: diioNames?.length || 0, zendesk: zendeskNames?.length || 0 })
 
     // STEP 3: Build client name lookup map
     const clientNameMap = new Map()
@@ -75,7 +96,7 @@ export default defineEventHandler(async (event) => {
       has_tickets: false // Will be updated when counting
     })) || []
     
-    console.log(`📊 List API: Created ${clients.length} clients from sentiment summary`)
+    logger.debug('Created clients list', { count: clients.length })
 
     // Apply search filter if provided
     if (searchQuery) {
@@ -89,11 +110,11 @@ export default defineEventHandler(async (event) => {
     // Store total before pagination
     const totalClients = clients.length
 
-    console.log(`Sorting by: ${sortBy}`)
+    logger.debug('Sorting clients', { sortBy })
 
     // Get ALL client IDs (BEFORE pagination) so we can fetch data for all, sort, then paginate
     const clientIds = clients.map(c => c.client_id)
-    console.log(`📊 Total unique clients to process: ${clientIds.length}`)
+    logger.debug('Total clients to process', { count: clientIds.length })
 
     // Initialize count objects
     const ticketCounts: Record<string, number> = {}
@@ -120,7 +141,12 @@ export default defineEventHandler(async (event) => {
           .range(ticketOffset, ticketOffset + pageSize - 1)
 
         if (ticketError) {
-          console.error(`❌ Error fetching ticket counts for batch ${i}-${i+batchSize}, offset ${ticketOffset}:`, ticketError)
+          logger.error('Error fetching ticket counts', {
+            batch: `${i}-${i+batchSize}`,
+            offset: ticketOffset,
+            error: ticketError
+          })
+          // Continue with next batch - don't fail entire request
           break
         }
 
@@ -176,7 +202,12 @@ export default defineEventHandler(async (event) => {
           .range(transcriptOffset, transcriptOffset + pageSize - 1)
 
         if (transcriptError) {
-          console.error(`❌ Error fetching transcript counts for batch ${i}-${i+batchSize}, offset ${transcriptOffset}:`, transcriptError)
+          logger.error('Error fetching transcript counts', {
+            batch: `${i}-${i+batchSize}`,
+            offset: transcriptOffset,
+            error: transcriptError
+          })
+          // Continue with next batch - don't fail entire request
           break
         }
 
@@ -193,10 +224,12 @@ export default defineEventHandler(async (event) => {
 
     const totalTickets = Object.values(ticketCounts).reduce((sum: number, count: number) => sum + count, 0)
     const totalTranscripts = Object.values(transcriptCounts).reduce((sum: number, count: number) => sum + count, 0)
-    console.log(`📊 Ticket counts: ${Object.keys(ticketCounts).length} clients with ${totalTickets} total tickets`)
-    console.log(`📊 Transcript counts: ${Object.keys(transcriptCounts).length} clients with ${totalTranscripts} total transcripts`)
-    console.log(`📊 Sample ticket counts:`, Object.entries(ticketCounts).slice(0, 3))
-    console.log(`📊 Sample transcript counts:`, Object.entries(transcriptCounts).slice(0, 3))
+    logger.debug('Counts fetched', {
+      ticketClients: Object.keys(ticketCounts).length,
+      totalTickets,
+      transcriptClients: Object.keys(transcriptCounts).length,
+      totalTranscripts
+    })
 
     // Fetch enrichment and sentiment data in batches
     const enrichmentMap: Record<string, any> = {}
@@ -212,7 +245,11 @@ export default defineEventHandler(async (event) => {
         .in('client_id', batch)
 
       if (enrichError) {
-        console.error(`❌ Error fetching enrichment for batch ${i}-${i+batchSize}:`, enrichError)
+        logger.warn('Error fetching enrichment data', {
+          batch: `${i}-${i+batchSize}`,
+          error: enrichError
+        })
+        // Non-critical - continue without enrichment data for this batch
       }
 
       enrichments?.forEach((enrich: any) => {
@@ -227,7 +264,11 @@ export default defineEventHandler(async (event) => {
         .is('period_start', null) // Get all-time summary (where period is NULL)
 
       if (sentimentError) {
-        console.error(`❌ Error fetching sentiment for batch ${i}-${i+batchSize}:`, sentimentError)
+        logger.warn('Error fetching sentiment data', {
+          batch: `${i}-${i+batchSize}`,
+          error: sentimentError
+        })
+        // Non-critical - continue without sentiment data for this batch
       }
 
       sentiments?.forEach((sentiment: any) => {
@@ -235,8 +276,10 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    console.log(`📊 Enrichment data for ${Object.keys(enrichmentMap).length} clients`)
-    console.log(`📊 Sentiment data for ${Object.keys(sentimentMap).length} clients`)
+    logger.debug('Enrichment and sentiment data fetched', {
+      enrichment: Object.keys(enrichmentMap).length,
+      sentiment: Object.keys(sentimentMap).length
+    })
 
     // Combine all data BEFORE sorting and pagination
     // We need to enrich ALL clients first, then sort, then paginate
@@ -308,7 +351,13 @@ export default defineEventHandler(async (event) => {
     // NOW apply pagination after sorting
     const enrichedClients = allEnrichedClients.slice(offset, offset + limit)
 
-    console.log(`Returning ${enrichedClients.length} clients (${offset}-${offset + limit} of ${totalClients}) sorted by ${sortBy}`)
+    logger.debug('Returning clients', {
+      returned: enrichedClients.length,
+      offset,
+      limit,
+      total: totalClients,
+      sortBy
+    })
 
     const hasMore = (offset + limit) < totalClients
 
@@ -322,12 +371,22 @@ export default defineEventHandler(async (event) => {
       returned: enrichedClients.length
     }
   } catch (error: any) {
-    console.error('Error fetching clients:', error)
-    return {
-      success: false,
-      error: error.message,
-      clients: [],
-      total: 0
+    logger.error('Error fetching clients list', { error })
+    
+    // If it's already a createError, re-throw it
+    if (error.statusCode) {
+      throw error
     }
+    
+    // Otherwise, create a proper HTTP error response
+    throw createError({
+      statusCode: 500,
+      message: error.message || 'Failed to load clients. Please try again later.',
+      data: {
+        success: false,
+        clients: [],
+        total: 0
+      }
+    })
   }
 })
