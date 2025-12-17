@@ -169,7 +169,7 @@ export default defineEventHandler(async (event) => {
       while (hasMoreTranscripts) {
         const { data: transcriptData, error: transcriptError } = await supabase
           .from('diio_transcripts')
-          .select('client_platform_id, aspect_sentiment, sentiment_score')
+          .select('client_platform_id')
           .in('client_platform_id', batch)
           .gte('occurred_at', threeMonthsAgoISO)
           .range(transcriptOffset, transcriptOffset + pageSize - 1)
@@ -179,36 +179,9 @@ export default defineEventHandler(async (event) => {
           break
         }
 
-        // Count transcripts and analyze payment issues for each client
+        // Count transcripts for each client
         transcriptData?.forEach((row: any) => {
           transcriptCounts[row.client_platform_id] = (transcriptCounts[row.client_platform_id] || 0) + 1
-          
-          // Track payment-related transcripts
-          const hasPaymentAspect = row.aspect_sentiment?.payments !== undefined && row.aspect_sentiment?.payments !== null
-          
-          if (hasPaymentAspect) {
-            if (!paymentIssues[row.client_platform_id]) {
-              paymentIssues[row.client_platform_id] = {
-                count: 0,
-                negative_count: 0,
-                total_sentiment: 0
-              }
-            }
-            const sentiment = row.aspect_sentiment?.payments || row.sentiment_score || 0
-            paymentIssues[row.client_platform_id].count++
-            paymentIssues[row.client_platform_id].total_sentiment += sentiment
-            if (sentiment < -0.1) {
-              paymentIssues[row.client_platform_id].negative_count++
-            }
-          }
-        })
-
-        // Mark clients that have transcripts
-        transcriptData?.forEach((row: any) => {
-          const client = clients.find(c => c.client_id === row.client_platform_id)
-          if (client) {
-            client.has_transcripts = true
-          }
         })
 
         // Check if we need to fetch more
@@ -221,6 +194,8 @@ export default defineEventHandler(async (event) => {
     const totalTranscripts = Object.values(transcriptCounts).reduce((sum: number, count: number) => sum + count, 0)
     console.log(`📊 Ticket counts: ${Object.keys(ticketCounts).length} clients with ${totalTickets} total tickets`)
     console.log(`📊 Transcript counts: ${Object.keys(transcriptCounts).length} clients with ${totalTranscripts} total transcripts`)
+    console.log(`📊 Sample ticket counts:`, Object.entries(ticketCounts).slice(0, 3))
+    console.log(`📊 Sample transcript counts:`, Object.entries(transcriptCounts).slice(0, 3))
 
     // Fetch enrichment and sentiment data in batches
     const enrichmentMap: Record<string, any> = {}
@@ -268,10 +243,14 @@ export default defineEventHandler(async (event) => {
       const enrichment = enrichmentMap[client.client_id]
       const sentiment = sentimentMap[client.client_id]
       const payment = paymentIssues[client.client_id]
+      const ticketCount = ticketCounts[client.client_id] || 0
+      const transcriptCount = transcriptCounts[client.client_id] || 0
       return {
         ...client,
-        ticket_count: ticketCounts[client.client_id] || 0,
-        transcript_count: transcriptCounts[client.client_id] || 0,
+        ticket_count: ticketCount,
+        transcript_count: transcriptCount,
+        has_tickets: ticketCount > 0,
+        has_transcripts: transcriptCount > 0,
         enrichment_status: enrichment?.enrichment_status || 'pending',
         payment_issues: payment ? {
           count: payment.count,
