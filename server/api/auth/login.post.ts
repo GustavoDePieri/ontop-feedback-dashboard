@@ -7,18 +7,50 @@
  */
 
 import { generateAuthToken } from '~/server/utils/auth'
+import { sanitizeString } from '~/server/utils/validation'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
+  
+  // Validate password input
+  if (!body || typeof body !== 'object') {
+    throw createError({
+      statusCode: 400,
+      message: 'Request body is required'
+    })
+  }
+
   const { password } = body
+
+  if (!password || typeof password !== 'string') {
+    throw createError({
+      statusCode: 400,
+      message: 'Password is required and must be a string'
+    })
+  }
+
+  // Sanitize password input (limit length to prevent DoS)
+  const sanitizedPassword = sanitizeString(password, 500)
 
   // Check against environment variable (or use default)
   // Set ADMIN_PASSWORD in Vercel to use your own password
   const validPassword = process.env.ADMIN_PASSWORD || 'ontop2024'
-  
-  console.log('Login attempt - Password check:', password === validPassword ? 'SUCCESS' : 'FAILED')
 
-  if (password !== validPassword) {
+  // Use constant-time comparison to prevent timing attacks
+  if (sanitizedPassword.length !== validPassword.length) {
+    throw createError({
+      statusCode: 401,
+      message: 'Invalid credentials'
+    })
+  }
+
+  // Constant-time string comparison
+  let match = true
+  for (let i = 0; i < sanitizedPassword.length; i++) {
+    match = match && sanitizedPassword[i] === validPassword[i]
+  }
+
+  if (!match) {
     throw createError({
       statusCode: 401,
       message: 'Invalid credentials'

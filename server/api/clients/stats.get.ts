@@ -1,12 +1,22 @@
 import { createClient } from '@supabase/supabase-js'
 import { logger } from '~/server/utils/logger'
+import { validateSearchQuery } from '~/server/utils/validation'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   
-  // Get search parameter from query
+  // Validate configuration
+  if (!config.supabaseUrl || !config.supabaseAnonKey) {
+    logger.error('Supabase configuration missing')
+    throw createError({
+      statusCode: 500,
+      message: 'Server configuration error. Please contact support.'
+    })
+  }
+  
+  // Get and validate search parameter from query
   const query = getQuery(event)
-  const searchQuery = (query.search as string) || ''
+  const searchQuery = validateSearchQuery(query.search as string, 200)
   
   try {
     const supabase = createClient(

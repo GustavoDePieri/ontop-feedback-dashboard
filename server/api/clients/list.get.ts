@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { logger } from '~/server/utils/logger'
+import { validateSearchQuery, validateNumericParam, validateSortBy } from '~/server/utils/validation'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
@@ -13,12 +14,28 @@ export default defineEventHandler(async (event) => {
     })
   }
   
-  // Get pagination and search params from query
+  // Get pagination and search params from query with validation
   const query = getQuery(event)
-  const limit = Math.min(Math.max(parseInt(query.limit as string) || 50, 1), 200) // Clamp between 1-200
-  const offset = Math.max(parseInt(query.offset as string) || 0, 0) // Ensure non-negative
-  const searchQuery = (query.search as string) || ''
-  const sortBy = (query.sortBy as string) || 'interactions'
+  const limit = validateNumericParam(query.limit, {
+    min: 1,
+    max: 200,
+    defaultValue: 50,
+    paramName: 'limit'
+  })
+  const offset = validateNumericParam(query.offset, {
+    min: 0,
+    defaultValue: 0,
+    paramName: 'offset'
+  })
+  const searchQuery = validateSearchQuery(query.search as string, 200)
+  const sortBy = validateSortBy(query.sortBy as string, [
+    'interactions',
+    'name',
+    'sentiment',
+    'tickets',
+    'transcripts',
+    'recent'
+  ])
   
   try {
     const supabase = createClient(

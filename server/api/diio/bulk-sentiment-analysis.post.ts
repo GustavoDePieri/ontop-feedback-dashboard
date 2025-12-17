@@ -14,6 +14,7 @@ import {
   extractKeyQuotes, 
   extractKeywords 
 } from '~/server/utils/bartSummarizer'
+import { validateStringArray, validateNumericParam } from '~/server/utils/validation'
 
 interface BulkAnalysisRequest {
   accountIds?: string[]  // Array of client_platform_id values (your 117 accounts)
@@ -71,9 +72,41 @@ export default defineEventHandler(async (event): Promise<BulkAnalysisResult> => 
   try {
     // Parse request body
     const body = await readBody<BulkAnalysisRequest>(event)
-    const { accountIds = [], limit = 100, skipAnalyzed = true, forceReanalysis = false } = body
+    
+    if (!body || typeof body !== 'object') {
+      throw createError({
+        statusCode: 400,
+        message: 'Request body is required'
+      })
+    }
 
-    console.log(`🚀 Starting bulk sentiment analysis for ${accountIds.length} accounts, limit: ${limit}`)
+    // Validate inputs
+    const accountIds = body.accountIds ? validateStringArray(body.accountIds, {
+      maxLength: 100,
+      maxItems: 1000,
+      itemValidator: (id) => {
+        // Validate account ID format (alphanumeric, hyphens, underscores)
+        if (!/^[a-zA-Z0-9._-]+$/.test(id)) {
+          throw createError({
+            statusCode: 400,
+            message: `Invalid account ID format: ${id}`
+          })
+        }
+        return id
+      }
+    }) : []
+    
+    const limit = validateNumericParam(body.limit, {
+      min: 1,
+      max: 10000,
+      defaultValue: 100,
+      paramName: 'limit'
+    })
+    
+    const skipAnalyzed = body.skipAnalyzed !== undefined ? Boolean(body.skipAnalyzed) : true
+    const forceReanalysis = body.forceReanalysis !== undefined ? Boolean(body.forceReanalysis) : false
+
+    logger.info('Starting bulk sentiment analysis', { accountCount: accountIds.length, limit })
 
     // Initialize Supabase
     if (!config.public.supabaseUrl || !config.public.supabaseAnonKey) {

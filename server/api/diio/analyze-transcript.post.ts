@@ -7,6 +7,7 @@
 
 import { HfInference } from '@huggingface/inference'
 import { createClient } from '@supabase/supabase-js'
+import { validateTranscriptId } from '~/server/utils/validation'
 
 interface AnalysisRequest {
   transcriptId: string  // UUID of transcript in database
@@ -53,14 +54,18 @@ export default defineEventHandler(async (event): Promise<AnalysisResult> => {
   try {
     // Parse request body
     const body = await readBody<AnalysisRequest>(event)
-    const { transcriptId } = body
-
-    if (!transcriptId) {
+    
+    if (!body || typeof body !== 'object') {
       throw createError({
         statusCode: 400,
-        message: 'Transcript ID is required'
+        message: 'Request body is required'
       })
     }
+
+    const { transcriptId: rawTranscriptId } = body
+
+    // Validate and sanitize transcript ID
+    const transcriptId = validateTranscriptId(rawTranscriptId)
 
     // Initialize Supabase
     if (!config.public.supabaseUrl || !config.public.supabaseAnonKey) {

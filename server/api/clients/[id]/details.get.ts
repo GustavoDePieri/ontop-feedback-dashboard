@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { logger } from '~/server/utils/logger'
+import { validateClientId } from '~/server/utils/validation'
 
 interface PaymentIssue {
   count: number
@@ -89,14 +90,10 @@ function analyzePaymentIssues(tickets: any[], transcripts: any[]): PaymentIssue 
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  const clientId = getRouterParam(event, 'id')
+  const rawClientId = getRouterParam(event, 'id')
   
-  if (!clientId) {
-    throw createError({
-      statusCode: 400,
-      message: 'Client ID is required'
-    })
-  }
+  // Validate and sanitize client ID
+  const clientId = validateClientId(rawClientId)
 
   // Validate configuration
   if (!config.supabaseUrl || !config.supabaseAnonKey) {

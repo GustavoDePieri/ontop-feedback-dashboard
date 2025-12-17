@@ -1,25 +1,30 @@
 import { createClient } from '@supabase/supabase-js'
+import { validateClientId } from '~/server/utils/validation'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  const clientId = getRouterParam(event, 'id')
+  const rawClientId = getRouterParam(event, 'id')
   
-  if (!clientId) {
+  // Validate and sanitize client ID
+  const clientId = validateClientId(rawClientId)
+
+  // Validate configuration
+  if (!config.supabaseUrl || !config.supabaseAnonKey) {
     throw createError({
-      statusCode: 400,
-      message: 'Client ID is required'
+      statusCode: 500,
+      message: 'Server configuration error. Please contact support.'
     })
   }
 
   try {
     const supabase = createClient(
-      config.supabaseUrl!,
-      config.supabaseAnonKey!
+      config.supabaseUrl,
+      config.supabaseAnonKey
     )
 
-    // Check query parameter for force re-enrichment
+    // Check query parameter for force re-enrichment (validate it's a boolean string)
     const query = getQuery(event)
-    const forceReEnrich = query.force === 'true'
+    const forceReEnrich = query.force === 'true' || query.force === '1'
 
     // Check if already enriched
     const { data: existing } = await supabase
