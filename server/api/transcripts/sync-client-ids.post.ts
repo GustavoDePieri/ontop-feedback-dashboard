@@ -19,6 +19,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { updateSyncProgress, clearSyncProgress } from '~/server/utils/sync-progress'
+import { logger } from '~/server/utils/logger'
 
 interface SyncResult {
   success: boolean
@@ -78,7 +79,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
   }
   
   try {
-    console.log('🔄 Starting Client ID sync for transcripts...')
+    logger.info('Starting Client ID sync for transcripts')
     
     // Initialize progress tracking
     clearSyncProgress()
@@ -98,7 +99,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
     
     while (hasMore && iteration < maxIterations) {
       iteration++
-      console.log(`📊 Iteration ${iteration}: Looking for transcripts without Client IDs...`)
+      logger.debug(`Iteration ${iteration}: Looking for transcripts without Client IDs`, { iteration })
       
       updateSyncProgress({
         currentBatch: iteration,
@@ -178,7 +179,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       transcripts = Array.from(uniqueMap.values()).slice(0, 50)
       
       if (fetchError) {
-        console.error('❌ Query error:', fetchError)
+        logger.error('Query error while fetching transcripts', { error: fetchError })
         throw new Error(`Failed to fetch transcripts: ${fetchError.message}`)
       }
       
@@ -212,10 +213,14 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
           // Column doesn't exist, that's fine
         }
         
-        console.log(`🔍 Debug: NULL count: ${nullCount.count}, Empty string count: ${emptyCount.count}, Attempted: ${attemptedCount}`)
-        console.log('🔍 Debug: Sample transcripts:', JSON.stringify(debugQuery.data?.slice(0, 3), null, 2))
+        logger.debug('No transcripts found - debug info', {
+          nullCount: nullCount.count,
+          emptyCount: emptyCount.count,
+          attemptedCount,
+          sampleTranscripts: debugQuery.data?.slice(0, 3)
+        })
         
-        console.log('✅ No more transcripts need Client IDs!')
+        logger.info('No more transcripts need Client IDs')
         updateSyncProgress({
           currentStep: `✅ Sync complete! No transcripts found (NULL: ${nullCount.count}, Empty: ${emptyCount.count}, Already attempted: ${attemptedCount})`,
           isRunning: false
@@ -224,7 +229,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         break
       }
       
-      console.log(`📋 Found ${transcripts.length} transcripts without Client IDs`)
+      logger.info(`Found ${transcripts.length} transcripts without Client IDs`, { count: transcripts.length })
       
       updateSyncProgress({
         transcriptsProcessed: result.summary.transcriptsProcessed || 0,
@@ -280,7 +285,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       })
       
       if (uniqueEmails.length === 0) {
-        console.log('⚠️ No new customer emails found in this batch (all already attempted)')
+        logger.warn('No new customer emails found in this batch (all already attempted)')
         // Mark these transcripts as attempted even if no emails
         for (const transcriptId of transcriptIdsToMark) {
           await supabase
@@ -294,12 +299,14 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       // Add emails to attempted set
       uniqueEmails.forEach(email => attemptedEmails.add(email))
       
-      console.log(`📧 Extracted ${uniqueEmails.length} unique customer emails (${attemptedEmails.size} total attempted in this session)`)
+      logger.info(`Extracted ${uniqueEmails.length} unique customer emails`, {
+        uniqueEmails: uniqueEmails.length,
+        totalAttempted: attemptedEmails.size
+      })
       
       // Step 3: Call n8n webhook with emails
       try {
-        console.log(`📡 Calling n8n webhook: ${n8nWebhookUrl}`)
-        console.log(`📧 Sending ${uniqueEmails.length} emails to n8n`)
+        logger.debug('Calling n8n webhook', { url: n8nWebhookUrl, emailCount: uniqueEmails.length })
         
         updateSyncProgress({
           currentStep: `Batch ${iteration}: Calling Salesforce via n8n for ${uniqueEmails.length} emails...`
@@ -319,30 +326,43 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         const contentType = n8nResponse.headers.get('content-type') || ''
         const responseText = await n8nResponse.text()
         
-        console.log(`📥 n8n response status: ${n8nResponse.status}`)
-        console.log(`📥 n8n response content-type: ${contentType}`)
+        logger.debug('n8n response received', {
+          status: n8nResponse.status,
+          contentType
+        })
         
         if (!n8nResponse.ok) {
-          console.error(`❌ n8n webhook error response: ${responseText.substring(0, 500)}`)
+          logger.error('n8n webhook error response', {
+            status: n8nResponse.status,
+            response: responseText.substring(0, 500)
+          })
           throw new Error(`n8n webhook returned ${n8nResponse.status}: ${responseText.substring(0, 200)}`)
         }
         
         // Check if response is JSON
         if (!contentType.includes('application/json')) {
-          console.error(`❌ n8n returned non-JSON response (${contentType}): ${responseText.substring(0, 500)}`)
+          logger.error('n8n returned non-JSON response', {
+            contentType,
+            response: responseText.substring(0, 500)
+          })
           throw new Error(`n8n webhook returned HTML instead of JSON. Check webhook URL and workflow configuration. Response preview: ${responseText.substring(0, 200)}`)
         }
         
         let n8nData
         try {
           const parsed = JSON.parse(responseText)
-          console.log(`📦 n8n response type: ${Array.isArray(parsed) ? 'array' : 'object'}`)
           // n8n returns an array, so extract the first element if it's an array
           n8nData = Array.isArray(parsed) ? parsed[0] : parsed
-          console.log(`✅ Extracted n8n data: success=${n8nData?.success}, results=${Object.keys(n8nData?.results || {}).length}, notFound=${Array.isArray(n8nData?.notFound) ? n8nData.notFound.length : 0}`)
+          logger.debug('Extracted n8n data', {
+            success: n8nData?.success,
+            resultsCount: Object.keys(n8nData?.results || {}).length,
+            notFoundCount: Array.isArray(n8nData?.notFound) ? n8nData.notFound.length : 0
+          })
         } catch (parseError: any) {
-          console.error(`❌ Failed to parse n8n response as JSON: ${parseError.message}`)
-          console.error(`Response text: ${responseText.substring(0, 500)}`)
+          logger.error('Failed to parse n8n response as JSON', {
+            error: parseError.message,
+            response: responseText.substring(0, 500)
+          })
           throw new Error(`n8n response is not valid JSON: ${parseError.message}. Response preview: ${responseText.substring(0, 200)}`)
         }
         
@@ -382,7 +402,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
           }
         }
         
-        console.log(`✅ Received ${clientIdMap.size} Client IDs from n8n`)
+        logger.debug(`Received ${clientIdMap.size} Client IDs from n8n`, { count: clientIdMap.size })
         
         // Step 5: Update transcripts in database
         const updates: any[] = []
@@ -412,7 +432,11 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
           ? notFoundArray.filter((email: any) => email !== null && email !== undefined && typeof email === 'string')
           : []
         
-        console.log(`📧 Found ${clientIdMap.size} Client IDs, ${notFoundEmails.length} emails not found (filtered from ${notFoundArray.length} total entries)`)
+        logger.info('Client IDs matched from n8n', {
+          matched: clientIdMap.size,
+          notFound: notFoundEmails.length,
+          totalEntries: notFoundArray.length
+        })
         
         updateSyncProgress({
           clientIdsMatched: result.summary.clientIdsMatched,
@@ -436,7 +460,9 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         // Mark transcripts that were attempted but didn't find Client IDs
         // This prevents us from retrying them in future syncs
         if (notFoundTranscriptIds.size > 0) {
-          console.log(`🏷️ Marking ${notFoundTranscriptIds.size} transcripts as attempted (no Client ID found)`)
+          logger.info(`Marking ${notFoundTranscriptIds.size} transcripts as attempted (no Client ID found)`, {
+            count: notFoundTranscriptIds.size
+          })
           const now = new Date().toISOString()
           for (const transcriptId of notFoundTranscriptIds) {
             try {
@@ -447,13 +473,13 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
               
               // If column doesn't exist, log warning but continue
               if (error && (error.message?.includes('column') || error.code === 'PGRST116')) {
-                console.log('⚠️ client_id_lookup_attempted_at column not found - run migration to enable tracking')
+                logger.warn('client_id_lookup_attempted_at column not found - run migration to enable tracking')
                 break // Skip remaining updates if column doesn't exist
               }
             } catch (err: any) {
               // Silently continue if column doesn't exist
               if (err.message?.includes('column') || err.code === 'PGRST116') {
-                console.log('⚠️ client_id_lookup_attempted_at column not found - run migration to enable tracking')
+                logger.warn('client_id_lookup_attempted_at column not found - run migration to enable tracking')
                 break
               }
             }
@@ -541,7 +567,10 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         
         result.summary.transcriptsProcessed += transcripts.length
         
-        console.log(`✅ Updated ${result.summary.transcriptsUpdated} transcripts in this iteration`)
+        logger.info(`Updated ${result.summary.transcriptsUpdated} transcripts in this iteration`, {
+          updated: result.summary.transcriptsUpdated,
+          iteration
+        })
         
         updateSyncProgress({
           transcriptsUpdated: result.summary.transcriptsUpdated,
@@ -554,7 +583,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         await new Promise(resolve => setTimeout(resolve, 500))
         
       } catch (n8nError: any) {
-        console.error('❌ Error calling n8n webhook:', n8nError)
+        logger.error('Error calling n8n webhook', { error: n8nError })
         result.details.errors.push({
           transcript_id: 'batch',
           error: `n8n webhook error: ${n8nError.message}`
@@ -570,12 +599,13 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       result.message = `Successfully synced Client IDs for all available transcripts.`
     }
     
-    console.log(`✅ Sync complete:`)
-    console.log(`   - ${result.summary.transcriptsUpdated} transcripts updated with Client IDs`)
-    console.log(`   - ${result.summary.emailsExtracted} unique emails processed`)
-    console.log(`   - ${result.details.notFound.length} transcripts marked as attempted (no Client ID found)`)
-    console.log(`   - ${result.summary.errors} errors`)
-    console.log(`   - ${attemptedEmails.size} total emails attempted in this session`)
+    logger.info('Sync complete', {
+      transcriptsUpdated: result.summary.transcriptsUpdated,
+      emailsExtracted: result.summary.emailsExtracted,
+      notFoundCount: result.details.notFound.length,
+      errors: result.summary.errors,
+      totalEmailsAttempted: attemptedEmails.size
+    })
     
     // Final progress update
     updateSyncProgress({
@@ -590,7 +620,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
     return result
     
   } catch (error: any) {
-    console.error('❌ Sync error:', error)
+    logger.error('Sync error', { error })
     
     // Update progress with error
     updateSyncProgress({

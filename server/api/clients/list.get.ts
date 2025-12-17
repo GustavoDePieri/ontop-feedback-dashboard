@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { logger } from '~/server/utils/logger'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
@@ -21,7 +22,7 @@ export default defineEventHandler(async (event) => {
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
     const threeMonthsAgoISO = threeMonthsAgo.toISOString()
 
-    console.log('Filtering interactions from last 3 months:', threeMonthsAgoISO)
+    logger.debug('Filtering interactions from last 3 months', { date: threeMonthsAgoISO })
 
     // STEP 1: Get ALL clients from client_sentiment_summary (the source of truth - 655 records)
     const { data: allClientsFromSummary, error: summaryError } = await supabase
