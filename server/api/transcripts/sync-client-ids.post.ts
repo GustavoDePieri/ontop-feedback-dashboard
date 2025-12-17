@@ -188,7 +188,11 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         
         let n8nData
         try {
-          n8nData = JSON.parse(responseText)
+          const parsed = JSON.parse(responseText)
+          console.log(`📦 n8n response type: ${Array.isArray(parsed) ? 'array' : 'object'}`)
+          // n8n returns an array, so extract the first element if it's an array
+          n8nData = Array.isArray(parsed) ? parsed[0] : parsed
+          console.log(`✅ Extracted n8n data: success=${n8nData?.success}, results=${Object.keys(n8nData?.results || {}).length}, notFound=${Array.isArray(n8nData?.notFound) ? n8nData.notFound.length : 0}`)
         } catch (parseError: any) {
           console.error(`❌ Failed to parse n8n response as JSON: ${parseError.message}`)
           console.error(`Response text: ${responseText.substring(0, 500)}`)
@@ -196,27 +200,37 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         }
         
         // Step 4: Process n8n response
-        // Expected format from n8n:
-        // {
-        //   "results": {
-        //     "email@example.com": {
-        //       "client_platform_id": "CL001234",
-        //       "account_name": "Example Corp"
-        //     }
-        //   },
-        //   "notFound": ["email2@example.com"]
-        // }
+        // Expected format from n8n (may be wrapped in array):
+        // [
+        //   {
+        //     "success": true,
+        //     "results": {
+        //       "email@example.com": {
+        //         "client_platform_id": "CL001234",
+        //         "account_name": "Example Corp"
+        //       }
+        //     },
+        //     "notFound": ["email2@example.com", null, null, ...]
+        //   }
+        // ]
+        
+        if (!n8nData || typeof n8nData !== 'object') {
+          throw new Error('Invalid n8n response format: expected object')
+        }
         
         const clientIdMap = new Map<string, { client_id: string; account_name?: string }>()
         
+        // Process results
         if (n8nData.results && typeof n8nData.results === 'object') {
           for (const [email, data] of Object.entries(n8nData.results)) {
             if (data && typeof data === 'object' && 'client_platform_id' in data) {
               const clientData = data as { client_platform_id: string; account_name?: string }
-              clientIdMap.set(email.toLowerCase(), {
-                client_id: clientData.client_platform_id,
-                account_name: clientData.account_name
-              })
+              if (clientData.client_platform_id) {
+                clientIdMap.set(email.toLowerCase(), {
+                  client_id: clientData.client_platform_id,
+                  account_name: clientData.account_name
+                })
+              }
             }
           }
         }
@@ -245,8 +259,14 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
           }
         }
         
-        // Mark emails not found
-        const notFoundEmails = n8nData.notFound || []
+        // Mark emails not found - filter out null values
+        const notFoundArray = n8nData.notFound || []
+        const notFoundEmails = Array.isArray(notFoundArray) 
+          ? notFoundArray.filter((email: any) => email !== null && email !== undefined && typeof email === 'string')
+          : []
+        
+        console.log(`📧 Found ${clientIdMap.size} Client IDs, ${notFoundEmails.length} emails not found (filtered from ${notFoundArray.length} total entries)`)
+        
         for (const email of notFoundEmails) {
           const transcriptsForEmail = emailMap.get(email.toLowerCase()) || []
           for (const transcriptRef of transcriptsForEmail) {
