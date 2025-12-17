@@ -346,35 +346,56 @@ const loadStats = async () => {
 const pollProgress = async () => {
   try {
     const response = await fetch('/api/transcripts/sync-progress')
-    const data = await response.json()
     
-    if (data) {
-      progressInfo.value = {
-        isRunning: data.isRunning || false,
-        currentBatch: data.currentBatch || 0,
-        totalBatches: data.totalBatches || 0,
-        transcriptsProcessed: data.transcriptsProcessed || 0,
-        emailsExtracted: data.emailsExtracted || 0,
-        clientIdsMatched: data.clientIdsMatched || 0,
-        transcriptsUpdated: data.transcriptsUpdated || 0,
-        errors: data.errors || 0,
-        currentStep: data.currentStep || '',
-        lastActivity: data.lastActivity || '',
-        recentLogs: data.recentLogs || []
-      }
-      
-      // Stop polling if sync is complete
-      if (!data.isRunning && syncing.value) {
-        stopProgressPolling()
-        syncing.value = false
-        // Reload stats after a short delay
-        setTimeout(() => {
-          loadStats()
-        }, 1000)
-      }
+    // Check if response is ok and has content
+    if (!response.ok) {
+      console.warn('Progress endpoint returned error:', response.status)
+      return
+    }
+    
+    const text = await response.text()
+    
+    // Handle empty response
+    if (!text || text.trim() === '') {
+      console.warn('Progress endpoint returned empty response')
+      return
+    }
+    
+    let data
+    try {
+      data = JSON.parse(text)
+    } catch (parseError) {
+      console.error('Failed to parse progress response:', parseError, 'Response:', text.substring(0, 100))
+      return
+    }
+    
+    // Update progress info
+    progressInfo.value = {
+      isRunning: data.isRunning || false,
+      currentBatch: data.currentBatch || 0,
+      totalBatches: data.totalBatches || 0,
+      transcriptsProcessed: data.transcriptsProcessed || 0,
+      emailsExtracted: data.emailsExtracted || 0,
+      clientIdsMatched: data.clientIdsMatched || 0,
+      transcriptsUpdated: data.transcriptsUpdated || 0,
+      errors: data.errors || 0,
+      currentStep: data.currentStep || '',
+      lastActivity: data.lastActivity || '',
+      recentLogs: data.recentLogs || []
+    }
+    
+    // Stop polling if sync is complete
+    if (!data.isRunning && syncing.value) {
+      stopProgressPolling()
+      syncing.value = false
+      // Reload stats after a short delay
+      setTimeout(() => {
+        loadStats()
+      }, 1000)
     }
   } catch (error) {
     console.error('Error polling progress:', error)
+    // Don't stop polling on error - might be temporary network issue
   }
 }
 
