@@ -6,6 +6,15 @@
 </template>
 
 <script setup>
+// Set favicon and app metadata
+useHead({
+  link: [
+    { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+    { rel: 'shortcut icon', href: '/favicon.ico' },
+    { rel: 'apple-touch-icon', href: '/favicon.png' }
+  ]
+})
+
 // Force dark mode on mount
 onMounted(() => {
   document.documentElement.classList.add('dark')
