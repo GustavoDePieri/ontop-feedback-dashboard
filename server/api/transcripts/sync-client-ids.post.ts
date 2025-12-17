@@ -18,6 +18,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
+import { updateSyncProgress, clearSyncProgress } from '~/server/utils/sync-progress'
 
 interface SyncResult {
   success: boolean
@@ -79,6 +80,14 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
   try {
     console.log('🔄 Starting Client ID sync for transcripts...')
     
+    // Initialize progress tracking
+    clearSyncProgress()
+    updateSyncProgress({
+      isRunning: true,
+      currentStep: 'Initializing sync...',
+      currentBatch: 0
+    })
+    
     // Keep processing until no more transcripts need Client IDs
     let hasMore = true
     const maxIterations = 100 // Safety limit
@@ -91,14 +100,42 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       iteration++
       console.log(`📊 Iteration ${iteration}: Looking for transcripts without Client IDs...`)
       
+      updateSyncProgress({
+        currentBatch: iteration,
+        currentStep: `Batch ${iteration}: Finding transcripts without Client IDs...`
+      })
+      
       // Step 1: Find transcripts without client_platform_id that haven't been attempted yet
       // Exclude transcripts that have already been attempted (client_id_lookup_attempted_at is set)
-      const { data: transcripts, error: fetchError } = await supabase
+      // Try with the attempted_at filter first, fall back if column doesn't exist yet
+      let transcripts: any[] | null = null
+      let fetchError: any = null
+      
+      // Try query with client_id_lookup_attempted_at filter
+      let query = supabase
         .from('diio_transcripts')
         .select('id, diio_transcript_id, attendees, client_id_lookup_attempted_at')
         .is('client_platform_id', null)
-        .is('client_id_lookup_attempted_at', null) // Only get transcripts that haven't been attempted
+        .is('client_id_lookup_attempted_at', null)
         .limit(50)
+      
+      const result = await query
+      fetchError = result.error
+      
+      // If column doesn't exist, fall back to query without it
+      if (fetchError && (fetchError.message?.includes('column') || fetchError.code === 'PGRST116')) {
+        console.log('⚠️ client_id_lookup_attempted_at column not found, using fallback query')
+        const fallbackResult = await supabase
+          .from('diio_transcripts')
+          .select('id, diio_transcript_id, attendees')
+          .is('client_platform_id', null)
+          .limit(50)
+        
+        transcripts = fallbackResult.data
+        fetchError = fallbackResult.error
+      } else {
+        transcripts = result.data
+      }
       
       if (fetchError) {
         throw new Error(`Failed to fetch transcripts: ${fetchError.message}`)
@@ -106,11 +143,20 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       
       if (!transcripts || transcripts.length === 0) {
         console.log('✅ No more transcripts need Client IDs!')
+        updateSyncProgress({
+          currentStep: '✅ Sync complete! No more transcripts need Client IDs.',
+          isRunning: false
+        })
         hasMore = false
         break
       }
       
       console.log(`📋 Found ${transcripts.length} transcripts without Client IDs`)
+      
+      updateSyncProgress({
+        transcriptsProcessed: result.summary.transcriptsProcessed,
+        currentStep: `Batch ${iteration}: Found ${transcripts.length} transcripts, extracting emails...`
+      })
       
       // Step 2: Extract customer emails from attendees
       // Only include emails we haven't attempted yet
@@ -155,6 +201,11 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       const uniqueEmails = Array.from(emailMap.keys())
       result.summary.emailsExtracted += uniqueEmails.length
       
+      updateSyncProgress({
+        emailsExtracted: result.summary.emailsExtracted,
+        currentStep: `Batch ${iteration}: Extracted ${uniqueEmails.length} unique emails, querying Salesforce...`
+      })
+      
       if (uniqueEmails.length === 0) {
         console.log('⚠️ No new customer emails found in this batch (all already attempted)')
         // Mark these transcripts as attempted even if no emails
@@ -176,6 +227,10 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       try {
         console.log(`📡 Calling n8n webhook: ${n8nWebhookUrl}`)
         console.log(`📧 Sending ${uniqueEmails.length} emails to n8n`)
+        
+        updateSyncProgress({
+          currentStep: `Batch ${iteration}: Calling Salesforce via n8n for ${uniqueEmails.length} emails...`
+        })
         
         const n8nResponse = await fetch(n8nWebhookUrl, {
           method: 'POST',
@@ -286,6 +341,11 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         
         console.log(`📧 Found ${clientIdMap.size} Client IDs, ${notFoundEmails.length} emails not found (filtered from ${notFoundArray.length} total entries)`)
         
+        updateSyncProgress({
+          clientIdsMatched: result.summary.clientIdsMatched,
+          currentStep: `Batch ${iteration}: Found ${clientIdMap.size} Client IDs, updating transcripts...`
+        })
+        
         // Track transcripts that didn't find Client IDs
         const notFoundTranscriptIds = new Set<string>()
         
@@ -306,10 +366,24 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
           console.log(`🏷️ Marking ${notFoundTranscriptIds.size} transcripts as attempted (no Client ID found)`)
           const now = new Date().toISOString()
           for (const transcriptId of notFoundTranscriptIds) {
-            await supabase
-              .from('diio_transcripts')
-              .update({ client_id_lookup_attempted_at: now })
-              .eq('id', transcriptId)
+            try {
+              const { error } = await supabase
+                .from('diio_transcripts')
+                .update({ client_id_lookup_attempted_at: now })
+                .eq('id', transcriptId)
+              
+              // If column doesn't exist, log warning but continue
+              if (error && (error.message?.includes('column') || error.code === 'PGRST116')) {
+                console.log('⚠️ client_id_lookup_attempted_at column not found - run migration to enable tracking')
+                break // Skip remaining updates if column doesn't exist
+              }
+            } catch (err: any) {
+              // Silently continue if column doesn't exist
+              if (err.message?.includes('column') || err.code === 'PGRST116') {
+                console.log('⚠️ client_id_lookup_attempted_at column not found - run migration to enable tracking')
+                break
+              }
+            }
           }
         }
         
@@ -327,10 +401,22 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         for (const transcriptId of transcriptIdsToMark) {
           if (!processedTranscriptIds.has(transcriptId) && !notFoundTranscriptIds.has(transcriptId)) {
             // Transcript was in batch but had no emails or other issue
-            await supabase
-              .from('diio_transcripts')
-              .update({ client_id_lookup_attempted_at: new Date().toISOString() })
-              .eq('id', transcriptId)
+            try {
+              const { error } = await supabase
+                .from('diio_transcripts')
+                .update({ client_id_lookup_attempted_at: new Date().toISOString() })
+                .eq('id', transcriptId)
+              
+              // If column doesn't exist, skip silently
+              if (error && (error.message?.includes('column') || error.code === 'PGRST116')) {
+                break
+              }
+            } catch (err: any) {
+              // Silently continue if column doesn't exist
+              if (err.message?.includes('column') || err.code === 'PGRST116') {
+                break
+              }
+            }
           }
         }
         
@@ -384,6 +470,13 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         
         console.log(`✅ Updated ${result.summary.transcriptsUpdated} transcripts in this iteration`)
         
+        updateSyncProgress({
+          transcriptsUpdated: result.summary.transcriptsUpdated,
+          transcriptsProcessed: result.summary.transcriptsProcessed,
+          errors: result.summary.errors,
+          currentStep: `Batch ${iteration} complete: ${result.summary.transcriptsUpdated} updated, ${result.summary.errors} errors`
+        })
+        
         // Small delay to avoid overwhelming the database
         await new Promise(resolve => setTimeout(resolve, 500))
         
@@ -411,14 +504,37 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
     console.log(`   - ${result.summary.errors} errors`)
     console.log(`   - ${attemptedEmails.size} total emails attempted in this session`)
     
+    // Final progress update
+    updateSyncProgress({
+      isRunning: false,
+      currentStep: `✅ Sync complete! ${result.summary.transcriptsUpdated} transcripts updated, ${result.summary.errors} errors`,
+      transcriptsProcessed: result.summary.transcriptsProcessed,
+      transcriptsUpdated: result.summary.transcriptsUpdated,
+      clientIdsMatched: result.summary.clientIdsMatched,
+      errors: result.summary.errors
+    })
+    
     return result
     
   } catch (error: any) {
     console.error('❌ Sync error:', error)
+    
+    // Update progress with error
+    updateSyncProgress({
+      isRunning: false,
+      currentStep: `❌ Sync failed: ${error.message}`,
+      errors: result.summary.errors + 1
+    })
+    
     throw createError({
       statusCode: 500,
       message: `Failed to sync Client IDs: ${error.message}`
     })
+  } finally {
+    // Clear progress after a delay (to allow UI to fetch final state)
+    setTimeout(() => {
+      clearSyncProgress()
+    }, 30000) // Clear after 30 seconds
   }
 })
 

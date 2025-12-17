@@ -78,14 +78,55 @@
             <!-- Progress Bar -->
             <div v-if="syncing || syncResult" class="mb-4">
               <div class="flex items-center justify-between text-sm text-white/60 mb-2">
-                <span>Progress</span>
-                <span>{{ syncProgress.processed }} / {{ syncProgress.total }}</span>
+                <span>{{ progressInfo.currentStep || 'Processing...' }}</span>
+                <span>{{ progressInfo.transcriptsProcessed || 0 }} / {{ stats.missing }}</span>
               </div>
               <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
                 <div 
                   class="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
-                  :style="{ width: `${(syncProgress.processed / syncProgress.total) * 100}%` }"
+                  :style="{ width: `${Math.min((progressInfo.transcriptsProcessed || 0) / Math.max(stats.missing, 1) * 100, 100)}%` }"
                 ></div>
+              </div>
+            </div>
+            
+            <!-- Detailed Progress Info -->
+            <div v-if="syncing && progressInfo.isRunning" class="bg-white/5 rounded-lg p-4 mb-4">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                <div>
+                  <div class="text-xs text-white/50 mb-1">Current Batch</div>
+                  <div class="text-lg font-bold text-white">{{ progressInfo.currentBatch || 0 }}</div>
+                </div>
+                <div>
+                  <div class="text-xs text-white/50 mb-1">Emails Extracted</div>
+                  <div class="text-lg font-bold text-green-400">{{ progressInfo.emailsExtracted || 0 }}</div>
+                </div>
+                <div>
+                  <div class="text-xs text-white/50 mb-1">Client IDs Found</div>
+                  <div class="text-lg font-bold text-blue-400">{{ progressInfo.clientIdsMatched || 0 }}</div>
+                </div>
+                <div>
+                  <div class="text-xs text-white/50 mb-1">Transcripts Updated</div>
+                  <div class="text-lg font-bold text-purple-400">{{ progressInfo.transcriptsUpdated || 0 }}</div>
+                </div>
+              </div>
+              
+              <div v-if="progressInfo.errors > 0" class="mt-2">
+                <div class="text-xs text-white/50 mb-1">Errors</div>
+                <div class="text-sm font-semibold text-yellow-400">{{ progressInfo.errors }}</div>
+              </div>
+              
+              <!-- Recent Activity Log -->
+              <div v-if="progressInfo.recentLogs && progressInfo.recentLogs.length > 0" class="mt-4 pt-4 border-t border-white/10">
+                <div class="text-xs text-white/50 mb-2">Recent Activity</div>
+                <div class="max-h-32 overflow-y-auto space-y-1">
+                  <div 
+                    v-for="(log, idx) in progressInfo.recentLogs.slice().reverse()" 
+                    :key="idx"
+                    class="text-xs text-white/70 font-mono"
+                  >
+                    {{ log }}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -266,6 +307,22 @@ const syncProgress = ref({
   total: 0
 })
 
+const progressInfo = ref({
+  isRunning: false,
+  currentBatch: 0,
+  totalBatches: 0,
+  transcriptsProcessed: 0,
+  emailsExtracted: 0,
+  clientIdsMatched: 0,
+  transcriptsUpdated: 0,
+  errors: 0,
+  currentStep: '',
+  lastActivity: '',
+  recentLogs: [] as string[]
+})
+
+let progressPollInterval: NodeJS.Timeout | null = null
+
 // Load stats
 const loadStats = async () => {
   loading.value = true
@@ -285,6 +342,56 @@ const loadStats = async () => {
   }
 }
 
+// Poll progress updates
+const pollProgress = async () => {
+  try {
+    const response = await fetch('/api/transcripts/sync-progress')
+    const data = await response.json()
+    
+    if (data) {
+      progressInfo.value = {
+        isRunning: data.isRunning || false,
+        currentBatch: data.currentBatch || 0,
+        totalBatches: data.totalBatches || 0,
+        transcriptsProcessed: data.transcriptsProcessed || 0,
+        emailsExtracted: data.emailsExtracted || 0,
+        clientIdsMatched: data.clientIdsMatched || 0,
+        transcriptsUpdated: data.transcriptsUpdated || 0,
+        errors: data.errors || 0,
+        currentStep: data.currentStep || '',
+        lastActivity: data.lastActivity || '',
+        recentLogs: data.recentLogs || []
+      }
+      
+      // Stop polling if sync is complete
+      if (!data.isRunning && syncing.value) {
+        stopProgressPolling()
+        syncing.value = false
+        // Reload stats after a short delay
+        setTimeout(() => {
+          loadStats()
+        }, 1000)
+      }
+    }
+  } catch (error) {
+    console.error('Error polling progress:', error)
+  }
+}
+
+const startProgressPolling = () => {
+  // Poll every 1 second
+  progressPollInterval = setInterval(pollProgress, 1000)
+  // Initial poll
+  pollProgress()
+}
+
+const stopProgressPolling = () => {
+  if (progressPollInterval) {
+    clearInterval(progressPollInterval)
+    progressPollInterval = null
+  }
+}
+
 // Run sync
 const runSync = async () => {
   if (syncing.value) return
@@ -292,6 +399,24 @@ const runSync = async () => {
   syncing.value = true
   syncResult.value = null
   syncProgress.value = { processed: 0, total: stats.value.missing }
+  
+  // Reset progress info
+  progressInfo.value = {
+    isRunning: true,
+    currentBatch: 0,
+    totalBatches: 0,
+    transcriptsProcessed: 0,
+    emailsExtracted: 0,
+    clientIdsMatched: 0,
+    transcriptsUpdated: 0,
+    errors: 0,
+    currentStep: 'Starting sync...',
+    lastActivity: '',
+    recentLogs: []
+  }
+  
+  // Start polling for progress
+  startProgressPolling()
   
   try {
     const response = await fetch('/api/transcripts/sync-client-ids', {
@@ -311,7 +436,8 @@ const runSync = async () => {
       }
     }
     
-    // Reload stats
+    // Stop polling and reload stats
+    stopProgressPolling()
     await loadStats()
   } catch (error: any) {
     console.error('Error running sync:', error)
@@ -319,6 +445,7 @@ const runSync = async () => {
       success: false,
       message: error.message || 'Failed to sync Client IDs'
     }
+    stopProgressPolling()
   } finally {
     syncing.value = false
   }
@@ -327,6 +454,11 @@ const runSync = async () => {
 // Load stats on mount
 onMounted(() => {
   loadStats()
+})
+
+// Cleanup on unmount
+onUnmounted(() => {
+  stopProgressPolling()
 })
 </script>
 
