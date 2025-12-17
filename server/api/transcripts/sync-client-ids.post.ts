@@ -84,15 +84,20 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
     const maxIterations = 100 // Safety limit
     let iteration = 0
     
+    // Track emails we've already attempted in this sync session
+    const attemptedEmails = new Set<string>()
+    
     while (hasMore && iteration < maxIterations) {
       iteration++
       console.log(`📊 Iteration ${iteration}: Looking for transcripts without Client IDs...`)
       
-      // Step 1: Find transcripts without client_platform_id (batch of 50)
+      // Step 1: Find transcripts without client_platform_id that haven't been attempted yet
+      // Exclude transcripts that have already been attempted (client_id_lookup_attempted_at is set)
       const { data: transcripts, error: fetchError } = await supabase
         .from('diio_transcripts')
-        .select('id, diio_transcript_id, attendees')
+        .select('id, diio_transcript_id, attendees, client_id_lookup_attempted_at')
         .is('client_platform_id', null)
+        .is('client_id_lookup_attempted_at', null) // Only get transcripts that haven't been attempted
         .limit(50)
       
       if (fetchError) {
@@ -108,9 +113,12 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       console.log(`📋 Found ${transcripts.length} transcripts without Client IDs`)
       
       // Step 2: Extract customer emails from attendees
+      // Only include emails we haven't attempted yet
       const emailMap = new Map<string, Array<{ transcript_id: string; diio_id: string }>>()
+      const transcriptIdsToMark = new Set<string>() // Track transcripts we're processing
       
       for (const transcript of transcripts) {
+        transcriptIdsToMark.add(transcript.id)
         try {
           const attendees = transcript.attendees as any
           
@@ -118,6 +126,11 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
             for (const customer of attendees.customers) {
               if (customer.email && typeof customer.email === 'string' && customer.email.includes('@')) {
                 const email = customer.email.toLowerCase().trim()
+                
+                // Skip emails we've already attempted in this session
+                if (attemptedEmails.has(email)) {
+                  continue
+                }
                 
                 if (!emailMap.has(email)) {
                   emailMap.set(email, [])
@@ -143,15 +156,21 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       result.summary.emailsExtracted += uniqueEmails.length
       
       if (uniqueEmails.length === 0) {
-        console.log('⚠️ No customer emails found in this batch')
-        // Mark these transcripts as processed (no email to match)
-        for (const transcript of transcripts) {
-          // Could set a flag or skip - for now we'll just continue
+        console.log('⚠️ No new customer emails found in this batch (all already attempted)')
+        // Mark these transcripts as attempted even if no emails
+        for (const transcriptId of transcriptIdsToMark) {
+          await supabase
+            .from('diio_transcripts')
+            .update({ client_id_lookup_attempted_at: new Date().toISOString() })
+            .eq('id', transcriptId)
         }
         continue
       }
       
-      console.log(`📧 Extracted ${uniqueEmails.length} unique customer emails`)
+      // Add emails to attempted set
+      uniqueEmails.forEach(email => attemptedEmails.add(email))
+      
+      console.log(`📧 Extracted ${uniqueEmails.length} unique customer emails (${attemptedEmails.size} total attempted in this session)`)
       
       // Step 3: Call n8n webhook with emails
       try {
@@ -267,13 +286,51 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         
         console.log(`📧 Found ${clientIdMap.size} Client IDs, ${notFoundEmails.length} emails not found (filtered from ${notFoundArray.length} total entries)`)
         
+        // Track transcripts that didn't find Client IDs
+        const notFoundTranscriptIds = new Set<string>()
+        
         for (const email of notFoundEmails) {
           const transcriptsForEmail = emailMap.get(email.toLowerCase()) || []
           for (const transcriptRef of transcriptsForEmail) {
+            notFoundTranscriptIds.add(transcriptRef.transcript_id)
             result.details.notFound.push({
               transcript_id: transcriptRef.transcript_id,
               email: email
             })
+          }
+        }
+        
+        // Mark transcripts that were attempted but didn't find Client IDs
+        // This prevents us from retrying them in future syncs
+        if (notFoundTranscriptIds.size > 0) {
+          console.log(`🏷️ Marking ${notFoundTranscriptIds.size} transcripts as attempted (no Client ID found)`)
+          const now = new Date().toISOString()
+          for (const transcriptId of notFoundTranscriptIds) {
+            await supabase
+              .from('diio_transcripts')
+              .update({ client_id_lookup_attempted_at: now })
+              .eq('id', transcriptId)
+          }
+        }
+        
+        // Also mark transcripts that were processed (even if they got Client IDs)
+        // This helps track which transcripts have been through the sync process
+        const processedTranscriptIds = new Set<string>()
+        for (const [email] of clientIdMap.entries()) {
+          const transcriptsForEmail = emailMap.get(email) || []
+          for (const transcriptRef of transcriptsForEmail) {
+            processedTranscriptIds.add(transcriptRef.transcript_id)
+          }
+        }
+        
+        // Mark all transcripts in this batch as attempted
+        for (const transcriptId of transcriptIdsToMark) {
+          if (!processedTranscriptIds.has(transcriptId) && !notFoundTranscriptIds.has(transcriptId)) {
+            // Transcript was in batch but had no emails or other issue
+            await supabase
+              .from('diio_transcripts')
+              .update({ client_id_lookup_attempted_at: new Date().toISOString() })
+              .eq('id', transcriptId)
           }
         }
         
@@ -347,7 +404,12 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       result.message = `Successfully synced Client IDs for all available transcripts.`
     }
     
-    console.log(`✅ Sync complete: ${result.summary.transcriptsUpdated} transcripts updated, ${result.summary.errors} errors`)
+    console.log(`✅ Sync complete:`)
+    console.log(`   - ${result.summary.transcriptsUpdated} transcripts updated with Client IDs`)
+    console.log(`   - ${result.summary.emailsExtracted} unique emails processed`)
+    console.log(`   - ${result.details.notFound.length} transcripts marked as attempted (no Client ID found)`)
+    console.log(`   - ${result.summary.errors} errors`)
+    console.log(`   - ${attemptedEmails.size} total emails attempted in this session`)
     
     return result
     
