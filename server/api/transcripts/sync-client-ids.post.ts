@@ -106,45 +106,118 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       })
       
       // Step 1: Find transcripts without client_platform_id that haven't been attempted yet
-      // Exclude transcripts that have already been attempted (client_id_lookup_attempted_at is set)
-      // Try with the attempted_at filter first, fall back if column doesn't exist yet
-      let transcripts: any[] | null = null
+      // Use separate queries for NULL and empty string, then combine
+      // This is more reliable than .or() syntax which can be problematic
+      let transcripts: any[] = []
       let fetchError: any = null
       
-      // Try query with client_id_lookup_attempted_at filter
-      let query = supabase
+      // First, try to query for NULL client_platform_id
+      // Check if client_id_lookup_attempted_at column exists by trying to select it
+      let nullQuery = supabase
         .from('diio_transcripts')
         .select('id, diio_transcript_id, attendees, client_id_lookup_attempted_at')
         .is('client_platform_id', null)
-        .is('client_id_lookup_attempted_at', null)
         .limit(50)
       
-      const result = await query
-      fetchError = result.error
-      
       // If column doesn't exist, fall back to query without it
-      if (fetchError && (fetchError.message?.includes('column') || fetchError.code === 'PGRST116')) {
-        console.log('⚠️ client_id_lookup_attempted_at column not found, using fallback query')
-        const fallbackResult = await supabase
+      let nullResult = await nullQuery
+      if (nullResult.error && (nullResult.error.message?.includes('column') || nullResult.error.code === 'PGRST116')) {
+        // Column doesn't exist, query without it
+        nullQuery = supabase
           .from('diio_transcripts')
           .select('id, diio_transcript_id, attendees')
           .is('client_platform_id', null)
           .limit(50)
-        
-        transcripts = fallbackResult.data
-        fetchError = fallbackResult.error
-      } else {
-        transcripts = result.data
+        nullResult = await nullQuery
       }
       
+      // Filter out transcripts that have already been attempted (if column exists)
+      if (nullResult.data) {
+        const nullTranscripts = nullResult.data.filter((t: any) => {
+          // If client_id_lookup_attempted_at exists and is set, skip it
+          return !t.client_id_lookup_attempted_at
+        })
+        transcripts.push(...nullTranscripts)
+      }
+      
+      if (nullResult.error && !nullResult.error.message?.includes('column')) {
+        fetchError = nullResult.error
+      }
+      
+      // Also query for empty string client_platform_id
+      let emptyQuery = supabase
+        .from('diio_transcripts')
+        .select('id, diio_transcript_id, attendees, client_id_lookup_attempted_at')
+        .eq('client_platform_id', '')
+        .limit(50)
+      
+      let emptyResult = await emptyQuery
+      if (emptyResult.error && (emptyResult.error.message?.includes('column') || emptyResult.error.code === 'PGRST116')) {
+        emptyQuery = supabase
+          .from('diio_transcripts')
+          .select('id, diio_transcript_id, attendees')
+          .eq('client_platform_id', '')
+          .limit(50)
+        emptyResult = await emptyQuery
+      }
+      
+      if (emptyResult.data) {
+        const emptyTranscripts = emptyResult.data.filter((t: any) => {
+          return !t.client_id_lookup_attempted_at
+        })
+        transcripts.push(...emptyTranscripts)
+      }
+      
+      if (emptyResult.error && !emptyResult.error.message?.includes('column')) {
+        fetchError = emptyResult.error || fetchError
+      }
+      
+      // Deduplicate by id (in case a transcript appears in both queries)
+      const uniqueMap = new Map()
+      transcripts.forEach(t => uniqueMap.set(t.id, t))
+      transcripts = Array.from(uniqueMap.values()).slice(0, 50)
+      
       if (fetchError) {
+        console.error('❌ Query error:', fetchError)
         throw new Error(`Failed to fetch transcripts: ${fetchError.message}`)
       }
       
-      if (!transcripts || transcripts.length === 0) {
+      if (transcripts.length === 0) {
+        // Debug: Check what's actually in the database
+        const debugQuery = await supabase
+          .from('diio_transcripts')
+          .select('id, client_platform_id, client_id_lookup_attempted_at')
+          .limit(10)
+        
+        const nullCount = await supabase
+          .from('diio_transcripts')
+          .select('id', { count: 'exact', head: true })
+          .is('client_platform_id', null)
+        
+        const emptyCount = await supabase
+          .from('diio_transcripts')
+          .select('id', { count: 'exact', head: true })
+          .eq('client_platform_id', '')
+        
+        // Check how many have been attempted
+        let attemptedCount = 0
+        try {
+          const attemptedQuery = await supabase
+            .from('diio_transcripts')
+            .select('id', { count: 'exact', head: true })
+            .is('client_platform_id', null)
+            .not('client_id_lookup_attempted_at', 'is', null)
+          attemptedCount = attemptedQuery.count || 0
+        } catch (e) {
+          // Column doesn't exist, that's fine
+        }
+        
+        console.log(`🔍 Debug: NULL count: ${nullCount.count}, Empty string count: ${emptyCount.count}, Attempted: ${attemptedCount}`)
+        console.log('🔍 Debug: Sample transcripts:', JSON.stringify(debugQuery.data?.slice(0, 3), null, 2))
+        
         console.log('✅ No more transcripts need Client IDs!')
         updateSyncProgress({
-          currentStep: '✅ Sync complete! No more transcripts need Client IDs.',
+          currentStep: `✅ Sync complete! No transcripts found (NULL: ${nullCount.count}, Empty: ${emptyCount.count}, Already attempted: ${attemptedCount})`,
           isRunning: false
         })
         hasMore = false
@@ -154,7 +227,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       console.log(`📋 Found ${transcripts.length} transcripts without Client IDs`)
       
       updateSyncProgress({
-        transcriptsProcessed: result.summary.transcriptsProcessed,
+        transcriptsProcessed: result.summary.transcriptsProcessed || 0,
         currentStep: `Batch ${iteration}: Found ${transcripts.length} transcripts, extracting emails...`
       })
       

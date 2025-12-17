@@ -1,0 +1,53 @@
+🚀 *Recent Updates - Feedback Analytics Dashboard*
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+*Latest Release Summary*
+
+🔄 *Automated Client ID Sync System*
+• New automated Salesforce integration for transcript matching
+• Real-time sync dashboard with progress tracking
+• Processes transcripts in batches automatically
+• Prevents duplicate processing
+*Impact:* Eliminates manual Client ID matching, saves hours of work
+
+💳 *Payment Issue Detection & Navigation*
+• Automatic payment problem identification
+• Clickable issues → navigate directly to source ticket/transcript
+• Visual warnings on client cards
+*Impact:* Faster identification and resolution of payment issues
+
+🔄 *Client Re-enrichment System*
+• On-demand AI analysis re-run when clients have new interactions
+• Automatic detection of outdated enrichment data
+• One-click re-enrichment from client detail modal
+*Impact:* Ensures client insights stay current with latest data
+
+👥 *Unified Client View Improvements*
+• Now shows all 655 clients from database
+• Accurate ticket and transcript counts per client
+• Payment issue warnings on client cards
+*Impact:* Complete visibility into all client relationships
+
+📊 *Real-time Sync Progress Dashboard*
+• Live progress updates during sync operations
+• Detailed statistics and activity log
+• Error tracking and reporting
+*Impact:* Full visibility into sync operations, better troubleshooting
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+*Key Metrics*
+• 655 clients visible in unified view
+• Automated sync eliminates manual work
+• Payment issues automatically detected
+• Re-enrichment keeps insights current
+
+*Quick Access*
+• Client ID Sync: `/sync` page
+• Payment Issues: Client detail → "Payment Problems" section
+• Re-enrichment: Client detail → "Re-enrich" button
+• Client View: `/clients` page
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
