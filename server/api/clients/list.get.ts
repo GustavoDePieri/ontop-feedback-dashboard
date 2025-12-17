@@ -21,69 +21,60 @@ export default defineEventHandler(async (event) => {
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
     const threeMonthsAgoISO = threeMonthsAgo.toISOString()
 
-    console.log('Filtering data from last 3 months:', threeMonthsAgoISO)
+    console.log('Filtering interactions from last 3 months:', threeMonthsAgoISO)
 
-    // Get all unique clients from DIIO transcripts (last 3 months only)
-    const { data: diioClients, error: diioError } = await supabase
+    // STEP 1: Get ALL clients from client_sentiment_summary (the source of truth - 655 records)
+    const { data: allClientsFromSummary, error: summaryError } = await supabase
+      .from('client_sentiment_summary')
+      .select('client_id')
+      .is('period_start', null) // All-time summary only
+      .order('client_id')
+
+    if (summaryError) throw summaryError
+
+    console.log(`📊 List API: Found ${allClientsFromSummary?.length || 0} clients in client_sentiment_summary`)
+
+    // STEP 2: Get client names from DIIO and Zendesk (no date filter - we want all names)
+    const { data: diioNames, error: diioNameError } = await supabase
       .from('diio_transcripts')
       .select('client_platform_id, account_name')
       .not('client_platform_id', 'is', null)
-      .gte('occurred_at', threeMonthsAgoISO)
       .order('client_platform_id')
 
-    if (diioError) throw diioError
+    if (diioNameError) throw diioNameError
 
-    // Get all unique clients from Zendesk conversations 
-    // Filter: is_external = TRUE and last 3 months only
-    const { data: zendeskClients, error: zendeskError } = await supabase
+    const { data: zendeskNames, error: zendeskNameError } = await supabase
       .from('zendesk_conversations')
       .select('client_id')
       .not('client_id', 'is', null)
-      .eq('is_external', true)
-      .gte('created_at', threeMonthsAgoISO)
       .order('client_id')
 
-    if (zendeskError) throw zendeskError
+    if (zendeskNameError) throw zendeskNameError
 
-    console.log('Found DIIO clients:', diioClients?.length || 0)
-    console.log('Found Zendesk external clients:', zendeskClients?.length || 0)
+    console.log(`📊 List API: Found ${diioNames?.length || 0} DIIO names, ${zendeskNames?.length || 0} Zendesk names`)
 
-    // Merge and deduplicate clients
-    const clientMap = new Map()
-
-    // Add DIIO clients
-    diioClients?.forEach((item: any) => {
-      if (item.client_platform_id) {
-        clientMap.set(item.client_platform_id, {
-          client_id: item.client_platform_id,
-          client_name: item.account_name || item.client_platform_id,
-          has_transcripts: true,
-          has_tickets: false
-        })
-      }
-    })
-
-    // Add/update with Zendesk clients
-    zendeskClients?.forEach((item: any) => {
-      if (item.client_id) {
-        const existing = clientMap.get(item.client_id)
-        if (existing) {
-          existing.has_tickets = true
-        } else {
-          clientMap.set(item.client_id, {
-            client_id: item.client_id,
-            client_name: item.client_id,
-            has_transcripts: false,
-            has_tickets: true
-          })
-        }
-      }
-    })
-
-    // Convert to array
-    let clients = Array.from(clientMap.values())
+    // STEP 3: Build client name lookup map
+    const clientNameMap = new Map()
     
-    console.log(`📊 List API: DIIO: ${diioClients?.length || 0} records, Zendesk: ${zendeskClients?.length || 0} records, Unique clients after merge: ${clients.length}`)
+    // Add DIIO names (account_name is the best source)
+    diioNames?.forEach((item: any) => {
+      if (item.client_platform_id && item.account_name) {
+        clientNameMap.set(item.client_platform_id, item.account_name)
+      }
+    })
+
+    // Zendesk doesn't have names, just IDs
+    // (client names from DIIO will be used if available)
+
+    // STEP 4: Create client list from sentiment summary with names
+    let clients = allClientsFromSummary?.map((item: any) => ({
+      client_id: item.client_id,
+      client_name: clientNameMap.get(item.client_id) || item.client_id,
+      has_transcripts: false, // Will be updated when counting
+      has_tickets: false // Will be updated when counting
+    })) || []
+    
+    console.log(`📊 List API: Created ${clients.length} clients from sentiment summary`)
 
     // Apply search filter if provided
     if (searchQuery) {
@@ -158,6 +149,14 @@ export default defineEventHandler(async (event) => {
           }
         })
 
+        // Mark clients that have tickets
+        ticketData?.forEach((row: any) => {
+          const client = clients.find(c => c.client_id === row.client_id)
+          if (client) {
+            client.has_tickets = true
+          }
+        })
+
         // Check if we need to fetch more
         hasMoreTickets = ticketData && ticketData.length === pageSize
         ticketOffset += pageSize
@@ -201,6 +200,14 @@ export default defineEventHandler(async (event) => {
             if (sentiment < -0.1) {
               paymentIssues[row.client_platform_id].negative_count++
             }
+          }
+        })
+
+        // Mark clients that have transcripts
+        transcriptData?.forEach((row: any) => {
+          const client = clients.find(c => c.client_id === row.client_platform_id)
+          if (client) {
+            client.has_transcripts = true
           }
         })
 

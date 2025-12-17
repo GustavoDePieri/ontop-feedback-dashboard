@@ -20,60 +20,45 @@ export default defineEventHandler(async (event) => {
 
     console.log(`📊 Stats API called with search: "${searchQuery}"`)
 
-    // Get all clients from both sources to calculate stats
-    // We need enrichment status and interaction counts
-    
-    // Get DIIO clients with transcript counts and account names for search
-    const { data: diioClients, error: diioError } = await supabase
+    // STEP 1: Get ALL clients from client_sentiment_summary (the source of truth - 655 records)
+    const { data: allClientsFromSummary, error: summaryError } = await supabase
+      .from('client_sentiment_summary')
+      .select('client_id')
+      .is('period_start', null) // All-time summary only
+      .order('client_id')
+
+    if (summaryError) throw summaryError
+
+    console.log(`📊 Stats API: Found ${allClientsFromSummary?.length || 0} clients in client_sentiment_summary`)
+
+    // STEP 2: Get client names from DIIO (no date filter - we want all names for search)
+    const { data: diioNames, error: diioNameError } = await supabase
       .from('diio_transcripts')
       .select('client_platform_id, account_name')
       .not('client_platform_id', 'is', null)
-      .gte('occurred_at', threeMonthsAgoISO)
+      .order('client_platform_id')
 
-    if (diioError) throw diioError
+    if (diioNameError) throw diioNameError
 
-    // Get Zendesk clients with ticket counts
-    const { data: zendeskClients, error: zendeskError } = await supabase
-      .from('zendesk_conversations')
-      .select('client_id')
-      .not('client_id', 'is', null)
-      .eq('is_external', true)
-      .gte('created_at', threeMonthsAgoISO)
+    console.log(`📊 Stats API: Found ${diioNames?.length || 0} DIIO names`)
 
-    if (zendeskError) throw zendeskError
-
-    // Merge and deduplicate clients (same logic as list.get.ts)
-    const clientMap = new Map()
-
-    // Add DIIO clients
-    diioClients?.forEach((item: any) => {
-      if (item.client_platform_id) {
-        clientMap.set(item.client_platform_id, {
-          client_id: item.client_platform_id,
-          client_name: item.account_name || item.client_platform_id
-        })
-      }
-    })
-
-    // Add/update with Zendesk clients
-    zendeskClients?.forEach((item: any) => {
-      if (item.client_id) {
-        const existing = clientMap.get(item.client_id)
-        if (existing) {
-          // Client already exists from DIIO
-        } else {
-          clientMap.set(item.client_id, {
-            client_id: item.client_id,
-            client_name: item.client_id
-          })
-        }
-      }
-    })
-
-    // Convert to array
-    let clients = Array.from(clientMap.values())
+    // STEP 3: Build client name lookup map
+    const clientNameMap = new Map()
     
-    console.log(`📊 Stats API: DIIO: ${diioClients?.length || 0} records, Zendesk: ${zendeskClients?.length || 0} records, Unique clients before search: ${clients.length}`)
+    // Add DIIO names (account_name is the best source)
+    diioNames?.forEach((item: any) => {
+      if (item.client_platform_id && item.account_name) {
+        clientNameMap.set(item.client_platform_id, item.account_name)
+      }
+    })
+
+    // STEP 4: Create client list from sentiment summary with names
+    let clients = allClientsFromSummary?.map((item: any) => ({
+      client_id: item.client_id,
+      client_name: clientNameMap.get(item.client_id) || item.client_id
+    })) || []
+    
+    console.log(`📊 Stats API: Created ${clients.length} clients from sentiment summary`)
 
     // Apply search filter (same logic as list.get.ts)
     if (searchQuery) {
@@ -100,15 +85,31 @@ export default defineEventHandler(async (event) => {
     const enriched = enrichmentData?.filter((e: any) => e.enrichment_status === 'completed').length || 0
     const pending = clientIds.size - enriched // All clients without completed enrichment are pending
 
-    // Calculate total interactions for filtered clients only
-    const filteredTickets = zendeskClients?.filter((t: any) => clientIds.has(t.client_id)) || []
-    const filteredTranscripts = diioClients?.filter((t: any) => clientIds.has(t.client_platform_id)) || []
+    // STEP 5: Count interactions (tickets/transcripts) from last 3 months for filtered clients
+    const { data: recentTickets, error: ticketsError } = await supabase
+      .from('zendesk_conversations')
+      .select('client_id')
+      .not('client_id', 'is', null)
+      .eq('is_external', true)
+      .gte('created_at', threeMonthsAgoISO)
+      .in('client_id', Array.from(clientIds))
+
+    if (ticketsError) throw ticketsError
+
+    const { data: recentTranscripts, error: transcriptsError } = await supabase
+      .from('diio_transcripts')
+      .select('client_platform_id')
+      .not('client_platform_id', 'is', null)
+      .gte('occurred_at', threeMonthsAgoISO)
+      .in('client_platform_id', Array.from(clientIds))
+
+    if (transcriptsError) throw transcriptsError
     
-    const totalTickets = filteredTickets.length
-    const totalTranscripts = filteredTranscripts.length
+    const totalTickets = recentTickets?.length || 0
+    const totalTranscripts = recentTranscripts?.length || 0
     const totalInteractions = totalTickets + totalTranscripts
     
-    console.log(`📊 Stats API: Filtered stats - ${clientIds.size} clients, ${totalTickets} tickets, ${totalTranscripts} transcripts`)
+    console.log(`📊 Stats API: Filtered stats - ${clientIds.size} clients, ${totalTickets} tickets (last 3m), ${totalTranscripts} transcripts (last 3m)`)
 
     return {
       success: true,
