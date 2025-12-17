@@ -881,6 +881,14 @@
 </template>
 
 <script setup lang="ts">
+// Page metadata
+useHead({
+  title: 'Call Transcripts - Ontop Analytics',
+  meta: [
+    { name: 'description', content: 'Access and analyze meeting and call transcripts from DIIO with AI sentiment analysis' }
+  ]
+})
+
 definePageMeta({
   layout: 'default',
   ssr: false // Disable SSR to prevent slow builds and allow client-side data fetching

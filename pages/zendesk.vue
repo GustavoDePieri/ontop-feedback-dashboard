@@ -628,6 +628,14 @@
 </template>
 
 <script setup lang="ts">
+// Page metadata
+useHead({
+  title: 'Zendesk Tickets - Ontop Analytics',
+  meta: [
+    { name: 'description', content: 'Browse and analyze support tickets grouped by client with sentiment insights' }
+  ]
+})
+
 definePageMeta({
   ssr: false // Disable SSR to prevent slow builds and allow client-side data fetching
 })

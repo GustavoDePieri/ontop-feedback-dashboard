@@ -494,6 +494,14 @@
 <script setup lang="ts">
 import ClientDetailModal from '~/components/ClientDetailModal.vue'
 
+// Page metadata
+useHead({
+  title: 'Clients - Ontop Analytics',
+  meta: [
+    { name: 'description', content: 'Comprehensive client analysis with AI-powered insights, pain points, and churn risk analysis' }
+  ]
+})
+
 // Disable SSR for this page to improve build performance
 definePageMeta({
   ssr: false
