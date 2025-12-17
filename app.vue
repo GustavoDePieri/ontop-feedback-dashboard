@@ -1,7 +1,9 @@
 <template>
   <div>
-    <!-- Force showing pages instead of welcome -->
-    <NuxtPage />
+    <!-- Use NuxtLayout to enable layout system -->
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
 
