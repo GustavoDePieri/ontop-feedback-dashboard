@@ -2,11 +2,7 @@
   <div class="min-h-screen bg-gradient-dark transition-colors duration-300">
     <!-- Sidebar -->
     <div class="fixed inset-y-0 left-0 z-50 w-64 bg-ontop-navy-dark/95 backdrop-blur-xl border-r border-white/5 transform transition-all duration-300 ease-in-out lg:translate-x-0" :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }">
-      <div class="flex items-center justify-center h-20 px-4 bg-gradient-ontop-hero relative overflow-hidden">
-        <!-- Subtle animated background -->
-        <div class="absolute inset-0 opacity-20">
-          <div class="absolute top-0 left-0 w-32 h-32 bg-white rounded-full mix-blend-overlay filter blur-xl animate-pulse-slow"></div>
-        </div>
+      <div class="flex items-center justify-center h-20 px-4 bg-ontop-navy-dark/95 relative overflow-hidden border-b border-white/5">
         <!-- Logo -->
         <div class="relative z-10">
           <AppLogo size="md" :show-text="true" />
