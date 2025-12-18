@@ -35,7 +35,7 @@
 
             <NuxtLink
               to="/diio"
-              class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+              class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               :class="$route.path === '/diio' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
             >
               <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -46,7 +46,7 @@
 
             <NuxtLink
               to="/zendesk"
-              class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+              class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               :class="$route.path === '/zendesk' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
             >
               <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,7 +57,7 @@
 
             <NuxtLink
               to="/clients"
-              class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+              class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               :class="$route.path === '/clients' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
             >
               <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -68,7 +68,7 @@
 
             <NuxtLink
               to="/analytics"
-              class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+              class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               :class="$route.path === '/analytics' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
             >
               <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

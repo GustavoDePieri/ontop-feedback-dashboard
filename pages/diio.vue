@@ -328,9 +328,14 @@
         </div>
 
         <!-- Loading State -->
-        <div v-if="loading" class="text-center py-12">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
-          <p class="text-gray-400 mt-2">Loading transcripts...</p>
+        <div v-if="loading" class="text-center py-20 fade-in">
+          <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-emerald-400 border-t-transparent shadow-lg"></div>
+          <p class="text-white font-medium mt-6 text-lg">Loading transcripts...</p>
+          <p class="text-gray-400 mt-2 text-sm">Fetching data from DIIO</p>
+          <!-- Skeleton loaders -->
+          <div class="mt-8 space-y-4 max-w-4xl mx-auto">
+            <div v-for="i in 3" :key="i" class="skeleton rounded-lg p-4 h-24 border border-white/10"></div>
+          </div>
         </div>
 
         <!-- Empty State -->
