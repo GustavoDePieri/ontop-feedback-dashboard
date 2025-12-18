@@ -240,22 +240,26 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="text-center py-20">
-        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-emerald-400 border-t-transparent"></div>
+      <div v-if="loading" class="text-center py-20 fade-in">
+        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-emerald-400 border-t-transparent shadow-lg"></div>
         <p class="text-white font-medium mt-6 text-lg">Loading clients...</p>
         <p class="text-gray-400 mt-2 text-sm">Fetching data from database</p>
+        <!-- Skeleton loaders -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+          <div v-for="i in 6" :key="i" class="skeleton rounded-xl p-5 h-48 border border-white/10"></div>
+        </div>
       </div>
 
       <!-- Empty State - No Clients Found -->
-      <div v-else-if="filteredClients.length === 0 && !loading" class="text-center py-20">
-        <div class="max-w-md mx-auto bg-white/5 backdrop-blur-sm rounded-2xl p-12 border border-white/10">
-          <div class="w-24 h-24 bg-gray-700/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-12 h-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      <div v-else-if="filteredClients.length === 0 && !loading" class="text-center py-20 fade-in">
+        <div class="max-w-md mx-auto bg-white/5 backdrop-blur-sm rounded-2xl p-12 border border-white/10 shadow-lg">
+          <div class="w-32 h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm border border-white/10">
+            <svg class="w-16 h-16 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>
-          <h3 class="text-white text-xl font-bold mb-3">No Clients Found</h3>
-          <p class="text-gray-400 mb-6">
+          <h3 class="text-white text-2xl font-bold mb-3">No Clients Found</h3>
+          <p class="text-gray-400 mb-8 text-lg">
             <span v-if="searchQuery || filterEnrichment !== 'all'">
               No clients match your current filters. Try adjusting your search or filters.
             </span>
