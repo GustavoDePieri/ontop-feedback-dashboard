@@ -106,24 +106,31 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         currentStep: `Batch ${iteration}: Finding transcripts without Client IDs...`
       })
       
-      // Step 1: Find transcripts without client_platform_id that haven't been attempted yet
-      // Use separate queries for NULL and empty string, then combine
-      // This is more reliable than .or() syntax which can be problematic
+      // Step 1: Find transcripts without client_platform_id
+      // Include transcripts that:
+      // 1. Don't have client_platform_id (NULL or empty)
+      // 2. Haven't been attempted, OR were attempted more than 7 days ago (to allow retries)
       let transcripts: any[] = []
       let fetchError: any = null
       
-      // First, try to query for NULL client_platform_id
-      // Check if client_id_lookup_attempted_at column exists by trying to select it
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+      const sevenDaysAgoISO = sevenDaysAgo.toISOString()
+      
+      // Query for NULL client_platform_id
+      // Try to query with attempted_at filter first (if column exists)
       let nullQuery = supabase
         .from('diio_transcripts')
         .select('id, diio_transcript_id, attendees, client_id_lookup_attempted_at')
         .is('client_platform_id', null)
+        .or(`client_id_lookup_attempted_at.is.null,client_id_lookup_attempted_at.lt.${sevenDaysAgoISO}`)
         .limit(50)
       
-      // If column doesn't exist, fall back to query without it
       let nullResult = await nullQuery
+      
+      // If column doesn't exist, fall back to query without it
       if (nullResult.error && (nullResult.error.message?.includes('column') || nullResult.error.code === 'PGRST116')) {
-        // Column doesn't exist, query without it
+        logger.debug('client_id_lookup_attempted_at column not found, querying without filter')
         nullQuery = supabase
           .from('diio_transcripts')
           .select('id, diio_transcript_id, attendees')
@@ -132,21 +139,8 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         nullResult = await nullQuery
       }
       
-      // Include all transcripts without client_platform_id
-      // Only skip if they were attempted MORE THAN 7 DAYS AGO (to allow retries)
       if (nullResult.data) {
-        const nullTranscripts = nullResult.data.filter((t: any) => {
-          // If client_id_lookup_attempted_at doesn't exist, include it
-          if (!t.client_id_lookup_attempted_at) {
-            return true
-          }
-          // If it was attempted more than 7 days ago, retry it
-          const attemptedDate = new Date(t.client_id_lookup_attempted_at)
-          const sevenDaysAgo = new Date()
-          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-          return attemptedDate < sevenDaysAgo
-        })
-        transcripts.push(...nullTranscripts)
+        transcripts.push(...nullResult.data)
       }
       
       if (nullResult.error && !nullResult.error.message?.includes('column')) {
@@ -158,6 +152,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         .from('diio_transcripts')
         .select('id, diio_transcript_id, attendees, client_id_lookup_attempted_at')
         .eq('client_platform_id', '')
+        .or(`client_id_lookup_attempted_at.is.null,client_id_lookup_attempted_at.lt.${sevenDaysAgoISO}`)
         .limit(50)
       
       let emptyResult = await emptyQuery
@@ -171,18 +166,7 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       }
       
       if (emptyResult.data) {
-        const emptyTranscripts = emptyResult.data.filter((t: any) => {
-          // If client_id_lookup_attempted_at doesn't exist, include it
-          if (!t.client_id_lookup_attempted_at) {
-            return true
-          }
-          // If it was attempted more than 7 days ago, retry it
-          const attemptedDate = new Date(t.client_id_lookup_attempted_at)
-          const sevenDaysAgo = new Date()
-          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-          return attemptedDate < sevenDaysAgo
-        })
-        transcripts.push(...emptyTranscripts)
+        transcripts.push(...emptyResult.data)
       }
       
       if (emptyResult.error && !emptyResult.error.message?.includes('column')) {
