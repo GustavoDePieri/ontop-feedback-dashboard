@@ -3,6 +3,10 @@
     {
       "path": "/api/diio/sync-transcripts-daily",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/transcripts/sync-client-ids-daily",
+      "schedule": "0 3 * * *"
     }
   ]
 }

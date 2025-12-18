@@ -132,11 +132,19 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
         nullResult = await nullQuery
       }
       
-      // Filter out transcripts that have already been attempted (if column exists)
+      // Include all transcripts without client_platform_id
+      // Only skip if they were attempted MORE THAN 7 DAYS AGO (to allow retries)
       if (nullResult.data) {
         const nullTranscripts = nullResult.data.filter((t: any) => {
-          // If client_id_lookup_attempted_at exists and is set, skip it
-          return !t.client_id_lookup_attempted_at
+          // If client_id_lookup_attempted_at doesn't exist, include it
+          if (!t.client_id_lookup_attempted_at) {
+            return true
+          }
+          // If it was attempted more than 7 days ago, retry it
+          const attemptedDate = new Date(t.client_id_lookup_attempted_at)
+          const sevenDaysAgo = new Date()
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+          return attemptedDate < sevenDaysAgo
         })
         transcripts.push(...nullTranscripts)
       }
@@ -164,7 +172,15 @@ export default defineEventHandler(async (event): Promise<SyncResult> => {
       
       if (emptyResult.data) {
         const emptyTranscripts = emptyResult.data.filter((t: any) => {
-          return !t.client_id_lookup_attempted_at
+          // If client_id_lookup_attempted_at doesn't exist, include it
+          if (!t.client_id_lookup_attempted_at) {
+            return true
+          }
+          // If it was attempted more than 7 days ago, retry it
+          const attemptedDate = new Date(t.client_id_lookup_attempted_at)
+          const sevenDaysAgo = new Date()
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+          return attemptedDate < sevenDaysAgo
         })
         transcripts.push(...emptyTranscripts)
       }
