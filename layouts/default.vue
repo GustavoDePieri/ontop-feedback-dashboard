@@ -13,7 +13,7 @@
           <div class="hidden lg:flex items-center space-x-1 flex-1 justify-center">
             <NuxtLink
               to="/"
-              class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200"
+              class="flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
               :class="$route.path === '/' ? 'bg-gradient-cta text-white shadow-lg' : 'text-white/70 hover:bg-white/10 hover:text-white'"
             >
               <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

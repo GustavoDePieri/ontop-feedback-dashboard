@@ -32,7 +32,7 @@
 
           <!-- Quick Stats -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-2xl mx-auto lg:mx-0">
-            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200 fade-in card-hover">
               <div v-if="loading" class="flex items-center justify-center h-12">
                 <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
               </div>
@@ -41,7 +41,7 @@
                 <div class="text-sm text-white/60">Total Feedback</div>
               </template>
             </div>
-            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200 fade-in-delay-1 card-hover">
               <div v-if="loading" class="flex items-center justify-center h-12">
                 <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
               </div>
@@ -50,7 +50,7 @@
                 <div class="text-sm text-white/60">Call Transcripts</div>
               </template>
             </div>
-              <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200">
+              <div class="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-200 fade-in-delay-2 card-hover">
                 <div v-if="loading" class="flex items-center justify-center h-12">
                   <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
           </div>
@@ -77,7 +77,7 @@
         <!-- Unified Clients Card - FIRST -->
         <NuxtLink 
           to="/clients"
-          class="group relative bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:shadow-glow-purple hover:scale-105"
+          class="group relative bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:shadow-glow-purple hover:scale-105 fade-in card-hover focus:outline-none focus:ring-2 focus:ring-purple-500/50"
         >
           <div class="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300"></div>
           
@@ -264,7 +264,7 @@
         </NuxtLink>
 
         <!-- Quick Actions Card -->
-        <div class="group relative bg-gradient-to-br from-green-600/20 to-emerald-800/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-green-500/50 transition-all duration-300">
+        <div class="group relative bg-gradient-to-br from-green-600/20 to-emerald-800/20 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:border-green-500/50 transition-all duration-300 fade-in-delay-3 card-hover">
           <div class="relative z-10">
             <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl p-4 w-16 h-16 flex items-center justify-center mb-4 shadow-lg">
               <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
