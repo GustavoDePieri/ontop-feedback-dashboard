@@ -57,7 +57,7 @@ Required variables (see `env.example` for full list):
 - `DIIO_CLIENT_SECRET` - DIIO API client secret
 - `DIIO_REFRESH_TOKEN` - DIIO API refresh token
 - `N8N_WEBHOOK_URL` - n8n webhook URL for Client ID sync
-- `ADMIN_PASSWORD` - Admin password for login (default: ontop2024)
+- `ADMIN_PASSWORD` - Admin password for login (default: ontop2026)
 
 ## Features
 

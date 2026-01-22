@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
 
   // Check against environment variable (or use default)
   // Set ADMIN_PASSWORD in Vercel to use your own password
-  const validPassword = process.env.ADMIN_PASSWORD || 'ontop2024'
+  const validPassword = process.env.ADMIN_PASSWORD || 'ontop2026'
 
   // Use constant-time comparison to prevent timing attacks
   if (sanitizedPassword.length !== validPassword.length) {
