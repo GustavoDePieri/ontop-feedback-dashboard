@@ -26,6 +26,8 @@ export default defineNuxtConfig({
     cronSecret: process.env.CRON_SECRET, // Optional: for securing daily sync endpoint
     // n8n Webhook URL (for Client ID lookup via n8n)
     n8nWebhookUrl: process.env.N8N_WEBHOOK_URL,
+    // Admin password for authentication
+    adminPassword: process.env.ADMIN_PASSWORD || 'ontop2026',
     public: {
       // Client-side environment variables
       appName: 'Ontop Feedback Analytics',

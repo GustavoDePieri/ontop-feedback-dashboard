@@ -32,9 +32,10 @@ export default defineEventHandler(async (event) => {
   // Sanitize password input (limit length to prevent DoS)
   const sanitizedPassword = sanitizeString(password, 500)
 
-  // Check against environment variable (or use default)
-  // Set ADMIN_PASSWORD in Vercel to use your own password
-  const validPassword = process.env.ADMIN_PASSWORD || 'ontop2026'
+  // Check against runtime config (from environment variable or default)
+  // Set ADMIN_PASSWORD in Vercel/.env to use your own password
+  const config = useRuntimeConfig()
+  const validPassword = config.adminPassword || 'ontop2026'
 
   // Use constant-time comparison to prevent timing attacks
   if (sanitizedPassword.length !== validPassword.length) {
